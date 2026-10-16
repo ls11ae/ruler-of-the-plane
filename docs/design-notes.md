@@ -229,6 +229,10 @@ subsection below, so their branches do not conflict.
   at 768, 1024 and 1280 px that nothing overlaps and the title is not cut off (`expectHeaderLaidOut` in
   `e2e/helpers.ts`, for every game's test to reuse). Alternatives: a fixed breakpoint (breaks again
   with a longer status), shrinking fonts and buttons (hit targets below 44 px).
+- **2026-10-16 "Licht ins Verlies" counts torches without a limit in the text.** The header shows
+  "Fackeln: 4" (dots: the level's number dashed, extra torches orange) and the subtitle "Ziel: 3
+  Fackeln" instead of "Fackeln: 4 von 3" and "3 Fackeln erlaubt", which read oddly because more torches
+  may be placed (they cost stars).
 - **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
   code uses `person` too, e.g. the colour `--person`). Reason: "Herrchen" is gendered and "owner" says

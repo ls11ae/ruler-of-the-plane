@@ -49,7 +49,9 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
   await expect(howTo).toBeVisible()
   await shot(page, testInfo, 'art-gallery-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
-  await expect(page.getByText('Fackeln: 0 von 2')).toBeVisible()
+  await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
+  // The subtitle names the goal (phones hide the subtitle).
+  if (!isMobile) await expect(page.getByText('Verlies 1 von 9 · Ziel: 2 Fackeln')).toBeVisible()
 
   const place = async (x: number, y: number) => {
     const p = await toScreen(page, x, y)
@@ -59,7 +61,7 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
 
   // A torch in a poor spot: the dungeon stays partly dark and the thickest dark spot is marked.
   await place(-2.5, 3.5)
-  await expect(page.getByText('Fackeln: 1 von 2')).toBeVisible()
+  await expect(page.getByText('Fackeln: 1', { exact: true })).toBeVisible()
   await expect(page.getByTestId('dark-hint')).toBeVisible()
   await shot(page, testInfo, 'art-gallery-one-torch')
 
@@ -80,7 +82,7 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
     await page.mouse.move(outside.x, outside.y, { steps: 6 })
     await page.mouse.up()
   }
-  await expect(page.getByText('Fackeln: 0 von 2')).toBeVisible()
+  await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
 
   // Two well-placed torches light everything: three stars.
   await place(2.35, -2.79)
