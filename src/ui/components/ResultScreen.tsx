@@ -18,6 +18,8 @@ export interface LeaderboardSubmission {
 
 interface ResultScreenProps {
   outcome: 'won' | 'lost'
+  /** Replaces the title of the outcome, e.g. "Unentschieden!" or "Blau gewinnt!" with two players. */
+  title?: ReactNode
   /** 0–3 stars, if the game gives stars. */
   stars?: number
   record?: boolean
@@ -44,7 +46,7 @@ export function ResultScreen(props: ResultScreenProps) {
   const { outcome, stars, record, stats, explanation, animation, leaderboard } = props
   return (
     <Overlay
-      title={outcome === 'won' ? t.result.won : t.result.lost}
+      title={props.title ?? (outcome === 'won' ? t.result.won : t.result.lost)}
       onClose={props.onClose}
       className={styles.card}
       actions={

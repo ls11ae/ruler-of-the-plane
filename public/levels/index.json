@@ -49,6 +49,19 @@
       "convex-hull/hullLevel1",
       "convex-hull/hullLevel2",
       "convex-hull/hullLevel3"
+    ],
+    "voronoi": [
+      "voronoi/map1-island",
+      "voronoi/map2-river-valley",
+      "voronoi/map3-lake-district"
+    ],
+    "lawn-mowing": [
+      "lawn-mowing/lawn1",
+      "lawn-mowing/lawn2",
+      "lawn-mowing/lawn3",
+      "lawn-mowing/lawn4",
+      "lawn-mowing/lawn5",
+      "lawn-mowing/smr_882k_481_3s3"
     ]
   }
 }

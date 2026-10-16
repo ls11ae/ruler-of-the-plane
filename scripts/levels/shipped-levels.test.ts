@@ -1,8 +1,9 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { validatePolygonWithHoles } from '../../src/core/geometry/polygon'
+import { isSimple, pointInRing, validatePolygonWithHoles } from '../../src/core/geometry/polygon'
 import type { Level, LevelIndex } from '../../src/core/levels/schema'
+import { checkTours, makeLawn } from '../../src/core/games/lawn-mowing/mowing'
 import { parseLevelName } from './convert'
 import { convertAll, levelFiles } from './import'
 
@@ -27,12 +28,12 @@ const levels: Level[] = Object.values(index.collections ?? {})
 
 describe('shipped levels (public/levels)', () => {
   it('match a fresh import (run `npm run levels` after changing the importer)', () => {
-    const fresh = levelFiles(convertAll(join(root, 'legacy', 'levels')))
+    const fresh = levelFiles(convertAll(join(root, 'legacy', 'levels'), join(root, 'levels')))
     expect([...committed.keys()].sort()).toEqual([...fresh.keys()].sort())
     for (const [path, content] of fresh) expect(committed.get(path), path).toBe(content)
   })
 
-  it('contain all 37 Unity levels', () => {
+  it('contain all 37 Unity levels and the new maps', () => {
     const counts = Object.fromEntries(Object.entries(index.collections).map(([c, ids]) => [c, ids.length]))
     expect(counts).toEqual({
       'art-gallery': 14,
@@ -41,6 +42,8 @@ describe('shipped levels (public/levels)', () => {
       'kings-taxes/tsp': 3,
       divide: 9,
       'convex-hull': 3,
+      voronoi: 3,
+      'lawn-mowing': 6,
     })
     expect(levels.every((l) => l !== null)).toBe(true)
   })
@@ -54,6 +57,7 @@ describe('shipped levels (public/levels)', () => {
 
   it('carry the parameters of their file names', () => {
     for (const level of levels) {
+      if (level.collection === 'lawn-mowing' && level.competition) continue
       const { number, param } = parseLevelName(level.collection, level.name)
       expect(level.number).toBe(number)
       if (level.collection === 'art-gallery') expect(level.torches).toBe(param)
@@ -91,7 +95,7 @@ describe('shipped levels (public/levels)', () => {
   })
 
   it('normalise IPE levels to the Unity size and keep Unity assets as they are', () => {
-    const size = { 'art-gallery': 9, 'kings-taxes': 6, divide: 5, 'convex-hull': 6 }
+    const size = { 'art-gallery': 9, 'kings-taxes': 6, divide: 5, 'convex-hull': 6, voronoi: 16 }
     for (const level of levels) {
       const { minX, minY, maxX, maxY } = level.bounds
       const extent = Math.max(maxX - minX, maxY - minY)
@@ -107,5 +111,47 @@ describe('shipped levels (public/levels)', () => {
     expect(div1.bounds.maxY - div1.bounds.minY).toBeCloseTo(2.755475, 5)
     const hull2 = levels.find((l) => l.id === 'convex-hull/hullLevel2')!
     expect([hull2.bounds.maxX - hull2.bounds.minX, hull2.bounds.maxY - hull2.bounds.minY]).toEqual([3, 6])
+  })
+
+  describe.each(levels.filter((l) => l.collection === 'voronoi'))('$id', (level) => {
+    it('has simple land rings, land positive and lakes negative, and places on land', () => {
+      const area = (ring: readonly (readonly [number, number])[]) =>
+        ring.reduce((s, [x1, y1], i) => {
+          const [x2, y2] = ring[(i + 1) % ring.length]!
+          return s + x1 * y2 - x2 * y1
+        }, 0)
+      for (const ring of [...level.land, ...level.water]) expect(isSimple(ring)).toBe(true)
+      expect(level.land.some((r) => area(r) > 0)).toBe(true)
+      const onLand = (p: readonly [number, number]) =>
+        level.land.reduce((w, r) => w + (pointInRing(p, r) === 1 ? Math.sign(area(r)) : 0), 0) > 0
+      for (const p of [...level.cities, ...level.mines, ...level.forests, ...level.mountains]) {
+        expect(onLand(p), `${p.join(', ')}`).toBe(true)
+      }
+      expect(level.cities.length).toBeGreaterThanOrEqual(3)
+      expect(level.mines.length).toBeGreaterThanOrEqual(1)
+    })
+  })
+
+  describe.each(levels.filter((l) => l.collection === 'lawn-mowing'))('$id', (level) => {
+    const lawn = makeLawn(level.outer, level.holes, level.cutter, level.cutterCenter)
+
+    it('is a lawn of 300 to 500 cells with a 3 × 3 cutter for 1 and 2 cutters (booth lawns)', () => {
+      if (level.competition) return
+      expect(lawn.cells.count).toBeGreaterThanOrEqual(300)
+      expect(lawn.cells.count).toBeLessThanOrEqual(500)
+      expect(lawn.offsets).toHaveLength(9)
+      expect(level.variants.map((v) => v.cutters)).toEqual([1, 2])
+      expect(level.holes.length).toBeGreaterThan(0)
+    })
+
+    it('has solutions that mow everything, with the stated longest tour', () => {
+      for (const v of level.variants) {
+        if (!v.solution) continue
+        const result = checkTours(lawn, v.solution.tours)
+        expect(result.uncovered, v.uid).toEqual([])
+        expect(result.maxTourLength).toBe(v.solution.maxTourLength)
+        expect(v.solution.tours).toHaveLength(v.cutters)
+      }
+    })
   })
 })

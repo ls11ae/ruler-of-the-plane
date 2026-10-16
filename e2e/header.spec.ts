@@ -17,6 +17,20 @@ for (const width of [768, 1024, 1280]) {
       await page.getByRole('button', { name: "Los geht's!" }).click()
       await expectHeaderLaidOut(page)
     }
+    // These two ask for a setup ("Neues Spiel") after "So geht's", then show the full header.
+    for (const game of ['voronoi', 'lawn-mowing']) {
+      await page.goto(`./#/play/${game}`)
+      await page
+        .getByRole('dialog', { name: "So geht's" })
+        .getByRole('button', { name: "Los geht's!" })
+        .click()
+      await page
+        .getByRole('dialog', { name: 'Neues Spiel' })
+        .getByRole('button', { name: "Los geht's!" })
+        .click()
+      await expectHeaderLaidOut(page)
+      await shot(page, testInfo, `header-${game}-${width}`)
+    }
     await page.goto('./#/demo')
     await expectHeaderLaidOut(page)
   })

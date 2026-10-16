@@ -66,12 +66,27 @@ h
           [9, 22],
         ],
         closed: true,
+        layer: 'alpha',
       },
     ])
     expect(page.markers).toEqual([
-      { kind: 'disk', at: [-3, 2] },
-      { kind: 'square', at: [102, 4] },
+      { kind: 'disk', at: [-3, 2], layer: 'alpha' },
+      { kind: 'square', at: [102, 4], layer: 'alpha' },
     ])
+  })
+
+  it('records layers: inherited from the previous object, and from a group for its children', () => {
+    const page = readIpePage(
+      ipe(`<path layer="land">0 0 m 1 0 l 1 1 l h</path>
+<path>2 0 m 3 0 l 3 1 l h</path>
+<use layer="towns" name="mark/disk(sx)" pos="1 2"/>
+<group layer="water"><path layer="land">5 0 m 6 0 l 6 1 l h</path><use name="mark/disk(sx)" pos="0 0"/></group>
+<use name="mark/disk(sx)" pos="4 4"/>`),
+    )
+    expect(page.paths.map((p) => p.layer)).toEqual(['land', 'land', 'water'])
+    expect(page.markers.map((m) => m.layer)).toEqual(['towns', 'water', 'water'])
+    // Without a layer attribute, objects are in the page's first layer.
+    expect(readIpePage(ipe('<path>0 0 m 1 0 l 1 1 l h</path>')).paths[0]!.layer).toBe('alpha')
   })
 
   it('ignores symbol definitions outside the page and rejects curves', () => {
@@ -145,5 +160,50 @@ MonoBehaviour:
       [-1.3, -1.56],
     ])
     expect(() => convertLevel('Divide', 'divLevel1_0.asset', asset)).toThrow(/differ from the file name/)
+  })
+})
+
+describe('convertLevel (Voronoi maps)', () => {
+  const rect = (layer: string, x0: number, y0: number, x1: number, y1: number) =>
+    `<path layer="${layer}">${x0} ${y0} m ${x1} ${y0} l ${x1} ${y1} l ${x0} ${y1} l h</path>`
+
+  it('cuts water out of the land, clips to the frame and sorts the markers', () => {
+    // Frame 160 × 100 (→ 16 × 10), land reaching beyond its right edge, a 20 × 20 lake inside.
+    const xml = ipe(
+      rect('frame', 0, 0, 160, 100) +
+        rect('land', 20, 20, 200, 80) +
+        rect('water', 40, 40, 60, 60) +
+        `<use layer="places" name="mark/square(sx)" pos="100 50"/>
+<use name="mark/cross(sx)" pos="120 50"/>
+<use name="mark/disk(sx)" pos="30 30"/>
+<use name="mark/circle(sx)" pos="140 70"/>`,
+    )
+    const level = convertLevel('voronoi', 'map7-test.ipe', xml, true)
+    if (level.collection !== 'voronoi') throw new Error('wrong collection')
+    expect(level.id).toBe('voronoi/map7-test')
+    expect(level.number).toBe(7)
+    expect(level.source).toBe('levels/voronoi/map7-test.ipe')
+    expect(level.bounds).toEqual({ minX: -8, minY: -5, maxX: 8, maxY: 5 })
+    const area = (ring: readonly (readonly [number, number])[]) =>
+      ring.reduce((s, [x1, y1], i) => {
+        const [x2, y2] = ring[(i + 1) % ring.length]!
+        return s + x1 * y2 - x2 * y1
+      }, 0) / 2
+    // Land 14 × 6 inside the frame minus a 2 × 2 lake; outer ring positive, the lake negative.
+    expect(level.land.map(area).sort((a, b) => a - b)).toEqual([-4, 84])
+    expect(level.water.map(area)).toEqual([4])
+    expect(level.cities).toEqual([[2, 0]])
+    expect(level.mines).toEqual([[4, 0]])
+    expect(level.forests).toEqual([[-5, 2]])
+    expect(level.mountains).toEqual([[6, -2]])
+  })
+
+  it('needs a rectangular frame and land', () => {
+    expect(() => convertLevel('voronoi', 'map1-x.ipe', ipe(rect('land', 0, 0, 10, 10)), true)).toThrow(
+      /frame/,
+    )
+    expect(() => convertLevel('voronoi', 'map1-x.ipe', ipe(rect('frame', 0, 0, 10, 10)), true)).toThrow(
+      /land/,
+    )
   })
 })

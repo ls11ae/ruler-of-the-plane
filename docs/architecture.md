@@ -18,7 +18,12 @@ touches no shared file:
    `useLocalized({ de, en })`. Shared texts (buttons, result screen) come from `useT()`.
 4. Art: import files from `assets/` in the game's folder and add a row per file to the game's section
    of `CREDITS.md`.
-5. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
+5. Optionally `src/ui/games/<id>/attract.tsx` default-exports a demo that the kiosk's attract screen plays
+   behind its text (e.g. the computer against itself); it is discovered like the game.
+6. New level sources (made for this edition) go to `levels/<id>/` and are converted by `npm run levels`
+   (folder → collection in `NEW_FOLDERS` of `scripts/levels/convert.ts`); `legacy/` stays the read-only
+   copy of the Unity files.
+7. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
    turned board) and how to do a touch drag with Pointer Events; `e2e/frechet.spec.ts` how to hold keys
@@ -34,7 +39,7 @@ touches no shared file:
 | Hand-drawn outlines                    | `filter={board.ink}` on a board; `filter="url(#ink)"` where one unit is about one pixel (start map)                                                                                       |
 | Buttons, keycaps, stars, progress bar  | `components/Button` (`variant`: solid, accent, dashed), `Keycap` (`code`, `pressed`), `Stars`, `ProgressBar`                                                                              |
 | "So geht's"                            | `components/HowToOverlay` (2–3 sentences, optional animation, key hints)                                                                                                                  |
-| End of a round                         | `components/ResultScreen` (outcome, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                                         |
+| End of a round                         | `components/ResultScreen` (outcome or an own `title`, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                       |
 | Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format (nickname picker with the last name first and a lucky number built in)                     |
 | "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                                                |
 | Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                                              |

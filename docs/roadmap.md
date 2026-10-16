@@ -99,26 +99,33 @@ Status: the raster check passes on all 14 levels (with the thickness rule, check
 lighting takes at most 10 ms per drag frame on the largest level with 17 torches in the cloud session
 (median 2 ms); check on a booth laptop in the playtest.
 
-## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct)
+## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct) — done 2026-10-16 (playtest items open)
 
 - Maps with land and water, authored in IPE (define and document the convention, e.g. a layer for land
   polygons with lakes as holes, `square` markers for cities, `cross` markers for gold mines). At least
-  three maps: island, river valley, lake district.
+  three maps: island, river valley, lake district. — done 2026-10-16 (`levels/voronoi/README.md`)
 - Rules: castles only on land; a minimum distance to every castle, shown as a circle while aiming; score
-  = land area of a player's cells plus city and gold-mine bonuses.
+  = land area of a player's cells plus city and gold-mine bonuses. — done 2026-10-16 (rings of half the
+  distance around every castle; castles also keep off the shore and the towns, proposed)
 - Two players or against the computer, 5 or 10 castles each. Hovering shows a ghost castle with its
-  future cell and the points it would gain; a click places it (touch: press and hold, release).
+  future cell and the points it would gain; a click places it (touch: press and hold, release). — done
+  2026-10-16
 - AI in a worker: candidate positions on land with jitter, gain evaluated on a land raster. "Leicht"
   picks a random move among the good ones, "Schwer" the best move with one ply of look-ahead. Attract
-  mode = AI vs. AI.
+  mode = AI vs. AI. — done 2026-10-16 (plus "Mittel"; the attract screen plays the demo behind its
+  text)
 - Look as in `docs/look/erobere-das-land.webp`: Cartography Pack on parchment, coast with offset ink
   lines, castles with a pennant and base in the player colour, towns and a mine with bonus badges,
-  territories as colour washes, dashed cell borders.
+  territories as colour washes, dashed cell borders. — done 2026-10-16
 - Theory view: Voronoi diagram, Delaunay triangulation and empty circumcircles as buttons; heatmap of
-  the gain of the next move (the AI's evaluation).
+  the gain of the next move (the AI's evaluation). — done 2026-10-16
 
 Acceptance: an AI move takes under 200 ms on a booth laptop; "Schwer" beats "Leicht" in at least 70 % of
 AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area.
+Status: in a cloud session the slowest "Schwer" move takes about 50 ms (the unit test only logs it and
+fails above 1 s, since wall-clock time depends on the machine), "Schwer" beat "Leicht" in 104 of 120 games
+(a test plays 12), and raster and exact land differ by less than 1 point of 100 in the tests. The 200 ms
+target is measured on a booth laptop in the playtest (Phase 6).
 
 ## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct) — done 2026-10-16 (booth key test open)
 
@@ -151,27 +158,35 @@ every walk can be finished at 60 frames per second by following the hint (unit t
 walks the first walk with the keys (laptop) and with both hold buttons at once (phone). Open: A + L on
 the booth laptops' keyboards (key test in the staff menu).
 
-## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
+## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct) — done 2026-10-16 (solver targets and playtest open)
 
 - Read instances and solutions in the pyutils27 JSON formats; booth lawns are small polyominoes with
-  holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters.
+  holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters. — lawns designed 2026-10-16 (five lawns,
+  `levels/lawn-mowing/`); solver solutions requested from the chair. Reading and import done 2026-10-16
+  (`npm run levels` picks up `levels/lawn-mowing/solutions/` once the files are there).
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
-  (space) drives every cutter back to its start on the shortest (L1) way and closes the tour.
+  (space) drives every cutter back to its start on the shortest (L1) way and closes the tour. — done
+  2026-10-16
 - On-screen controls for phones: a direction pad for one cutter (holding a direction repeats at the same
   fixed rate as the keys) plus a "Feierabend" button; on phones the lawns are played with one cutter. A
-  phone smoke test mows a lawn with them.
+  phone smoke test mows a lawn with them. — done 2026-10-16
 - Live display: mowed share, steps per cutter, the longest tour (the score), and the target from the
-  chair's solver for this lawn (stored with the level; shown as a placeholder until provided).
+  chair's solver for this lawn (stored with the level; shown as a placeholder until provided). — done
+  2026-10-16 (until the solver's tours arrive, the target is the strip strategy's, marked as such)
 - Theory view: the solver's tours as an animation, the lower bound from the cutter width, the min-max
-  objective, and one real competition instance with a solution.
+  objective, and one real competition instance with a solution. — done 2026-10-16 (the strips stand in
+  for the solver's tours until they arrive)
 - Look as in `docs/look/rasenmaehen.webp`: Scribble grid paper; uncut cells green with grass, mowed cells
   striped light green, holes (pond, tree, flower bed) from the Scribble tiles, cutters as red and purple
-  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines.
+  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines. — done 2026-10-16
 
 Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test fixtures (generated once
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
 laptop keyboard; one player can mow a lawn on a phone with the direction pad.
+Status: coverage and lengths agree with the pyutils27 verifier on the fixtures (three booth lawns and a
+competition instance, 25 tours); the smoke tests mow lawn 1 with two players on the laptop keyboard and
+with the direction pad on a phone; check the key pairs with the key test on the booth laptops.
 
 ## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct) — done 2026-10-16
 
@@ -190,6 +205,10 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 
 - Playtest with teenagers (not only student assistants) on the booth laptops with external mice; fix
   confusing texts and controls.
+- Measure on each booth laptop: a "Schwer" move of "Erobere das Land" takes under 200 ms (Phase 2
+  acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
+  computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
+  lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`.
 - Final art in place, `CREDITS.md` complete, credits screen in the app.
 - Accessibility pass: contrast, colour never the only cue, readable fonts.
 

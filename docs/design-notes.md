@@ -41,7 +41,8 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 ## 4. Open questions (for Kevin)
 
 - Booth laptops: operating system, browser, external mice; key test on each keyboard.
-- Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations).
+- Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations): the
+  instances are in `levels/lawn-mowing/instances/`, the solutions go to `levels/lawn-mowing/solutions/`.
 - Where tsp-boards is published (it is private and not deployed yet).
 - Whether a floor plan of a TU Dortmund building can be used as a level.
 - Who is responsible for the Impressum and privacy notice of the public site.
@@ -204,6 +205,109 @@ subsection below, so their branches do not conflict.
   level. Reason: one rule for every board game, no level data to maintain.
 
 ### Track A ("Erobere das Land", "Rasenmähen")
+
+- **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
+  Schlossgarten, Obstwiese, Stadtpark) with ponds, trees and flower beds as holes, each a pyutils27
+  instance with a 3 × 3 cutter for 1 and for 2 cutters, in `levels/lawn-mowing/instances/`; the chair's
+  solver solutions go to `levels/lawn-mowing/solutions/`. Drawn as text grids in
+  `levels/lawn-mowing/lawns.txt` and converted by `scripts/lawns/make_instances.py`, which validates them
+  with the pyutils27 schema. A hole's art follows from its shape (tree, flower bed, pond), so the files
+  stay plain competition instances. The instances have no start position, as in the competition; the
+  game starts each cutter on a point of the solver's tour, so the target stays reachable. Alternatives: a
+  fixed shed as the start (the solver would need an extra constraint, and the target might be out of
+  reach); drawing the lawns in IPE (no snapping to cells, no check of pinch points). New level sources go
+  to `levels/<game>/`, since `legacy/` is the read-only copy of the Unity files.
+
+- **2026-10-16 Maps of "Erobere das Land" drawn in IPE with layers**: `frame` (one rectangle, the sheet),
+  `land` and `water` (closed polygons; land may reach beyond the frame), markers `square` = city,
+  `cross` = gold mine, `disk` = forest, `circle` = mountains (`levels/voronoi/README.md`). The importer
+  computes the scoring land (frame ∩ land − water) and the inland water with Clipper2, so the game needs
+  no polygon boolean operations at load time. Three maps: island with a lake and an islet, river valley
+  (land fills the sheet, a river with a tributary), lake district (coast and six lakes). Alternatives:
+  land and water by nesting depth (no rivers that reach the frame), fill colours as the marker of water
+  (invisible in the file). The IPE reader now records each object's layer (shared script code).
+- **2026-10-16 Score in points**: all land together is worth 100 points (one point = one percent of the
+  land), a city 5 and a gold mine 10 for the owner of the cell that contains it. Totals are shown and
+  compared rounded to whole points; equal totals are a draw. Alternatives: area in map units (meaningless
+  numbers); Unity's share of the rectangle including water.
+- **2026-10-16 (proposed) Spacing rules**: castles keep the distance d = 0.55·√(land / castles in the
+  game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a dashed
+  ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring and
+  the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
+  shore seemed to stand in the lake) and 0.55 units from cities and mines (castles covered the town icons).
+  Alternatives: a fixed distance per map; no distance to towns. A player with no room left passes.
+- **2026-10-16 Blue starts, the computer is orange and moves second.** Alternatives: random start; the
+  computer first. Reason: the natural order for visitors; the last move is an advantage, which the
+  computer's strength levels balance. Check in the playtest.
+- **2026-10-16 The computer of "Erobere das Land"**: candidate positions are a jittered grid (about 320 on
+  the land), positions just outside the distance ring of every castle and next to every city and mine;
+  each is rated on a land raster (spacing 0.125, 5,000–10,000 samples, rows pruned by the largest
+  distance to a castle) by its swing: own points gained plus the opponent's points lost. "Leicht" takes
+  a random move with at least half the best swing, "Mittel" the best swing, "Schwer" the best of its top
+  eight after the opponent's best answer (one ply ahead; as answers it rates the opponent's 30 best
+  positions and every candidate within three times the distance of the tried move, the only places the
+  move changes). Positions are tested for land and the coast margin in one floating-point pass over the
+  coast. The staff's difficulty (easy, normal, hard) is the default strength; the setup offers all three.
+  Measured in a cloud session after these speed-ups: the slowest "Schwer" move 50–55 ms (before them up
+  to 300 ms; another session measured 211–231 ms for the slower version), "Leicht" and "Mittel" a few
+  ms; "Schwer" beat "Leicht" in 104 of 120 games and "Mittel" in 77 of 120. Raster and exact scores
+  differ by less than one point (1 % of the land) in the tests.
+- **2026-10-16 The 200 ms move time is measured on a booth laptop, not in the unit tests.** Wall-clock
+  time depends on the machine (CI runners and cloud sessions vary by a factor of two or more), so
+  `ai.test.ts` logs the slowest "Schwer" move and fails only above 1 s, which catches gross slowdowns
+  without being flaky. The acceptance target of Phase 2, under 200 ms per move, is checked on each booth
+  laptop in the playtest (Phase 6): the theory view shows the computing time of the computer's last move
+  (measured in the worker). If a laptop is slower, "Schwer" can rate fewer moves ahead
+  (`LOOKAHEAD`) or use a coarser raster (`RASTER_STEP`). Alternatives: a fixed 200 ms assertion (failed
+  at 211–231 ms in another session); no timing test at all.
+- **2026-10-16 "Erobere das Land" interaction**: with a mouse the ghost castle follows the pointer and
+  shows its future cell, its ring and a box with the gain ("+7 Land, +5 Stadt"), a click builds; with
+  touch the ghost floats 64 px above the finger while pressed, releasing builds, and a quick tap (under
+  180 ms without moving) only explains how to aim. A setup dialog before each game: map, opponent
+  (computer or two players), strength, 5 or 10 castles each; the chosen map shows behind it.
+- **2026-10-16 Theory view of "Erobere das Land"**: switches for the Voronoi diagram over the whole sheet,
+  the Delaunay triangles and their empty circumcircles, and a heat map of the swing of the next castle
+  (computed in the worker, in its own yellow-to-red colours with a ring at the best spot, so it reads on
+  both territories). The heat map also works after the game: where one more castle would have helped
+  most. "Was steckt dahinter?" shows circles growing from all castles at the same speed, each filling
+  only its own cell, until the borders appear.
+- **2026-10-16 Attract mode = computer against computer**: a game may provide `attract.tsx`, a demo the
+  attract screen plays behind its text (shared change: discovered like the games, a failing demo just
+  disappears). "Erobere das Land" plays Mittel against Schwer with 8 castles each, one castle every
+  0.9 s, map after map.
+
+- **2026-10-16 "Rasenmähen" keeps the competition's coordinates**: the lawn levels in
+  `public/levels/lawn-mowing/` store region, cutter and tours as in pyutils27 (integers, y up); the game
+  flips y only to draw, and draws a cutter at the centre of its footprint (the reference point of the
+  3 × 3 cutter is the corner of its middle cell). Alternative: convert to y down at import. Reason: the
+  solver's files and the verifier fixtures can be compared without conversion. Coverage and tour lengths
+  agree with the pyutils27 verifier on committed fixtures (`levels/lawn-mowing/fixtures/`, made by
+  `scripts/lawns/make_fixtures.py`).
+- **2026-10-16 (proposed) Start points and target of "Rasenmähen"**: cutters start on the first point of
+  the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there. Until the
+  chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high as the
+  cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
+  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three
+  up to 1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to
+  20 % above. Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the
+  start as a constraint); "[Wert]" as a placeholder (no goal to play for).
+- **2026-10-16 "Rasenmähen" controls**: cutter 1 WASD, cutter 2 the arrow keys (with one cutter both
+  steer it), gamepads 1 and 2, space or A for "Feierabend". A press moves one lattice step at once (on
+  the key event, so a short tap between two frames counts), then after 220 ms one step every 115 ms
+  (about 9 per second); of several held keys of one cutter the newest counts. Keys and the direction pad
+  mean screen directions, also on a phone board turned by 90°. Cutters may drive up to 2 cells beyond
+  the lawn's bounding box and cross holes. Phones (coarse pointer) play with one cutter: a direction pad
+  with hold buttons at the same rate and a "Feierabend" button; the two-cutter option is not offered there.
+- **2026-10-16 "Feierabend"**: all cutters drive home at once on a shortest L1 way (of the two L shapes
+  the one through more uncut lawn), 70 ms per step. If lawn is left, play continues from the starts ("Da
+  ist noch Gras: n Felder!"); the round ends when everything is mowed and every cutter is home. The live
+  display shows each cutter's steps and its way back ("+6 zurück"), the longest tour including the way
+  back (the score) and the target. Alternative: "Feierabend" only once everything is mowed. Reason:
+  players learn that the way back counts.
+- **2026-10-16 Theory of "Rasenmähen"**: the min-max objective, the lower bound ⌈(N − 9k)/3k⌉ rounded
+  up to an even number (a closed tour on the grid has even length) with the lawn's numbers, the solver's
+  tours (or the strips) played back on a small picture, and the competition instance `smr_882k_481_3s3`
+  (481 cells, three cutters) with the example solution of pyutils27.
 
 ### Track B ("Gassi gehen", "Straßenbau")
 

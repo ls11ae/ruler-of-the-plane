@@ -1,0 +1,371 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* The map lies on the parchment of the page. */
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.boardArea {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 1.4rem;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 6px 12px 10px;
+  border-top: 2px solid var(--ink-faint);
+  background: rgb(251 248 240 / 80%);
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  white-space: nowrap;
+}
+
+.notice {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 8px 18px;
+  border: 2.5px solid var(--warn);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--warn);
+  font-size: 1.15rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Score cards in the header, as in the mockup. */
+.scores {
+  display: flex;
+  gap: 14px;
+}
+
+.scoreCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+  padding: 5px 14px;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.scoreCard.active {
+  box-shadow: 0 3px 0 var(--ink);
+  background: #fff7dd;
+  outline: 3px solid var(--light);
+  outline-offset: 1px;
+}
+
+.playerDot {
+  display: inline-block;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+
+.scoreMain {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.scoreName {
+  font-size: 1rem;
+}
+
+.scoreTotal {
+  font-size: 1.75rem;
+}
+
+.scoreParts {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  color: var(--ink-soft);
+}
+
+/* A new castle fades in and its base flashes once. */
+.newCastle {
+  animation: arrive 0.45s ease-out both;
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Setup ("Neues Spiel"). */
+.setup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: min(620px, 82vw);
+}
+
+.setup h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.maps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mapCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.mapCard[aria-pressed='true'] {
+  background: var(--light-soft);
+  outline: 3px solid var(--light);
+}
+
+.mapCard svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+}
+
+.mapName {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+}
+
+.mapTagline {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Theory panel. */
+.theory {
+  width: 340px;
+  flex: none;
+  overflow: auto;
+  padding: 12px 16px 16px;
+  border-left: 3px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.05rem;
+  user-select: text;
+}
+
+.theory p {
+  margin: 0 0 0.6em;
+}
+
+.theoryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.theoryHead h2 {
+  font-size: 1.6rem;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+
+/* Animations ("So geht's", "Was steckt dahinter?"). */
+.animationSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 40vh;
+}
+
+/* "So geht's": a 7 s loop. The ghost and its cell at 30 %, the new territories at 55 %, the gain at 60 %. */
+.loop * {
+  animation-duration: 7s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.before {
+  animation-name: showBefore;
+}
+.after {
+  animation-name: showAfter;
+}
+.ghost,
+.ghostCell {
+  animation-name: showGhost;
+}
+.gain {
+  animation-name: showGain;
+}
+
+@keyframes showBefore {
+  0%,
+  52% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes showAfter {
+  0%,
+  52% {
+    opacity: 0;
+  }
+  56%,
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes showGhost {
+  0%,
+  26% {
+    opacity: 0;
+  }
+  30%,
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes showGain {
+  0%,
+  58% {
+    opacity: 0;
+  }
+  62%,
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop *,
+  .newCastle {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .scores {
+    gap: 8px;
+  }
+  .scoreCard {
+    min-width: 0;
+    gap: 6px;
+    padding: 3px 8px;
+  }
+  .scoreTotal {
+    font-size: 1.35rem;
+  }
+  .scoreParts {
+    font-size: 0.85rem;
+  }
+  .footer {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.95rem;
+  }
+  .maps {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .mapTagline {
+    display: none;
+  }
+  .notice {
+    font-size: 1rem;
+    white-space: normal;
+    width: max-content;
+    max-width: 90%;
+  }
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .main {
+    flex-direction: column;
+  }
+  .theory {
+    width: auto;
+    max-height: 42%;
+    border-left: none;
+    border-top: 3px solid var(--ink);
+    font-size: 1rem;
+  }
+}

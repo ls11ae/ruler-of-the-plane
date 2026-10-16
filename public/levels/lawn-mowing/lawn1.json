@@ -1,0 +1,59 @@
+{
+  "id": "lawn-mowing/lawn1",
+  "collection": "lawn-mowing",
+  "name": "lawn1",
+  "number": 1,
+  "source": "levels/lawn-mowing/instances/lawn1_1s3.instance.json",
+  "bounds": { "minX": 0, "minY": 0, "maxX": 26, "maxY": 14 },
+  "outer": [
+    [0, 1],
+    [1, 1],
+    [1, 0],
+    [16, 0],
+    [16, 4],
+    [26, 4],
+    [26, 13],
+    [25, 13],
+    [25, 14],
+    [2, 14],
+    [2, 13],
+    [0, 13]
+  ],
+  "holes": [
+    [
+      [18, 7],
+      [18, 9],
+      [20, 9],
+      [20, 7]
+    ],
+    [
+      [3, 7],
+      [3, 9],
+      [4, 9],
+      [4, 10],
+      [7, 10],
+      [7, 9],
+      [8, 9],
+      [8, 8],
+      [7, 8],
+      [7, 7]
+    ]
+  ],
+  "cutter": [
+    [0, 0],
+    [3, 0],
+    [3, 3],
+    [0, 3]
+  ],
+  "cutterCenter": [1, 1],
+  "variants": [
+    {
+      "cutters": 1,
+      "uid": "lawn1_1s3"
+    },
+    {
+      "cutters": 2,
+      "uid": "lawn1_2s3"
+    }
+  ]
+}
