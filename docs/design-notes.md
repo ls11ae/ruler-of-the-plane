@@ -217,4 +217,50 @@ subsection below, so their branches do not conflict.
   reach); drawing the lawns in IPE (no snapping to cells, no check of pinch points). New level sources go
   to `levels/<game>/`, since `legacy/` is the read-only copy of the Unity files.
 
+- **2026-10-16 Maps of "Erobere das Land" drawn in IPE with layers**: `frame` (one rectangle, the sheet),
+  `land` and `water` (closed polygons; land may reach beyond the frame), markers `square` = city,
+  `cross` = gold mine, `disk` = forest, `circle` = mountains (`levels/voronoi/README.md`). The importer
+  computes the scoring land (frame ∩ land − water) and the inland water with Clipper2, so the game needs
+  no polygon boolean operations at load time. Three maps: island with a lake and an islet, river valley
+  (land fills the sheet, a river with a tributary), lake district (coast and six lakes). Alternatives:
+  land and water by nesting depth (no rivers that reach the frame), fill colours as the marker of water
+  (invisible in the file). The IPE reader now records each object's layer (shared script code).
+- **2026-10-16 Score in points**: all land together is worth 100 points (one point = one percent of the
+  land), a city 5 and a gold mine 10 for the owner of the cell that contains it. Totals are shown and
+  compared rounded to whole points; equal totals are a draw. Alternatives: area in map units (meaningless
+  numbers); Unity's share of the rectangle including water.
+- **2026-10-16 (proposed) Spacing rules**: castles keep the distance d = 0.55·√(land / castles in the
+  game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a dashed
+  ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring and
+  the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
+  shore seemed to stand in the lake) and 0.55 units from cities and mines (castles covered the town icons).
+  Alternatives: a fixed distance per map; no distance to towns. A player with no room left passes.
+- **2026-10-16 Blue starts, the computer is orange and moves second.** Alternatives: random start; the
+  computer first. Reason: the natural order for visitors; the last move is an advantage, which the
+  computer's strength levels balance. Check in the playtest.
+- **2026-10-16 The computer of "Erobere das Land"**: candidate positions are a jittered grid (about 320 on
+  the land), positions just outside the distance ring of every castle and next to every city and mine;
+  each is rated on a land raster (spacing 0.125, 5,000–10,000 samples, rows pruned by the largest
+  distance to a castle) by its swing: own points gained plus the opponent's points lost. "Leicht" takes
+  a random move with at least half the best swing, "Mittel" the best swing, "Schwer" the best of its top
+  eight after the opponent's best answer (one ply ahead). The staff's difficulty (easy, normal, hard) is
+  the default strength; the setup offers all three. Measured in the cloud session: a "Schwer" move takes
+  40–110 ms, "Leicht" and "Mittel" about 10 ms; "Schwer" beat "Leicht" in 112 of 120 games and "Mittel"
+  in 74 of 120. Raster and exact scores differ by less than one point (1 % of the land) in the tests.
+- **2026-10-16 "Erobere das Land" interaction**: with a mouse the ghost castle follows the pointer and
+  shows its future cell, its ring and a box with the gain ("+7 Land, +5 Stadt"), a click builds; with
+  touch the ghost floats 64 px above the finger while pressed, releasing builds, and a quick tap (under
+  180 ms without moving) only explains how to aim. A setup dialog before each game: map, opponent
+  (computer or two players), strength, 5 or 10 castles each; the chosen map shows behind it.
+- **2026-10-16 Theory view of "Erobere das Land"**: switches for the Voronoi diagram over the whole sheet,
+  the Delaunay triangles and their empty circumcircles, and a heat map of the swing of the next castle
+  (computed in the worker, in its own yellow-to-red colours with a ring at the best spot, so it reads on
+  both territories). The heat map also works after the game: where one more castle would have helped
+  most. "Was steckt dahinter?" shows circles growing from all castles at the same speed, each filling
+  only its own cell, until the borders appear.
+- **2026-10-16 Attract mode = computer against computer**: a game may provide `attract.tsx`, a demo the
+  attract screen plays behind its text (shared change: discovered like the games, a failing demo just
+  disappears). "Erobere das Land" plays Mittel against Schwer with 8 castles each, one castle every
+  0.9 s, map after map.
+
 ### Track B ("Gassi gehen", "Straßenbau")

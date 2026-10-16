@@ -99,26 +99,32 @@ Status: the raster check passes on all 14 levels (with the thickness rule, check
 lighting takes at most 10 ms per drag frame on the largest level with 17 torches in the cloud session
 (median 2 ms); check on a booth laptop in the playtest.
 
-## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct)
+## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct) — done 2026-10-16 (playtest items open)
 
 - Maps with land and water, authored in IPE (define and document the convention, e.g. a layer for land
   polygons with lakes as holes, `square` markers for cities, `cross` markers for gold mines). At least
-  three maps: island, river valley, lake district.
+  three maps: island, river valley, lake district. — done 2026-10-16 (`levels/voronoi/README.md`)
 - Rules: castles only on land; a minimum distance to every castle, shown as a circle while aiming; score
-  = land area of a player's cells plus city and gold-mine bonuses.
+  = land area of a player's cells plus city and gold-mine bonuses. — done 2026-10-16 (rings of half the
+  distance around every castle; castles also keep off the shore and the towns, proposed)
 - Two players or against the computer, 5 or 10 castles each. Hovering shows a ghost castle with its
-  future cell and the points it would gain; a click places it (touch: press and hold, release).
+  future cell and the points it would gain; a click places it (touch: press and hold, release). — done
+  2026-10-16
 - AI in a worker: candidate positions on land with jitter, gain evaluated on a land raster. "Leicht"
   picks a random move among the good ones, "Schwer" the best move with one ply of look-ahead. Attract
-  mode = AI vs. AI.
+  mode = AI vs. AI. — done 2026-10-16 (plus "Mittel"; the attract screen plays the demo behind its
+  text)
 - Look as in `docs/look/erobere-das-land.webp`: Cartography Pack on parchment, coast with offset ink
   lines, castles with a pennant and base in the player colour, towns and a mine with bonus badges,
-  territories as colour washes, dashed cell borders.
+  territories as colour washes, dashed cell borders. — done 2026-10-16
 - Theory view: Voronoi diagram, Delaunay triangulation and empty circumcircles as buttons; heatmap of
-  the gain of the next move (the AI's evaluation).
+  the gain of the next move (the AI's evaluation). — done 2026-10-16
 
 Acceptance: an AI move takes under 200 ms on a booth laptop; "Schwer" beats "Leicht" in at least 70 % of
 AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area.
+Status: in the cloud session a "Schwer" move takes 40–110 ms (a test checks < 200 ms), "Schwer" beat
+"Leicht" in 112 of 120 games (a test plays 12), and raster and exact land differ by less than 1 point of
+100 in the tests; check the move time on a booth laptop in the playtest.
 
 ## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct)
 
