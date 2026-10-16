@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { ALL_LEVELS, EXPERT_LEVELS, isRecord, leaderboardScore, splitScore, starsFor } from './rules'
+import {
+  ALL_LEVELS,
+  EXPERT_LEVELS,
+  isRecord,
+  leaderboardScore,
+  MAIN_LEVELS,
+  splitScore,
+  starsFor,
+} from './rules'
 import { ART_GALLERY_LEVELS } from './levels.fixture'
 
 describe('rules', () => {
@@ -9,13 +17,14 @@ describe('rules', () => {
     expect(isRecord(4, 4)).toBe(false)
   })
 
-  it('orders all 14 levels once, the expert set being those with 12 or more torches', () => {
+  it('orders all 14 levels once; experts get the spike box and the levels with 12 or more torches', () => {
     expect([...ALL_LEVELS].sort()).toEqual(ART_GALLERY_LEVELS.map((l) => l.name).sort())
     expect([...EXPERT_LEVELS].sort()).toEqual(
-      ART_GALLERY_LEVELS.filter((l) => l.torches >= 12)
+      ART_GALLERY_LEVELS.filter((l) => l.torches >= 12 || l.name === 'agLevel13_4')
         .map((l) => l.name)
         .sort(),
     )
+    expect(MAIN_LEVELS).toHaveLength(9)
   })
 
   it('packs torches and seconds into one leaderboard score', () => {

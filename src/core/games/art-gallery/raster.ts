@@ -6,8 +6,13 @@ import { edgesOf, isOnFloor, type Dungeon } from './dungeon'
  * floor and test each against every torch with a plain floating-point segment test. Shares no code with
  * the visibility sweep or the Clipper2 coverage.
  */
+export type Walls = readonly (readonly [number, number, number, number])[]
+
+/** The walls as flat segments for {@link seesFloat}. */
+export const wallsOf = (d: Dungeon): Walls => edgesOf(d).map(({ a, b }) => [a[0], a[1], b[0], b[1]] as const)
+
 export function rasterCoverage(d: Dungeon, torches: readonly Vec2[], cells = 120) {
-  const edges = edgesOf(d).map(({ a, b }) => [a[0], a[1], b[0], b[1]] as const)
+  const edges = wallsOf(d)
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity
@@ -37,7 +42,8 @@ export function rasterCoverage(d: Dungeon, torches: readonly Vec2[], cells = 120
   return { samples: floor, dark, darkShare: floor ? dark / floor : 0, darkPoints, cellArea: step * step }
 }
 
-function seesFloat(t: Vec2, p: Vec2, edges: readonly (readonly [number, number, number, number])[]): boolean {
+/** Whether p is visible from t: the segment tp crosses no wall (floating point; grazing counts as blocked). */
+export function seesFloat(t: Vec2, p: Vec2, edges: Walls): boolean {
   const [tx, ty] = t
   const [px, py] = p
   for (const [ax, ay, bx, by] of edges) {

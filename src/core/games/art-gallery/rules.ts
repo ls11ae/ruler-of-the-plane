@@ -18,23 +18,30 @@ export const isRecord = (torches: number, k: number) => torches < k
 export const MAX_TORCHES = 30
 
 /**
- * The 14 Unity levels re-ordered by difficulty: by the allowed torches k, then by the number of corners
- * and pillars. Levels with 12 or more torches form the expert set.
+ * The 14 levels (the 2020 set of "Designing Art Galleries", see docs/legacy-unity-notes.md) re-ordered
+ * by difficulty: by the allowed torches k, then by the number of corners and pillars. The expert set has
+ * the levels with 12 or more torches and the spike-box-like agLevel13_4 (spike boxes were the least
+ * liked puzzles in the paper's user study; Kevin, 2026-10-16).
  */
 export const MAIN_LEVELS = [
   'agLevel3_2', // k 2, 18 corners
   'agLevel1_3', // k 3, 15 corners, spiky
   'agLevel6_3', // k 3, 20 corners
   'agLevel2_3', // k 3, 3 pillars
-  'agLevel13_4', // k 4, star with 33 corners
   'agLevel10_4', // k 4, 3 pillars
   'agLevel8_4', // k 4, 46 corners with many niches
   'agLevel5_5', // k 5, 5 pillars
-  'agLevel12_7', // k 7, 7 pillars
+  'agLevel12_7', // k 7, 7 pillars (planar vertex cover construction)
   'agLevel4_8', // k 8, 6 pillars (the level of the mockup)
 ] as const
 
-export const EXPERT_LEVELS = ['agLevel9_12', 'agLevel7_13', 'agLevel11_14', 'agLevel14_17'] as const
+export const EXPERT_LEVELS = [
+  'agLevel13_4', // k 4, spike box with 33 corners
+  'agLevel9_12', // k 12
+  'agLevel7_13', // k 13, planar 3SAT construction: 13 torches are necessary
+  'agLevel11_14', // k 14
+  'agLevel14_17', // k 17
+] as const
 
 export type LevelName = (typeof MAIN_LEVELS)[number] | (typeof EXPERT_LEVELS)[number]
 
