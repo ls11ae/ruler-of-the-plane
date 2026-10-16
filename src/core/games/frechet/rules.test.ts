@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { frechetDistance, walkLeash } from './frechet'
-import { WALKS, walkById, type WalkLevel } from './levels'
+import { WALKS, type WalkLevel } from './levels'
 import {
   advice,
   leashAt,
