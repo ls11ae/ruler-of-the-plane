@@ -1,7 +1,15 @@
+import { existsSync } from 'node:fs'
 import { defineConfig, devices } from '@playwright/test'
 
 const port = 4173
 const base = '/ruler-of-the-plane/'
+
+// Cloud sessions of Claude Code ship a Chromium that may not match this Playwright version's browser
+// build; use it when present instead of downloading one. CI installs the matching browser.
+const preinstalledChromium = '/opt/pw-browsers/chromium'
+const executablePath =
+  process.env.PW_CHROMIUM_EXECUTABLE ??
+  (!process.env.CI && existsSync(preinstalledChromium) ? preinstalledChromium : undefined)
 
 // Smoke tests run against the production build (`npm run build` first), as served by `vite preview`.
 // Screenshots go to `screenshots/<project>/` and are uploaded by CI as a workflow artifact.
@@ -16,6 +24,7 @@ export default defineConfig({
     baseURL: `http://localhost:${port}${base}`,
     trace: 'retain-on-failure',
     locale: 'de-DE',
+    launchOptions: executablePath ? { executablePath } : {},
   },
   projects: [
     {
