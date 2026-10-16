@@ -228,23 +228,48 @@ export function optimalWalk(P: readonly Vec2[], Q: readonly Vec2[]): { distance:
 }
 
 /**
- * The longest leash a walk needs. Within one cell the distance along a straight step is convex, so its
- * maximum is at a corner of the step; steps are split at the vertices of both paths.
+ * The longest leash a walk needs, and where. Within one cell the distance along a straight step is
+ * convex, so its maximum is at a corner of the step; steps are split at the vertices of both paths.
  */
-export function walkLeash(P: Path, Q: Path, walk: Walk): number {
-  let worst = 0
-  for (const [s, t] of walk) worst = Math.max(worst, distance(pointAt(P, s), pointAt(Q, t)))
+export function tightestPoint(P: Path, Q: Path, walk: Walk): { leash: number; at: [number, number] } {
+  let leash = -1
+  let at: [number, number] = [0, 0]
+  const check = (s: number, t: number) => {
+    const d = distance(pointAt(P, s), pointAt(Q, t))
+    if (d > leash) {
+      leash = d
+      at = [s, t]
+    }
+  }
+  for (const [s, t] of walk) check(s, t)
   for (let k = 1; k < walk.length; k++) {
     const [s0, t0] = walk[k - 1]!
     const [s1, t1] = walk[k]!
-    const cuts = new Set<number>()
-    for (const c of P.cumulative) if (c > s0 && c < s1) cuts.add((c - s0) / (s1 - s0))
-    for (const c of Q.cumulative) if (c > t0 && c < t1) cuts.add((c - t0) / (t1 - t0))
-    for (const f of cuts) {
-      worst = Math.max(worst, distance(pointAt(P, s0 + f * (s1 - s0)), pointAt(Q, t0 + f * (t1 - t0))))
-    }
+    for (const c of P.cumulative) if (c > s0 && c < s1) check(c, t0 + ((c - s0) / (s1 - s0)) * (t1 - t0))
+    for (const c of Q.cumulative) if (c > t0 && c < t1) check(s0 + ((c - t0) / (t1 - t0)) * (s1 - s0), c)
   }
-  return worst
+  return { leash, at }
+}
+
+/** The longest leash a walk needs. */
+export const walkLeash = (P: Path, Q: Path, walk: Walk) => tightestPoint(P, Q, walk).leash
+
+/**
+ * The critical values where a passage opens at a corner: the distance of the two starts, of the two
+ * ends, and of every vertex of one path to every segment of the other (types (a) and (b) of
+ * {@link criticalValues}; shown as ticks on the theory view's slider).
+ */
+export function cornerValues(P: readonly Vec2[], Q: readonly Vec2[]): number[] {
+  const values = [distance(P[0]!, Q[0]!), distance(P[P.length - 1]!, Q[Q.length - 1]!)]
+  for (const [A, B] of [
+    [P, Q],
+    [Q, P],
+  ] as const) {
+    for (let j = 0; j + 1 < B.length; j++)
+      for (const v of A) values.push(pointSegmentDistance(v, B[j]!, B[j + 1]!))
+  }
+  values.sort((x, y) => x - y)
+  return values.filter((v, i) => i === 0 || v - values[i - 1]! > 1e-9)
 }
 
 /** Can the walk still be finished from positions (s, t) with a leash of length eps? */
