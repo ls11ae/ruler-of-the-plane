@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "collections": {
+    "art-gallery": [
+      "art-gallery/agLevel1_3",
+      "art-gallery/agLevel2_3",
+      "art-gallery/agLevel3_2",
+      "art-gallery/agLevel4_8",
+      "art-gallery/agLevel5_5",
+      "art-gallery/agLevel6_3",
+      "art-gallery/agLevel7_13",
+      "art-gallery/agLevel8_4",
+      "art-gallery/agLevel9_12",
+      "art-gallery/agLevel10_4",
+      "art-gallery/agLevel11_14",
+      "art-gallery/agLevel12_7",
+      "art-gallery/agLevel13_4",
+      "art-gallery/agLevel14_17"
+    ],
+    "kings-taxes/mst": [
+      "kings-taxes/mst/ktLevel1",
+      "kings-taxes/mst/ktLevel2",
+      "kings-taxes/mst/ktLevel3",
+      "kings-taxes/mst/ktLevel4"
+    ],
+    "kings-taxes/spanner": [
+      "kings-taxes/spanner/ktLevel1_1.5",
+      "kings-taxes/spanner/ktLevel2_1.7",
+      "kings-taxes/spanner/ktLevel3_2",
+      "kings-taxes/spanner/ktLevel4_1.5"
+    ],
+    "kings-taxes/tsp": [
+      "kings-taxes/tsp/ktLevel1",
+      "kings-taxes/tsp/ktLevel2",
+      "kings-taxes/tsp/ktLevel3"
+    ],
+    "divide": [
+      "divide/divLevel1_0",
+      "divide/divLevel2_0",
+      "divide/divLevel3_2",
+      "divide/divLevel4_0",
+      "divide/divLevel5_0",
+      "divide/divLevel6_1",
+      "divide/divLevel7_2",
+      "divide/divLevel8_0",
+      "divide/divLevel9_1"
+    ],
+    "convex-hull": [
+      "convex-hull/hullLevel1",
+      "convex-hull/hullLevel2",
+      "convex-hull/hullLevel3"
+    ]
+  }
+}

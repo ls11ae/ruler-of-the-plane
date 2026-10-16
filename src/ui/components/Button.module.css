@@ -1,0 +1,67 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: var(--hit);
+  min-width: var(--hit);
+  padding: 0.25em 0.9em;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 1em;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 80ms ease-out,
+    box-shadow 80ms ease-out;
+  touch-action: manipulation;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+.button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: var(--shadow);
+}
+
+.accent {
+  background: var(--light-soft);
+}
+
+.dashed {
+  border-style: dashed;
+  box-shadow: none;
+  background: rgb(251 244 226 / 70%);
+}
+
+.dashed:hover,
+.dashed:active {
+  box-shadow: none;
+}
+
+.small {
+  min-height: 36px;
+  padding: 0.15em 0.6em;
+  font-size: 0.9em;
+}
+
+.selected {
+  background: var(--ink);
+  color: var(--card);
+}

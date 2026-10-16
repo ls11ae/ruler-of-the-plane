@@ -14,7 +14,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 ## Status
 
-- Phase 0 not started. **`docs/roadmap.md` is the source of truth for open work**, in its order.
+- Phase 0 done on branch `claude/charming-goldberg-mkxway` (2026-10-16), awaiting merge; Phase 1 next.
+  **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
+  code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
 - `legacy/` holds the Unity level files and in-game texts (copied from `kbuchin/ruler` at commit
@@ -34,9 +36,10 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   npm, git, Python with pip. Network access "Trusted": the npm registry, PyPI and GitHub work, most other
   sites (kenney.nl, CDNs, `*.github.io`) do not. That is why all art and fonts are already in `assets/`;
   never add a build step that downloads anything else.
-- The cloud image has no browser for Playwright. Run Vitest in the session; Playwright tests and
-  screenshots run in CI (GitHub Actions) and are uploaded as workflow artifacts. Try
-  `npx playwright install chromium` at most once per session; if it fails, move on.
+- The cloud image ships an older Chromium at `/opt/pw-browsers/chromium`; `playwright.config.ts` uses it
+  outside CI, so `npm run build && npm run e2e` works in the session and you can look at the screenshots
+  in `screenshots/`. No need for `npx playwright install` in a session. CI installs the matching browser
+  and uploads the screenshots as workflow artifacts.
 - Pushing files under `.github/workflows/` may be refused if the session's GitHub credential lacks
   workflow rights. Then save the workflow files under `docs/ci/` instead, say so in the report, and the
   person adds them through the GitHub web interface.
@@ -135,14 +138,16 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 ## Layout
 
 - `src/core/` pure TypeScript, no DOM: geometry, game rules and scoring, AIs, level schema.
-- `src/ui/` the React app: shell (menu, i18n, kiosk mode, leaderboard) and one folder per game.
+- `src/ui/` the React app: `shell/` (start map, routes, kiosk mode, staff menu, settings and booth data),
+  `components/` (shared UI: board, header, overlays, result screen, leaderboard), `input/` (pointer,
+  keyboard, gamepad), `i18n/`, and `games/<game>/` per game (discovered by `games/registry.ts`).
 - `src/workers/` Web Worker entry points.
 - `scripts/` level import and helper scripts (`cloud-session-start.sh` belongs to the session setup).
 - `public/levels/` generated level JSON, committed.
 - `assets/` source art and fonts with their licence files; import what you use from code, Vite then
   bundles only the imported files. `assets/kenney/<pack>/` holds the subsets listed in `CREDITS.md`.
 - `legacy/` read-only Unity level files and texts. `docs/look/` the style mockup.
-- `e2e/` Playwright smoke tests (run in CI).
+- `e2e/` Playwright smoke tests (run in CI and in sessions, see above).
 
 ## Conventions
 
@@ -168,18 +173,18 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Missing assets (e.g. TU Dortmund / LS 11 logos): use a text placeholder and carry on.
 - Look (decided 2026-10-16, mockup in `docs/look/`): Kenney packs, all CC0, in two ink styles that
   belong together, "the King's sketchbook":
-    - Cartography Pack (`assets/kenney/cartography-pack/`): parchment, castles, towns, mills, forests,
-      mountains, roads, compass. For the start screen (a map of the kingdom with one place per game),
-      "Erobere das Land", "Straßenbau" and the park in "Gassi gehen". Coastlines and lakes of any shape
-      are SVG ink lines; territories are translucent colour washes over the parchment.
-    - Scribble Dungeons (`assets/kenney/scribble-dungeons/`, top-down, 128 px tiles): grid-paper floor,
-      chests, barrels, grass, coloured tokens. For "Licht ins Verlies" (floor as a pattern clipped to the
-      level polygon, walls as sketchy SVG strokes, since the levels are not grid polygons) and
-      "Rasenmähen" (uncut cells with grass, mowed cells striped, cutters as coloured tokens).
-    - Animal Pack Remastered (`assets/kenney/animal-pack-remastered/round-outline/`): `dog.png` (looks like
-      a wolf) is the dog in "Gassi gehen"; other animal heads are optional extras.
-    - Fonts (`assets/fonts/`, OFL): Eagle Lake for titles and place names, Patrick Hand for all other
-      text. Key glyphs are drawn as keycaps (as in the mockup), not taken from a pack.
+  - Cartography Pack (`assets/kenney/cartography-pack/`): parchment, castles, towns, mills, forests,
+    mountains, roads, compass. For the start screen (a map of the kingdom with one place per game),
+    "Erobere das Land", "Straßenbau" and the park in "Gassi gehen". Coastlines and lakes of any shape
+    are SVG ink lines; territories are translucent colour washes over the parchment.
+  - Scribble Dungeons (`assets/kenney/scribble-dungeons/`, top-down, 128 px tiles): grid-paper floor,
+    chests, barrels, grass, coloured tokens. For "Licht ins Verlies" (floor as a pattern clipped to the
+    level polygon, walls as sketchy SVG strokes, since the levels are not grid polygons) and
+    "Rasenmähen" (uncut cells with grass, mowed cells striped, cutters as coloured tokens).
+  - Animal Pack Remastered (`assets/kenney/animal-pack-remastered/round-outline/`): `dog.png` (looks like
+    a wolf) is the dog in "Gassi gehen"; other animal heads are optional extras.
+  - Fonts (`assets/fonts/`, OFL): Eagle Lake for titles and place names, Patrick Hand for all other
+    text. Key glyphs are drawn as keycaps (as in the mockup), not taken from a pack.
 - Style rules: black ink on paper or parchment; colour only for players, light and territories; a slight
   SVG displacement filter makes outlines look hand-drawn. The old TU/e art is not used.
 

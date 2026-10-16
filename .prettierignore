@@ -1,0 +1,11 @@
+legacy/
+assets/
+public/levels/
+docs/look/
+dist/
+dev-dist/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+screenshots/

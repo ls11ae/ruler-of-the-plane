@@ -1,0 +1,25 @@
+{
+  "id": "divide/divLevel6_1",
+  "collection": "divide",
+  "name": "divLevel6_1",
+  "number": 6,
+  "source": "legacy/levels/Divide/divLevel6_1.ipe",
+  "bounds": { "minX": -2.5, "minY": -2.1875, "maxX": 2.5, "maxY": 2.1875 },
+  "swaps": 1,
+  "spearmen": [
+    [-2.5, -0.9375],
+    [0.3125, -1.25],
+    [-0.625, 2.1875],
+    [1.25, 1.875]
+  ],
+  "archers": [
+    [-1.25, -2.1875],
+    [-1.25, 0.625],
+    [0.3125, 0.9375],
+    [2.5, -0.9375]
+  ],
+  "mages": [
+    [1.5625, 0],
+    [-2.5, 1.25]
+  ]
+}

@@ -1,0 +1,73 @@
+.test {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 2px solid var(--ink-faint);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow-x: auto;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.row:nth-child(2) {
+  margin-left: 0.9em;
+}
+.row:nth-child(3) {
+  margin-left: 1.4em;
+}
+.row:nth-child(4) {
+  margin-left: 0;
+}
+
+.space {
+  min-width: 9em !important;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  font-size: 1.15rem;
+}
+
+.held {
+  font-family: var(--font-fallback);
+  font-size: 0.95rem;
+}
+
+.pairs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pairs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.55;
+}
+
+.pairs li.seen {
+  opacity: 1;
+}
+
+.check {
+  width: 1.2em;
+  height: 1.2em;
+}

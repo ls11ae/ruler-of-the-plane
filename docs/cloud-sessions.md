@@ -14,10 +14,10 @@ Repository owner (`kbuchin`):
    Phase 0). Settings → Secrets and variables → Actions → Variables: `VITE_STAFF_PIN` (any four digits)
    and, once tsp-boards is online, `VITE_TSP_BOARDS_URL`.
 4. GitHub access for the cloud sessions, one of:
-    - install the Claude GitHub App (`github.com/apps/claude`) on the `ls11ae` organization, at least
-      for this repository (organization owners install or approve it); or
-    - `mbuchin` runs `gh auth login` and then `/web-setup` once in the Claude Code CLI on her computer;
-      her cloud sessions then use her GitHub token, and no app installation is needed.
+   - install the Claude GitHub App (`github.com/apps/claude`) on the `ls11ae` organization, at least
+     for this repository (organization owners install or approve it); or
+   - `mbuchin` runs `gh auth login` and then `/web-setup` once in the Claude Code CLI on her computer;
+     her cloud sessions then use her GitHub token, and no app installation is needed.
 
 Session runner (`mbuchin`):
 
@@ -32,10 +32,10 @@ Session runner (`mbuchin`):
 ## Running sessions
 
 - One session per phase, from Phase 2 on one per track. Suggested first messages:
-    - Phase 0: "Read CLAUDE.md, then work on Phase 0 of docs/roadmap.md."
-    - Phase 1: "Read CLAUDE.md, then work on Phase 1 of docs/roadmap.md."
-    - From Phase 2 on, two sessions in parallel: "Read CLAUDE.md, then work on track A (Phase 2, then
-      Phase 4) of docs/roadmap.md." and the same for track B (Phase 3, then Phase 5).
+  - Phase 0: "Read CLAUDE.md, then work on Phase 0 of docs/roadmap.md."
+  - Phase 1: "Read CLAUDE.md, then work on Phase 1 of docs/roadmap.md."
+  - From Phase 2 on, two sessions in parallel: "Read CLAUDE.md, then work on track A (Phase 2, then
+    Phase 4) of docs/roadmap.md." and the same for track B (Phase 3, then Phase 5).
 - The session pushes its branch after each finished roadmap item and ends with a report: pull request
   title and description, "proposed" decisions, changes to shared code, open points. Use "Create PR"
   with that text, wait for green CI, look at the Playwright screenshots (workflow artifacts), and merge
@@ -55,5 +55,6 @@ Session runner (`mbuchin`):
 - Only package registries and GitHub are reachable by default. All art and fonts are therefore in
   `assets/`. If a session ever needs another site, add the files to the repository, or set the
   environment's network access to "Custom" and list the domain (keep "include default list" ticked).
-- The cloud image has no Playwright browser and its download host is probably blocked; Playwright runs
-  in CI.
+- The cloud image has an older Chromium at `/opt/pw-browsers/chromium`, which `playwright.config.ts`
+  uses outside CI; sessions can therefore run the Playwright tests and look at the screenshots. CI runs
+  them with the matching browser and uploads the screenshots.

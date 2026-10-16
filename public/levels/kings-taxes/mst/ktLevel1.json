@@ -1,0 +1,17 @@
+{
+  "id": "kings-taxes/mst/ktLevel1",
+  "collection": "kings-taxes/mst",
+  "name": "ktLevel1",
+  "number": 1,
+  "source": "legacy/levels/KingsTaxes/MST/ktLevel1.ipe",
+  "bounds": { "minX": -3, "minY": -3, "maxX": 3, "maxY": 3 },
+  "villages": [
+    [-3, -3],
+    [-1.285714, -2.142857],
+    [3, -2.142857],
+    [-0.428571, 3]
+  ],
+  "castles": [
+    [1.285714, -0.428571]
+  ]
+}

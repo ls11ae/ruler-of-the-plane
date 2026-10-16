@@ -14,3 +14,4 @@ Thumbs.db
 !.env.example
 __pycache__/
 .venv/
+screenshots/

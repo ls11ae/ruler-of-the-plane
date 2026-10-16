@@ -1,0 +1,44 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--paper);
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background-color: #f1ede3;
+  background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgb(43 36 32 / 10%) 9px 10.5px);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+  padding: 8px 12px 12px;
+  border-top: 2px solid var(--ink-faint);
+  background: var(--paper);
+}
+
+.keys {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.big {
+  font-size: 1.8rem;
+}

@@ -1,0 +1,66 @@
+.menu {
+  width: min(860px, 100%);
+}
+
+.pin {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pin input {
+  width: 8em;
+  min-height: var(--hit);
+  padding: 4px 10px;
+  border: var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 1.3rem;
+  letter-spacing: 0.3em;
+  user-select: text;
+}
+
+.error {
+  color: var(--warn);
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px 28px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section h3 {
+  font-size: 1.3rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer {
+  margin-top: 18px;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}

@@ -7,27 +7,27 @@ clone the public repository (GitHub is reachable from cloud sessions); do not co
 
 The level files and the in-game texts are copied into this repository (Unity `.meta` files left out):
 
-| Unity path | Copy here |
-| --- | --- |
-| `ArtGallery/Levels/*.ipe` | `legacy/levels/ArtGallery/` |
+| Unity path                                   | Copy here                                           |
+| -------------------------------------------- | --------------------------------------------------- |
+| `ArtGallery/Levels/*.ipe`                    | `legacy/levels/ArtGallery/`                         |
 | `KingsTaxes/Levels/MST/`, `TSP/`, `Spanner/` | `legacy/levels/KingsTaxes/MST/`, `TSP/`, `Spanner/` |
-| `Divide/Levels/` (`.ipe` and `.asset`) | `legacy/levels/Divide/` |
-| `ConvexHull/Levels/` (`.ipe` and `.asset`) | `legacy/levels/ConvexHull/` |
-| `ingameText.md` (repository root) | `legacy/ingameText.md` |
+| `Divide/Levels/` (`.ipe` and `.asset`)       | `legacy/levels/Divide/`                             |
+| `ConvexHull/Levels/` (`.ipe` and `.asset`)   | `legacy/levels/ConvexHull/`                         |
+| `ingameText.md` (repository root)            | `legacy/ingameText.md`                              |
 
 The in-game texts (English) are the starting point for the German texts, not a template to translate
 literally.
 
 ## Overview
 
-| Game (menu name) | Scenes | Controller | Levels |
-| --- | --- | --- | --- |
-| Illuminate (art gallery) | `ArtGallery/Scenes/ag*.unity` | `Scripts/ArtGallery/Controller/ArtGalleryController.cs` | 14 `.ipe` |
-| Conquer (Voronoi game) | `Voronoi/Scenes/voronoi*.unity` | `Scripts/Voronoi/Controller/VoronoiController.cs` | none (free play) |
-| Connect (MST, t-spanner, TSP) | `KingsTaxes/Scenes/{MST,Spanner,TSP}/` | `Scripts/KingsTaxes/Controller/*.cs` | 4 + 4 + 3 `.ipe`, plus endless mode |
-| Divide (ham sandwich) | `Divide/Scenes/Divide*.unity` | `Scripts/Divide/Controller/DivideController.cs` | 9 (3 `.asset`, 6 `.ipe`) |
-| Convex hull (not in the main menu) | `ConvexHull/Scenes/hull*.unity` | `Scripts/ConvexHull/Controller/HullController.cs` | 3 (2 `.asset`, 1 `.ipe`) |
-| Dots & Polygons (branch only) | branch `MultiThreadedalfabeta` | `Scripts/DotsAndPolygons/` on that branch | generated |
+| Game (menu name)                   | Scenes                                 | Controller                                              | Levels                              |
+| ---------------------------------- | -------------------------------------- | ------------------------------------------------------- | ----------------------------------- |
+| Illuminate (art gallery)           | `ArtGallery/Scenes/ag*.unity`          | `Scripts/ArtGallery/Controller/ArtGalleryController.cs` | 14 `.ipe`                           |
+| Conquer (Voronoi game)             | `Voronoi/Scenes/voronoi*.unity`        | `Scripts/Voronoi/Controller/VoronoiController.cs`       | none (free play)                    |
+| Connect (MST, t-spanner, TSP)      | `KingsTaxes/Scenes/{MST,Spanner,TSP}/` | `Scripts/KingsTaxes/Controller/*.cs`                    | 4 + 4 + 3 `.ipe`, plus endless mode |
+| Divide (ham sandwich)              | `Divide/Scenes/Divide*.unity`          | `Scripts/Divide/Controller/DivideController.cs`         | 9 (3 `.asset`, 6 `.ipe`)            |
+| Convex hull (not in the main menu) | `ConvexHull/Scenes/hull*.unity`        | `Scripts/ConvexHull/Controller/HullController.cs`       | 3 (2 `.asset`, 1 `.ipe`)            |
+| Dots & Polygons (branch only)      | branch `MultiThreadedalfabeta`         | `Scripts/DotsAndPolygons/` on that branch               | generated                           |
 
 The geometry library is `Scripts/Util/` (about 11,200 lines): float `Vector2`, `MathUtil.EPS = 1e-4`
 applied to squared distances (points within 0.01 count as equal), no exact predicates. Do not port it;
@@ -38,12 +38,12 @@ use the libraries named in `CLAUDE.md`.
 Importer in Unity: `Scripts/Editor/LoadLevelEditor.cs`. The file name selects the game and one optional
 parameter after an underscore:
 
-| File name | Game | Parameter after `_` | Content of the IPE page |
-| --- | --- | --- | --- |
-| `agLevel<n>_<k>.ipe` | art gallery | k = number of torches (int) | paths; the largest-area path is the outer boundary, all others are holes |
-| `ktLevel<n>_<t>.ipe` | Kings Taxes | t = spanner ratio (float; class default 1) | markers: `disk` = village, `square` = castle |
-| `divLevel<n>_<s>.ipe` | Divide | s = allowed swaps (int, default 0) | markers: `disk` = spearman, `square` = archer, `cross` = mage; each count even |
-| `hullLevel<n>.ipe` | convex hull | – | markers: `disk` |
+| File name             | Game        | Parameter after `_`                        | Content of the IPE page                                                        |
+| --------------------- | ----------- | ------------------------------------------ | ------------------------------------------------------------------------------ |
+| `agLevel<n>_<k>.ipe`  | art gallery | k = number of torches (int)                | paths; the largest-area path is the outer boundary, all others are holes       |
+| `ktLevel<n>_<t>.ipe`  | Kings Taxes | t = spanner ratio (float; class default 1) | markers: `disk` = village, `square` = castle                                   |
+| `divLevel<n>_<s>.ipe` | Divide      | s = allowed swaps (int, default 0)         | markers: `disk` = spearman, `square` = archer, `cross` = mage; each count even |
+| `hullLevel<n>.ipe`    | convex hull | –                                          | markers: `disk`                                                                |
 
 - Coordinates are centred and scaled so the larger side of the bounding box is 9 (art gallery), 6 (Kings
   Taxes, hull) or 5 (Divide) units. Art-gallery polygons are made clockwise.
@@ -123,8 +123,7 @@ Level order in the scenes:
 
 ## Dots & Polygons (branches, 2020, not merged)
 
-Branch `dots-and-polygons` (May 2020) has the game with the greedy AI; `MultiThreadedalfabeta` (July
-2020) builds on it and adds the min-max AI, multithreading and headless tests. Port from the latter.
+Branch `dots-and-polygons` (May 2020) has the game with the greedy AI; `MultiThreadedalfabeta` (July 2020) builds on it and adds the min-max AI, multithreading and headless tests. Port from the latter.
 
 - Board: up to 20 dots in a 16 × 7 field with minimum spacing and no three collinear (placement via
   Clipper in `DotsPlacer.cs`); "convex" mode puts 20 dots on a jittered circle.

@@ -1,0 +1,18 @@
+{
+  "id": "convex-hull/hullLevel3",
+  "collection": "convex-hull",
+  "name": "hullLevel3",
+  "number": 3,
+  "source": "legacy/levels/ConvexHull/hullLevel3.ipe",
+  "bounds": { "minX": -3, "minY": -1.714286, "maxX": 3, "maxY": 1.714286 },
+  "points": [
+    [-3, -0.857143],
+    [0.428571, -1.714286],
+    [1.714286, 0.857143],
+    [-0.857143, 1.714286],
+    [-0.857143, -0.428571],
+    [-2.571429, 1.714286],
+    [3, -1.285714],
+    [1.285714, -0.857143]
+  ]
+}

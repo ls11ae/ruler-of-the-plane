@@ -95,6 +95,69 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Style mockup as the visual target** (`docs/look/`, five screens at 1280 × 800). Numbers
   in it are sample values; "[Wert]" marks the solver target that is still missing.
 
+- **2026-10-16 Toolchain versions (Phase 0).** TypeScript 6.0.3, React 19.3, Vite 8.3, Vitest 5.0, ESLint
+  10.12 with typescript-eslint 8.71, Prettier 3.9, zustand 5. jsdom is pinned to 29, the newest version
+  that supports Node 22.13 (jsdom 30 needs 22.22.2). Strict TypeScript with `noUncheckedIndexedAccess`;
+  a third tsconfig checks `src/core/` without DOM types, so core code cannot use the DOM by accident.
+- **2026-10-16 Playwright also runs in cloud sessions.** The cloud image does ship a Chromium
+  (`/opt/pw-browsers/chromium`, older than the one Playwright 1.64 expects); `playwright.config.ts` uses
+  it when present outside CI. CI installs the matching browser. Alternative: CI only. Reason: the
+  session can look at its own screenshots before pushing.
+- **2026-10-16 Level JSON format** (`src/core/levels/schema.ts`): one file per level at
+  `public/levels/<collection>/<name>.json` plus `index.json` with the ids in Unity order; points as
+  `[x, y]` pairs (compact, the format of d3-delaunay); y points down (SVG); coordinates rounded to 6
+  decimals for readable diffs; art gallery outer boundary with positive shoelace area, holes negative.
+  Collections are keyed by folder (`kings-taxes/mst`, `…/spanner`, `…/tsp`). Alternatives: one file per
+  game; `{x, y}` objects. Reason: small diffs when a level changes, direct use with the geometry
+  libraries.
+- **2026-10-16 Level size per game as in Unity.** IPE levels are centred and scaled so the larger side
+  of the bounding box is 9 (art gallery), 6 (Kings Taxes, convex hull) or 5 (Divide) units, the sizes
+  the Unity importer used; the five `.asset` levels are already in those units and are only mirrored
+  (Unity's y also points up). Alternative: one size for all games. Reason: the hand-made `.asset`
+  levels then fit with the IPE levels of the same game (`hullLevel2` spans exactly 6); every board
+  scales to the screen anyway.
+- **2026-10-16 IPE reader**: fast-xml-parser (dev dependency only); paths with `m`/`l`/`h` only (other
+  operators such as curves fail with a clear message, so new levels drawn in IPE must use polylines);
+  markers by symbol name (`mark/disk` etc.); matrices of paths, markers and groups are composed.
+
+- **2026-10-16 Games are discovered, not registered.** A game is the folder `src/ui/games/<id>/` with an
+  `index.tsx` that default-exports its screen; `import.meta.glob` finds it at build time, the start map
+  then shows its place as open, and the game is a separate chunk. Alternative: a shared registry array.
+  Reason: the parallel tracks never edit the same file to add a game (see `docs/architecture.md`).
+- **2026-10-16 Hash routes** (`#/`, `#/play/<id>`, `#/demo`). Alternative: history routes. Reason: GitHub
+  Pages and a local booth build serve them without rewrites; the service worker needs no fallback rules.
+- **2026-10-16 Start map in two layouts**: landscape (1280 × 800, as the mockup) for laptops and a
+  portrait island (800 × 1600) for phones, chosen by aspect ratio; place labels are HTML buttons over
+  the SVG art, sized in container query units. Alternatives: one layout scaled down (unreadable on
+  phones); labels as SVG text (no automatic width, worse accessibility). Places of games not built yet
+  are dashed with "Kommt bald"; games switched off by the staff are dashed with "Heute geschlossen".
+  The external places ("Alte Ruinen", "Rundreise") are dashed as in the mockup but keep full ink, open
+  in the same tab, and "Rundreise" is hidden while `VITE_TSP_BOARDS_URL` is empty.
+- **2026-10-16 Kiosk mode is opt-in**: `?kiosk` in the URL (for the booth start script) or the staff
+  menu turns it on and it stays on for that browser; the app then starts on the attract screen and
+  returns there after 90 s without input, with the language reset to German and the staff menu closed.
+  Alternative: always on. Reason: players at home should not be thrown out while reading the theory.
+- **2026-10-16 Staff menu access**: a 3 s press on the compass rose of the start map (mouse, touchpad,
+  touch) or Ctrl+Shift+S, then the PIN. An empty `VITE_STAFF_PIN` opens the menu without a PIN (the
+  menu says so). Alternatives: a hidden URL (visitors could read it off the screen), a key sequence.
+- **2026-10-16 Leaderboards**: per board key (`<game>/<level>`), today's top 10 in local time, older days
+  dropped; names chosen from 32 fixed nicknames (German and English, e.g. "Kluge Eule"), stored by id so
+  they follow the language switch; the "Mensch gegen Maschine" tally also restarts every day. All in
+  `localStorage` of the device. Alternative: free text names (needs moderation at a public booth).
+- **2026-10-16 Key test** in the staff menu: a drawn laptop keyboard lights up the held keys (labels from
+  `navigator.keyboard` where available, so a QWERTZ keyboard shows Z and Y correctly), the most keys
+  seen at once, and a checklist of the key pairs the games need together (A + L, WASD with arrows).
+- **2026-10-16 Offline via vite-plugin-pwa** (Workbox, `generateSW`): the whole build including every
+  level JSON is precached; a new service worker takes over at once (`skipWaiting`, `clientsClaim`) and
+  the error boundary's way back reloads the page, in case an updated deployment removed an old game
+  chunk. Manifest with `display: fullscreen`; the app icon is a compass rose drawn for this repository.
+  Alternative: a hand-written service worker. Reason: the plugin knows the hashed file names.
+- **2026-10-16 English names of the places** (shown with the language switch): "Light the Dungeon",
+  "Conquer the Land", "Walk the Dog", "Mow the Lawn", "Road Works", "Old Ruins", "Round Trip". The map
+  subtitle reads "Hands-on geometry – pick a place on the map".
+- **2026-10-16 Logo placeholder**: the text "TU Dortmund · Informatik · LS 11" at the bottom of the start
+  map until the logos are provided.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")
