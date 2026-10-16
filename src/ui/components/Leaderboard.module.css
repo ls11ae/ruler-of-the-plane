@@ -1,7 +1,8 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  container-type: inline-size;
 }
 
 .panel h3 {
@@ -19,7 +20,7 @@
 .list li {
   display: flex;
   gap: 10px;
-  padding: 3px 6px;
+  padding: 1px 6px;
   break-inside: avoid;
   border-radius: 6px;
 }
@@ -42,14 +43,15 @@
 .names {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .empty {
   color: var(--ink-soft);
 }
 
-@media (max-width: 600px) {
+/* Two columns only where a name and a score fit side by side twice. */
+@container (max-width: 560px) {
   .list {
     columns: 1;
   }
