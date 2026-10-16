@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../geometry/types'
 import { mulberry32 } from '../../random'
-import { isOnLand, LAND_POINTS, prepareMap, type GameMap } from './map'
+import { distanceToCoast, isOnLand, LAND_POINTS, prepareMap, type GameMap } from './map'
 import { VORONOI_MAPS } from './maps.fixture'
-import { makeRaster, Territory } from './raster'
+import { hasRoom, makeRaster, Territory } from './raster'
 import {
   CITY_BONUS,
+  COAST_MARGIN,
   cells,
   exactScores,
   minDistance,
@@ -13,6 +14,7 @@ import {
   nearestCastle,
   placementProblem,
   playerToMove,
+  TOWN_MARGIN,
   winner,
   type Castle,
   type Player,
@@ -124,6 +126,18 @@ describe('rules', () => {
     expect(placementProblem(map, [castle], [land[0] + 1, land[1]], 1)).toBeNull()
   })
 
+  it('keeps castles off the shore and off cities and mines', () => {
+    const city = map.level.cities[0]!
+    expect(placementProblem(map, [], city, 1)).toBe('town')
+    expect(placementProblem(map, [], [city[0], city[1] + TOWN_MARGIN + 0.01], 1)).toBeNull()
+    // Walk from inland towards the sea until the castle is refused: that happens before the water.
+    let p: Vec2 = [0.5, -1.5]
+    while (placementProblem(map, [], p, 1) === null) p = [p[0], p[1] - 0.01]
+    expect(isOnLand(map, p)).toBe(true)
+    expect(distanceToCoast(map, p)).toBeLessThan(COAST_MARGIN)
+    expect(distanceToCoast(map, p)).toBeGreaterThan(COAST_MARGIN - 0.02)
+  })
+
   it('lets blue start and the players alternate', () => {
     const c = (owner: Player): Castle => ({ at: [0, 0], owner })
     expect(playerToMove([], 0)).toBe(0)
@@ -158,5 +172,16 @@ describe('rules', () => {
       const castles = randomCastles(m, 20, 5, minDistance(m, 10))
       expect(castles).toHaveLength(20)
     }
+  })
+})
+
+describe('room for castles', () => {
+  it('is left on an empty map and gone when the minimum distance spans the sheet', () => {
+    const map = prepareMap(VORONOI_MAPS[0]!)
+    const raster = makeRaster(map)
+    const castles: Castle[] = [{ at: [0, 0], owner: 0 }]
+    expect(hasRoom(map, raster, [], 1)).toBe(true)
+    expect(hasRoom(map, raster, castles, 1)).toBe(true)
+    expect(hasRoom(map, raster, castles, 50)).toBe(false)
   })
 })

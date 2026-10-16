@@ -38,6 +38,24 @@ export function isOnLand(map: GameMap, p: Vec2): boolean {
   return count > 0
 }
 
+/** Distance from p to the nearest coast (any edge of the land, lake shores and river banks included). */
+export function distanceToCoast(map: GameMap, [px, py]: Vec2): number {
+  let best = Infinity
+  for (const ring of map.level.land) {
+    for (let i = 0, n = ring.length; i < n; i++) {
+      const [ax, ay] = ring[i]!
+      const [bx, by] = ring[(i + 1) % n]!
+      const dx = bx - ax
+      const dy = by - ay
+      const len2 = dx * dx + dy * dy
+      const t = len2 > 0 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len2)) : 0
+      const d = (px - ax - t * dx) ** 2 + (py - ay - t * dy) ** 2
+      if (d < best) best = d
+    }
+  }
+  return Math.sqrt(best)
+}
+
 export function insideFrame(map: GameMap, [x, y]: Vec2): boolean {
   const f = map.frame
   return x >= f.minX && x <= f.maxX && y >= f.minY && y <= f.maxY

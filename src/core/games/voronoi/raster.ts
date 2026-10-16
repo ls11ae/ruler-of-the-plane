@@ -1,6 +1,6 @@
 import type { Vec2 } from '../../geometry/types'
 import { LAND_POINTS, type GameMap } from './map'
-import { CITY_BONUS, MINE_BONUS, type Castle, type Player } from './rules'
+import { CITY_BONUS, MINE_BONUS, placementProblem, type Castle, type Player } from './rules'
 
 /**
  * The land as a raster of sample points (centres of a square grid that lie on land), for the computer's
@@ -213,4 +213,25 @@ export class Territory {
       swing: (free + 2 * taken) * weight + bonusSwing,
     }
   }
+}
+
+/** Whether a castle still fits somewhere: some land sample where a castle may stand. */
+export function hasRoom(
+  map: GameMap,
+  raster: LandRaster,
+  castles: readonly Castle[],
+  minDist: number,
+): boolean {
+  const d2 = minDist * minDist
+  const { xs, ys } = raster
+  outer: for (let i = 0; i < xs.length; i++) {
+    // The cheap test first: the distance to the castles.
+    for (const { at } of castles) {
+      const dx = xs[i]! - at[0]
+      const dy = ys[i]! - at[1]
+      if (dx * dx + dy * dy < d2) continue outer
+    }
+    if (placementProblem(map, castles, [xs[i]!, ys[i]!], minDist) === null) return true
+  }
+  return false
 }

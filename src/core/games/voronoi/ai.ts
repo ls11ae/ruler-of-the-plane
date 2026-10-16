@@ -2,7 +2,7 @@ import type { Vec2 } from '../../geometry/types'
 import { randomInt, type Rng } from '../../random'
 import { type GameMap } from './map'
 import { Territory, type LandRaster } from './raster'
-import { other, placementProblem, type Castle, type Player } from './rules'
+import { other, placementProblem, TOWN_MARGIN, type Castle, type Player } from './rules'
 
 /** The computer's strength: Leicht, Mittel, Schwer (the staff's difficulty setting is the default). */
 export type AiLevel = 'easy' | 'normal' | 'hard'
@@ -29,8 +29,8 @@ function ring(at: Vec2, radius: number, directions: number, phase: number): Vec2
 
 /**
  * Where the computer considers building: a jittered grid over the sheet (only valid positions on land),
- * positions just outside the minimum distance around every castle (to cut into its cell), and the cities
- * and mines themselves.
+ * positions just outside the minimum distance around every castle (to cut into its cell), and positions
+ * right next to the cities and mines.
  */
 export function candidatePositions(
   ctx: AiContext,
@@ -52,7 +52,9 @@ export function candidatePositions(
     }
   }
   for (const c of castles) for (const p of ring(c.at, minDist * 1.0001, RING_DIRECTIONS, rng())) tryAdd(p)
-  for (const p of [...map.level.cities, ...map.level.mines]) tryAdd(p)
+  for (const town of [...map.level.cities, ...map.level.mines]) {
+    for (const p of ring(town, TOWN_MARGIN * 1.0001, 6, rng())) tryAdd(p)
+  }
   return out
 }
 

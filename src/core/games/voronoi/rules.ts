@@ -1,6 +1,6 @@
 import { Delaunay } from 'd3-delaunay'
 import type { Vec2 } from '../../geometry/types'
-import { insideFrame, isOnLand, LAND_POINTS, landAreaIn, type GameMap } from './map'
+import { distanceToCoast, insideFrame, isOnLand, LAND_POINTS, landAreaIn, type GameMap } from './map'
 
 /** Blue (0) starts; orange (1) is the friend or the computer. */
 export type Player = 0 | 1
@@ -29,16 +29,27 @@ export function minDistance(map: GameMap, castlesPerPlayer: number): number {
   return 0.55 * Math.sqrt(map.landArea / (2 * castlesPerPlayer))
 }
 
-export type PlacementProblem = 'water' | 'tooClose'
+/** A castle keeps this distance from the water, so it never seems to stand in it (map units, about 11 px). */
+export const COAST_MARGIN = 0.15
+/** ... and this distance from cities and mines, which are buildings too. */
+export const TOWN_MARGIN = 0.55
 
-/** Why a castle may not stand at p (null if it may): castles only on land and apart from all others. */
+export type PlacementProblem = 'water' | 'town' | 'tooClose'
+
+/**
+ * Why a castle may not stand at p (null if it may): castles only on land (not right at the water), not on
+ * a city or mine, and apart from all other castles.
+ */
 export function placementProblem(
   map: GameMap,
   castles: readonly Castle[],
   p: Vec2,
   minDist: number,
 ): PlacementProblem | null {
-  if (!insideFrame(map, p) || !isOnLand(map, p)) return 'water'
+  if (!insideFrame(map, p) || !isOnLand(map, p) || distanceToCoast(map, p) < COAST_MARGIN) return 'water'
+  for (const town of [...map.level.cities, ...map.level.mines]) {
+    if (Math.hypot(town[0] - p[0], town[1] - p[1]) < TOWN_MARGIN) return 'town'
+  }
   const d2 = minDist * minDist
   for (const c of castles) {
     const dx = c.at[0] - p[0]
