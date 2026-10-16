@@ -124,3 +124,21 @@ test('kiosk mode returns to the attract screen after 90 s without input', async 
   await expect(attract).toBeVisible()
   await expect(page).toHaveURL(/#\/$/)
 })
+
+test('works offline after the first visit', async ({ page, context }) => {
+  await page.goto('./')
+  await expect(page.getByRole('heading', { name: 'Ruler of the Plane' })).toBeVisible()
+  // Wait until the service worker has precached everything and controls the page.
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready
+    if (!navigator.serviceWorker.controller) {
+      await new Promise((resolve) => navigator.serviceWorker.addEventListener('controllerchange', resolve))
+    }
+  })
+  await context.setOffline(true)
+  await page.reload()
+  await expect(page.getByText('Licht ins Verlies')).toBeVisible()
+  await page.goto('./#/demo')
+  await expect(page.getByRole('img', { name: 'Werkstatt' })).toBeVisible()
+  await context.setOffline(false)
+})

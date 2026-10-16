@@ -27,7 +27,17 @@ export class ErrorBoundary extends Component<{ children: ReactNode; message: str
       <div style={{ display: 'grid', placeItems: 'center', height: '100%', gap: 16, textAlign: 'center' }}>
         <div>
           <h2 style={{ fontSize: '2rem', marginBottom: 16 }}>{this.props.message}</h2>
-          <LinkButton href={hrefFor({ name: 'start' })}>{this.props.back}</LinkButton>
+          {/* A full reload: after an update, a game chunk of the old version may be gone. */}
+          <LinkButton
+            href={hrefFor({ name: 'start' })}
+            onClick={(e) => {
+              e.preventDefault()
+              window.location.hash = hrefFor({ name: 'start' })
+              window.location.reload()
+            }}
+          >
+            {this.props.back}
+          </LinkButton>
         </div>
       </div>
     )
