@@ -145,7 +145,8 @@ with the key test on the booth laptops); a level can be finished on a phone with
 ## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
 
 - Read instances and solutions in the pyutils27 JSON formats; booth lawns are small polyominoes with
-  holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters.
+  holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters. — lawns designed 2026-10-16 (five lawns,
+  `levels/lawn-mowing/`); solver solutions requested from the chair.
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
   (space) drives every cutter back to its start on the shortest (L1) way and closes the tour.

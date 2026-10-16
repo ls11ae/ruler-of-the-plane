@@ -205,4 +205,16 @@ subsection below, so their branches do not conflict.
 
 ### Track A ("Erobere das Land", "Rasenmähen")
 
+- **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
+  Schlossgarten, Obstwiese, Stadtpark) with ponds, trees and flower beds as holes, each a pyutils27
+  instance with a 3 × 3 cutter for 1 and for 2 cutters, in `levels/lawn-mowing/instances/`; the chair's
+  solver solutions go to `levels/lawn-mowing/solutions/`. Drawn as text grids in
+  `levels/lawn-mowing/lawns.txt` and converted by `scripts/lawns/make_instances.py`, which validates them
+  with the pyutils27 schema. A hole's art follows from its shape (tree, flower bed, pond), so the files
+  stay plain competition instances. The instances have no start position, as in the competition; the
+  game starts each cutter on a point of the solver's tour, so the target stays reachable. Alternatives: a
+  fixed shed as the start (the solver would need an extra constraint, and the target might be out of
+  reach); drawing the lawns in IPE (no snapping to cells, no check of pinch points). New level sources go
+  to `levels/<game>/`, since `legacy/` is the read-only copy of the Unity files.
+
 ### Track B ("Gassi gehen", "Straßenbau")
