@@ -30,6 +30,11 @@ export const de = {
     'Dann vereinigt er alle Sichtbereiche und zieht sie vom Verlies ab: Bleibt nichts übrig, ist alles hell.',
     `Mit Säulen reichen immer (Ecken + Säulen) ÷ 3 Fackeln, hier ${bound}; die kleinste Zahl zu finden ist sehr schwer (NP-schwer).`,
   ],
+  replay: 'Nochmal zeigen',
+  howToAnimation: 'Eine Fackel erhellt, was sie sieht; eine zweite den Rest: 100 %',
+  fiskAnimation: 'Fisks Beweis: Dreiecke, drei Farben, Fackeln an der seltensten Farbe',
+  sweepAnimation: 'Ein Strahl kreist um die Fackel und zeigt ihren Sichtbereich',
+  theoryButton: 'Theorie',
   picker: {
     title: 'Verliese',
     main: 'Verliese',

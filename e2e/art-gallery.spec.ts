@@ -92,4 +92,11 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
   await shot(page, testInfo, 'art-gallery-result')
   await result.getByRole('button', { name: 'Schließen', exact: true }).first().click()
   await shot(page, testInfo, 'art-gallery-lit')
+
+  // The theory view: the guarantee for this dungeon and the triangulation on the board.
+  await page.getByRole('button', { name: 'Theorie' }).click()
+  const theory = page.getByRole('complementary', { name: 'Theorie' })
+  await expect(theory.getByText('18 Ecken ÷ 3, abgerundet: 6 Fackeln reichen immer.')).toBeVisible()
+  await expect(page.getByTestId('theory-layer')).toBeVisible()
+  await shot(page, testInfo, 'art-gallery-theory')
 })

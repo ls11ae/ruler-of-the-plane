@@ -31,6 +31,11 @@ export const en: ArtGalleryTexts = {
     'Then it unites all visibility regions and subtracts them from the dungeon: if nothing is left, everything is lit.',
     `With pillars, (corners + pillars) ÷ 3 torches always suffice, here ${bound}; finding the smallest number is very hard (NP-hard).`,
   ],
+  replay: 'Show again',
+  howToAnimation: 'One torch lights what it sees, a second one the rest: 100 %',
+  fiskAnimation: "Fisk's proof: triangles, three colours, torches at the rarest colour",
+  sweepAnimation: 'A ray turns around the torch and reveals its visibility region',
+  theoryButton: 'Theory',
   picker: {
     title: 'Dungeons',
     main: 'Dungeons',

@@ -179,3 +179,63 @@
     font-size: 1rem;
   }
 }
+
+.theory {
+  width: 340px;
+  flex: none;
+  overflow: auto;
+  padding: 12px 16px 16px;
+  border-left: 3px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.05rem;
+  user-select: text;
+}
+
+.theory p {
+  margin: 0 0 0.6em;
+}
+
+.theoryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.theoryHead h2 {
+  font-size: 1.6rem;
+}
+
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .main {
+    flex-direction: column;
+  }
+  .theory {
+    width: auto;
+    max-height: 42%;
+    border-left: none;
+    border-top: 3px solid var(--ink);
+    font-size: 1rem;
+  }
+}

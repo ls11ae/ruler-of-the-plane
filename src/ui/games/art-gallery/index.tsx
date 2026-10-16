@@ -25,11 +25,14 @@ import { useLocalized, useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import styles from './ArtGallery.module.css'
 import { DarkHint, DungeonFloor, DungeonWalls, LightLayer } from './DungeonArt'
+import { FiskAnimation, SweepAnimation } from './Explanation'
+import { HowToAnimation } from './HowToAnimation'
 import { de, type ArtGalleryTexts } from './i18n.de'
 import { en } from './i18n.en'
 import { LevelPicker } from './LevelPicker'
 import { makeLighting } from './lighting'
 import { useProgress } from './store'
+import { TheoryLayer, TheoryPanel, type TheoryLayers } from './Theory'
 import { TorchControls, type DragState, type PlacedTorch } from './TorchControls'
 import { TrashIcon } from './TrashIcon'
 import { useMedia } from './useMedia'
@@ -66,6 +69,8 @@ function TorchDots({ count, k, t }: { count: number; k: number; t: ArtGalleryTex
 }
 
 interface Result {
+  /** Where the torches stood when everything was lit (for the explanation). */
+  positions: Vec2[]
   torches: number
   seconds: number
   stars: number
@@ -86,6 +91,13 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
   const [startedAt, setStartedAt] = useState<number | null>(null)
   const [result, setResult] = useState<Result | null>(null)
   const [lit, setLit] = useState(false)
+  const [theory, setTheory] = useState(false)
+  // Not everything at once: Fisk's colouring where it works (no pillars), else the visibility regions.
+  const [layers, setLayers] = useState<TheoryLayers>({
+    triangles: true,
+    visibility: level.holes.length > 0,
+    colouring: level.holes.length === 0,
+  })
   const trash = useRef<HTMLDivElement>(null)
   const resultTimer = useRef<number | undefined>(undefined)
   const touch = useMedia('(pointer: coarse)')
@@ -122,7 +134,13 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
     if (nowLit && !lit) {
       const seconds = startedAt === null ? 0 : (performance.now() - startedAt) / 1000
       const stars = starsFor(next.length, k)
-      setResult({ torches: next.length, seconds, stars, record: isRecord(next.length, k) })
+      setResult({
+        positions: next.map((tt) => tt.at),
+        torches: next.length,
+        seconds,
+        stars,
+        record: isRecord(next.length, k),
+      })
       progress.recordWin(name, next.length, stars)
       window.clearTimeout(resultTimer.current)
       resultTimer.current = window.setTimeout(() => setOverlay('result'), RESULT_DELAY_MS)
@@ -165,6 +183,9 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
             <Button small={narrow} onClick={() => setOverlay('howto')}>
               {shell.game.howTo}
             </Button>
+            <Button small={narrow} selected={theory} aria-pressed={theory} onClick={() => setTheory(!theory)}>
+              {t.theoryButton}
+            </Button>
             <Button small={narrow} onClick={restart}>
               {t.restart}
             </Button>
@@ -185,6 +206,7 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
               outline={outline}
             />
             <DungeonWalls level={level} />
+            {theory && <TheoryLayer level={level} layers={layers} visibility={light.visibility} />}
             {hint && <DarkHint at={hint.at} />}
             <TorchControls
               level={level}
@@ -224,10 +246,21 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
             </div>
           )}
         </div>
+        {theory && (
+          <TheoryPanel
+            level={level}
+            torches={torches.length}
+            layers={layers}
+            setLayers={setLayers}
+            t={t}
+            onClose={() => setTheory(false)}
+          />
+        )}
       </main>
       <footer className={styles.footer}>{touch ? t.hintTouch : t.hintMouse}</footer>
       {overlay === 'howto' && (
         <HowToOverlay
+          animation={<HowToAnimation doneLabel={t.howToAnimation} />}
           onClose={() => {
             progress.setSeenHowTo()
             setOverlay(null)
@@ -255,6 +288,22 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
           record={result.record}
           stats={t.stats(result.torches, formatTime(result.seconds))}
           explanation={(level.holes.length === 0 ? t.fisk(n, bound, k) : t.sweep(bound)).join(' ')}
+          animation={
+            level.holes.length === 0 ? (
+              <FiskAnimation level={level} label={t.fiskAnimation} replay={t.replay} />
+            ) : (
+              <SweepAnimation
+                level={level}
+                torches={result.positions}
+                label={t.sweepAnimation}
+                replay={t.replay}
+              />
+            )
+          }
+          onTheory={() => {
+            setOverlay(null)
+            setTheory(true)
+          }}
           leaderboard={{
             board: levelId(name),
             spec: { higherIsBetter: false },
