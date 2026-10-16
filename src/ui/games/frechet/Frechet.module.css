@@ -1,0 +1,419 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.boardArea {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 1.4rem;
+}
+
+/* Header status: "2,8 m von 3,6 m Leine" and the leash bar. */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.leash {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.leashValue {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.leashValue small {
+  font-size: 1rem;
+  margin-left: 0.35em;
+}
+
+.tries {
+  font-size: 1.2rem;
+}
+
+/* Hint bubble over the park ("Leine fast straff!"), the dead-end banner. */
+.bubble {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 4;
+  max-width: min(460px, calc(100% - 24px));
+  padding: 8px 14px;
+  transform: translateX(-50%);
+  border: 2.5px solid var(--warn);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 3px 0 var(--warn);
+  font-size: 1.1rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.bubble strong {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: normal;
+  color: var(--warn);
+}
+
+.deadEnd {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 24px);
+  padding: 8px 10px 8px 16px;
+  transform: translateX(-50%);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--light-soft);
+  box-shadow: var(--shadow);
+  font-size: 1.1rem;
+}
+
+/* Footer: the two hold controls (keycaps on a laptop, large buttons on touch screens). */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 18px;
+  padding: 8px 14px 12px;
+  border-top: 2px solid var(--ink-faint);
+  background: rgb(251 248 240 / 92%);
+}
+
+.hold {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 4px 14px;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.hold[data-held] {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+  background: var(--light-soft);
+}
+
+.hold img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.both {
+  color: var(--ink-soft);
+}
+
+.touch {
+  flex-wrap: nowrap;
+}
+
+.touch .hold {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  min-height: 84px;
+  font-size: 1.35rem;
+}
+
+.touch .hold img {
+  width: 40px;
+  height: 40px;
+}
+
+/* "Schätz die Leine": the slider and the buttons below the park. */
+.guessBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  padding: 8px 14px 12px;
+  border-top: 2px solid var(--ink-faint);
+  background: rgb(251 248 240 / 92%);
+}
+
+.guessBar .slider {
+  flex: 1 1 280px;
+  max-width: 520px;
+}
+
+.guessMessage {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.sandboxHint {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+/* Theory panel beside the park (below it on portrait screens). */
+.theory {
+  width: 400px;
+  flex: none;
+  overflow: auto;
+  padding: 12px 16px 16px;
+  border-left: 3px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.02rem;
+  user-select: text;
+}
+
+.theory p {
+  margin: 0 0 0.6em;
+}
+
+.theoryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.theoryHead h2 {
+  font-size: 1.6rem;
+}
+
+.muted {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.diagram {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 4px 6px;
+  margin: 4px 0 6px;
+}
+
+.plot {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+}
+
+.field,
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.yAxis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.xAxis {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.axisArrow {
+  width: 1em;
+  height: 1em;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 26px;
+  border-top: 3px solid var(--ink);
+}
+
+.dotSwatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--warn);
+}
+
+.sliderRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.slider {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.slider input {
+  width: 100%;
+  min-height: 32px;
+  accent-color: var(--ink);
+}
+
+.ticks {
+  width: 100%;
+  height: 10px;
+}
+
+/* The diagram in the result dialog: as tall as the dialog allows. */
+.explainDiagram {
+  width: min(100%, var(--animation-height, 280px) + 40px);
+  margin: 0 auto;
+}
+
+/* Picker of walks and modes. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.card[aria-current='true'] {
+  background: var(--light-soft);
+}
+
+.card svg {
+  width: 100%;
+  height: 72px;
+}
+
+.cardTitle {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+}
+
+.howTo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 34vh;
+}
+
+@media (max-width: 720px) {
+  .leashValue {
+    font-size: 1.35rem;
+  }
+  .bubble,
+  .deadEnd {
+    font-size: 1rem;
+  }
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .main {
+    flex-direction: column;
+  }
+  .theory {
+    width: auto;
+    max-height: 48%;
+    border-left: none;
+    border-top: 3px solid var(--ink);
+    font-size: 1rem;
+  }
+  .theory .diagram {
+    max-width: 340px;
+    margin-inline: auto;
+  }
+}

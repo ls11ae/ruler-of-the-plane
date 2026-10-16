@@ -70,8 +70,17 @@ pull request that starts using it.
 
 ### Gassi gehen
 
-| File | Source | Author | Licence | Used for | Changes |
-| ---- | ------ | ------ | ------- | -------- | ------- |
+| File                                                             | Source                 | Author | Licence | Used for                                   | Changes |
+| ---------------------------------------------------------------- | ---------------------- | ------ | ------- | ------------------------------------------ | ------- |
+| `assets/kenney/animal-pack-remastered/round-outline/dog.png`     | Animal Pack Remastered | Kenney | CC0 1.0 | The dog                                    | none    |
+| `assets/kenney/scribble-dungeons/characters/green_character.png` | Scribble Dungeons      | Kenney | CC0 1.0 | The person (green token)                   | none    |
+| `assets/kenney/cartography-pack/castle.png`                      | Cartography Pack       | Kenney | CC0 1.0 | The castle at the goal                     | none    |
+| `assets/kenney/cartography-pack/fence.png`                       | Cartography Pack       | Kenney | CC0 1.0 | The park gate at the start                 | none    |
+| `assets/kenney/cartography-pack/treePines.png`                   | Cartography Pack       | Kenney | CC0 1.0 | Park: trees                                | none    |
+| `assets/kenney/cartography-pack/treePine.png`                    | Cartography Pack       | Kenney | CC0 1.0 | Park: trees                                | none    |
+| `assets/kenney/cartography-pack/rocksA.png`                      | Cartography Pack       | Kenney | CC0 1.0 | Park: rocks                                | none    |
+| `assets/kenney/cartography-pack/well.png`                        | Cartography Pack       | Kenney | CC0 1.0 | Park: a well                               | none    |
+| `assets/kenney/cartography-pack/bush.png`                        | Cartography Pack       | Kenney | CC0 1.0 | Bushes the dog runs to ("Stöckchen holen") | none    |
 
 ### Rasenmähen
 
