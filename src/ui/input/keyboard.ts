@@ -14,6 +14,8 @@ class Keyboard {
   private installed = false
   private padCodes = new Set<string>()
   private padFrame = 0
+  private snapshot: { version: number; held: string[] } = { version: -1, held: [] }
+  private version = 0
 
   install(): void {
     if (this.installed || typeof window === 'undefined') return
@@ -49,10 +51,20 @@ class Keyboard {
   }
 
   isDown(code: string): boolean {
+    this.install()
     return this.state.isDown(code)
   }
 
+  /** Held codes; the same array until the next press or release (for `useSyncExternalStore`). */
+  held(): string[] {
+    if (this.snapshot.version !== this.version) {
+      this.snapshot = { version: this.version, held: this.state.held() }
+    }
+    return this.snapshot.held
+  }
+
   private emit(code: string, down: boolean) {
+    this.version++
     for (const l of this.listeners) l({ code, down })
   }
 

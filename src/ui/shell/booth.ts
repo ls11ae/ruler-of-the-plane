@@ -19,7 +19,8 @@ import { persistStorage } from './storage'
 interface BoothState {
   boards: Record<string, LeaderboardEntry[]>
   versus?: VersusTally
-  addScore(board: string, spec: BoardSpec, name: string, score: number): number | null
+  /** Adds today's entry; returns its rank (null if it did not make the board) and its time stamp. */
+  addScore(board: string, spec: BoardSpec, name: string, score: number): { rank: number | null; at: number }
   recordVersus(winner: 'human' | 'machine'): void
   resetBoards(): void
   resetVersus(): void
@@ -35,7 +36,7 @@ export const useBooth = create<BoothState>()(
         const entry: LeaderboardEntry = { name, score, day: today(), at: Date.now() }
         const { entries, rank } = addEntry(get().boards[board] ?? [], spec, entry)
         set((s) => ({ boards: { ...s.boards, [board]: entries } }))
-        return rank
+        return { rank, at: entry.at }
       },
       recordVersus(winner) {
         set((s) => ({ versus: recordVersus(s.versus, winner, today()) }))

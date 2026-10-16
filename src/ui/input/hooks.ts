@@ -3,20 +3,13 @@ import { DEFAULT_GESTURE, GestureTracker, type GestureOptions } from './gesture'
 import { keyboard } from './keyboard'
 import { KeyRepeater, type RepeatOptions } from './keyState'
 
-let heldSnapshot: string[] = []
-const subscribeHeld = (onChange: () => void) =>
-  keyboard.subscribe(() => {
-    heldSnapshot = keyboard.state.held()
-    onChange()
-  })
+const subscribeHeld = (onChange: () => void) => keyboard.subscribe(onChange)
+const heldKeys = () => keyboard.held()
+const noKeys: string[] = []
 
 /** Codes currently held (keyboard and gamepads), re-rendering on every press and release. */
 export function useHeldKeys(): string[] {
-  return useSyncExternalStore(
-    subscribeHeld,
-    () => heldSnapshot,
-    () => heldSnapshot,
-  )
+  return useSyncExternalStore(subscribeHeld, heldKeys, () => noKeys)
 }
 
 /** Keeps the browser from scrolling or clicking on these keys while the component is mounted. */
@@ -112,6 +105,14 @@ export function usePointerGesture(
   }
   useEffect(() => finish, [])
 
+  const cancel = (e: React.PointerEvent) => {
+    const t = tracker.current
+    if (!t || t.id !== e.pointerId) return
+    const wasDrag = t.gesture.kind === 'drag'
+    finish()
+    if (wasDrag) ref.current.onDragEnd?.(e)
+  }
+
   return {
     onPointerDown(e: React.PointerEvent) {
       if (tracker.current || (e.pointerType === 'mouse' && e.button !== 0)) return
@@ -140,12 +141,8 @@ export function usePointerGesture(
       if (kind === 'tap') ref.current.onTap?.(e)
       else if (kind === 'drag') ref.current.onDragEnd?.(e)
     },
-    onPointerCancel(e: React.PointerEvent) {
-      const t = tracker.current
-      if (!t || t.id !== e.pointerId) return
-      const wasDrag = t.gesture.kind === 'drag'
-      finish()
-      if (wasDrag) ref.current.onDragEnd?.(e)
-    },
+    onPointerCancel: cancel,
+    // Capture can be lost without pointerup (e.g. the element re-rendered away); never stay stuck.
+    onLostPointerCapture: cancel,
   }
 }

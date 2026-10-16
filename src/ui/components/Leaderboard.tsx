@@ -29,9 +29,8 @@ export function LeaderboardPanel({ submission }: { submission: LeaderboardSubmis
   const qualifies = state.phase === 'pick' && rankFor(entries, spec, score, today()) !== null
 
   const pick = (name: NicknameId) => {
-    addScore(board, spec, name, score)
-    const mine = useBooth.getState().boards[board]?.find((e) => e.name === name && e.score === score)
-    setState({ phase: 'done', at: mine?.at ?? null })
+    const { rank, at } = addScore(board, spec, name, score)
+    setState({ phase: 'done', at: rank === null ? null : at })
   }
 
   return (
