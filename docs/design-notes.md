@@ -243,5 +243,53 @@ subsection below, so their branches do not conflict.
   tall for the result dialog), letters or initials (free text by the back door).
 - **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
-  code uses `person` too, e.g. the colour `--person`). Reason: "Herrchen" is gendered and "owner" says
-  more than the game needs. The mockup `docs/look/gassi-gehen.webp` still shows the old word.
+  code uses `person` too, e.g. the colour `--person`). The mockup `docs/look/gassi-gehen.webp` still
+  shows the old word.
+- **2026-10-16 (proposed) "Gassi gehen" walks are TypeScript data, not IPE files**
+  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in
+  metres (at most 20 segments), with a pond or bushes where needed; trees, rocks and a well are
+  scattered by a seeded generator away from the paths. The leash is not stored but computed: Fréchet
+  distance × the walk's factor (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up
+  to 0.1 m (3.6 to 6.2 m). Alternatives: IPE files with a new collection in the importer (a shared
+  file that track A changes at the same time for its maps). Reason: no shared importer change in
+  parallel with track A; the paths are few and short. Can move to IPE once both tracks are merged.
+- **2026-10-16 "Gassi gehen" walking rules.** Person and dog walk at 2.2 m/s (about 15–35 s per walk
+  if nobody waits); a frame is checked in four steps and the moment the leash would get longer is found
+  by bisection, so the leash never shows more than its length. The leash sags while slack and turns
+  orange-red from 85 % of its length, when a bubble says "Leine fast straff!"; on the first two walks
+  it also names the key to hold (the walker behind, whose step shortens the leash). As soon as no way to
+  the castle is left with this leash, a banner says "Sackgasse" with a restart button (the computer
+  knows: reachability from the current position). A snapped leash opens "Leine zu straff!" with who
+  should have waited and "Nochmal". Alternatives: the leash stops the walker instead of failing (no
+  tension, against the roadmap); no dead-end hint (visitors would stand stuck).
+- **2026-10-16 (proposed) "Gassi gehen" scoring**: stars by the longest leash the walk needed compared
+  with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk is
+  better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time
+  does not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
+- **2026-10-16 "Gassi gehen" controls.** The footer shows "A Mensch geht" and "L Hund läuft" as hold
+  buttons that also work with the mouse; on touch screens they are two large buttons side by side
+  (left person, right dog), each with its own touch point, so both can be held. Gamepad: left side
+  (stick or d-pad left, X) for the person, right side (right, B) for the dog. Keys are read per frame
+  from the shared key state.
+- **2026-10-16 "Gassi gehen" theory view.** A square free-space diagram (axes are the two paths' arc
+  lengths, each scaled to the square, so holding both keys is a fixed slope but not 45°), painted on a
+  canvas from a distance field (200 × 200, computed once per walk; thresholding is fast enough for the
+  slider), hatched where the leash does not reach, thin lines at the corners of the paths; the
+  player's walk green, the computer's walk dashed (traced back through the reachable boundaries,
+  preferring steps where both walk), the narrowest spot of the computer's walk marked. Ticks on the
+  ε slider are the critical values where a passage opens at a corner (vertex–segment distances and the
+  start and end distances); ‹ and › step through them; the text names the number of all candidates
+  (with the bisector values) and the halving steps. Pointing at the diagram shows ghosts of person and
+  dog in the park. Sandbox: draw the person's path, then the dog's (simplified to at most 20 segments
+  with a 0.35 m tolerance), see their diagram, and walk them ("Ausprobieren", leash 1.2 × Fréchet
+  distance).
+- **2026-10-16 "Schätz die Leine"**: the player sets a length and presses "Probieren"; the computer
+  walks a walk with that leash, or walks its best walk until the leash gets too taut (red). Tries are
+  marked on the slider (green worked, red did not). "Auflösen" shows the Fréchet distance; stars by the
+  shortest guess that worked (within 5 % three, within 15 % two). The explanation is the computer's
+  own method: decide a length in the diagram, halve the range, only critical values. No leaderboard
+  (the answer is the same for everyone).
+- **2026-10-16 "Gassi gehen" smoke test plays closed-loop.** The park exposes the walkers' positions
+  (`data-walk` on the board area); the test reads them every 80 ms and holds what the game's hint
+  advises. A precomputed key schedule failed: each slot ran a little long in the browser and the
+  walkers drifted from the plan.

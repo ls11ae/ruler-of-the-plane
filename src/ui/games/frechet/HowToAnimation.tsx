@@ -25,10 +25,10 @@ const DEMO: WalkLevel = {
 
 /** Who walks when (seconds of the loop): both, then the dog alone while the person waits, then both. */
 const SCRIPT: [until: number, person: boolean, dog: boolean][] = [
-  [1.6, true, true],
-  [4.6, false, true],
-  [9, true, true],
-  [10.5, false, false],
+  [1.1, true, true],
+  [3.6, false, true],
+  [9.6, true, true],
+  [11, false, false],
 ]
 const LOOP_S = SCRIPT[SCRIPT.length - 1]![0]
 
@@ -72,8 +72,7 @@ export function HowToAnimation({ label, t }: { label: string; t: FrechetTexts })
     setFrame((f) => {
       if (f.time + dt >= LOOP_S) return { time: 0, state: startState(course) }
       const [, person, dog] = SCRIPT.find(([until]) => f.time < until) ?? SCRIPT[0]!
-      // Walk slowly, so the eye can follow.
-      return { time: f.time + dt, state: step(course, f.state, { person, dog }, dt * 0.7) }
+      return { time: f.time + dt, state: step(course, f.state, { person, dog }, dt) }
     })
   })
   const { time, state } = frame

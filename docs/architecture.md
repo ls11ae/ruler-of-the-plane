@@ -21,7 +21,9 @@ touches no shared file:
 5. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
-   turned board) and how to do a touch drag with Pointer Events.
+   turned board) and how to do a touch drag with Pointer Events; `e2e/frechet.spec.ts` how to hold keys
+   or several touch buttons at once. Call `expectHeaderLaidOut(page)` (helpers) once the game shows its
+   header: it fails if title, status and buttons overlap.
 
 ## Shared building blocks
 
@@ -33,7 +35,7 @@ touches no shared file:
 | Buttons, keycaps, stars, progress bar  | `components/Button` (`variant`: solid, accent, dashed), `Keycap` (`code`, `pressed`), `Stars`, `ProgressBar`                                                                              |
 | "So geht's"                            | `components/HowToOverlay` (2–3 sentences, optional animation, key hints)                                                                                                                  |
 | End of a round                         | `components/ResultScreen` (outcome, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                                         |
-| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format                                                                                            |
+| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format (nickname picker with the last name first and a lucky number built in)                     |
 | "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                                                |
 | Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                                              |
 | Levels                                 | `useLevel<ArtGalleryLevel>('art-gallery/agLevel4_8')`, `loadLevelIndex()` (`src/ui/levels.ts`; format in `src/core/levels/schema.ts`)                                                     |
