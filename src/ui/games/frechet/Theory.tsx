@@ -18,6 +18,8 @@ export interface TheoryCourse {
   person: Path
   dog: Path
   shortest: number
+  /** The walk's leash (sets the slider's range). */
+  leash: number
   computer: Walk
 }
 
@@ -50,14 +52,14 @@ export function TheoryPanel({
   onClose,
   onSandbox,
 }: TheoryPanelProps) {
-  const { person, dog, shortest, computer } = course
+  const { person, dog, shortest, leash, computer } = course
   const P = person.points
   const Q = dog.points
   const ticks = useMemo(() => cornerValues(P, Q), [P, Q])
   const candidates = useMemo(() => criticalValues(P, Q).length, [P, Q])
   const narrowest = useMemo(() => tightestPoint(person, dog, computer).at, [person, dog, computer])
   const ok = useMemo(() => decide(P, Q, eps), [P, Q, eps])
-  const max = sliderMax(shortest, eps)
+  const max = sliderMax(shortest, leash)
   const stops = [...ticks, shortest].sort((a, b) => a - b)
   const jump = (dir: -1 | 1) => {
     const next =
