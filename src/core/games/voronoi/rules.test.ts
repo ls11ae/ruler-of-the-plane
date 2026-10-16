@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../geometry/types'
 import { mulberry32 } from '../../random'
-import { distanceToCoast, isOnLand, LAND_POINTS, prepareMap, type GameMap } from './map'
+import { distanceToCoast, isOnLand, LAND_POINTS, landClearance, prepareMap, type GameMap } from './map'
 import { VORONOI_MAPS } from './maps.fixture'
 import { hasRoom, makeRaster, Territory } from './raster'
 import {
@@ -48,6 +48,17 @@ describe.each(VORONOI_MAPS)('$name', (level) => {
     const sheet = (map.frame.maxX - map.frame.minX) * (map.frame.maxY - map.frame.minY)
     expect(map.landArea).toBeGreaterThan(sheet / 3)
     expect(map.landArea).toBeLessThanOrEqual(sheet)
+  })
+
+  it('measures the clearance from the coast as the exact land test and the distance do', () => {
+    const rng = mulberry32(level.number)
+    const f = map.frame
+    for (let i = 0; i < 400; i++) {
+      const p: Vec2 = [f.minX + rng() * (f.maxX - f.minX), f.minY + rng() * (f.maxY - f.minY)]
+      const clearance = landClearance(map, p)
+      expect(clearance >= 0, `${p.join(', ')}`).toBe(isOnLand(map, p))
+      if (clearance >= 0) expect(clearance).toBeCloseTo(distanceToCoast(map, p), 9)
+    }
   })
 
   it('puts cities and mines on land, away from the coast', () => {

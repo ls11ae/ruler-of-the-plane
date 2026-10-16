@@ -17,8 +17,11 @@ export interface AiContext {
 export const GRID_CANDIDATES = 320
 /** Positions tried around each castle, just outside the minimum distance. */
 const RING_DIRECTIONS = 12
-/** "Schwer" looks one move ahead for this many of its best moves. */
+/** "Schwer" looks one move ahead for this many of its best moves... */
 const LOOKAHEAD = 8
+/** ...checking the opponent's this many best positions and all candidates within NEAR × the distance. */
+const OPPONENT_BEST = 30
+const NEAR = 3
 
 function ring(at: Vec2, radius: number, directions: number, phase: number): Vec2[] {
   return Array.from({ length: directions }, (_, k) => {
@@ -109,6 +112,14 @@ export function chooseMove(ctx: AiContext, request: MoveRequest, rng: Rng): Vec2
 
   const shortlist = [...rated].sort((a, b) => b.swing - a.swing).slice(0, LOOKAHEAD)
   const opponent = other(player)
+  // The opponent's answers worth checking: its best positions now, and everything near the tried move
+  // (only there does the move change what a castle would win, and only there can it be undercut).
+  const theirBest = rate(territory, positions, opponent)
+    .sort((a, b) => b.swing - a.swing)
+    .slice(0, OPPONENT_BEST)
+    .map((r) => r.at)
+  const d2 = minDist * minDist
+  const near2 = (NEAR * minDist) ** 2
   let choice: Rated | null = null
   let choiceValue = -Infinity
   for (const move of shortlist) {
@@ -116,8 +127,10 @@ export function chooseMove(ctx: AiContext, request: MoveRequest, rng: Rng): Vec2
     const after = territory.clone()
     after.add(castle)
     const next = [...castles, castle]
+    const dist2 = (p: Vec2) => (p[0] - move.at[0]) ** 2 + (p[1] - move.at[1]) ** 2
+    // The candidates are valid already; only the distance to the new castle can rule one out.
     const replies = [
-      ...positions.filter((p) => placementProblem(ctx.map, [castle], p, minDist) === null),
+      ...new Set([...positions.filter((p) => dist2(p) <= near2), ...theirBest].filter((p) => dist2(p) >= d2)),
       ...ring(move.at, minDist * 1.0001, RING_DIRECTIONS, 0.3).filter(
         (p) => placementProblem(ctx.map, next, p, minDist) === null,
       ),

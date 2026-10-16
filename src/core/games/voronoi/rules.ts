@@ -1,6 +1,6 @@
 import { Delaunay } from 'd3-delaunay'
 import type { Vec2 } from '../../geometry/types'
-import { distanceToCoast, insideFrame, isOnLand, LAND_POINTS, landAreaIn, type GameMap } from './map'
+import { insideFrame, LAND_POINTS, landAreaIn, landClearance, type GameMap } from './map'
 
 /** Blue (0) starts; orange (1) is the friend or the computer. */
 export type Player = 0 | 1
@@ -46,7 +46,7 @@ export function placementProblem(
   p: Vec2,
   minDist: number,
 ): PlacementProblem | null {
-  if (!insideFrame(map, p) || !isOnLand(map, p) || distanceToCoast(map, p) < COAST_MARGIN) return 'water'
+  if (!insideFrame(map, p) || landClearance(map, p) < COAST_MARGIN) return 'water'
   for (const town of [...map.level.cities, ...map.level.mines]) {
     if (Math.hypot(town[0] - p[0], town[1] - p[1]) < TOWN_MARGIN) return 'town'
   }

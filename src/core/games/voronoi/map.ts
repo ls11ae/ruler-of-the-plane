@@ -17,6 +17,11 @@ export interface GameMap {
   land: PathsD
   /** Area of the land (map units²); it is worth {@link LAND_POINTS} points. */
   landArea: number
+  /**
+   * The coast as a flat list for fast tests: per ring, its orientation (1 land, −1 lake), the number of
+   * edges and then ax, ay, bx, by of every edge.
+   */
+  coast: Float64Array
 }
 
 /** Points for all the land together: one point is one percent of the land. */
@@ -24,7 +29,19 @@ export const LAND_POINTS = 100
 
 export function prepareMap(level: VoronoiLevel): GameMap {
   const land = level.land.map(toPathD)
-  return { level, frame: level.bounds, land, landArea: areaPathsD(land) }
+  return {
+    level,
+    frame: level.bounds,
+    land,
+    landArea: areaPathsD(land),
+    coast: Float64Array.from(
+      level.land.flatMap((ring) => [
+        Math.sign(signedArea(ring)),
+        ring.length,
+        ...ring.flatMap(([ax, ay], i) => [ax, ay, ...ring[(i + 1) % ring.length]!]),
+      ]),
+    ),
+  }
 }
 
 /** Whether p is on land (the coast counts as land): the signed rings around p add up to a positive count. */
@@ -54,6 +71,41 @@ export function distanceToCoast(map: GameMap, [px, py]: Vec2): number {
     }
   }
   return Math.sqrt(best)
+}
+
+/**
+ * How far p lies inside the land: the distance to the nearest coast if p is on land, else −1. One pass
+ * over the coast in floating point (crossings and distances together), much faster than
+ * {@link isOnLand} and {@link distanceToCoast}; only points within rounding error of a coast could be
+ * judged differently, and castles keep a margin from every coast.
+ */
+export function landClearance(map: GameMap, [px, py]: Vec2): number {
+  const c = map.coast
+  let best = Infinity
+  let winding = 0
+  for (let k = 0; k < c.length;) {
+    const sign = c[k]!
+    const n = c[k + 1]!
+    let crossings = 0
+    k += 2
+    for (const end = k + 4 * n; k < end; k += 4) {
+      const ax = c[k]!
+      const ay = c[k + 1]!
+      const bx = c[k + 2]!
+      const by = c[k + 3]!
+      if (ay > py !== by > py && ax + ((py - ay) / (by - ay)) * (bx - ax) > px) crossings++
+      const dx = bx - ax
+      const dy = by - ay
+      const len2 = dx * dx + dy * dy
+      const t = len2 > 0 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len2)) : 0
+      const ex = px - ax - t * dx
+      const ey = py - ay - t * dy
+      const d = ex * ex + ey * ey
+      if (d < best) best = d
+    }
+    if (crossings % 2) winding += sign
+  }
+  return winding > 0 ? Math.sqrt(best) : -1
 }
 
 export function insideFrame(map: GameMap, [x, y]: Vec2): boolean {
