@@ -8,6 +8,8 @@ Ruler of the Plane (Unity, TU Eindhoven, 2017–2020), [github.com/kbuchin/ruler
 - Programming: Sander Beekhuis, Kevin Buchin, Thom Hurks, Stijn Slot
 - Art: Willem Sonke, Thom Castermans (not used in this edition)
 - Dots & Polygons: Jolan Rensen, GitHub user leovsch
+- Art gallery levels (2020 set): Toon van Benthem, Kevin Buchin, Irina Kostitsyna, Stijn Slot, from
+  "Designing Art Galleries" (SoCG 2020 Media Exposition, LIPIcs, 80:1–80:5)
 
 The level files in `legacy/levels/` and the texts in `legacy/ingameText.md` come from that project.
 

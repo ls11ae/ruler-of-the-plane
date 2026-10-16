@@ -97,10 +97,16 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   2–5 minutes. Every game ends with "Was steckt dahinter?": three sentences plus an animation of how the
   computer solves it (or, for the art gallery, of the guarantee below).
 - Art gallery: a level is a polygon, 9 of the 14 Unity levels with holes ("pillars"); a torch sees its
-  visibility polygon. "Fully lit" = the uncovered region (level minus the union of visibility polygons,
-  Clipper2) is empty up to a small tolerance (integer rounding creates slivers: ignore uncovered area
-  below about 1e-6 of the level area). The Unity version used an area ratio plus checkpoints, which was
-  fragile.
+  visibility polygon (exact, a point). "Fully lit" is judged by thickness (Kevin, 2026-10-16): the dark
+  region (level minus the union of visibility polygons, Clipper2), shrunk by r = 0.03 level units, is
+  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and while
+  not lit a pulsing dot marks the thickest dark spot. An area tolerance would accept a half-dark niche
+  (the smallest niches of agLevel8_4 are 0.29 % of the floor); the Unity version used an area ratio plus
+  checkpoints, which was fragile. r is tuned in the playtest.
+- The 14 art gallery levels are the 2020 set of "Designing Art Galleries" (van Benthem, Buchin,
+  Kostitsyna, Slot; SoCG 2020 Media Exposition): agLevel7_13 is its planar 3SAT construction (13 torches
+  are necessary, no record possible), agLevel12_7 its planar vertex cover construction, agLevel13_4 a
+  spike box (least liked in the paper's user study, hence in the expert set).
 - Art gallery bounds: ⌊n/3⌋ torches always suffice for polygons without holes (Chvátal); with h holes
   ⌊(n+h)/3⌋, where n counts all vertices including those of the holes; for orthogonal polygons without
   holes ⌊n/4⌋. Fisk's proof (triangulate, 3-colour, take the smallest colour class) works only without

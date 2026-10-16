@@ -167,6 +167,22 @@ subsection below, so their branches do not conflict.
   only for the start map and the explanations. Reason: most visitors who scan the QR code will play at
   home on a phone.
 
+- **2026-10-16 "Fully lit" by thickness, not by area** (Kevin). Torches keep exact point visibility; the
+  floor counts as lit when the dark region, shrunk by r = 0.03 level units (Clipper2 offset with −r),
+  is empty, i.e. no dark spot is thicker than 0.06 units (4–6 px on the laptop). The remaining
+  hairlines are drawn lit and the display shows 100 %. While the floor is not fully lit, a pulsing dot
+  marks the thickest dark spot (the 2020 version added such a feedback point after its user study).
+  Alternatives: the strict 1e-6 area tolerance (a torch a pixel away from a perfect spot leaves
+  hairlines, so the game sticks at 99 %); a 0.2 % area tolerance (also accepts a compact dark spot of
+  about 25 × 25 px, close to the size of real niches: the smallest niches of agLevel8_4 are 0.29 % of
+  the floor); a torch as a small disc (changes the model). Tune r in the playtest. Measured on
+  agLevel3_2: Kevin's torches at (2.35, −2.79) and (1.37, 1.83) stay fully lit even under the strict
+  rule when each is moved by up to 0.05 units, so the levels have slack when torches are placed well.
+- **2026-10-16 Art gallery level order** (Kevin for agLevel13_4): 9 main levels by k and complexity
+  (agLevel3_2, 1_3, 6_3, 2_3, 10_4, 8_4, 5_5, 12_7, 4_8) and an expert set: the spike box agLevel13_4
+  (spike boxes were the least liked puzzles in the 2020 user study) and the levels with 12 or more
+  torches (9_12, 7_13, 11_14, 14_17).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")
