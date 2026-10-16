@@ -1,0 +1,37 @@
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9em;
+  height: 1.9em;
+  padding: 0 0.45em;
+  border: 2px solid var(--ink);
+  border-radius: 7px;
+  background: var(--paper);
+  box-shadow: 0 3px 0 var(--ink);
+  font-family: var(--font-text);
+  font-size: 1em;
+  line-height: 1;
+  color: var(--ink);
+  vertical-align: middle;
+  white-space: nowrap;
+  transition:
+    transform 60ms,
+    box-shadow 60ms,
+    background 60ms;
+}
+
+.pressed {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+  background: var(--light-soft);
+}
+
+.wide {
+  min-width: 4.5em;
+}
+
+.arrow {
+  width: 0.95em;
+  height: 0.95em;
+}

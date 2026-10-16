@@ -1,0 +1,59 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(43 36 32 / 45%);
+  animation: fade 160ms ease-out;
+}
+
+.card {
+  position: relative;
+  max-width: min(960px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 24px 28px 28px;
+  border: var(--border);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: 0 6px 0 var(--ink);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 0.4em;
+  padding-right: 2.2em;
+}
+
+.close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 18px 16px 20px;
+  }
+  .title {
+    font-size: 1.6rem;
+  }
+}
