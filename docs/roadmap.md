@@ -14,6 +14,12 @@ After Phase 1, two tracks run in parallel, each in its own cloud session and bra
 
 If time runs short, drop Phase 5 first; the two research games and the playtest have priority.
 
+Phones (Kevin, 2026-10-16): visitors open the QR code on their phones, so every game must be playable on a
+phone in portrait, not only on the booth laptops. Pointer games use the screen well in portrait (e.g. a
+wide board rotated by 90°) and keep touch targets at least 44 px; the keyboard games get on-screen
+controls. Each game's Playwright smoke test plays a level in both projects (laptop 1280 × 800 and phone
+390 × 844).
+
 ## Phase 0: foundation (target 20 Oct) — done 2026-10-16
 
 - Scaffold the app at the repository root with the toolchain described in `CLAUDE.md` (Node ≥ 22.13,
@@ -73,6 +79,9 @@ first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3
   set. If a floor plan is available, add a TU Dortmund building as a level.
 - Explanation on hole-free levels (Unity levels 1, 3, 6, 8, 13): animation of Fisk's proof (triangulate,
   3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation.
+- Phones in portrait: rotate a wide level by 90° when that makes it larger, torches at least 44 px, a
+  torch dragged by touch is drawn above the finger, and a way to remove a torch when the dungeon fills
+  the screen. The smoke test plays a level in both Playwright projects (laptop and phone).
 - Look as in `docs/look/licht-ins-verlies.webp`: Scribble grid-paper floor clipped to the level, hatched
   rock outside and in pillars, sketchy SVG walls, props as decoration under the light, torches as yellow
   tokens with a flame, lit area warm, unlit area dark. Optional extra levels built from tiles as
@@ -108,6 +117,8 @@ AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area
   their key is held (owner `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
   speed. The leash is drawn and turns orange-red when nearly taut; exceeding the length limit L fails the
   level; levels lower L towards the Fréchet distance.
+- On-screen controls for phones: two large hold buttons, "Herrchen" (left) and "Hund" (right), which act
+  like the keys while pressed (multi-touch: both at once); a phone smoke test plays a level with them.
 - Solo mode "Schätz die Leine": pick a length with a slider; the computer shows whether a walk exists.
 - Theory view (panel beside the park, as in `docs/look/gassi-gehen.webp`): free-space diagram
   (x = owner's position, y = dog's position, light = leash long enough) with an ε slider; the player's
@@ -120,7 +131,7 @@ AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area
   discrete Fréchet distance on densely sampled curves.
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
-with the key test on the booth laptops).
+with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
 
 ## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
 
@@ -129,6 +140,9 @@ with the key test on the booth laptops).
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
   (space) drives every cutter back to its start on the shortest (L1) way and closes the tour.
+- On-screen controls for phones: a direction pad for one cutter (holding a direction repeats at the same
+  fixed rate as the keys) plus a "Feierabend" button; on phones the lawns are played with one cutter. A
+  phone smoke test mows a lawn with them.
 - Live display: mowed share, steps per cutter, the longest tour (the score), and the target from the
   chair's solver for this lawn (stored with the level; shown as a placeholder until provided).
 - Theory view: the solver's tours as an animation, the lower bound from the cutter width, the min-max
@@ -139,7 +153,7 @@ with the key test on the booth laptops).
 
 Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test fixtures (generated once
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
-laptop keyboard.
+laptop keyboard; one player can mow a lawn on a phone with the direction pad.
 
 ## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct)
 

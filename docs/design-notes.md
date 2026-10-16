@@ -158,6 +158,15 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Logo placeholder**: the text "TU Dortmund · Informatik · LS 11" at the bottom of the start
   map until the logos are provided.
 
+- **2026-10-16 Every game playable on a phone in portrait** (Kevin). Visitors open the QR code on their
+  phones, so the laptops stay the booth hardware but phones are no longer only a bonus. Pointer games use
+  portrait screens well (e.g. a wide board rotated by 90°), with touch targets of at least 44 px; the
+  keyboard games get on-screen controls: two large hold buttons for owner and dog in "Gassi gehen"
+  (Phase 3), a direction pad for one cutter plus a "Feierabend" button in "Rasenmähen" (Phase 4). Each
+  game's Playwright smoke test plays a level in the laptop and the phone project. Alternative: phones
+  only for the start map and the explanations. Reason: most visitors who scan the QR code will play at
+  home on a phone.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")
