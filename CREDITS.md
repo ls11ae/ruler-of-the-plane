@@ -54,8 +54,14 @@ pull request that starts using it.
 
 ### Licht ins Verlies
 
-| File | Source | Author | Licence | Used for | Changes |
-| ---- | ------ | ------ | ------- | -------- | ------- |
+| File                                                              | Source            | Author | Licence | Used for                                          | Changes |
+| ----------------------------------------------------------------- | ----------------- | ------ | ------- | ------------------------------------------------- | ------- |
+| `assets/kenney/scribble-dungeons/tiles.png`                       | Scribble Dungeons | Kenney | CC0 1.0 | Grid-paper floor (pattern clipped to the dungeon) | none    |
+| `assets/kenney/scribble-dungeons/characters/yellow_character.png` | Scribble Dungeons | Kenney | CC0 1.0 | Torch token (flame drawn on top in SVG)           | none    |
+| `assets/kenney/scribble-dungeons/barrels.png`                     | Scribble Dungeons | Kenney | CC0 1.0 | Prop (decoration)                                 | none    |
+| `assets/kenney/scribble-dungeons/chest.png`                       | Scribble Dungeons | Kenney | CC0 1.0 | Prop (decoration)                                 | none    |
+| `assets/kenney/scribble-dungeons/crate_small.png`                 | Scribble Dungeons | Kenney | CC0 1.0 | Prop (decoration)                                 | none    |
+| `assets/kenney/scribble-dungeons/barrel.png`                      | Scribble Dungeons | Kenney | CC0 1.0 | Prop (decoration)                                 | none    |
 
 ### Erobere das Land
 

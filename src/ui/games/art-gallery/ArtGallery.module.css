@@ -1,0 +1,181 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--paper);
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  /* Hatched rock around the dungeon and inside the pillars. */
+  background-color: #efebe2;
+  background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgb(43 36 32 / 13%) 9px 10.5px);
+}
+
+.boardArea {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.footer {
+  padding: 6px 12px 10px;
+  border-top: 2px solid var(--ink-faint);
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  white-space: nowrap;
+}
+
+.torchCount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--light);
+}
+
+.dot.empty {
+  border-style: dashed;
+  background: transparent;
+}
+
+.dot.extra {
+  border-color: var(--warn);
+  background: var(--light-soft);
+}
+
+.lit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.percent {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.percent small {
+  font-size: 1rem;
+  margin-left: 0.3em;
+}
+
+.trash {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 8px 18px;
+  transform: translateX(-50%);
+  border: 3px dashed var(--ink);
+  border-radius: 16px;
+  background: rgb(251 248 240 / 94%);
+  font-size: 1.1rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.trash.over {
+  border-style: solid;
+  background: #ffd9c7;
+  color: var(--warn);
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 1.4rem;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.picker h3 {
+  font-size: 1.3rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.card[aria-current='true'] {
+  background: var(--light-soft);
+}
+
+.card svg {
+  width: 100%;
+  height: 70px;
+}
+
+.cardTitle {
+  font-family: var(--font-title);
+  font-size: 1.05rem;
+}
+
+@media (max-width: 720px) {
+  .status {
+    gap: 14px;
+  }
+  .dot {
+    width: 13px;
+    height: 13px;
+  }
+  .percent {
+    font-size: 1.35rem;
+  }
+  .footer {
+    font-size: 0.95rem;
+  }
+  .trash {
+    bottom: 10px;
+    font-size: 1rem;
+  }
+}
