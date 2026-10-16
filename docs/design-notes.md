@@ -233,6 +233,14 @@ subsection below, so their branches do not conflict.
   "Fackeln: 4" (dots: the level's number dashed, extra torches orange) and the subtitle "Ziel: 3
   Fackeln" instead of "Fackeln: 4 von 3" and "3 Fackeln erlaubt", which read oddly because more torches
   may be placed (they cost stars).
+- **2026-10-16 Leaderboard names: remembered, all reachable, optional lucky number** (Kevin). The
+  nickname chosen last is offered first (accent button "Wieder als …") the next time a score makes a
+  board; in kiosk mode it is forgotten when the attract screen takes over (kiosk timeout), otherwise the
+  device keeps it. "Andere Namen" pages through all 32 nicknames in a shuffled order (six per page, with
+  a page counter), so every name can be reached. An optional lucky number 1–99 (digits typed, or − and
+  +) follows the name ("Kluge Eule 7"); entries store it next to the nickname id. Still no free-text
+  names. Alternatives: random subsets only (some names never offered), one list of all 32 names (too
+  tall for the result dialog), letters or initials (free text by the back door).
 - **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
   code uses `person` too, e.g. the colour `--person`). Reason: "Herrchen" is gendered and "owner" says

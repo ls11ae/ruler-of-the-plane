@@ -56,3 +56,40 @@
     columns: 1;
   }
 }
+
+.pickRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 14px;
+}
+
+.lucky {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.luckyInput {
+  width: 3.2em;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--card);
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.luckyInput::placeholder {
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}
+
+.page {
+  margin-left: 0.4em;
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}

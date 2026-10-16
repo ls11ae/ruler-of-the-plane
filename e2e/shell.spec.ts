@@ -58,13 +58,18 @@ test('demo page: board, tokens, how-to, result and leaderboard', async ({ page }
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result.getByText('Was steckt dahinter?')).toBeVisible()
   await result.getByText('Trag dich ein').waitFor()
-  await result
-    .locator('button')
-    .filter({ hasNotText: /Andere|Ohne|Nochmal|Theorie|×/ })
-    .first()
-    .click()
+  // A nickname with a lucky number; the next time it is offered first.
+  await result.getByLabel('Glückszahl', { exact: true }).fill('7')
+  const name = result.getByTestId('nickname').first()
+  const signature = (await name.textContent())!
+  expect(signature).toMatch(/ 7$/)
+  await name.click()
   await expect(result.locator('ol li')).toHaveCount(1)
+  await expect(result.locator('ol li')).toContainText(signature)
   await shot(page, testInfo, 'demo-result')
+  await result.getByRole('button', { name: 'Nochmal' }).click()
+  await page.getByRole('button', { name: 'Ergebnis' }).click()
+  await expect(result.getByTestId('nickname').first()).toHaveAccessibleName(`Wieder als ${signature}`)
 })
 
 test('staff menu: open with Ctrl+Shift+S, key test, switch a game off', async ({

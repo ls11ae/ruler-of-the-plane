@@ -6,6 +6,8 @@
 export interface LeaderboardEntry {
   /** Nickname id from the fixed list (shown in the current language). */
   name: string
+  /** Optional lucky number shown after the nickname ("Kluge Eule 7"), 1–99. */
+  number?: number
   score: number
   /** Local day, `YYYY-MM-DD`. */
   day: string
@@ -55,6 +57,23 @@ export function rankFor(
   const board = todaysBoard(entries, spec, today)
   const better = board.filter((e) => (spec.higherIsBetter ? e.score >= score : e.score <= score)).length
   return better < BOARD_SIZE ? better + 1 : null
+}
+
+/** Lucky numbers go from 1 to 99; no free text, so a booth board needs no moderation. */
+export const LUCKY_MAX = 99
+
+/** The lucky number typed so far: digits only, at most two; empty or 0 means none. */
+export function parseLucky(text: string): number | undefined {
+  const digits = text.replace(/\D/g, '').slice(0, 2)
+  const n = Number(digits)
+  return digits && n >= 1 ? Math.min(n, LUCKY_MAX) : undefined
+}
+
+/** One step up or down through none, 1, 2, …, 99, none, … */
+export function stepLucky(n: number | undefined, delta: 1 | -1): number | undefined {
+  const next = (n ?? 0) + delta
+  if (next > LUCKY_MAX || next === 0) return undefined
+  return next < 0 ? LUCKY_MAX : next
 }
 
 /** Adds an entry and returns today's board (old days dropped) and the rank of the new entry, if kept. */
