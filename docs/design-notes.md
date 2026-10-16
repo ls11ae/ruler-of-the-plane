@@ -222,6 +222,13 @@ subsection below, so their branches do not conflict.
   so a running game cannot lose a chunk. An open page (the booth) checks for a new version every hour.
   Alternatives: keep `skipWaiting` and reload on `controllerchange` (the new worker would already serve
   new files to the old page mid-game); a "new version" button (visitors would not press it).
+- **2026-10-16 Game header wraps instead of overlapping** (shared `GameHeader`). It measures the natural
+  width of its parts (back button, titles, status, buttons); when they do not fit in one line, the
+  status moves to a centred line of its own and the buttons wrap. Before, the status could shrink to
+  nothing and its content was drawn over the title between about 721 and 1180 px. A smoke test checks
+  at 768, 1024 and 1280 px that nothing overlaps and the title is not cut off (`expectHeaderLaidOut` in
+  `e2e/helpers.ts`, for every game's test to reuse). Alternatives: a fixed breakpoint (breaks again
+  with a longer status), shrinking fonts and buttons (hit targets below 44 px).
 - **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
   code uses `person` too, e.g. the colour `--person`). Reason: "Herrchen" is gendered and "owner" says
