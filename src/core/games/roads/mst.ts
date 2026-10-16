@@ -89,6 +89,18 @@ export function kruskal(points: readonly Vec2[]): { roads: Road[]; length: numbe
   return { roads, length, steps }
 }
 
+/**
+ * The first k Kruskal steps as drawn by the theory view: the roads taken so far, and the k-th road
+ * (marked current) even if it was skipped.
+ */
+export function kruskalSoFar(steps: readonly KruskalStep[], k: number) {
+  return steps
+    .slice(0, k)
+    .flatMap((step, i) =>
+      step.taken || i === k - 1 ? [{ road: step.road, taken: step.taken, current: i === k - 1 }] : [],
+    )
+}
+
 /** Number of separate groups of villages in a network. */
 export function componentCount(n: number, roads: readonly Road[]): number {
   const sets = new DisjointSets(n)
