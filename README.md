@@ -3,8 +3,8 @@
 Spiele zur algorithmischen Geometrie für den Tag der offenen Tür der TU Dortmund. Browser games that make
 computational geometry tangible, for walk-up visitors and for playing at home.
 
-**Status:** work in progress for the open house on 7 November 2026. Once Phase 0 of the roadmap is done,
-the current version runs at <https://ls11ae.github.io/ruler-of-the-plane/>.
+**Status:** work in progress for the open house on 7 November 2026. The current version of `main` runs at
+<https://ls11ae.github.io/ruler-of-the-plane/> (works offline after the first visit).
 
 Booth edition:
 
@@ -22,13 +22,20 @@ The TSP game lives in the separate project tsp-boards. The original Unity versio
 
 ## Development
 
-Requirements: Node 22.13 or newer and npm. After Phase 0 of [`docs/roadmap.md`](docs/roadmap.md):
+Requirements: Node 22.13 or newer and npm.
 
 ```sh
 npm install
-npm run dev     # development server
+npm run dev     # development server (http://localhost:5173/ruler-of-the-plane/)
 npm run check   # format check, lint, typecheck, tests, build
+npm run e2e     # Playwright smoke tests against the build (screenshots in screenshots/)
+npm run levels  # convert legacy/levels/ to public/levels/
 ```
+
+Useful addresses: `#/demo` shows the shared UI components; `?kiosk` turns on booth mode (attract screen
+after 90 s without input). The staff menu opens with Ctrl+Shift+S or a 3 s press on the compass. Build
+variables are described in [`.env.example`](.env.example); the code layout in
+[`docs/architecture.md`](docs/architecture.md).
 
 Most of the work happens in Claude Code on the web: see [`CLAUDE.md`](CLAUDE.md) and
 [`docs/cloud-sessions.md`](docs/cloud-sessions.md).

@@ -55,5 +55,6 @@ Session runner (`mbuchin`):
 - Only package registries and GitHub are reachable by default. All art and fonts are therefore in
   `assets/`. If a session ever needs another site, add the files to the repository, or set the
   environment's network access to "Custom" and list the domain (keep "include default list" ticked).
-- The cloud image has no Playwright browser and its download host is probably blocked; Playwright runs
-  in CI.
+- The cloud image has an older Chromium at `/opt/pw-browsers/chromium`, which `playwright.config.ts`
+  uses outside CI; sessions can therefore run the Playwright tests and look at the screenshots. CI runs
+  them with the matching browser and uploads the screenshots.

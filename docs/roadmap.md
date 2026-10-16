@@ -14,33 +14,33 @@ After Phase 1, two tracks run in parallel, each in its own cloud session and bra
 
 If time runs short, drop Phase 5 first; the two research games and the playtest have priority.
 
-## Phase 0: foundation (target 20 Oct)
+## Phase 0: foundation (target 20 Oct) — done 2026-10-16
 
 - Scaffold the app at the repository root with the toolchain described in `CLAUDE.md` (Node ≥ 22.13,
   TypeScript `~6.0`); Prettier and ESLint ignores as in `CLAUDE.md`, then format the Markdown docs once;
   `npm run check` green; CI on GitHub Actions for pull requests and pushes to `main`, including a
   Playwright job that uploads screenshots as artifacts (if pushing workflow files is refused, see
-  `CLAUDE.md`).
+  `CLAUDE.md`). — done 2026-10-16
 - `.env.example` with the build variables `VITE_TSP_BOARDS_URL` and `VITE_STAFF_PIN`; the Pages
-  workflow reads them from GitHub Actions repository variables.
+  workflow reads them from GitHub Actions repository variables. — done 2026-10-16
 - GitHub Pages via Actions: a workflow builds `main` and deploys it to
   `ls11ae.github.io/ruler-of-the-plane/` (Vite `base`). Kevin switches Settings → Pages → Source to
-  "GitHub Actions" once. The old site at `kbuchin.github.io/ruler/` stays untouched.
+  "GitHub Actions" once. The old site at `kbuchin.github.io/ruler/` stays untouched. — done 2026-10-16 (workflow ready; the first deployment follows the merge)
 - Shell: start screen as in `docs/look/start-map.webp` (parchment map of the kingdom, one labelled place
   per game, places without a game yet shown dashed), German/English switch, fullscreen button, "Alte
   Ruinen" linking to `https://kbuchin.github.io/ruler/`, "Rundreise" linking to tsp-boards (build
-  variable, hidden while unset).
+  variable, hidden while unset). — done 2026-10-16
 - Kiosk mode: after 90 s without input, return to an attract screen; a hidden staff menu (long press or
   a key combination, then the PIN from `VITE_STAFF_PIN`) resets leaderboards, enables or disables games, sets the difficulty and
-  offers a key test (shows every key currently held, to find rollover limits of the laptop keyboard).
+  offers a key test (shows every key currently held, to find rollover limits of the laptop keyboard). — done 2026-10-16
 - Input layer: Pointer Events for mouse, touchpad and touch; a keyboard module with key-state tracking by
-  `KeyboardEvent.code` and fixed-rate repeat; optional Gamepad API.
+  `KeyboardEvent.code` and fixed-rate repeat; optional Gamepad API. — done 2026-10-16
 - Shared UI: SVG board component (fits the screen, ≥ 44 px hit targets), sketchy buttons and keycaps as
   in the mockup, "So geht's" overlay, result screen with a "Was steckt dahinter?" panel and a button for
   the game's theory view, local daily leaderboard with nicknames chosen from a list, "Mensch gegen
-  Maschine" counter.
+  Maschine" counter. — done 2026-10-16
 - Assets: use the files in `assets/` (already in the repository: Kenney packs CC0, fonts OFL); start the
-  per-file list in `CREDITS.md`. TU Dortmund / LS 11 logos are placeholders until provided.
+  per-file list in `CREDITS.md`. TU Dortmund / LS 11 logos are placeholders until provided. — done 2026-10-16
 - `scripts/import-ipe.ts` (`npm run levels`): convert all levels in `legacy/levels/` to JSON in
   `public/levels/` (rules in `docs/legacy-unity-notes.md`):
   - read only the paths and markers inside `<page>`; apply each path's and marker's `matrix`
@@ -56,7 +56,7 @@ If time runs short, drop Phase 5 first; the two research games and the playtest 
     `divLevel3_2`, `ConvexHull/hullLevel1`, `hullLevel2`) are converted by a small YAML reader;
   - tests on the shipped levels: outer polygon simple, holes inside it and pairwise disjoint, outer
     polygon plus holes a valid polygon, parameters as in the file names, and the committed JSON equal
-    to a fresh import.
+    to a fresh import. — done 2026-10-16
 
 Acceptance: the shell runs on a laptop (mouse and keyboard) and on a phone and works offline after the
 first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3 Kings Taxes, 9 Divide,
