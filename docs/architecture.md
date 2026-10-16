@@ -18,7 +18,12 @@ touches no shared file:
    `useLocalized({ de, en })`. Shared texts (buttons, result screen) come from `useT()`.
 4. Art: import files from `assets/` in the game's folder and add a row per file to the game's section
    of `CREDITS.md`.
-5. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
+5. Optionally `src/ui/games/<id>/attract.tsx` default-exports a demo that the kiosk's attract screen plays
+   behind its text (e.g. the computer against itself); it is discovered like the game.
+6. New level sources (made for this edition) go to `levels/<id>/` and are converted by `npm run levels`
+   (folder → collection in `NEW_FOLDERS` of `scripts/levels/convert.ts`); `legacy/` stays the read-only
+   copy of the Unity files.
+7. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
    turned board) and how to do a touch drag with Pointer Events.

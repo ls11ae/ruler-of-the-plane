@@ -28,3 +28,17 @@ export function isImplemented(id: GameId): boolean {
 export function gameLoader(id: GameId): (() => Promise<GameModule>) | undefined {
   return loaders.get(id)
 }
+
+/**
+ * Optionally, `src/ui/games/<id>/attract.tsx` default-exports a demo the attract screen of the kiosk mode
+ * plays behind its text (e.g. the computer playing against itself). Discovered like the games.
+ */
+const attractModules = import.meta.glob<GameModule>('./*/attract.tsx')
+
+const attractLoaders = new Map<string, () => Promise<GameModule>>(
+  Object.entries(attractModules).map(([path, load]) => [path.split('/')[1]!, load]),
+)
+
+export function attractLoader(id: GameId): (() => Promise<GameModule>) | undefined {
+  return attractLoaders.get(id)
+}

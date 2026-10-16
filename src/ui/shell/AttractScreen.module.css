@@ -14,6 +14,41 @@
   cursor: pointer;
 }
 
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3vh;
+}
+
+/* A game's demo fills the screen; the text sits on a paper card in front of it. */
+.demo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.overDemo {
+  padding: 3vh 4vw;
+  border: var(--border);
+  border-radius: 24px;
+  background: rgb(251 248 240 / 88%);
+  box-shadow: var(--shadow);
+}
+
+.overDemo .compass {
+  width: min(12vh, 24vw);
+}
+
+.overDemo .title {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+}
+
+.overDemo .invite {
+  font-size: clamp(1.3rem, 3vw, 2.3rem);
+}
+
 .compass {
   width: min(22vh, 40vw);
   animation: turn 24s linear infinite;
