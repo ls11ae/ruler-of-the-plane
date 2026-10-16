@@ -10,7 +10,7 @@ import { Board } from '../../components/Board'
 import { useBoard } from '../../components/boardContext'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
-import { HowToOverlay } from '../../components/HowToOverlay'
+import { HowToOverlay, type KeyHint } from '../../components/HowToOverlay'
 import { ProgressBar } from '../../components/ProgressBar'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
@@ -33,6 +33,18 @@ import { useMedia } from './useMedia'
 
 /** Pause between the last cutter arriving home and the result, to see the finished lawn. */
 const RESULT_DELAY_MS = 900
+
+/** The keys shown in "So geht's" (none on a phone: it has the direction pad). */
+function howToKeys(t: LawnTexts, cutters: number, phone: boolean): KeyHint[] | undefined {
+  if (phone) return undefined
+  return [
+    { codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD'], label: t.howToKeys.one },
+    ...(cutters > 1
+      ? [{ codes: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], label: t.howToKeys.two }]
+      : []),
+    { codes: ['Space'], label: t.howToKeys.home },
+  ]
+}
 
 /** Reports the board's rotation (keys and the pad mean screen directions). */
 function RotationProbe({ onChange }: { onChange: (rotation: 0 | 90) => void }) {
@@ -272,20 +284,7 @@ function Round({
       {overlay === 'howto' && (
         <HowToOverlay
           animation={<HowToAnimation label={t.howToAnimation} />}
-          keys={
-            phone
-              ? undefined
-              : k === 1
-                ? [
-                    { codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD'], label: t.howToKeys.one },
-                    { codes: ['Space'], label: t.howToKeys.home },
-                  ]
-                : [
-                    { codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD'], label: t.howToKeys.one },
-                    { codes: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], label: t.howToKeys.two },
-                    { codes: ['Space'], label: t.howToKeys.home },
-                  ]
-          }
+          keys={howToKeys(t, k, phone)}
           onClose={() => {
             prefs.setSeenHowTo()
             setOverlay(null)
@@ -360,6 +359,7 @@ export default function LawnMowingGame() {
       {overlay === 'howto' && (
         <HowToOverlay
           animation={<HowToAnimation label={t.howToAnimation} />}
+          keys={howToKeys(t, 2, phone)}
           onClose={() => {
             prefs.setSeenHowTo()
             setOverlay('setup')

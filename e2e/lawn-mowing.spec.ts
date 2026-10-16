@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page, type TestInfo } from '@playwright/test'
 import { freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -62,10 +62,11 @@ async function screenDir(page: Page, d: Dir): Promise<Dir> {
   return ({ left: 'up', right: 'down', down: 'left', up: 'right' } as const)[d]
 }
 
-async function startGame(page: Page, players: 1 | 2) {
+async function startGame(page: Page, players: 1 | 2, testInfo: TestInfo) {
   await page.goto('./#/play/lawn-mowing')
   const howTo = page.getByRole('dialog', { name: "So geht's" })
   await expect(howTo).toBeVisible()
+  await shot(page, testInfo, 'lawn-mowing-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
   await expect(setup).toBeVisible()
@@ -75,7 +76,7 @@ async function startGame(page: Page, players: 1 | 2) {
 
 test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMobile }, testInfo) => {
   test.skip(isMobile, 'phones play with one mower and the direction pad')
-  const setup = await startGame(page, 2)
+  const setup = await startGame(page, 2, testInfo)
   await shot(page, testInfo, 'lawn-mowing-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('steps-2')).toBeVisible()
@@ -114,7 +115,7 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMob
 
 test('one player mows a lawn with the direction pad', async ({ page, isMobile }, testInfo) => {
   test.skip(!isMobile, 'the direction pad is for phones')
-  const setup = await startGame(page, 1)
+  const setup = await startGame(page, 1, testInfo)
   await expect(setup.getByText('Auf dem Handy mähst du mit einem Mäher.')).toBeVisible()
   await shot(page, testInfo, 'lawn-mowing-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
