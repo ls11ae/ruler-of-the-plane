@@ -49,6 +49,11 @@
       "convex-hull/hullLevel1",
       "convex-hull/hullLevel2",
       "convex-hull/hullLevel3"
+    ],
+    "voronoi": [
+      "voronoi/map1-island",
+      "voronoi/map2-river-valley",
+      "voronoi/map3-lake-district"
     ]
   }
 }

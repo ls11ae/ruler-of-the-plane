@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { COLLECTIONS, LEVEL_FORMAT_VERSION, type Level, type LevelIndex } from '../../src/core/levels/schema'
-import { convertLevel, FOLDERS } from './convert'
+import { convertLevel, FOLDERS, NEW_FOLDERS } from './convert'
 
 /** JSON with two-space indentation, but number pairs (points) and bounds on one line. */
 export function formatJson(value: unknown): string {
@@ -15,13 +15,30 @@ export function formatJson(value: unknown): string {
   )
 }
 
-/** Converts every level below `legacyDir`; returns the levels in Unity order per collection. */
-export function convertAll(legacyDir: string): Level[] {
+/**
+ * Converts every level below `legacyDir` (Unity levels) and `levelsDir` (new levels); returns the levels
+ * in order per collection (Unity order, or the number in the file name).
+ */
+export function convertAll(legacyDir: string, levelsDir: string): Level[] {
   const levels: Level[] = []
-  for (const [folder, collection] of Object.entries(FOLDERS)) {
-    const dir = join(legacyDir, folder)
+  const folders = [
+    ...Object.entries(FOLDERS).map(([folder, collection]) => ({
+      folder,
+      collection,
+      root: legacyDir,
+      fresh: false,
+    })),
+    ...Object.entries(NEW_FOLDERS).map(([folder, collection]) => ({
+      folder,
+      collection,
+      root: levelsDir,
+      fresh: true,
+    })),
+  ]
+  for (const { folder, collection, root, fresh } of folders) {
+    const dir = join(root, folder)
     const files = readdirSync(dir).filter((f) => f.endsWith('.ipe') || f.endsWith('.asset'))
-    const converted = files.map((f) => convertLevel(folder, f, readFileSync(join(dir, f), 'utf8')))
+    const converted = files.map((f) => convertLevel(folder, f, readFileSync(join(dir, f), 'utf8'), fresh))
     converted.sort((a, b) => a.number - b.number)
     for (let i = 1; i < converted.length; i++) {
       if (converted[i]!.number === converted[i - 1]!.number) {

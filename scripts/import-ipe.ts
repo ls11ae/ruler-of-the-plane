@@ -1,6 +1,6 @@
 /**
  * `npm run levels`: converts the Unity levels in `legacy/levels/` (IPE files and five Unity `.asset`
- * files) to JSON in `public/levels/`. The output is committed; a test checks that it matches a fresh
+ * files) and the new levels in `levels/` (IPE maps of "Erobere das Land") to JSON in `public/levels/`. The output is committed; a test checks that it matches a fresh
  * import. Format: `src/core/levels/schema.ts`; rules: `docs/legacy-unity-notes.md`.
  */
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
@@ -10,6 +10,7 @@ import { convertAll, levelFiles } from './levels/import'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const legacyDir = join(root, 'legacy', 'levels')
+const levelsDir = join(root, 'levels')
 const outDir = join(root, 'public', 'levels')
 
 function listJson(dir: string): string[] {
@@ -18,7 +19,7 @@ function listJson(dir: string): string[] {
     .map((e) => relative(dir, join(e.parentPath, e.name)).split('\\').join('/'))
 }
 
-const files = levelFiles(convertAll(legacyDir))
+const files = levelFiles(convertAll(legacyDir, levelsDir))
 mkdirSync(outDir, { recursive: true })
 for (const stale of listJson(outDir).filter((f) => !files.has(f))) {
   rmSync(join(outDir, stale))

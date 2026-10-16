@@ -1,0 +1,625 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70218" creator="Ipe 7.2.18">
+<info created="D:20261016120000" modified="D:20261016120000" title="Seenplatte"/>
+<ipestyle name="basic">
+<symbol name="arrow/arc(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/farc(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/ptarc(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fptarc(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+0.5 0 0 0.5 0 0 e
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+</path>
+</symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+-0.43 -0.57 m
+0.57 0.43 l
+0.43 0.57 l
+-0.57 -0.43 l
+h
+</path>
+<path fill="sym-stroke">
+-0.43 0.57 m
+0.57 -0.43 l
+0.43 -0.57 l
+-0.57 0.43 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="arrow/fnormal(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/pointed(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fpointed(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/linear(spx)">
+<path stroke="sym-stroke" pen="sym-pen">
+-1 0.333 m
+0 0 l
+-1 -0.333 l
+</path>
+</symbol>
+<symbol name="arrow/fdouble(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/double(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.2"/>
+<pen name="ultrafat" value="2"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<color name="red" value="1 0 0"/>
+<color name="green" value="0 1 0"/>
+<color name="blue" value="0 0 1"/>
+<color name="yellow" value="1 1 0"/>
+<color name="orange" value="1 0.647 0"/>
+<color name="gold" value="1 0.843 0"/>
+<color name="purple" value="0.627 0.125 0.941"/>
+<color name="gray" value="0.745"/>
+<color name="brown" value="0.647 0.165 0.165"/>
+<color name="navy" value="0 0 0.502"/>
+<color name="pink" value="1 0.753 0.796"/>
+<color name="seagreen" value="0.18 0.545 0.341"/>
+<color name="turquoise" value="0.251 0.878 0.816"/>
+<color name="violet" value="0.933 0.51 0.933"/>
+<color name="darkblue" value="0 0 0.545"/>
+<color name="darkcyan" value="0 0.545 0.545"/>
+<color name="darkgray" value="0.663"/>
+<color name="darkgreen" value="0 0.392 0"/>
+<color name="darkmagenta" value="0.545 0 0.545"/>
+<color name="darkorange" value="1 0.549 0"/>
+<color name="darkred" value="0.545 0 0"/>
+<color name="lightblue" value="0.678 0.847 0.902"/>
+<color name="lightcyan" value="0.878 1 1"/>
+<color name="lightgray" value="0.827"/>
+<color name="lightgreen" value="0.565 0.933 0.565"/>
+<color name="lightyellow" value="1 1 0.878"/>
+<dashstyle name="dashed" value="[4] 0"/>
+<dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
+<dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
+<textsize name="large" value="\large"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
+<gridsize name="4 pts" value="4"/>
+<gridsize name="8 pts (~3 mm)" value="8"/>
+<gridsize name="16 pts (~6 mm)" value="16"/>
+<gridsize name="32 pts (~12 mm)" value="32"/>
+<gridsize name="10 pts (~3.5 mm)" value="10"/>
+<gridsize name="20 pts (~7 mm)" value="20"/>
+<gridsize name="14 pts (~5 mm)" value="14"/>
+<gridsize name="28 pts (~10 mm)" value="28"/>
+<gridsize name="56 pts (~20 mm)" value="56"/>
+<anglesize name="90 deg" value="90"/>
+<anglesize name="60 deg" value="60"/>
+<anglesize name="45 deg" value="45"/>
+<anglesize name="30 deg" value="30"/>
+<anglesize name="22.5 deg" value="22.5"/>
+<opacity name="10%" value="0.1"/>
+<opacity name="30%" value="0.3"/>
+<opacity name="50%" value="0.5"/>
+<opacity name="75%" value="0.75"/>
+<tiling name="falling" angle="-60" step="4" width="1"/>
+<tiling name="rising" angle="30" step="4" width="1"/>
+</ipestyle>
+<page>
+<layer name="frame"/>
+<layer name="land"/>
+<layer name="water"/>
+<layer name="places"/>
+<view layers="frame land water places" active="places"/>
+<path layer="frame" stroke="black">
+0.000 400.000 m
+640.000 400.000 l
+640.000 0.000 l
+0.000 0.000 l
+h
+</path>
+<path layer="land" stroke="black">
+-24.000 424.000 m
+664.000 424.000 l
+664.000 184.000 l
+640.000 170.247 l
+637.942 168.069 l
+635.722 165.655 l
+633.183 163.201 l
+630.189 160.777 l
+626.624 158.429 l
+622.403 156.186 l
+617.475 154.070 l
+611.824 152.097 l
+605.474 150.274 l
+598.482 148.606 l
+590.940 147.089 l
+582.969 145.717 l
+574.710 144.479 l
+566.319 143.359 l
+557.962 142.340 l
+549.800 141.398 l
+541.984 140.510 l
+534.649 139.650 l
+527.905 138.789 l
+521.830 137.899 l
+516.467 136.950 l
+511.826 135.915 l
+507.876 134.764 l
+504.551 133.471 l
+501.754 132.012 l
+499.360 130.364 l
+497.224 128.508 l
+495.186 126.427 l
+493.082 124.109 l
+490.752 121.545 l
+488.047 118.731 l
+484.837 115.664 l
+481.018 112.350 l
+476.518 108.795 l
+471.301 105.010 l
+465.366 101.011 l
+458.750 96.817 l
+451.525 92.449 l
+443.796 87.931 l
+435.691 83.291 l
+427.360 78.558 l
+418.963 73.760 l
+410.665 68.930 l
+402.624 64.097 l
+394.986 59.292 l
+387.876 54.546 l
+381.391 49.885 l
+375.598 45.336 l
+370.525 40.923 l
+366.166 36.665 l
+362.475 32.581 l
+359.375 28.684 l
+356.756 24.984 l
+354.484 21.487 l
+352.406 18.194 l
+350.362 15.103 l
+348.186 12.207 l
+345.723 9.496 l
+342.830 6.956 l
+339.387 4.567 l
+335.302 2.310 l
+330.518 0.160 l
+325.012 -1.908 l
+318.798 -3.924 l
+311.928 -5.915 l
+304.487 -7.913 l
+296.591 -9.948 l
+288.377 -12.050 l
+280.000 -14.247 l
+-24.000 -24.000 l
+h
+</path>
+<path layer="water" stroke="black">
+139.165 297.750 m
+137.209 293.609 l
+133.700 290.342 l
+129.234 287.901 l
+124.332 286.060 l
+119.218 284.632 l
+113.851 283.641 l
+108.146 283.320 l
+102.175 283.924 l
+96.203 285.512 l
+90.522 287.848 l
+85.222 290.507 l
+80.088 293.128 l
+74.752 295.636 l
+69.001 298.287 l
+63.059 301.488 l
+57.615 305.514 l
+53.558 310.295 l
+51.535 315.423 l
+51.622 320.369 l
+53.288 324.765 l
+55.689 328.570 l
+58.112 332.019 l
+60.306 335.394 l
+62.512 338.792 l
+65.212 342.031 l
+68.778 344.767 l
+73.262 346.720 l
+78.431 347.848 l
+83.981 348.338 l
+89.757 348.430 l
+95.786 348.192 l
+102.115 347.426 l
+108.587 345.771 l
+114.750 342.952 l
+120.006 339.006 l
+123.925 334.321 l
+126.535 329.452 l
+128.352 324.838 l
+130.115 320.586 l
+132.353 316.472 l
+135.057 312.155 l
+137.641 307.454 l
+139.243 302.515 l
+h
+</path>
+<path layer="water" stroke="black">
+278.523 324.000 m
+277.880 319.893 l
+275.610 316.090 l
+272.090 312.850 l
+267.836 310.250 l
+263.305 308.183 l
+258.739 306.449 l
+254.123 304.879 l
+249.272 303.443 l
+244.000 302.299 l
+238.290 301.735 l
+232.383 302.056 l
+226.739 303.445 l
+221.887 305.882 l
+218.232 309.135 l
+215.910 312.850 l
+214.761 316.684 l
+214.423 320.415 l
+214.523 324.000 l
+214.852 327.533 l
+215.469 331.139 l
+216.664 334.850 l
+218.809 338.532 l
+222.166 341.889 l
+226.739 344.555 l
+232.234 346.225 l
+238.159 346.775 l
+244.000 346.299 l
+249.403 345.067 l
+254.272 343.402 l
+258.739 341.551 l
+263.025 339.588 l
+267.258 337.417 l
+271.336 334.850 l
+274.901 331.732 l
+277.451 328.055 l
+h
+</path>
+<path layer="water" stroke="black">
+490.010 320.855 m
+490.864 317.739 l
+489.808 314.216 l
+486.844 310.471 l
+482.265 306.722 l
+476.593 303.159 l
+470.424 299.877 l
+464.260 296.857 l
+458.365 293.980 l
+452.705 291.083 l
+446.998 288.034 l
+440.851 284.810 l
+433.935 281.525 l
+426.147 278.429 l
+417.686 275.840 l
+409.019 274.061 l
+400.755 273.291 l
+393.461 273.564 l
+387.490 274.741 l
+382.880 276.552 l
+379.364 278.680 l
+376.480 280.851 l
+373.750 282.909 l
+370.858 284.843 l
+367.770 286.770 l
+364.757 288.873 l
+362.309 291.323 l
+360.983 294.217 l
+361.233 297.537 l
+363.276 301.163 l
+367.049 304.911 l
+372.253 308.596 l
+378.462 312.079 l
+385.256 315.297 l
+392.332 318.251 l
+399.540 320.980 l
+406.865 323.514 l
+414.346 325.839 l
+421.994 327.889 l
+429.732 329.563 l
+437.392 330.762 l
+444.761 331.427 l
+451.661 331.568 l
+458.009 331.255 l
+463.842 330.595 l
+469.279 329.685 l
+474.439 328.571 l
+479.333 327.225 l
+483.805 325.559 l
+487.513 323.462 l
+h
+</path>
+<path layer="water" stroke="black">
+225.816 167.524 m
+225.429 160.259 l
+223.099 153.447 l
+219.006 147.822 l
+213.902 143.622 l
+208.650 140.448 l
+203.740 137.591 l
+199.142 134.588 l
+194.526 131.585 l
+189.639 129.228 l
+184.534 128.157 l
+179.470 128.489 l
+174.616 129.708 l
+169.852 131.049 l
+164.855 132.091 l
+159.449 133.120 l
+153.916 134.971 l
+148.994 138.465 l
+145.512 143.840 l
+143.885 150.595 l
+143.849 157.822 l
+144.627 164.774 l
+145.431 171.224 l
+145.952 177.404 l
+146.484 183.605 l
+147.629 189.819 l
+149.810 195.721 l
+152.961 200.985 l
+156.620 205.647 l
+160.313 210.163 l
+163.929 215.053 l
+167.770 220.385 l
+172.268 225.505 l
+177.577 229.276 l
+183.389 230.712 l
+189.109 229.583 l
+194.248 226.556 l
+198.724 222.778 l
+202.829 219.184 l
+206.906 216.008 l
+210.991 212.810 l
+214.732 208.952 l
+217.656 204.122 l
+219.569 198.526 l
+220.764 192.645 l
+221.835 186.788 l
+223.216 180.856 l
+224.780 174.495 l
+h
+</path>
+<path layer="water" stroke="black">
+380.998 160.000 m
+381.561 155.900 l
+380.667 151.760 l
+378.198 148.038 l
+374.424 145.142 l
+369.884 143.243 l
+365.131 142.222 l
+360.497 141.770 l
+356.000 141.592 l
+351.461 141.596 l
+346.729 141.949 l
+341.900 142.982 l
+337.378 144.982 l
+333.738 148.004 l
+331.473 151.807 l
+330.762 155.952 l
+331.398 160.000 l
+332.914 163.703 l
+334.843 167.067 l
+336.957 170.261 l
+339.352 173.426 l
+342.328 176.501 l
+346.150 179.177 l
+350.820 181.001 l
+356.000 181.592 l
+361.137 180.827 l
+365.710 178.904 l
+369.456 176.241 l
+372.450 173.266 l
+374.978 170.227 l
+377.297 167.114 l
+379.409 163.755 l
+h
+</path>
+<path layer="water" stroke="black">
+119.943 75.118 m
+121.522 70.944 l
+120.848 66.286 l
+118.125 61.696 l
+114.161 57.570 l
+109.869 53.925 l
+105.730 50.465 l
+101.600 46.897 l
+96.959 43.265 l
+91.412 40.038 l
+85.082 37.888 l
+78.593 37.291 l
+72.683 38.225 l
+67.728 40.185 l
+63.535 42.501 l
+59.570 44.748 l
+55.450 46.962 l
+51.358 49.540 l
+48.057 52.882 l
+46.478 57.056 l
+47.152 61.714 l
+49.875 66.304 l
+53.839 70.430 l
+58.131 74.075 l
+62.270 77.535 l
+66.400 81.103 l
+71.041 84.735 l
+76.588 87.962 l
+82.918 90.112 l
+89.407 90.709 l
+95.317 89.775 l
+100.272 87.815 l
+104.465 85.499 l
+108.430 83.252 l
+112.550 81.038 l
+116.642 78.460 l
+h
+</path>
+<use layer="places" name="mark/square(sx)" pos="312.000 248.000" size="large" stroke="black"/>
+<use layer="places" name="mark/square(sx)" pos="64.000 220.000" size="large" stroke="black"/>
+<use layer="places" name="mark/square(sx)" pos="528.000 328.000" size="large" stroke="black"/>
+<use layer="places" name="mark/square(sx)" pos="216.000 64.000" size="large" stroke="black"/>
+<use layer="places" name="mark/square(sx)" pos="424.000 200.000" size="large" stroke="black"/>
+<use layer="places" name="mark/cross(sx)" pos="300.000 44.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="160.000 264.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="332.000 356.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="584.000 256.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="268.000 124.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="48.000 136.000" size="large" stroke="black"/>
+<use layer="places" name="mark/disk(sx)" pos="476.000 232.000" size="large" stroke="black"/>
+<use layer="places" name="mark/circle(sx)" pos="40.000 368.000" size="large" stroke="black"/>
+<use layer="places" name="mark/circle(sx)" pos="496.000 372.000" size="large" stroke="black"/>
+<use layer="places" name="mark/circle(sx)" pos="136.000 28.000" size="large" stroke="black"/>
+<use layer="places" name="mark/circle(sx)" pos="384.000 96.000" size="large" stroke="black"/>
+</page>
+</ipe>

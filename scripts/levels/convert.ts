@@ -12,6 +12,7 @@ import {
 import { readIpePage, type IpePage } from './ipe'
 import { parseNumber } from './numbers'
 import { readUnityAsset, type UnityAsset } from './unity-asset'
+import { convertVoronoiMap } from './voronoi'
 
 /** Legacy folder (below `legacy/levels/`) → collection. */
 export const FOLDERS: Record<string, Collection> = {
@@ -23,6 +24,11 @@ export const FOLDERS: Record<string, Collection> = {
   ConvexHull: 'convex-hull',
 }
 
+/** Folder below `levels/` (new level sources, made for this edition) → collection. */
+export const NEW_FOLDERS: Record<string, Collection> = {
+  voronoi: 'voronoi',
+}
+
 const NAME_PATTERNS: Record<Collection, RegExp> = {
   'art-gallery': /^agLevel(\d+)_(\d+)$/,
   'kings-taxes/mst': /^ktLevel(\d+)$/,
@@ -30,6 +36,7 @@ const NAME_PATTERNS: Record<Collection, RegExp> = {
   'kings-taxes/tsp': /^ktLevel(\d+)$/,
   divide: /^divLevel(\d+)_(\d+)$/,
   'convex-hull': /^hullLevel(\d+)$/,
+  voronoi: /^map(\d+)-[a-z-]+$/,
 }
 
 /** Splits a level file name into the level number and the optional parameter after `_`. */
@@ -185,6 +192,11 @@ function fromIpe(src: Source, xml: string, param: number | undefined): Level {
       const { points = [] } = markersOf(page, { disk: 'points' }, src)
       return convexHull(src, points.map(normaliser(points, LEVEL_SIZE['convex-hull'])))
     }
+    case 'voronoi':
+      return convertVoronoiMap(
+        { id: `${src.collection}/${src.name}`, name: src.name, number: 0, source: src.source },
+        page,
+      )
   }
 }
 
@@ -209,16 +221,20 @@ function fromUnityAsset(src: Source, asset: UnityAsset): Level {
 }
 
 /**
- * Converts one legacy level file. `folder` is the folder below `legacy/levels/` (e.g. `KingsTaxes/MST`),
- * `fileName` includes the extension (`.ipe` or `.asset`).
+ * Converts one level file. `folder` is the folder below `legacy/levels/` (e.g. `KingsTaxes/MST`) or, with
+ * `fresh`, below `levels/` (e.g. `voronoi`); `fileName` includes the extension (`.ipe` or `.asset`).
  */
-export function convertLevel(folder: string, fileName: string, content: string): Level {
-  const collection = FOLDERS[folder]
+export function convertLevel(folder: string, fileName: string, content: string, fresh = false): Level {
+  const collection = (fresh ? NEW_FOLDERS : FOLDERS)[folder]
   if (!collection) throw new Error(`unknown level folder "${folder}"`)
   const ext = /\.(ipe|asset)$/.exec(fileName)?.[1]
   if (!ext) throw new Error(`unsupported level file "${fileName}"`)
   const name = fileName.slice(0, -(ext.length + 1))
-  const src: Source = { collection, name, source: `legacy/levels/${folder}/${fileName}` }
+  const src: Source = {
+    collection,
+    name,
+    source: `${fresh ? 'levels' : 'legacy/levels'}/${folder}/${fileName}`,
+  }
   const { number, param } = parseLevelName(collection, name)
   try {
     const level = ext === 'ipe' ? fromIpe(src, content, param) : fromUnityAsset(src, readUnityAsset(content))
