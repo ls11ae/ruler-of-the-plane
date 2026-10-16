@@ -1,7 +1,8 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  container-type: inline-size;
 }
 
 .panel h3 {
@@ -19,7 +20,7 @@
 .list li {
   display: flex;
   gap: 10px;
-  padding: 3px 6px;
+  padding: 1px 6px;
   break-inside: avoid;
   border-radius: 6px;
 }
@@ -42,15 +43,53 @@
 .names {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .empty {
   color: var(--ink-soft);
 }
 
-@media (max-width: 600px) {
+/* Two columns only where a name and a score fit side by side twice. */
+@container (max-width: 560px) {
   .list {
     columns: 1;
   }
+}
+
+.pickRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 14px;
+}
+
+.lucky {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.luckyInput {
+  width: 3.2em;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--card);
+  text-align: center;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.luckyInput::placeholder {
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}
+
+.page {
+  margin-left: 0.4em;
+  color: var(--ink-soft);
+  font-size: 0.85em;
 }

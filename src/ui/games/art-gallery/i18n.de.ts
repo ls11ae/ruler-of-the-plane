@@ -2,8 +2,8 @@
 export const de = {
   title: 'Licht ins Verlies',
   subtitle: (i: number, n: number, k: number, expert: boolean) =>
-    `${expert ? 'Profi-Verlies' : 'Verlies'} ${i} von ${n} · ${k} Fackeln erlaubt`,
-  torches: (n: number, k: number) => `Fackeln: ${n} von ${k}`,
+    `${expert ? 'Profi-Verlies' : 'Verlies'} ${i} von ${n} · Ziel: ${k} ${k === 1 ? 'Fackel' : 'Fackeln'}`,
+  torches: (n: number) => `Fackeln: ${n}`,
   lit: 'beleuchtet',
   litLabel: 'Beleuchteter Anteil des Verlieses',
   levels: 'Verliese',
@@ -11,7 +11,7 @@ export const de = {
   hintMouse: 'Klick: Fackel aufstellen · Ziehen: verschieben · Aus dem Verlies ziehen: wegnehmen',
   hintTouch: 'Tippen: Fackel aufstellen · Ziehen: verschieben · Auf den Eimer ziehen: wegnehmen',
   trash: 'Hierher ziehen: Fackel wegnehmen',
-  board: (k: number) => `Verlies, ${k} Fackeln erlaubt`,
+  board: (k: number) => `Verlies, Ziel: ${k} ${k === 1 ? 'Fackel' : 'Fackeln'}`,
   howTo: (k: number) => [
     'Stell Fackeln ins Verlies, bis alles hell ist.',
     'Jede Fackel leuchtet so weit, wie sie sehen kann: Wände und Säulen werfen Schatten.',

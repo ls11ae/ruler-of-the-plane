@@ -120,27 +120,36 @@ lighting takes at most 10 ms per drag frame on the largest level with 17 torches
 Acceptance: an AI move takes under 200 ms on a booth laptop; "Schwer" beats "Leicht" in at least 70 % of
 AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area.
 
-## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct)
+## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct) — done 2026-10-16 (booth key test open)
 
-- Two paths through the castle park; owner and dog each move only forward along their own path while
-  their key is held (owner `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
+- Two paths through the castle park; person and dog each move only forward along their own path while
+  their key is held (person `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
   speed. The leash is drawn and turns orange-red when nearly taut; exceeding the length limit L fails the
-  level; levels lower L towards the Fréchet distance.
-- On-screen controls for phones: two large hold buttons, "Herrchen" (left) and "Hund" (right), which act
-  like the keys while pressed (multi-touch: both at once); a phone smoke test plays a level with them.
-- Solo mode "Schätz die Leine": pick a length with a slider; the computer shows whether a walk exists.
+  level; levels lower L towards the Fréchet distance. — done 2026-10-16 (six walks, leash from 1.6 down
+  to 1.08 times the Fréchet distance; a dead end is shown at once, and a hint says who should walk).
+- On-screen controls for phones: two large hold buttons, "Mensch" (left) and "Hund" (right), which act
+  like the keys while pressed (multi-touch: both at once); a phone smoke test plays a level with them. —
+  done 2026-10-16
+- Solo mode "Schätz die Leine": pick a length with a slider; the computer shows whether a walk exists. —
+  done 2026-10-16 (it walks the walk, or walks until the leash gets too taut)
 - Theory view (panel beside the park, as in `docs/look/gassi-gehen.webp`): free-space diagram
-  (x = owner's position, y = dog's position, light = leash long enough) with an ε slider; the player's
+  (x = person's position, y = dog's position, light = leash long enough) with an ε slider; the player's
   walk and the optimal monotone walk drawn as curves; hovering a point of the diagram shows the matching
-  positions and leash on the map; critical values marked; a sandbox to draw one's own paths.
-- Look: park from the Cartography Pack, the owner's path as a footpath (walked part darker), the dog's
-  trail dotted (walked part solid), owner = green Scribble token, dog = `animal-pack-remastered`
-  `dog.png`.
+  positions and leash on the map; critical values marked; a sandbox to draw one's own paths. — done
+  2026-10-16 (critical values where a passage opens at a corner as ticks on the slider, with buttons to
+  step through them; the narrowest spot of the computer's walk marked)
+- Look: park from the Cartography Pack, the person's path as a footpath (walked part darker), the dog's
+  trail dotted (walked part solid), person = green Scribble token, dog = `animal-pack-remastered`
+  `dog.png`. — done 2026-10-16
 - Core: Fréchet decision and distance for polylines with up to 20 segments, property-tested against the
-  discrete Fréchet distance on densely sampled curves.
+  discrete Fréchet distance on densely sampled curves. — done 2026-10-16
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
+Status: decisions and distances agree with the discrete Fréchet distance on random curves (and on ties);
+every walk can be finished at 60 frames per second by following the hint (unit test); the smoke test
+walks the first walk with the keys (laptop) and with both hold buttons at once (phone). Open: A + L on
+the booth laptops' keyboards (key test in the staff menu).
 
 ## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
 
@@ -164,13 +173,18 @@ Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test 
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
 laptop keyboard; one player can mow a lawn on a phone with the direction pad.
 
-## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct)
+## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct) — done 2026-10-16
 
 - Drag between villages to build a road, click a road to remove it; live total length and "+x % über dem
-  Optimum". Unity MST levels plus random ones. Explanation: Kruskal animation.
-- Look: villages from the Cartography Pack, roads as dashed ink lines (see the start map).
+  Optimum". Unity MST levels plus random ones. Explanation: Kruskal animation. — done 2026-10-16 (also
+  two taps to build on phones; the four Unity MST maps, then the larger Unity spanner and TSP point sets,
+  then random villages; hints; a theory panel that runs Kruskal step by step on the map)
+- Look: villages from the Cartography Pack, roads as dashed ink lines (see the start map). — done
+  2026-10-16
 
-Acceptance: the MST check accepts every optimal tree.
+Acceptance: the MST check accepts every optimal tree. Status: checked by brute force on a grid with many
+equal lengths (every optimal spanning tree accepted, every longer one rejected); Kruskal against brute
+force for up to 8 villages; following the hints from a random tangle of roads always ends optimal.
 
 ## Phase 6: playtest and polish (target 4 Nov)
 

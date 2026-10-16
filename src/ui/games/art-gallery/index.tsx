@@ -53,7 +53,7 @@ function TorchDots({ count, k, t }: { count: number; k: number; t: ArtGalleryTex
   const slots = Math.max(count, k)
   return (
     <span className={styles.torchCount}>
-      <span>{t.torches(count, k)}</span>
+      <span>{t.torches(count)}</span>
       <span className={styles.dots} aria-hidden="true">
         {Array.from({ length: Math.min(slots, 20) }, (_, i) => (
           <span

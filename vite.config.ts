@@ -26,10 +26,11 @@ export default defineConfig({
   plugins: [
     react(),
     // Offline after the first visit (booth laptops, phones): a service worker precaches the app,
-    // fonts, art and all level JSON. New versions activate on the next load.
+    // fonts, art and all level JSON. A new version installs in the background and waits until the app
+    // activates it and reloads, on the start map or the attract screen (src/main.tsx, shell/update.ts).
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'script-defer',
+      registerType: 'prompt',
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
       manifest: {
         name: 'Ruler of the Plane',
@@ -53,8 +54,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webp,ttf,woff2,json}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         cleanupOutdatedCaches: true,
+        // The first install controls the open page at once (offline right away); later versions wait.
         clientsClaim: true,
-        skipWaiting: true,
+        skipWaiting: false,
         navigateFallback: 'index.html',
       },
     }),

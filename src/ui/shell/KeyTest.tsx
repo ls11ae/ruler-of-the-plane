@@ -47,7 +47,7 @@ function useLayoutLabels(): Map<string, string> {
 function Check() {
   return (
     <svg viewBox="0 0 20 20" className={styles.check} aria-hidden="true">
-      <path d="M3 11l5 5 9-12" fill="none" stroke="var(--owner)" strokeWidth="3" strokeLinecap="round" />
+      <path d="M3 11l5 5 9-12" fill="none" stroke="var(--person)" strokeWidth="3" strokeLinecap="round" />
     </svg>
   )
 }
