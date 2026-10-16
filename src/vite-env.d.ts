@@ -10,3 +10,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
+
+/** Version and commit of the build (set in vite.config.ts), shown in the staff menu. */
+declare const __APP_VERSION__: string
+/** Build time (UTC, minutes). */
+declare const __BUILD_TIME__: string

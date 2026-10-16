@@ -1,0 +1,74 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 24px;
+  text-align: center;
+  background: var(--parchment) url('../../../assets/kenney/cartography-pack/textures/parchmentFolded.png')
+    center / cover;
+  cursor: pointer;
+}
+
+.compass {
+  width: min(22vh, 40vw);
+  animation: turn 24s linear infinite;
+}
+
+.title {
+  font-size: clamp(2.5rem, 9vw, 6.5rem);
+}
+
+.invite {
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 4vw, 3rem);
+}
+
+.teaser {
+  min-height: 2.6em;
+  font-size: clamp(1.2rem, 2.6vw, 2rem);
+  animation: fadein 600ms ease-out;
+}
+
+.teaser strong {
+  font-family: var(--font-title);
+  font-weight: normal;
+}
+
+.prompt {
+  padding: 0.4em 1.2em;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.versus {
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  color: var(--ink-soft);
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
