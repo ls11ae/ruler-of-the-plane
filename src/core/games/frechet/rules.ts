@@ -126,34 +126,36 @@ export const stillPossible = (course: Course, state: WalkState) =>
 export type Advice = 'person' | 'dog' | 'both' | null
 
 /**
- * Who should walk now, for the hint when the leash is nearly taut: both if they can, else the person
- * alone or the dog alone; null if no short move keeps the walk possible (a dead end).
+ * Who should walk now, for the hint when the leash is nearly taut: while it is slack both walk if they
+ * can; once it is nearly taut, the one whose step shortens the leash most (the one behind). A move
+ * counts only if it keeps within the leash and the walk can still be finished. Null at a dead end.
  */
 export function advice(course: Course, state: WalkState): Advice {
-  const step = 0.4
-  const ok = (ds: number, dt: number) => {
+  const ahead = 0.4
+  const leash = leashAt(course, state.s, state.t)
+  const moves = (
+    [
+      ['both', ahead, ahead],
+      ['person', ahead, 0],
+      ['dog', 0, ahead],
+    ] as const
+  ).flatMap(([who, ds, dt]) => {
     const s = Math.min(course.person.length, state.s + ds)
     const t = Math.min(course.dog.length, state.t + dt)
-    if (s === state.s && t === state.t) return false
+    if (s === state.s && t === state.t) return []
     const move: Walk = [
       [state.s, state.t],
       [s, t],
     ]
-    return (
+    const ok =
       walkLeash(course.person, course.dog, move) <= course.leash &&
       canFinish(course.person, course.dog, s, t, course.leash)
-    )
-  }
-  if (ok(step, step)) return 'both'
-  const person = ok(step, 0)
-  const dog = ok(0, step)
-  if (person && dog) {
-    // Either works: the one that shortens the leash.
-    return leashAt(course, state.s + step, state.t) <= leashAt(course, state.s, state.t + step)
-      ? 'person'
-      : 'dog'
-  }
-  return person ? 'person' : dog ? 'dog' : null
+    return ok ? [{ who, after: leashAt(course, s, t) }] : []
+  })
+  if (moves.length === 0) return null
+  if (leash < TAUT_SHARE * course.leash) return moves[0]!.who
+  const single = moves.filter((m) => m.who !== 'both' && m.after < leash).sort((a, b) => a.after - b.after)
+  return (single[0] ?? moves[0]!).who
 }
 
 /** Stars for an arrival: 3 if the longest leash was within 10 % of the shortest possible, 2 within 25 %. */
@@ -161,6 +163,10 @@ export function starsFor(longest: number, shortest: number): number {
   const ratio = longest / Math.max(shortest, 1e-9)
   return ratio <= 1.1 ? 3 : ratio <= 1.25 ? 2 : 1
 }
+
+/** "Schätz die Leine": stars for the shortest guess that worked, compared with the Fréchet distance. */
+export const guessStars = (best: number | null, shortest: number) =>
+  best === null ? 0 : best <= shortest * 1.05 ? 3 : best <= shortest * 1.15 ? 2 : 1
 
 /** Leaderboard score: the longest leash needed, in centimetres (lower is better). */
 export const leaderboardScore = (longest: number) => Math.round(longest * 100)

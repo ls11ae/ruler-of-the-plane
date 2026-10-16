@@ -79,9 +79,11 @@ export function toArcLength(path: Path, x: number): number {
 
 export const distance = (a: Vec2, b: Vec2) => Math.hypot(a[0] - b[0], a[1] - b[1])
 
-/** Douglas–Peucker simplification to at most `maxSegments` segments (for drawn paths). */
-export function simplify(points: readonly Vec2[], maxSegments: number): Vec2[] {
-  if (points.length <= maxSegments + 1) return [...points]
+/**
+ * Douglas–Peucker simplification for drawn paths: at most `maxSegments` segments, and no corner that
+ * deviates less than `tolerance` from the simplified line.
+ */
+export function simplify(points: readonly Vec2[], maxSegments: number, tolerance = 0): Vec2[] {
   // Keep the vertices with the largest deviation, one by one, until the budget is used.
   const keep = new Set([0, points.length - 1])
   while (keep.size < maxSegments + 1) {
@@ -99,7 +101,7 @@ export function simplify(points: readonly Vec2[], maxSegments: number): Vec2[] {
         }
       }
     }
-    if (bestIndex < 0) break
+    if (bestIndex < 0 || best <= tolerance) break
     keep.add(bestIndex)
   }
   return [...keep].sort((a, b) => a - b).map((i) => points[i]!)

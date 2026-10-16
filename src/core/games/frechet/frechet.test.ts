@@ -242,5 +242,8 @@ describe('paths', () => {
     const simple = simplify(drawn, 4)
     expect(simple.length).toBeLessThanOrEqual(5)
     expect(simple).toContainEqual([50, 0])
+    // With a tolerance, a nearly straight wobble becomes one segment.
+    const wobble: Vec2[] = Array.from({ length: 40 }, (_, i) => [i, (i % 2) * 0.1] as const)
+    expect(simplify(wobble, 20, 0.3)).toEqual([wobble[0], wobble[39]])
   })
 })

@@ -7,7 +7,8 @@ import type { Bounds, Vec2 } from '../../geometry/types'
  * and the factors shrink from level to level.
  */
 export interface WalkLevel {
-  id: WalkId
+  /** A walk of the game, or `own` for paths drawn in the sandbox. */
+  id: WalkId | 'own'
   /** The person's path (a footpath). */
   person: Vec2[]
   /** The dog's trail. */
@@ -20,12 +21,17 @@ export interface WalkLevel {
   sniff?: Vec2[]
 }
 
+/** One of the game's walks (the sandbox's drawn paths have the id `own`). */
+export interface GameWalk extends WalkLevel {
+  id: WalkId
+}
+
 export const PARK: Bounds = { minX: 0, minY: 0, maxX: 36, maxY: 22 }
 
 export const WALK_IDS = ['avenue', 'sniffing', 'pond', 'fetch', 'braid', 'expert'] as const
 export type WalkId = (typeof WALK_IDS)[number]
 
-export const WALKS: readonly WalkLevel[] = [
+export const WALKS: readonly GameWalk[] = [
   {
     // Side by side along the avenue; the dog's trail swings a little.
     id: 'avenue',
@@ -192,4 +198,4 @@ export const WALKS: readonly WalkLevel[] = [
   },
 ]
 
-export const walkById = (id: WalkId): WalkLevel => WALKS.find((w) => w.id === id)!
+export const walkById = (id: WalkId): GameWalk => WALKS.find((w) => w.id === id)!
