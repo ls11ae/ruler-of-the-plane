@@ -161,7 +161,7 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Every game playable on a phone in portrait** (Kevin). Visitors open the QR code on their
   phones, so the laptops stay the booth hardware but phones are no longer only a bonus. Pointer games use
   portrait screens well (e.g. a wide board rotated by 90°), with touch targets of at least 44 px; the
-  keyboard games get on-screen controls: two large hold buttons for owner and dog in "Gassi gehen"
+  keyboard games get on-screen controls: two large hold buttons for person and dog in "Gassi gehen"
   (Phase 3), a direction pad for one cutter plus a "Feierabend" button in "Rasenmähen" (Phase 4). Each
   game's Playwright smoke test plays a level in the laptop and the phone project. Alternative: phones
   only for the start map and the explanations. Reason: most visitors who scan the QR code will play at
@@ -222,3 +222,7 @@ subsection below, so their branches do not conflict.
   so a running game cannot lose a chunk. An open page (the booth) checks for a new version every hour.
   Alternatives: keep `skipWaiting` and reload on `controllerchange` (the new worker would already serve
   new files to the old page mid-game); a "new version" button (visitors would not press it).
+- **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
+  called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
+  code uses `person` too, e.g. the colour `--person`). Reason: "Herrchen" is gendered and "owner" says
+  more than the game needs. The mockup `docs/look/gassi-gehen.webp` still shows the old word.

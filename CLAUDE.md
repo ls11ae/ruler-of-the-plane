@@ -128,12 +128,12 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   edges by increasing length, add one when the current graph distance exceeds t times its length.
 - Ham sandwich: two finite point sets can always be bisected by one line; three sets in general cannot
   (that is why the Unity game lets players swap soldiers).
-- Fréchet distance ("Gassi gehen", walking the dog): owner and dog move monotonically along their
+- Fréchet distance ("Gassi gehen", walking the dog): person and dog move monotonically along their
   curves. Decision for a leash length ε via reachability in the free-space diagram (O(nm) cells); the
   distance itself via search over the critical values. A player's joint walk is a monotone curve in the
   diagram, whose axes are the arc lengths along the two paths. The theory view shows the diagram with an
   ε slider, the player's and the optimal walk, the positions belonging to the point under the mouse, and
-  the critical values. Owner and dog walk at the same speed, so holding both keys moves along a fixed
+  the critical values. Person and dog walk at the same speed, so holding both keys moves along a fixed
   slope (path lengths differ) and players must sometimes let one walker wait: that is the lesson.
 - Lawn mowing ("Rasenmähen", CG:SHOP 2027, see `github.com/CG-SHOP/pyutils27`): the lawn is a polyomino
   with holes on the integer grid, the cutter a polyomino with a reference lattice point `cutter_center`

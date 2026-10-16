@@ -51,7 +51,7 @@ export const de = {
     explanation:
       'Hier steht später in drei Sätzen, wie der Computer die Aufgabe löst. Daneben läuft eine Animation. Ein Knopf führt zur Theorie.',
     score: (n: number) => `${n} Marken`,
-    owner: 'Herrchen läuft',
+    person: 'Mensch läuft',
     mower1: 'Mäher 1',
     mower2: 'Mäher 2',
   },

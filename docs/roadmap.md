@@ -122,19 +122,19 @@ AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area
 
 ## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct)
 
-- Two paths through the castle park; owner and dog each move only forward along their own path while
-  their key is held (owner `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
+- Two paths through the castle park; person and dog each move only forward along their own path while
+  their key is held (person `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
   speed. The leash is drawn and turns orange-red when nearly taut; exceeding the length limit L fails the
   level; levels lower L towards the Fréchet distance.
-- On-screen controls for phones: two large hold buttons, "Herrchen" (left) and "Hund" (right), which act
+- On-screen controls for phones: two large hold buttons, "Mensch" (left) and "Hund" (right), which act
   like the keys while pressed (multi-touch: both at once); a phone smoke test plays a level with them.
 - Solo mode "Schätz die Leine": pick a length with a slider; the computer shows whether a walk exists.
 - Theory view (panel beside the park, as in `docs/look/gassi-gehen.webp`): free-space diagram
-  (x = owner's position, y = dog's position, light = leash long enough) with an ε slider; the player's
+  (x = person's position, y = dog's position, light = leash long enough) with an ε slider; the player's
   walk and the optimal monotone walk drawn as curves; hovering a point of the diagram shows the matching
   positions and leash on the map; critical values marked; a sandbox to draw one's own paths.
-- Look: park from the Cartography Pack, the owner's path as a footpath (walked part darker), the dog's
-  trail dotted (walked part solid), owner = green Scribble token, dog = `animal-pack-remastered`
+- Look: park from the Cartography Pack, the person's path as a footpath (walked part darker), the dog's
+  trail dotted (walked part solid), person = green Scribble token, dog = `animal-pack-remastered`
   `dog.png`.
 - Core: Fréchet decision and distance for polylines with up to 20 segments, property-tested against the
   discrete Fréchet distance on densely sampled curves.

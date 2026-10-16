@@ -49,7 +49,7 @@ export const en: ShellTexts = {
     explanation:
       'Later, three sentences here explain how the computer solves the task. Next to them runs an animation. A button leads to the theory.',
     score: (n: number) => `${n} tokens`,
-    owner: 'Owner walks',
+    person: 'Person walks',
     mower1: 'Mower 1',
     mower2: 'Mower 2',
   },
