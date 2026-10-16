@@ -89,8 +89,17 @@ pull request that starts using it.
 
 ### Straßenbau
 
-| File | Source | Author | Licence | Used for | Changes |
-| ---- | ------ | ------ | ------- | -------- | ------- |
+| File                                              | Source           | Author | Licence | Used for                               | Changes |
+| ------------------------------------------------- | ---------------- | ------ | ------- | -------------------------------------- | ------- |
+| `assets/kenney/cartography-pack/house.png`        | Cartography Pack | Kenney | CC0 1.0 | Villages                               | none    |
+| `assets/kenney/cartography-pack/houseSmall.png`   | Cartography Pack | Kenney | CC0 1.0 | Villages                               | none    |
+| `assets/kenney/cartography-pack/houseChimney.png` | Cartography Pack | Kenney | CC0 1.0 | Villages                               | none    |
+| `assets/kenney/cartography-pack/houses.png`       | Cartography Pack | Kenney | CC0 1.0 | Villages                               | none    |
+| `assets/kenney/cartography-pack/houseTall.png`    | Cartography Pack | Kenney | CC0 1.0 | Villages                               | none    |
+| `assets/kenney/cartography-pack/castle.png`       | Cartography Pack | Kenney | CC0 1.0 | Castles (the levels' `square` markers) | none    |
+| `assets/kenney/cartography-pack/treePines.png`    | Cartography Pack | Kenney | CC0 1.0 | Land between the places                | none    |
+| `assets/kenney/cartography-pack/treePine.png`     | Cartography Pack | Kenney | CC0 1.0 | Land between the places                | none    |
+| `assets/kenney/cartography-pack/rocks.png`        | Cartography Pack | Kenney | CC0 1.0 | Land between the places                | none    |
 
 ## Fonts
 

@@ -12,6 +12,11 @@ for (const width of [768, 1024, 1280]) {
     await page.getByRole('button', { name: "Los geht's!" }).click()
     await expectHeaderLaidOut(page)
     await shot(page, testInfo, `header-art-gallery-${width}`)
+    for (const game of ['frechet', 'roads']) {
+      await page.goto(`./#/play/${game}`)
+      await page.getByRole('button', { name: "Los geht's!" }).click()
+      await expectHeaderLaidOut(page)
+    }
     await page.goto('./#/demo')
     await expectHeaderLaidOut(page)
   })
