@@ -168,18 +168,18 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Missing assets (e.g. TU Dortmund / LS 11 logos): use a text placeholder and carry on.
 - Look (decided 2026-10-16, mockup in `docs/look/`): Kenney packs, all CC0, in two ink styles that
   belong together, "the King's sketchbook":
-    - Cartography Pack (`assets/kenney/cartography-pack/`): parchment, castles, towns, mills, forests,
-      mountains, roads, compass. For the start screen (a map of the kingdom with one place per game),
-      "Erobere das Land", "Straßenbau" and the park in "Gassi gehen". Coastlines and lakes of any shape
-      are SVG ink lines; territories are translucent colour washes over the parchment.
-    - Scribble Dungeons (`assets/kenney/scribble-dungeons/`, top-down, 128 px tiles): grid-paper floor,
-      chests, barrels, grass, coloured tokens. For "Licht ins Verlies" (floor as a pattern clipped to the
-      level polygon, walls as sketchy SVG strokes, since the levels are not grid polygons) and
-      "Rasenmähen" (uncut cells with grass, mowed cells striped, cutters as coloured tokens).
-    - Animal Pack Remastered (`assets/kenney/animal-pack-remastered/round-outline/`): `dog.png` (looks like
-      a wolf) is the dog in "Gassi gehen"; other animal heads are optional extras.
-    - Fonts (`assets/fonts/`, OFL): Eagle Lake for titles and place names, Patrick Hand for all other
-      text. Key glyphs are drawn as keycaps (as in the mockup), not taken from a pack.
+  - Cartography Pack (`assets/kenney/cartography-pack/`): parchment, castles, towns, mills, forests,
+    mountains, roads, compass. For the start screen (a map of the kingdom with one place per game),
+    "Erobere das Land", "Straßenbau" and the park in "Gassi gehen". Coastlines and lakes of any shape
+    are SVG ink lines; territories are translucent colour washes over the parchment.
+  - Scribble Dungeons (`assets/kenney/scribble-dungeons/`, top-down, 128 px tiles): grid-paper floor,
+    chests, barrels, grass, coloured tokens. For "Licht ins Verlies" (floor as a pattern clipped to the
+    level polygon, walls as sketchy SVG strokes, since the levels are not grid polygons) and
+    "Rasenmähen" (uncut cells with grass, mowed cells striped, cutters as coloured tokens).
+  - Animal Pack Remastered (`assets/kenney/animal-pack-remastered/round-outline/`): `dog.png` (looks like
+    a wolf) is the dog in "Gassi gehen"; other animal heads are optional extras.
+  - Fonts (`assets/fonts/`, OFL): Eagle Lake for titles and place names, Patrick Hand for all other
+    text. Key glyphs are drawn as keycaps (as in the mockup), not taken from a pack.
 - Style rules: black ink on paper or parchment; colour only for players, light and territories; a slight
   SVG displacement filter makes outlines look hand-drawn. The old TU/e art is not used.
 

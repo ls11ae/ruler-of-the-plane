@@ -28,32 +28,32 @@ pull request that starts using it.
 ### Shared
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ### Licht ins Verlies
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ### Erobere das Land
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ### Gassi gehen
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ### Rasenmähen
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ### Straßenbau
 
 | File | Source | Author | Licence | Used for | Changes |
-| --- | --- | --- | --- | --- | --- |
+| ---- | ------ | ------ | ------- | -------- | ------- |
 
 ## Fonts
 
@@ -69,4 +69,4 @@ Both fonts are licensed under the SIL Open Font License 1.1 and used unmodified.
 Runtime libraries and their licences (add them when they are introduced):
 
 | Library | Licence |
-| --- | --- |
+| ------- | ------- |

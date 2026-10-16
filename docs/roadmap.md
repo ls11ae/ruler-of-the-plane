@@ -43,20 +43,20 @@ If time runs short, drop Phase 5 first; the two research games and the playtest 
   per-file list in `CREDITS.md`. TU Dortmund / LS 11 logos are placeholders until provided.
 - `scripts/import-ipe.ts` (`npm run levels`): convert all levels in `legacy/levels/` to JSON in
   `public/levels/` (rules in `docs/legacy-unity-notes.md`):
-    - read only the paths and markers inside `<page>`; apply each path's and marker's `matrix`
-      correctly (x' = a·x + c·y + e, y' = b·x + d·y + f; 15 of the 32 IPE files use one, on paths or on
-      markers); IPE's y axis points up, so flip y for SVG;
-    - normalise every level the same way (centre it, scale the larger side of the bounding box to a
-      fixed size); the five `.asset` levels were made by hand in Unity units and are not normalised
-      (e.g. `divLevel1_0` spans 3.7 × 2.8, `hullLevel2` 3 × 6);
-    - culture-invariant number parsing; ignore paths with fewer than 3 vertices (`agLevel14_17.ipe` has
-      one with 2);
-    - key Kings Taxes levels by their folder (`MST/`, `TSP/` and `Spanner/` reuse the names `ktLevel1…`);
-    - the five levels stored only as Unity `.asset` YAML (`Divide/divLevel1_0`, `divLevel2_0`,
-      `divLevel3_2`, `ConvexHull/hullLevel1`, `hullLevel2`) are converted by a small YAML reader;
-    - tests on the shipped levels: outer polygon simple, holes inside it and pairwise disjoint, outer
-      polygon plus holes a valid polygon, parameters as in the file names, and the committed JSON equal
-      to a fresh import.
+  - read only the paths and markers inside `<page>`; apply each path's and marker's `matrix`
+    correctly (x' = a·x + c·y + e, y' = b·x + d·y + f; 15 of the 32 IPE files use one, on paths or on
+    markers); IPE's y axis points up, so flip y for SVG;
+  - normalise every level the same way (centre it, scale the larger side of the bounding box to a
+    fixed size); the five `.asset` levels were made by hand in Unity units and are not normalised
+    (e.g. `divLevel1_0` spans 3.7 × 2.8, `hullLevel2` 3 × 6);
+  - culture-invariant number parsing; ignore paths with fewer than 3 vertices (`agLevel14_17.ipe` has
+    one with 2);
+  - key Kings Taxes levels by their folder (`MST/`, `TSP/` and `Spanner/` reuse the names `ktLevel1…`);
+  - the five levels stored only as Unity `.asset` YAML (`Divide/divLevel1_0`, `divLevel2_0`,
+    `divLevel3_2`, `ConvexHull/hullLevel1`, `hullLevel2`) are converted by a small YAML reader;
+  - tests on the shipped levels: outer polygon simple, holes inside it and pairwise disjoint, outer
+    polygon plus holes a valid polygon, parameters as in the file names, and the committed JSON equal
+    to a fresh import.
 
 Acceptance: the shell runs on a laptop (mouse and keyboard) and on a phone and works offline after the
 first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3 Kings Taxes, 9 Divide,
