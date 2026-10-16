@@ -78,6 +78,12 @@ Level order in the scenes:
   win; visibility and a new mesh plus material are recomputed every frame while a torch is selected and
   the old ones are never destroyed (leak); collinear cases can produce wrong visibility polygons.
 - Old level 10 (137 vertices, 16 torches) was removed in 2020 because it was too slow.
+- Origin of the levels: the 14 levels are the 2020 set from T. van Benthem, K. Buchin, I. Kostitsyna,
+  S. Slot, "Designing Art Galleries", SoCG 2020 Media Exposition, LIPIcs, 80:1–80:5. `agLevel7_13` is
+  the planar 3SAT construction of its Fig. 6 (13 guards are necessary, so no record is possible there),
+  `agLevel12_7` the planar vertex cover construction of Fig. 8, and `agLevel13_4` is spike-box-like.
+  Spike boxes were the least liked puzzles in the paper's user study. After that study the 2020 version
+  added a feedback point that marks an unlit spot.
 
 ## Conquer (Voronoi game)
 

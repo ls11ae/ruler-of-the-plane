@@ -1,0 +1,102 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 40vh;
+}
+
+/* "So geht's": a 7 s loop. Torch 1 at 12 %, torch 2 at 42 %, "100 %" at 58 %. */
+.loop * {
+  animation-duration: 7s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.light1,
+.torch1 {
+  animation-name: show1;
+}
+.light2,
+.torch2 {
+  animation-name: show2;
+}
+.done {
+  animation-name: show3;
+}
+
+@keyframes show1 {
+  0%,
+  12% {
+    opacity: 0;
+  }
+  16%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes show2 {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  46%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes show3 {
+  0%,
+  58% {
+    opacity: 0;
+  }
+  62%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Fisk's proof: edges, then corner colours, then the guards, once. */
+.edge {
+  opacity: 0;
+  animation: appear 300ms ease-out forwards;
+}
+.corner {
+  opacity: 0;
+  animation: appear 250ms ease-out forwards;
+}
+.guard {
+  opacity: 0;
+  animation: appear 400ms ease-out forwards;
+}
+
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+
+.replay {
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop * {
+    animation: none;
+    opacity: 1;
+  }
+  .edge,
+  .corner,
+  .guard {
+    animation: none;
+    opacity: 1;
+  }
+}

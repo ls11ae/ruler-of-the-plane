@@ -158,6 +158,51 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Logo placeholder**: the text "TU Dortmund · Informatik · LS 11" at the bottom of the start
   map until the logos are provided.
 
+- **2026-10-16 Every game playable on a phone in portrait** (Kevin). Visitors open the QR code on their
+  phones, so the laptops stay the booth hardware but phones are no longer only a bonus. Pointer games use
+  portrait screens well (e.g. a wide board rotated by 90°), with touch targets of at least 44 px; the
+  keyboard games get on-screen controls: two large hold buttons for owner and dog in "Gassi gehen"
+  (Phase 3), a direction pad for one cutter plus a "Feierabend" button in "Rasenmähen" (Phase 4). Each
+  game's Playwright smoke test plays a level in the laptop and the phone project. Alternative: phones
+  only for the start map and the explanations. Reason: most visitors who scan the QR code will play at
+  home on a phone.
+
+- **2026-10-16 "Fully lit" by thickness, not by area** (Kevin). Torches keep exact point visibility; the
+  floor counts as lit when the dark region, shrunk by r = 0.03 level units (Clipper2 offset with −r),
+  is empty, i.e. no dark spot is thicker than 0.06 units (4–6 px on the laptop). The remaining
+  hairlines are drawn lit and the display shows 100 %. While the floor is not fully lit, a pulsing dot
+  marks the thickest dark spot (the 2020 version added such a feedback point after its user study).
+  Alternatives: the strict 1e-6 area tolerance (a torch a pixel away from a perfect spot leaves
+  hairlines, so the game sticks at 99 %); a 0.2 % area tolerance (also accepts a compact dark spot of
+  about 25 × 25 px, close to the size of real niches: the smallest niches of agLevel8_4 are 0.29 % of
+  the floor); a torch as a small disc (changes the model). Tune r in the playtest. Measured on
+  agLevel3_2: Kevin's torches at (2.35, −2.79) and (1.37, 1.83) stay fully lit even under the strict
+  rule when each is moved by up to 0.05 units, so the levels have slack when torches are placed well.
+- **2026-10-16 Art gallery level order** (Kevin for agLevel13_4): 9 main levels by k and complexity
+  (agLevel3_2, 1_3, 6_3, 2_3, 10_4, 8_4, 5_5, 12_7, 4_8) and an expert set: the spike box agLevel13_4
+  (spike boxes were the least liked puzzles in the 2020 user study) and the levels with 12 or more
+  torches (9_12, 7_13, 11_14, 14_17).
+
+- **2026-10-16 "Licht ins Verlies" interaction.** A click or tap places a torch, a drag moves it;
+  dropping it off the dungeon or on a bucket that appears while dragging removes it (phones: the
+  dungeon may fill the screen). A torch dragged by touch floats 64 px above the finger. Torch discs are
+  36 px with a mouse and 44 px on touch screens, hit targets at least 44 px. No game limit on torches
+  (more cost stars; a cap of 30 keeps the board fast). Alternatives: long press or a selected-torch
+  button to remove (less discoverable); a fixed limit of k torches as in Unity (children get stuck).
+- **2026-10-16 "Licht ins Verlies" scoring and flow.** The win triggers when the floor becomes fully
+  lit after a placement or drop (not mid-drag), with a short pause to see the lit dungeon. Leaderboard
+  per dungeon: torches first, then seconds since the first torch. Progress (current dungeon, best stars
+  per dungeon, "So geht's" seen) is stored on the device and reset by the kiosk timeout. A dungeon
+  picker shows the main set and the expert set.
+- **2026-10-16 "Was steckt dahinter?" for dungeons with pillars**: Fisk's proof needs a dungeon without
+  pillars, so those show how the computer checks the light: a ray sweeps once around the player's first
+  torch and reveals its visibility polygon, then all torches light the dungeon. The theory view shows
+  the bound ⌊(n + h)/3⌋ and the layers (triangulation, visibility polygons, Fisk's colouring where it
+  works); Fisk's three colours also have three shapes. Alternative: no animation on those levels.
+- **2026-10-16 Board turns by 90° on portrait screens** (shared `Board` option `autoRotate`): when a
+  turned board is at least 15 % larger; icons stay upright. Alternative: a separate portrait layout per
+  level. Reason: one rule for every board game, no level data to maintain.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")

@@ -14,6 +14,12 @@ After Phase 1, two tracks run in parallel, each in its own cloud session and bra
 
 If time runs short, drop Phase 5 first; the two research games and the playtest have priority.
 
+Phones (Kevin, 2026-10-16): visitors open the QR code on their phones, so every game must be playable on a
+phone in portrait, not only on the booth laptops. Pointer games use the screen well in portrait (e.g. a
+wide board rotated by 90°) and keep touch targets at least 44 px; the keyboard games get on-screen
+controls. Each game's Playwright smoke test plays a level in both projects (laptop 1280 × 800 and phone
+390 × 844).
+
 ## Phase 0: foundation (target 20 Oct) — done 2026-10-16
 
 - Scaffold the app at the repository root with the toolchain described in `CLAUDE.md` (Node ≥ 22.13,
@@ -62,24 +68,36 @@ Acceptance: the shell runs on a laptop (mouse and keyboard) and on a phone and w
 first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3 Kings Taxes, 9 Divide,
 3 convex hull); the Pages deployment serves the shell.
 
-## Phase 1: "Licht ins Verlies" (art gallery) (target 23 Oct)
+## Phase 1: "Licht ins Verlies" (art gallery) (target 23 Oct) — done 2026-10-16 (playtest items open)
 
-- Click to place a torch, drag to move, drag off the dungeon to remove.
-- Visibility polygon for polygons with holes (own angular sweep on exact predicates).
-- Live "x % beleuchtet" while dragging; the unlit region is darkened (Clipper2 difference).
+- Click to place a torch, drag to move, drag off the dungeon to remove. — done 2026-10-16
+- Visibility polygon for polygons with holes (own angular sweep on exact predicates). — done 2026-10-16
+- Live "x % beleuchtet" while dragging; the unlit region is darkened (Clipper2 difference). — done
+  2026-10-16; "fully lit" is judged by thickness (Kevin, see the decision log), with a pulsing dot at the
+  thickest dark spot; tune the radius r = 0.03 in the playtest.
 - Win as soon as everything is lit. Stars: at most k torches (the level's number) three, k + 1 two, more
-  one; fewer than k is shown as a record.
+  one; fewer than k is shown as a record. — done 2026-10-16
 - Levels: the 14 Unity levels re-ordered by difficulty; levels with 12 or more torches go to an expert
-  set. If a floor plan is available, add a TU Dortmund building as a level.
+  set. If a floor plan is available, add a TU Dortmund building as a level. — done 2026-10-16 (9 main
+  levels, expert set with agLevel13_4 and the levels with k ≥ 12); no floor plan available yet.
 - Explanation on hole-free levels (Unity levels 1, 3, 6, 8, 13): animation of Fisk's proof (triangulate,
-  3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation.
+  3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation. —
+  done 2026-10-16 (levels with pillars show the computer's ray sweep instead).
+- Phones in portrait: rotate a wide level by 90° when that makes it larger, torches at least 44 px, a
+  torch dragged by touch is drawn above the finger, and a way to remove a torch when the dungeon fills
+  the screen. The smoke test plays a level in both Playwright projects (laptop and phone). — done
+  2026-10-16 (removal by dragging onto a bucket that appears while dragging).
 - Look as in `docs/look/licht-ins-verlies.webp`: Scribble grid-paper floor clipped to the level, hatched
   rock outside and in pillars, sketchy SVG walls, props as decoration under the light, torches as yellow
   tokens with a flame, lit area warm, unlit area dark. Optional extra levels built from tiles as
-  orthogonal polygons; without holes, ⌊n/4⌋ torches always suffice (Kahn, Klawe, Kleitman).
+  orthogonal polygons; without holes, ⌊n/4⌋ torches always suffice (Kahn, Klawe, Kleitman). — done
+  2026-10-16, except the optional extra levels.
 
 Acceptance: on every level, random torch placements are judged identically by the exact check and by a
 fine raster check (up to the sliver tolerance in `CLAUDE.md`); dragging stays smooth on a booth laptop.
+Status: the raster check passes on all 14 levels (with the thickness rule, checked pointwise); the
+lighting takes at most 10 ms per drag frame on the largest level with 17 torches in the cloud session
+(median 2 ms); check on a booth laptop in the playtest.
 
 ## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct)
 
@@ -108,6 +126,8 @@ AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area
   their key is held (owner `KeyA`, dog `KeyL`; two players or one player with two hands), at the same
   speed. The leash is drawn and turns orange-red when nearly taut; exceeding the length limit L fails the
   level; levels lower L towards the Fréchet distance.
+- On-screen controls for phones: two large hold buttons, "Herrchen" (left) and "Hund" (right), which act
+  like the keys while pressed (multi-touch: both at once); a phone smoke test plays a level with them.
 - Solo mode "Schätz die Leine": pick a length with a slider; the computer shows whether a walk exists.
 - Theory view (panel beside the park, as in `docs/look/gassi-gehen.webp`): free-space diagram
   (x = owner's position, y = dog's position, light = leash long enough) with an ε slider; the player's
@@ -120,7 +140,7 @@ AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area
   discrete Fréchet distance on densely sampled curves.
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
-with the key test on the booth laptops).
+with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
 
 ## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
 
@@ -129,6 +149,9 @@ with the key test on the booth laptops).
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
   (space) drives every cutter back to its start on the shortest (L1) way and closes the tour.
+- On-screen controls for phones: a direction pad for one cutter (holding a direction repeats at the same
+  fixed rate as the keys) plus a "Feierabend" button; on phones the lawns are played with one cutter. A
+  phone smoke test mows a lawn with them.
 - Live display: mowed share, steps per cutter, the longest tour (the score), and the target from the
   chair's solver for this lawn (stored with the level; shown as a placeholder until provided).
 - Theory view: the solver's tours as an animation, the lower bound from the cutter width, the min-max
@@ -139,7 +162,7 @@ with the key test on the booth laptops).
 
 Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test fixtures (generated once
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
-laptop keyboard.
+laptop keyboard; one player can mow a lawn on a phone with the direction pad.
 
 ## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct)
 

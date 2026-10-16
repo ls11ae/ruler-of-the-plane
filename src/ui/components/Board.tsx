@@ -7,6 +7,11 @@ interface BoardProps {
   bounds: Bounds
   /** Margin around the bounds, in board units. */
   padding?: number
+  /**
+   * Turn the board by 90° when that shows it clearly larger, e.g. a wide dungeon on a phone held
+   * upright. Pointer conversion (`toBoard`) takes the turn into account.
+   */
+  autoRotate?: boolean
   children: ReactNode
   className?: string
   /** Accessible description of the board. */
@@ -23,10 +28,20 @@ interface BoardProps {
  * coordinates; `useBoard()` converts pointer positions and pixel sizes. Touch gestures of the browser
  * (scrolling, zooming) are off on the board.
  */
-export function Board({ bounds, padding = 0, children, className, label, ...handlers }: BoardProps) {
+export function Board({
+  bounds,
+  padding = 0,
+  autoRotate = false,
+  children,
+  className,
+  label,
+  ...handlers
+}: BoardProps) {
   const svg = useRef<SVGSVGElement>(null)
+  const content = useRef<SVGGElement>(null)
   const filterId = `ink-${useId().replace(/[^\w-]/g, '')}`
-  const [scale, setScale] = useState(1)
+  const [view, setView] = useState({ scale: 1, rotated: false })
+  const { scale, rotated } = view
   const x = bounds.minX - padding
   const y = bounds.minY - padding
   const w = bounds.maxX - bounds.minX + 2 * padding
@@ -36,35 +51,45 @@ export function Board({ bounds, padding = 0, children, className, label, ...hand
     const el = svg.current
     if (!el) return
     const update = () => {
-      const rect = el.getBoundingClientRect()
-      if (rect.width > 0 && rect.height > 0) setScale(Math.min(rect.width / w, rect.height / h))
+      const { width, height } = el.getBoundingClientRect()
+      if (!(width > 0 && height > 0)) return
+      const upright = Math.min(width / w, height / h)
+      const turned = Math.min(width / h, height / w)
+      // Turn only for a clear gain, so a nearly square board does not flip back and forth.
+      const rotate = autoRotate && turned > upright * 1.15
+      setView({ scale: rotate ? turned : upright, rotated: rotate })
     }
     update()
     const observer = new ResizeObserver(update)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [w, h])
+  }, [w, h, autoRotate])
 
   const api = useMemo<BoardApi>(
     () => ({
       toBoard(clientX, clientY) {
-        const el = svg.current
-        const ctm = el?.getScreenCTM()
-        if (!el || !ctm) return [0, 0]
+        const ctm = content.current?.getScreenCTM()
+        if (!ctm) return [0, 0]
         const p = new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse())
         return [p.x, p.y]
       },
       pxToBoard: (px) => px / scale,
       scale,
       ink: `url(#${filterId})`,
+      rotation: rotated ? 90 : 0,
+      upright: (px, py) => (rotated ? `rotate(-90 ${px} ${py})` : undefined),
     }),
-    [scale, filterId],
+    [scale, rotated, filterId],
   )
+
+  // rotate(90) maps (x, y) to (−y, x): the turned board spans x′ ∈ [−(y + h), −y], y′ ∈ [x, x + w].
+  const viewBox = rotated ? `${-(y + h)} ${x} ${h} ${w}` : `${x} ${y} ${w} ${h}`
 
   return (
     <svg
       ref={svg}
-      viewBox={`${x} ${y} ${w} ${h}`}
+      viewBox={viewBox}
+      data-rotated={rotated || undefined}
       preserveAspectRatio="xMidYMid meet"
       className={className}
       style={{ display: 'block', width: '100%', height: '100%', touchAction: 'none' }}
@@ -91,7 +116,9 @@ export function Board({ bounds, padding = 0, children, className, label, ...hand
           />
         </filter>
       </defs>
-      <BoardContext.Provider value={api}>{children}</BoardContext.Provider>
+      <g ref={content} transform={rotated ? 'rotate(90)' : undefined}>
+        <BoardContext.Provider value={api}>{children}</BoardContext.Provider>
+      </g>
     </svg>
   )
 }

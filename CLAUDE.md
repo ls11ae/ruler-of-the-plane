@@ -14,7 +14,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 ## Status
 
-- Phase 0 done on branch `claude/charming-goldberg-mkxway` (2026-10-16), awaiting merge; Phase 1 next.
+- Phase 0 merged; Phase 1 ("Licht ins Verlies") done on branch `claude/charming-goldberg-mkxway`
+  (2026-10-16), awaiting merge; then the two tracks of Phase 2–5.
   **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
   code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
@@ -61,9 +62,12 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   typecheck, tests, build.
 - **German first**, English via a switch. Texts short: 2–3 sentences per screen, rules shown as a short
   animation where possible.
-- **Booth hardware = laptops** (decided 2026-10-16): mouse or touchpad plus keyboard are the normal case,
-  touch is a bonus. Pointer Events cover mouse, pen and touch; hit targets ≥ 44 px. Hover may add
-  previews, but every action must also work by click or tap.
+- **Booth hardware = laptops** (decided 2026-10-16): mouse or touchpad plus keyboard are the normal case
+  at the booth. Pointer Events cover mouse, pen and touch; hit targets ≥ 44 px. Hover may add previews,
+  but every action must also work by click or tap.
+- **Phones in portrait** (Kevin, 2026-10-16): visitors open the QR code on their phones, so every game
+  must be playable on a phone in portrait: use the screen well (e.g. rotate a wide board by 90°), keep
+  touch targets ≥ 44 px, and give the keyboard games on-screen controls (hold buttons, direction pad).
 - **Keyboard games for two players on one laptop**: each player presses at most one key at a time, keys
   far apart (A/L, WASD/arrows), read via `KeyboardEvent.code` (layout-independent, QWERTZ-safe), own
   key-state tracking instead of OS auto-repeat. Laptop keyboards often register only two or three keys
@@ -94,10 +98,16 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   2–5 minutes. Every game ends with "Was steckt dahinter?": three sentences plus an animation of how the
   computer solves it (or, for the art gallery, of the guarantee below).
 - Art gallery: a level is a polygon, 9 of the 14 Unity levels with holes ("pillars"); a torch sees its
-  visibility polygon. "Fully lit" = the uncovered region (level minus the union of visibility polygons,
-  Clipper2) is empty up to a small tolerance (integer rounding creates slivers: ignore uncovered area
-  below about 1e-6 of the level area). The Unity version used an area ratio plus checkpoints, which was
-  fragile.
+  visibility polygon (exact, a point). "Fully lit" is judged by thickness (Kevin, 2026-10-16): the dark
+  region (level minus the union of visibility polygons, Clipper2), shrunk by r = 0.03 level units, is
+  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and while
+  not lit a pulsing dot marks the thickest dark spot. An area tolerance would accept a half-dark niche
+  (the smallest niches of agLevel8_4 are 0.29 % of the floor); the Unity version used an area ratio plus
+  checkpoints, which was fragile. r is tuned in the playtest.
+- The 14 art gallery levels are the 2020 set of "Designing Art Galleries" (van Benthem, Buchin,
+  Kostitsyna, Slot; SoCG 2020 Media Exposition): agLevel7_13 is its planar 3SAT construction (13 torches
+  are necessary, no record possible), agLevel12_7 its planar vertex cover construction, agLevel13_4 a
+  spike box (least liked in the paper's user study, hence in the expert set).
 - Art gallery bounds: ⌊n/3⌋ torches always suffice for polygons without holes (Chvátal); with h holes
   ⌊(n+h)/3⌋, where n counts all vertices including those of the holes; for orthogonal polygons without
   holes ⌊n/4⌋. Fisk's proof (triangulate, 3-colour, take the smallest colour class) works only without
@@ -159,7 +169,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Seeded RNG for level generation and AIs, so bugs are reproducible.
 - Tests: geometry against brute force or sampling (visibility area vs. Monte Carlo, Voronoi areas sum to
   the board area, MST vs. brute force for n ≤ 8, Fréchet decision vs. discrete Fréchet on densely
-  sampled curves). One Playwright smoke test per game that plays a level and saves a screenshot.
+  sampled curves). One Playwright smoke test per game that plays a level in both projects (laptop and
+  phone) and saves screenshots.
 - UI texts only in typed i18n dictionaries: shared texts in `src/ui/i18n/de.ts` and `en.ts`, game texts
   in `src/ui/games/<game>/i18n.de.ts` and `i18n.en.ts`, so parallel tracks do not edit the same file.
   Code, comments, commits and docs in English.

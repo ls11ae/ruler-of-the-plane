@@ -116,7 +116,11 @@ export function usePointerGesture(
   return {
     onPointerDown(e: React.PointerEvent) {
       if (tracker.current || (e.pointerType === 'mouse' && e.button !== 0)) return
-      e.currentTarget.setPointerCapture?.(e.pointerId)
+      try {
+        e.currentTarget.setPointerCapture?.(e.pointerId)
+      } catch {
+        // Unknown pointer (e.g. a synthetic event): the gesture still works without capture.
+      }
       const gesture = new GestureTracker(e.clientX, e.clientY, e.timeStamp, options)
       const timer = window.setTimeout(() => {
         if (tracker.current?.gesture.tick(e.timeStamp + options.longPressMs)) ref.current.onLongPress?.()
