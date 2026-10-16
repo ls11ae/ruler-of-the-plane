@@ -1,0 +1,21 @@
+{
+  "id": "divide/divLevel9_1",
+  "collection": "divide",
+  "name": "divLevel9_1",
+  "number": 9,
+  "source": "legacy/levels/Divide/divLevel9_1.ipe",
+  "bounds": { "minX": -2.5, "minY": -1.590909, "maxX": 2.5, "maxY": 1.590909 },
+  "swaps": 1,
+  "spearmen": [
+    [-1.136364, -1.590909],
+    [-2.5, -0.227273]
+  ],
+  "archers": [
+    [1.136364, -1.590909],
+    [2.5, -0.227273]
+  ],
+  "mages": [
+    [-0.681818, 1.590909],
+    [0.681818, 1.590909]
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "divide/divLevel1_0",
+  "collection": "divide",
+  "name": "divLevel1_0",
+  "number": 1,
+  "source": "legacy/levels/Divide/divLevel1_0.asset",
+  "bounds": { "minX": -1.5, "minY": -1.195475, "maxX": 2.2, "maxY": 1.56 },
+  "swaps": 0,
+  "spearmen": [
+    [-1.5, -0.6],
+    [-1.3, 1.56]
+  ],
+  "archers": [
+    [0.2, -0.657875],
+    [0.7, 1.378489]
+  ],
+  "mages": [
+    [1.5, 0.824599],
+    [2.2, -1.195475]
+  ]
+}

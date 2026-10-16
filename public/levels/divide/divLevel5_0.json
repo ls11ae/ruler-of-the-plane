@@ -1,0 +1,23 @@
+{
+  "id": "divide/divLevel5_0",
+  "collection": "divide",
+  "name": "divLevel5_0",
+  "number": 5,
+  "source": "legacy/levels/Divide/divLevel5_0.ipe",
+  "bounds": { "minX": -2.5, "minY": -2.5, "maxX": 2.5, "maxY": 2.5 },
+  "swaps": 0,
+  "spearmen": [
+    [-1.833333, -1.5],
+    [1.5, 1.5]
+  ],
+  "archers": [
+    [-2.5, -0.166667],
+    [-0.166667, -2.5],
+    [2.5, 0.5],
+    [-0.166667, 2.5]
+  ],
+  "mages": [
+    [2.166667, -1.833333],
+    [-1.833333, 1.5]
+  ]
+}

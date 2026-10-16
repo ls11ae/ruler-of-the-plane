@@ -1,0 +1,18 @@
+{
+  "id": "kings-taxes/tsp/ktLevel1",
+  "collection": "kings-taxes/tsp",
+  "name": "ktLevel1",
+  "number": 1,
+  "source": "legacy/levels/KingsTaxes/TSP/ktLevel1.ipe",
+  "bounds": { "minX": -3, "minY": -2.666667, "maxX": 3, "maxY": 2.666667 },
+  "villages": [
+    [-2.333333, -2],
+    [-1, -0.666667],
+    [1, 0.666667],
+    [2.333333, 2]
+  ],
+  "castles": [
+    [3, -2.666667],
+    [-3, 2.666667]
+  ]
+}

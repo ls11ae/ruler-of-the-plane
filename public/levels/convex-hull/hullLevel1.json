@@ -1,0 +1,13 @@
+{
+  "id": "convex-hull/hullLevel1",
+  "collection": "convex-hull",
+  "name": "hullLevel1",
+  "number": 1,
+  "source": "legacy/levels/ConvexHull/hullLevel1.asset",
+  "bounds": { "minX": -1, "minY": -1, "maxX": 1, "maxY": 0 },
+  "points": [
+    [-1, 0],
+    [0, -1],
+    [1, 0]
+  ]
+}

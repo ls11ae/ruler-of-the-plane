@@ -68,5 +68,8 @@ Both fonts are licensed under the SIL Open Font License 1.1 and used unmodified.
 
 Runtime libraries and their licences (add them when they are introduced):
 
-| Library | Licence |
-| ------- | ------- |
+| Library                                                                                                                             | Licence                   |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| [React](https://react.dev) and React DOM                                                                                            | MIT                       |
+| [zustand](https://github.com/pmndrs/zustand)                                                                                        | MIT                       |
+| [robust-predicates](https://github.com/mourner/robust-predicates) (exact orientation tests; port of Jonathan Shewchuk's predicates) | Unlicense (public domain) |

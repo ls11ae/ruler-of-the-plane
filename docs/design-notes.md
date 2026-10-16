@@ -95,6 +95,31 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Style mockup as the visual target** (`docs/look/`, five screens at 1280 × 800). Numbers
   in it are sample values; "[Wert]" marks the solver target that is still missing.
 
+- **2026-10-16 Toolchain versions (Phase 0).** TypeScript 6.0.3, React 19.3, Vite 8.3, Vitest 5.0, ESLint
+  10.12 with typescript-eslint 8.71, Prettier 3.9, zustand 5. jsdom is pinned to 29, the newest version
+  that supports Node 22.13 (jsdom 30 needs 22.22.2). Strict TypeScript with `noUncheckedIndexedAccess`;
+  a third tsconfig checks `src/core/` without DOM types, so core code cannot use the DOM by accident.
+- **2026-10-16 Playwright also runs in cloud sessions.** The cloud image does ship a Chromium
+  (`/opt/pw-browsers/chromium`, older than the one Playwright 1.64 expects); `playwright.config.ts` uses
+  it when present outside CI. CI installs the matching browser. Alternative: CI only. Reason: the
+  session can look at its own screenshots before pushing.
+- **2026-10-16 Level JSON format** (`src/core/levels/schema.ts`): one file per level at
+  `public/levels/<collection>/<name>.json` plus `index.json` with the ids in Unity order; points as
+  `[x, y]` pairs (compact, the format of d3-delaunay); y points down (SVG); coordinates rounded to 6
+  decimals for readable diffs; art gallery outer boundary with positive shoelace area, holes negative.
+  Collections are keyed by folder (`kings-taxes/mst`, `…/spanner`, `…/tsp`). Alternatives: one file per
+  game; `{x, y}` objects. Reason: small diffs when a level changes, direct use with the geometry
+  libraries.
+- **2026-10-16 Level size per game as in Unity.** IPE levels are centred and scaled so the larger side
+  of the bounding box is 9 (art gallery), 6 (Kings Taxes, convex hull) or 5 (Divide) units, the sizes
+  the Unity importer used; the five `.asset` levels are already in those units and are only mirrored
+  (Unity's y also points up). Alternative: one size for all games. Reason: the hand-made `.asset`
+  levels then fit with the IPE levels of the same game (`hullLevel2` spans exactly 6); every board
+  scales to the screen anyway.
+- **2026-10-16 IPE reader**: fast-xml-parser (dev dependency only); paths with `m`/`l`/`h` only (other
+  operators such as curves fail with a clear message, so new levels drawn in IPE must use polylines);
+  markers by symbol name (`mark/disk` etc.); matrices of paths, markers and groups are composed.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")

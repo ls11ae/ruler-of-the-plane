@@ -1,0 +1,22 @@
+{
+  "id": "kings-taxes/spanner/ktLevel2_1.7",
+  "collection": "kings-taxes/spanner",
+  "name": "ktLevel2_1.7",
+  "number": 2,
+  "source": "legacy/levels/KingsTaxes/Spanner/ktLevel2_1.7.ipe",
+  "bounds": { "minX": -3, "minY": -2.181818, "maxX": 3, "maxY": 2.181818 },
+  "ratio": 1.7,
+  "villages": [
+    [-3, -2.181818],
+    [-0.272727, -2.181818],
+    [0.818182, -0.545455],
+    [-0.818182, 1.090909],
+    [-3, 0],
+    [0.818182, 2.181818],
+    [3, 2.181818],
+    [2.454545, 0]
+  ],
+  "castles": [
+    [-0.272727, 0]
+  ]
+}
