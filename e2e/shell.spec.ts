@@ -1,20 +1,7 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { freshDevice, shot } from './helpers'
 
-/** Saves a screenshot to `screenshots/<project>/<name>.png` (uploaded by CI). */
-async function shot(page: Page, testInfo: TestInfo, name: string) {
-  await page.evaluate(() => document.fonts.ready)
-  await page.screenshot({ path: `screenshots/${testInfo.project.name}/${name}.png` })
-}
-
-test.beforeEach(async ({ page }) => {
-  // Every test starts from a fresh device: no stored settings or leaderboards.
-  await page.addInitScript(() => {
-    if (!sessionStorage.getItem('e2e-cleared')) {
-      localStorage.clear()
-      sessionStorage.setItem('e2e-cleared', '1')
-    }
-  })
-})
+freshDevice()
 
 test('start map shows every place and switches the language', async ({ page }, testInfo) => {
   await page.goto('./')
