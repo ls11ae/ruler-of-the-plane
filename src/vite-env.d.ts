@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/vanillajs" />
 
 interface ImportMetaEnv {
   /** URL of the tsp-boards play mode ("Rundreise"); the place is hidden while empty. */
