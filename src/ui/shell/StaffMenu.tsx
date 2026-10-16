@@ -11,9 +11,7 @@ import styles from './StaffMenu.module.css'
 import { useUi } from './ui'
 
 /** The staff PIN from the build (`VITE_STAFF_PIN`); empty means no PIN. Public in the bundle by design. */
-const STAFF_PIN = import.meta.env.VITE_STAFF_PIN?.trim() ?? ''
-
-let unlockedThisSession = false
+const staffPin = () => import.meta.env.VITE_STAFF_PIN?.trim() ?? ''
 
 function PinForm({ onUnlock }: { onUnlock: () => void }) {
   const t = useT()
@@ -24,7 +22,7 @@ function PinForm({ onUnlock }: { onUnlock: () => void }) {
       className={styles.pin}
       onSubmit={(e) => {
         e.preventDefault()
-        if (pin === STAFF_PIN) onUnlock()
+        if (pin === staffPin()) onUnlock()
         else {
           setWrong(true)
           setPin('')
@@ -91,18 +89,15 @@ export function StaffMenu() {
   const settings = useSettings()
   const resetBoards = useBooth((s) => s.resetBoards)
   const resetVersus = useBooth((s) => s.resetVersus)
-  const [unlocked, setUnlocked] = useState(unlockedThisSession || STAFF_PIN === '')
+  // Unlocking lasts while the menu is open: closing it (also by the kiosk idle reset) unmounts the
+  // menu, so the next visitor who finds it needs the PIN again.
+  const [unlocked, setUnlocked] = useState(() => staffPin() === '')
   const [view, setView] = useState<'menu' | 'keys'>('menu')
 
   if (!unlocked) {
     return (
       <Overlay title={t.staff.title} onClose={close}>
-        <PinForm
-          onUnlock={() => {
-            unlockedThisSession = true
-            setUnlocked(true)
-          }}
-        />
+        <PinForm onUnlock={() => setUnlocked(true)} />
       </Overlay>
     )
   }
@@ -134,7 +129,7 @@ export function StaffMenu() {
         </Button>
       }
     >
-      {STAFF_PIN === '' && <p className={styles.muted}>{t.staff.noPin}</p>}
+      {staffPin() === '' && <p className={styles.muted}>{t.staff.noPin}</p>}
       <div className={styles.sections}>
         <section className={styles.section}>
           <h3>{t.staff.games}</h3>
