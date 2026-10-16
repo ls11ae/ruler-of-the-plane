@@ -68,27 +68,36 @@ Acceptance: the shell runs on a laptop (mouse and keyboard) and on a phone and w
 first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3 Kings Taxes, 9 Divide,
 3 convex hull); the Pages deployment serves the shell.
 
-## Phase 1: "Licht ins Verlies" (art gallery) (target 23 Oct)
+## Phase 1: "Licht ins Verlies" (art gallery) (target 23 Oct) — done 2026-10-16 (playtest items open)
 
-- Click to place a torch, drag to move, drag off the dungeon to remove.
-- Visibility polygon for polygons with holes (own angular sweep on exact predicates).
-- Live "x % beleuchtet" while dragging; the unlit region is darkened (Clipper2 difference).
+- Click to place a torch, drag to move, drag off the dungeon to remove. — done 2026-10-16
+- Visibility polygon for polygons with holes (own angular sweep on exact predicates). — done 2026-10-16
+- Live "x % beleuchtet" while dragging; the unlit region is darkened (Clipper2 difference). — done
+  2026-10-16; "fully lit" is judged by thickness (Kevin, see the decision log), with a pulsing dot at the
+  thickest dark spot; tune the radius r = 0.03 in the playtest.
 - Win as soon as everything is lit. Stars: at most k torches (the level's number) three, k + 1 two, more
-  one; fewer than k is shown as a record.
+  one; fewer than k is shown as a record. — done 2026-10-16
 - Levels: the 14 Unity levels re-ordered by difficulty; levels with 12 or more torches go to an expert
-  set. If a floor plan is available, add a TU Dortmund building as a level.
+  set. If a floor plan is available, add a TU Dortmund building as a level. — done 2026-10-16 (9 main
+  levels, expert set with agLevel13_4 and the levels with k ≥ 12); no floor plan available yet.
 - Explanation on hole-free levels (Unity levels 1, 3, 6, 8, 13): animation of Fisk's proof (triangulate,
-  3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation.
+  3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation. —
+  done 2026-10-16 (levels with pillars show the computer's ray sweep instead).
 - Phones in portrait: rotate a wide level by 90° when that makes it larger, torches at least 44 px, a
   torch dragged by touch is drawn above the finger, and a way to remove a torch when the dungeon fills
-  the screen. The smoke test plays a level in both Playwright projects (laptop and phone).
+  the screen. The smoke test plays a level in both Playwright projects (laptop and phone). — done
+  2026-10-16 (removal by dragging onto a bucket that appears while dragging).
 - Look as in `docs/look/licht-ins-verlies.webp`: Scribble grid-paper floor clipped to the level, hatched
   rock outside and in pillars, sketchy SVG walls, props as decoration under the light, torches as yellow
   tokens with a flame, lit area warm, unlit area dark. Optional extra levels built from tiles as
-  orthogonal polygons; without holes, ⌊n/4⌋ torches always suffice (Kahn, Klawe, Kleitman).
+  orthogonal polygons; without holes, ⌊n/4⌋ torches always suffice (Kahn, Klawe, Kleitman). — done
+  2026-10-16, except the optional extra levels.
 
 Acceptance: on every level, random torch placements are judged identically by the exact check and by a
 fine raster check (up to the sliver tolerance in `CLAUDE.md`); dragging stays smooth on a booth laptop.
+Status: the raster check passes on all 14 levels (with the thickness rule, checked pointwise); the
+lighting takes at most 10 ms per drag frame on the largest level with 17 torches in the cloud session
+(median 2 ms); check on a booth laptop in the playtest.
 
 ## Phase 2 (track A): "Erobere das Land" (Voronoi game) (target 27 Oct)
 

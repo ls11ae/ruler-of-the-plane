@@ -14,7 +14,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 ## Status
 
-- Phase 0 done on branch `claude/charming-goldberg-mkxway` (2026-10-16), awaiting merge; Phase 1 next.
+- Phase 0 merged; Phase 1 ("Licht ins Verlies") done on branch `claude/charming-goldberg-mkxway`
+  (2026-10-16), awaiting merge; then the two tracks of Phase 2–5.
   **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
   code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the

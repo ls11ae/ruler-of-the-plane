@@ -183,6 +183,26 @@ subsection below, so their branches do not conflict.
   (spike boxes were the least liked puzzles in the 2020 user study) and the levels with 12 or more
   torches (9_12, 7_13, 11_14, 14_17).
 
+- **2026-10-16 "Licht ins Verlies" interaction.** A click or tap places a torch, a drag moves it;
+  dropping it off the dungeon or on a bucket that appears while dragging removes it (phones: the
+  dungeon may fill the screen). A torch dragged by touch floats 64 px above the finger. Torch discs are
+  36 px with a mouse and 44 px on touch screens, hit targets at least 44 px. No game limit on torches
+  (more cost stars; a cap of 30 keeps the board fast). Alternatives: long press or a selected-torch
+  button to remove (less discoverable); a fixed limit of k torches as in Unity (children get stuck).
+- **2026-10-16 "Licht ins Verlies" scoring and flow.** The win triggers when the floor becomes fully
+  lit after a placement or drop (not mid-drag), with a short pause to see the lit dungeon. Leaderboard
+  per dungeon: torches first, then seconds since the first torch. Progress (current dungeon, best stars
+  per dungeon, "So geht's" seen) is stored on the device and reset by the kiosk timeout. A dungeon
+  picker shows the main set and the expert set.
+- **2026-10-16 "Was steckt dahinter?" for dungeons with pillars**: Fisk's proof needs a dungeon without
+  pillars, so those show how the computer checks the light: a ray sweeps once around the player's first
+  torch and reveals its visibility polygon, then all torches light the dungeon. The theory view shows
+  the bound ⌊(n + h)/3⌋ and the layers (triangulation, visibility polygons, Fisk's colouring where it
+  works); Fisk's three colours also have three shapes. Alternative: no animation on those levels.
+- **2026-10-16 Board turns by 90° on portrait screens** (shared `Board` option `autoRotate`): when a
+  turned board is at least 15 % larger; icons stay upright. Alternative: a separate portrait layout per
+  level. Reason: one rule for every board game, no level data to maintain.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")

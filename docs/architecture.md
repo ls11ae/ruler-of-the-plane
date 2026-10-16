@@ -18,28 +18,30 @@ touches no shared file:
    `useLocalized({ de, en })`. Shared texts (buttons, result screen) come from `useT()`.
 4. Art: import files from `assets/` in the game's folder and add a row per file to the game's section
    of `CREDITS.md`.
-5. A Playwright smoke test `e2e/<id>.spec.ts` plays a level and saves screenshots to
-   `screenshots/<project>/<id>-*.png` (see `e2e/shell.spec.ts` for the pattern).
+5. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
+   screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
+   disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
+   turned board) and how to do a touch drag with Pointer Events.
 
 ## Shared building blocks
 
-| Need                                   | Use                                                                                                                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Top bar ("‹ Karte", title, status)     | `components/GameHeader`                                                                                                                                                  |
-| Board in level coordinates             | `components/Board` (`bounds`, `padding`); inside it `useBoard()` gives `toBoard(clientX, clientY)`, `pxToBoard(px)`, `ink`                                               |
-| Hand-drawn outlines                    | `filter={board.ink}` on a board; `filter="url(#ink)"` where one unit is about one pixel (start map)                                                                      |
-| Buttons, keycaps, stars, progress bar  | `components/Button` (`variant`: solid, accent, dashed), `Keycap` (`code`, `pressed`), `Stars`, `ProgressBar`                                                             |
-| "So geht's"                            | `components/HowToOverlay` (2–3 sentences, optional animation, key hints)                                                                                                 |
-| End of a round                         | `components/ResultScreen` (outcome, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                        |
-| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format                                                                           |
-| "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                               |
-| Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                             |
-| Levels                                 | `useLevel<ArtGalleryLevel>('art-gallery/agLevel4_8')`, `loadLevelIndex()` (`src/ui/levels.ts`; format in `src/core/levels/schema.ts`)                                    |
-| Pointer input (mouse, touchpad, touch) | `usePointerGesture({ onPress, onTap, onDragStart, onDragMove, onDragEnd, onLongPress })`                                                                                 |
-| Keys (two players on one keyboard)     | `keyboard.isDown(code)` per frame with `useAnimationFrame`; `useKeyRepeat(codes, onStep, { delay, interval })` for lattice steps; `useKeyCapture(codes)` stops scrolling |
-| Gamepads                               | virtual codes `Pad<i>Up/Down/Left/Right/A/B/X/Y/Start` in the same key state                                                                                             |
-| Exact predicates, polygons             | `src/core/geometry/predicates.ts`, `polygon.ts`                                                                                                                          |
-| Seeded randomness                      | `mulberry32(seed)` in `src/core/random.ts`                                                                                                                               |
+| Need                                   | Use                                                                                                                                                                                       |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Top bar ("‹ Karte", title, status)     | `components/GameHeader`                                                                                                                                                                   |
+| Board in level coordinates             | `components/Board` (`bounds`, `padding`, `autoRotate` for portrait phones); inside it `useBoard()` gives `toBoard(clientX, clientY)`, `pxToBoard(px)`, `ink`, `rotation`, `upright(x, y)` |
+| Hand-drawn outlines                    | `filter={board.ink}` on a board; `filter="url(#ink)"` where one unit is about one pixel (start map)                                                                                       |
+| Buttons, keycaps, stars, progress bar  | `components/Button` (`variant`: solid, accent, dashed), `Keycap` (`code`, `pressed`), `Stars`, `ProgressBar`                                                                              |
+| "So geht's"                            | `components/HowToOverlay` (2–3 sentences, optional animation, key hints)                                                                                                                  |
+| End of a round                         | `components/ResultScreen` (outcome, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                                         |
+| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format                                                                                            |
+| "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                                                |
+| Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                                              |
+| Levels                                 | `useLevel<ArtGalleryLevel>('art-gallery/agLevel4_8')`, `loadLevelIndex()` (`src/ui/levels.ts`; format in `src/core/levels/schema.ts`)                                                     |
+| Pointer input (mouse, touchpad, touch) | `usePointerGesture({ onPress, onTap, onDragStart, onDragMove, onDragEnd, onLongPress })`                                                                                                  |
+| Keys (two players on one keyboard)     | `keyboard.isDown(code)` per frame with `useAnimationFrame`; `useKeyRepeat(codes, onStep, { delay, interval })` for lattice steps; `useKeyCapture(codes)` stops scrolling                  |
+| Gamepads                               | virtual codes `Pad<i>Up/Down/Left/Right/A/B/X/Y/Start` in the same key state                                                                                                              |
+| Exact predicates, polygons             | `src/core/geometry/predicates.ts`, `polygon.ts`                                                                                                                                           |
+| Seeded randomness                      | `mulberry32(seed)` in `src/core/random.ts`                                                                                                                                                |
 
 `#/demo` shows these pieces on a real level; use it to check the look.
 
