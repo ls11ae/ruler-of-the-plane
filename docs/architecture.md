@@ -58,5 +58,7 @@ touches no shared file:
   there after 90 s without input, with the language reset to German.
 - Staff menu: hold the compass on the start map for 3 s, or press Ctrl+Shift+S; then the PIN from
   `VITE_STAFF_PIN` (no PIN if empty).
-- Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version takes
-  over on the next load.
+- Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version
+  installs in the background and waits; the app activates it and reloads as soon as it shows the start
+  map or the attract screen, never during a game (`src/main.tsx`, `shell/update.ts`). An open page checks
+  for a new version every hour.

@@ -150,7 +150,7 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Offline via vite-plugin-pwa** (Workbox, `generateSW`): the whole build including every
   level JSON is precached; a new service worker takes over at once (`skipWaiting`, `clientsClaim`) and
   the error boundary's way back reloads the page, in case an updated deployment removed an old game
-  chunk. Manifest with `display: fullscreen`; the app icon is a compass rose drawn for this repository.
+  chunk. (Updates changed in Phase 3, see "Updates wait for the start map" under track B.) Manifest with `display: fullscreen`; the app icon is a compass rose drawn for this repository.
   Alternative: a hand-written service worker. Reason: the plugin knows the hashed file names.
 - **2026-10-16 English names of the places** (shown with the language switch): "Light the Dungeon",
   "Conquer the Land", "Walk the Dog", "Mow the Lawn", "Road Works", "Old Ruins", "Round Trip". The map
@@ -206,3 +206,19 @@ subsection below, so their branches do not conflict.
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 ### Track B ("Gassi gehen", "Straßenbau")
+
+- **2026-10-16 Result dialog fits a laptop screen** (shared `ResultScreen`). Outcome and leaderboard
+  share the left column, "Was steckt dahinter?" the right one; the card is up to 1120 px wide and the
+  animation takes the height that is left (`clamp(110px, 100dvh − 530px, 40vh)`), so the dialog with
+  the name picker and nine entries fits 1280 × 800 and 1366 × 768 without scrolling (a smoke test
+  checks both). The leaderboard list switches to one column by container width. Alternatives: fewer
+  nicknames or entries (less choice), the leaderboard on a second page (one more click at the booth).
+  On phones the dialog still scrolls.
+- **2026-10-16 Updates wait for the start map** (shared shell). A new service worker installs in the
+  background and waits (`registerType: 'prompt'`, no `skipWaiting`); as soon as the app shows the start
+  map or the attract screen (staff menu closed), it activates the new version and reloads, so a device
+  that visited before shows a new deployment within seconds of the first load instead of on the second
+  one, and never reloads during a game. Until then the old service worker keeps serving the old files,
+  so a running game cannot lose a chunk. An open page (the booth) checks for a new version every hour.
+  Alternatives: keep `skipWaiting` and reload on `controllerchange` (the new worker would already serve
+  new files to the old page mid-game); a "new version" button (visitors would not press it).
