@@ -173,13 +173,18 @@ Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test 
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
 laptop keyboard; one player can mow a lawn on a phone with the direction pad.
 
-## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct)
+## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct) — done 2026-10-16
 
 - Drag between villages to build a road, click a road to remove it; live total length and "+x % über dem
-  Optimum". Unity MST levels plus random ones. Explanation: Kruskal animation.
-- Look: villages from the Cartography Pack, roads as dashed ink lines (see the start map).
+  Optimum". Unity MST levels plus random ones. Explanation: Kruskal animation. — done 2026-10-16 (also
+  two taps to build on phones; the four Unity MST maps, then the larger Unity spanner and TSP point sets,
+  then random villages; hints; a theory panel that runs Kruskal step by step on the map)
+- Look: villages from the Cartography Pack, roads as dashed ink lines (see the start map). — done
+  2026-10-16
 
-Acceptance: the MST check accepts every optimal tree.
+Acceptance: the MST check accepts every optimal tree. Status: checked by brute force on a grid with many
+equal lengths (every optimal spanning tree accepted, every longer one rejected); Kruskal against brute
+force for up to 8 villages; following the hints from a random tangle of roads always ends optimal.
 
 ## Phase 6: playtest and polish (target 4 Nov)
 

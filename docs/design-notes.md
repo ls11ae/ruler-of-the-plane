@@ -293,3 +293,27 @@ subsection below, so their branches do not conflict.
   (`data-walk` on the board area); the test reads them every 80 ms and holds what the game's hint
   advises. A precomputed key schedule failed: each slot ran a little long in the browser and the
   walkers drifted from the plan.
+- **2026-10-16 "Straßenbau" maps**: the four Unity MST maps (five places each) are short warm-ups, so
+  they are followed by the point sets of Unity's spanner and TSP levels (9, 12, 16 and 19 places, used
+  for the MST), then random villages (8 places, one more per new map up to 14; seeded, the seed shown
+  in the subtitle so a map can be reproduced). Castles (the levels' `square` markers) only look
+  different. Alternatives: random maps only after the Unity ones (four maps of five places are over in
+  a minute); the 26-place spanner map (too long for the booth).
+- **2026-10-16 "Straßenbau" controls and checks.** Drag from a place to another, or tap two places one
+  after the other (phones), to build; tap or click a road to remove it (mouse: a road under the pointer
+  turns red). Places are 66 px icons with 28 px hit radius. The header shows the length (1 unit =
+  1 km) and either how many parts are still separate, "+x % über dem Optimum" (one decimal below 10 %,
+  so it never reads +0 %) or "Optimal!". The round is won as soon as the network connects everything
+  and is as long as a minimum spanning tree (lengths compared, so ties never reject an optimal tree).
+- **2026-10-16 (proposed) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the longest
+  road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
+  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no
+  place. Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time
+  to the optimum plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at
+  a "Fertig" button (the game would end before the optimum, which is the point), no hints (players get
+  stuck on the 19-place map).
+- **2026-10-16 "Straßenbau" explanation and theory**: the result shows Kruskal on the player's map
+  (roads by length, a ring-closing road flashes red and disappears); the theory panel explains why the
+  shortest network is a tree (n − 1 of n(n − 1)/2 possible roads) and runs Kruskal step by step on the
+  map itself (next step, all steps, from the start), and says that solutions are checked by comparing
+  lengths.
