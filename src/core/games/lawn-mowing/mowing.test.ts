@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../geometry/types'
-import { cutterOffsets, rasterize } from './grid'
+import { cutterOffsets, holeKind, rasterize } from './grid'
 import { checkTours, lowerBound, makeLawn, Mowing } from './mowing'
 import { stripTours } from './strips'
 import { cornersOf, positionsOf, tourLength, wayBack } from './tour'
@@ -188,5 +188,23 @@ describe.each(INSTANCES)('booth lawn $instance_uid', (inst) => {
     expect(mowing.mowAt(start)).toBe(0)
     expect(mowing.count).toBe(first)
     expect(mowing.fresh([start[0] + 1, start[1]])).toBeLessThanOrEqual(lawn.cutterWidth)
+  })
+})
+
+describe('holes', () => {
+  it('are trees, flower beds and ponds by their shape, as drawn in lawns.txt', () => {
+    const kinds = (uid: string) => {
+      const inst = INSTANCES.find((i) => i.instance_uid === uid)!
+      const counts: Record<string, number> = {}
+      for (const h of inst.region_to_cover.inner_boundaries.map(ring)) {
+        counts[holeKind(h)] = (counts[holeKind(h)] ?? 0) + 1
+      }
+      return counts
+    }
+    expect(kinds('lawn1_1s3')).toEqual({ pond: 1, tree: 1 })
+    expect(kinds('lawn2_1s3')).toEqual({ bed: 6 })
+    expect(kinds('lawn3_1s3')).toEqual({ pond: 1, tree: 1, bed: 1 })
+    expect(kinds('lawn4_1s3')).toEqual({ tree: 13 })
+    expect(kinds('lawn5_1s3')).toEqual({ pond: 1, tree: 2, bed: 2 })
   })
 })

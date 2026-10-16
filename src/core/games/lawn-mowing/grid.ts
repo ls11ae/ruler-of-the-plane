@@ -95,3 +95,21 @@ export function cutterOffsets(cutter: readonly Vec2[], center: Vec2): Vec2[] {
     .cells()
     .map(([x, y]) => [x - center[0], y - center[1]] as const)
 }
+
+/** What a hole in the lawn is drawn as. */
+export type HoleKind = 'tree' | 'bed' | 'pond'
+
+/**
+ * The art of a hole by its shape (the same rule as `scripts/lawns/make_instances.py`): a 1 × 1 or 2 × 2
+ * square is a tree, a rectangle 1 or 2 cells wide and at least 3 long a flower bed, anything else a pond.
+ */
+export function holeKind(hole: readonly Vec2[]): HoleKind {
+  const cells = rasterize([hole])
+  const w = cells.width
+  const h = cells.height
+  if (cells.count === w * h) {
+    if (w === h && w <= 2) return 'tree'
+    if (Math.min(w, h) <= 2 && Math.max(w, h) >= 3) return 'bed'
+  }
+  return 'pond'
+}
