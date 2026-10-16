@@ -12,6 +12,13 @@ export interface BoardApi {
    * that one unit is about one pixel): use as `filter={board.ink}`.
    */
   ink: string
+  /** 90 if the board is shown turned by 90° (portrait screen, wide board; see `autoRotate`), else 0. */
+  rotation: 0 | 90
+  /**
+   * A `transform` that keeps a symbol at (x, y) upright on screen when the board is turned (icons,
+   * text); undefined otherwise.
+   */
+  upright(x: number, y: number): string | undefined
 }
 
 export const BoardContext = createContext<BoardApi | null>(null)
