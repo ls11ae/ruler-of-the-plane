@@ -98,6 +98,8 @@ function Match({
     heat: false,
   })
   const [heat, setHeat] = useState<{ turn: number; grid: HeatGrid } | null>(null)
+  /** How long the computer's last move took to compute (shown in the theory view; booth check < 200 ms). */
+  const [thinkMs, setThinkMs] = useState<number | null>(null)
   const [seed] = useState(() => Math.floor(Math.random() * 1e9))
   const noticeTimer = useRef<number | undefined>(undefined)
 
@@ -130,10 +132,11 @@ function Match({
       level,
       move: { castles, player: 1, minDist, opponentMovesLeft: placed[0] < perPlayer, level: aiLevel },
       seed: seed + turn,
-    }).then(({ at }) => {
+    }).then(({ at, ms }) => {
       timer = window.setTimeout(
         () => {
           if (!live) return
+          setThinkMs(ms)
           if (at) setCastles((cs) => [...cs, { at, owner: 1 }])
           else {
             setPasses(([a, b]) => [a, b + 1])
@@ -320,6 +323,7 @@ function Match({
             setLayers={setLayers}
             heatFor={heatFor}
             heatLoading={wantHeat && heat?.turn !== turn}
+            thinkMs={vsComputer ? thinkMs : null}
             t={t}
             onClose={() => setTheory(false)}
           />

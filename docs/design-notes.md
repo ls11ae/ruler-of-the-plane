@@ -244,10 +244,22 @@ subsection below, so their branches do not conflict.
   each is rated on a land raster (spacing 0.125, 5,000–10,000 samples, rows pruned by the largest
   distance to a castle) by its swing: own points gained plus the opponent's points lost. "Leicht" takes
   a random move with at least half the best swing, "Mittel" the best swing, "Schwer" the best of its top
-  eight after the opponent's best answer (one ply ahead). The staff's difficulty (easy, normal, hard) is
-  the default strength; the setup offers all three. Measured in the cloud session: a "Schwer" move takes
-  40–110 ms, "Leicht" and "Mittel" about 10 ms; "Schwer" beat "Leicht" in 112 of 120 games and "Mittel"
-  in 74 of 120. Raster and exact scores differ by less than one point (1 % of the land) in the tests.
+  eight after the opponent's best answer (one ply ahead; as answers it rates the opponent's 30 best
+  positions and every candidate within three times the distance of the tried move, the only places the
+  move changes). Positions are tested for land and the coast margin in one floating-point pass over the
+  coast. The staff's difficulty (easy, normal, hard) is the default strength; the setup offers all three.
+  Measured in a cloud session after these speed-ups: the slowest "Schwer" move 50–55 ms (before them up
+  to 300 ms; another session measured 211–231 ms for the slower version), "Leicht" and "Mittel" a few
+  ms; "Schwer" beat "Leicht" in 104 of 120 games and "Mittel" in 77 of 120. Raster and exact scores
+  differ by less than one point (1 % of the land) in the tests.
+- **2026-10-16 The 200 ms move time is measured on a booth laptop, not in the unit tests.** Wall-clock
+  time depends on the machine (CI runners and cloud sessions vary by a factor of two or more), so
+  `ai.test.ts` logs the slowest "Schwer" move and fails only above 1 s, which catches gross slowdowns
+  without being flaky. The acceptance target of Phase 2, under 200 ms per move, is checked on each booth
+  laptop in the playtest (Phase 6): the theory view shows the computing time of the computer's last move
+  (measured in the worker). If a laptop is slower, "Schwer" can rate fewer moves ahead
+  (`LOOKAHEAD`) or use a coarser raster (`RASTER_STEP`). Alternatives: a fixed 200 ms assertion (failed
+  at 211–231 ms in another session); no timing test at all.
 - **2026-10-16 "Erobere das Land" interaction**: with a mouse the ghost castle follows the pointer and
   shows its future cell, its ring and a box with the gain ("+7 Land, +5 Stadt"), a click builds; with
   touch the ghost floats 64 px above the finger while pressed, releasing builds, and a quick tap (under

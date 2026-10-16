@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
-import { freshDevice, shot } from './helpers'
+import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -80,6 +80,7 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMob
   await shot(page, testInfo, 'lawn-mowing-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('steps-2')).toBeVisible()
+  await expectHeaderLaidOut(page)
   await shot(page, testInfo, 'lawn-mowing-start')
 
   const [one, two] = await cutterPositions(page)

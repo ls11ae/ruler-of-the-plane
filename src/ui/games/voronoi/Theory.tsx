@@ -115,6 +115,7 @@ export function TheoryPanel({
   setLayers,
   heatFor,
   heatLoading,
+  thinkMs,
   t,
   onClose,
 }: {
@@ -122,6 +123,8 @@ export function TheoryPanel({
   setLayers: (l: TheoryLayers) => void
   heatFor: string
   heatLoading: boolean
+  /** Computing time of the computer's last move, if it has moved. */
+  thinkMs: number | null
   t: VoronoiTexts
   onClose: () => void
 }) {
@@ -156,6 +159,7 @@ export function TheoryPanel({
         {t.theory.heatText(heatFor)}
         {layers.heat && heatLoading && <em> {t.theory.heatLoading}</em>}
       </p>
+      {thinkMs !== null && <p data-testid="think-time">{t.theory.thinkTime(thinkMs)}</p>}
     </aside>
   )
 }

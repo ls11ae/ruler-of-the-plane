@@ -94,6 +94,7 @@ export const de = {
     heatText: (name: string) =>
       `Wärmekarte: So viele Punkte bringt eine neue Burg an jeder Stelle für ${name} (eigene Punkte plus die, die der Gegner verliert). So bewertet der Computer seine Züge. Der Ring markiert die beste Stelle.`,
     heatFor: { you: 'dich', computer: 'den Computer', blue: 'Blau', orange: 'Orange' },
+    thinkTime: (ms: number) => `Rechenzeit für den letzten Zug des Computers: ${ms} ms.`,
     heatLoading: 'Wird berechnet …',
   },
 }

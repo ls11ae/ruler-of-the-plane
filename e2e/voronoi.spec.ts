@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { freshDevice, shot } from './helpers'
+import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -47,6 +47,7 @@ test('plays a short game against the computer on the island', async ({ page, isM
   await shot(page, testInfo, 'voronoi-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.locator('[data-castles]')).toHaveAttribute('data-turn', '0')
+  if (!isMobile) await expectHeaderLaidOut(page)
 
   const game = page.locator('[data-castles]')
   const input = page.locator('svg[role=img] rect[fill="transparent"]')
@@ -106,6 +107,7 @@ test('plays a short game against the computer on the island', async ({ page, isM
   const theory = page.getByRole('complementary', { name: 'Theorie' })
   await expect(theory).toBeVisible()
   await expect(page.getByTestId('theory-layer')).toBeVisible()
+  await expect(theory.getByTestId('think-time')).toHaveText(/letzten Zug des Computers: \d+ ms/)
   await theory.getByRole('button', { name: 'Leere Umkreise' }).click()
   await shot(page, testInfo, 'voronoi-theory')
   await theory.getByRole('button', { name: 'Voronoi-Diagramm' }).click()

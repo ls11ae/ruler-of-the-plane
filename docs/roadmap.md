@@ -122,9 +122,10 @@ lighting takes at most 10 ms per drag frame on the largest level with 17 torches
 
 Acceptance: an AI move takes under 200 ms on a booth laptop; "Schwer" beats "Leicht" in at least 70 % of
 AI-vs-AI games; raster and exact scores differ by less than 1 % of the land area.
-Status: in the cloud session a "Schwer" move takes 40–110 ms (a test checks < 200 ms), "Schwer" beat
-"Leicht" in 112 of 120 games (a test plays 12), and raster and exact land differ by less than 1 point of
-100 in the tests; check the move time on a booth laptop in the playtest.
+Status: in a cloud session the slowest "Schwer" move takes about 50 ms (the unit test only logs it and
+fails above 1 s, since wall-clock time depends on the machine), "Schwer" beat "Leicht" in 104 of 120 games
+(a test plays 12), and raster and exact land differ by less than 1 point of 100 in the tests. The 200 ms
+target is measured on a booth laptop in the playtest (Phase 6).
 
 ## Phase 3 (track B): "Gassi gehen" (Fréchet distance) (target 29 Oct) — done 2026-10-16 (booth key test open)
 
@@ -204,6 +205,10 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 
 - Playtest with teenagers (not only student assistants) on the booth laptops with external mice; fix
   confusing texts and controls.
+- Measure on each booth laptop: a "Schwer" move of "Erobere das Land" takes under 200 ms (Phase 2
+  acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
+  computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
+  lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`.
 - Final art in place, `CREDITS.md` complete, credits screen in the app.
 - Accessibility pass: contrast, colour never the only cue, readable fonts.
 

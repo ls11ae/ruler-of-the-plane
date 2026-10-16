@@ -94,6 +94,7 @@ export const en: VoronoiTexts = {
     heatText: (name: string) =>
       `Heat map: how many points a new castle brings at each spot for ${name} (own points plus what the opponent loses). This is how the computer rates its moves. The ring marks the best spot.`,
     heatFor: { you: 'you', computer: 'the computer', blue: 'Blue', orange: 'Orange' },
+    thinkTime: (ms: number) => `Computing time of the computer's last move: ${ms} ms.`,
     heatLoading: 'Computing …',
   },
 }
