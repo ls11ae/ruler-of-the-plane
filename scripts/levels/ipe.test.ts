@@ -66,12 +66,27 @@ h
           [9, 22],
         ],
         closed: true,
+        layer: 'alpha',
       },
     ])
     expect(page.markers).toEqual([
-      { kind: 'disk', at: [-3, 2] },
-      { kind: 'square', at: [102, 4] },
+      { kind: 'disk', at: [-3, 2], layer: 'alpha' },
+      { kind: 'square', at: [102, 4], layer: 'alpha' },
     ])
+  })
+
+  it('records layers: inherited from the previous object, and from a group for its children', () => {
+    const page = readIpePage(
+      ipe(`<path layer="land">0 0 m 1 0 l 1 1 l h</path>
+<path>2 0 m 3 0 l 3 1 l h</path>
+<use layer="towns" name="mark/disk(sx)" pos="1 2"/>
+<group layer="water"><path layer="land">5 0 m 6 0 l 6 1 l h</path><use name="mark/disk(sx)" pos="0 0"/></group>
+<use name="mark/disk(sx)" pos="4 4"/>`),
+    )
+    expect(page.paths.map((p) => p.layer)).toEqual(['land', 'land', 'water'])
+    expect(page.markers.map((m) => m.layer)).toEqual(['towns', 'water', 'water'])
+    // Without a layer attribute, objects are in the page's first layer.
+    expect(readIpePage(ipe('<path>0 0 m 1 0 l 1 1 l h</path>')).paths[0]!.layer).toBe('alpha')
   })
 
   it('ignores symbol definitions outside the page and rejects curves', () => {

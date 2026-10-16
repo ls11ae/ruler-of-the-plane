@@ -35,9 +35,9 @@ export function parseMatrix(text: string): Matrix {
 /** Content of an IPE page in IPE coordinates (y up), with all matrices applied. */
 export interface IpePage {
   /** Closed or open polylines, one per subpath, with at least one vertex each. */
-  paths: { vertices: Vec2[]; closed: boolean }[]
+  paths: { vertices: Vec2[]; closed: boolean; layer?: string }[]
   /** Markers (`<use name="mark/disk(sx)">`): kind is the part between `mark/` and `(`. */
-  markers: { kind: string; at: Vec2 }[]
+  markers: { kind: string; at: Vec2; layer?: string }[]
 }
 
 type XmlNode = Record<string, unknown> & { ':@'?: Record<string, string> }
@@ -90,15 +90,28 @@ export function parsePathData(data: string, matrix: Matrix): IpePage['paths'] {
   return paths
 }
 
-function walk(nodes: XmlNode[], matrix: Matrix, page: IpePage): void {
+/**
+ * Layer bookkeeping: an object on the page without a `layer` attribute is in the layer of the object
+ * before it (IPE's file format); objects inside a group are in the group's layer.
+ */
+interface LayerState {
+  current: string | undefined
+  /** Set inside a group: the group's layer, for all its children. */
+  fixed?: string | undefined
+}
+
+function walk(nodes: XmlNode[], matrix: Matrix, page: IpePage, layers: LayerState): void {
   for (const node of nodes) {
     const tag = tagOf(node)
-    if (!tag || tag === '#text') continue
+    if (!tag || tag === '#text' || tag === 'layer' || tag === 'view') continue
     const attrs = node[':@'] ?? {}
     const own = attrs.matrix ? composeMatrices(matrix, parseMatrix(attrs.matrix)) : matrix
     const children = (node[tag] as XmlNode[] | undefined) ?? []
+    const layer = 'fixed' in layers ? layers.fixed : (attrs.layer ?? layers.current)
+    if (!('fixed' in layers)) layers.current = layer
+    const tagged = layer === undefined ? {} : { layer }
     if (tag === 'path') {
-      page.paths.push(...parsePathData(textOf(children), own))
+      page.paths.push(...parsePathData(textOf(children), own).map((p) => ({ ...p, ...tagged })))
     } else if (tag === 'use') {
       const name = attrs.name ?? ''
       const match = /^mark\/([a-z]+)/.exec(name)
@@ -106,9 +119,9 @@ function walk(nodes: XmlNode[], matrix: Matrix, page: IpePage): void {
       if (!attrs.pos) throw new Error(`marker "${name}" without pos`)
       const [x, y] = parseNumbers(attrs.pos, 'marker position')
       if (x === undefined || y === undefined) throw new Error(`marker "${name}" with invalid pos`)
-      page.markers.push({ kind: match[1]!, at: applyMatrix(own, [x, y]) })
+      page.markers.push({ kind: match[1]!, at: applyMatrix(own, [x, y]), ...tagged })
     } else if (tag === 'group') {
-      walk(children, own, page)
+      walk(children, own, page, { current: layer, fixed: layer })
     }
     // <layer>, <view>, <text> and other page content carry no level geometry.
   }
@@ -116,7 +129,8 @@ function walk(nodes: XmlNode[], matrix: Matrix, page: IpePage): void {
 
 /**
  * Reads the first `<page>` of an IPE XML file. Only paths and markers inside the page count (the style
- * sheet's symbol definitions are ignored); matrices of paths, markers and groups are applied.
+ * sheet's symbol definitions are ignored); matrices of paths, markers and groups are applied, and each
+ * path and marker carries its layer.
  */
 export function readIpePage(xml: string): IpePage {
   const doc = parser.parse(xml) as XmlNode[]
@@ -124,7 +138,10 @@ export function readIpePage(xml: string): IpePage {
   if (!ipe) throw new Error('no <ipe> element')
   const page = (ipe.ipe as XmlNode[]).find((n) => tagOf(n) === 'page')
   if (!page) throw new Error('no <page> element')
+  const content = page.page as XmlNode[]
+  // Objects before the first `layer` attribute are in the page's first layer.
+  const firstLayer = content.find((n) => tagOf(n) === 'layer')?.[':@']?.name
   const result: IpePage = { paths: [], markers: [] }
-  walk(page.page as XmlNode[], IDENTITY, result)
+  walk(content, IDENTITY, result, { current: firstLayer })
   return result
 }
