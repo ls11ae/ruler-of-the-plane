@@ -37,6 +37,7 @@ const NAME_PATTERNS: Record<Collection, RegExp> = {
   divide: /^divLevel(\d+)_(\d+)$/,
   'convex-hull': /^hullLevel(\d+)$/,
   voronoi: /^map(\d+)-[a-z-]+$/,
+  'lawn-mowing': /^lawn(\d+)$/,
 }
 
 /** Splits a level file name into the level number and the optional parameter after `_`. */
@@ -192,6 +193,8 @@ function fromIpe(src: Source, xml: string, param: number | undefined): Level {
       const { points = [] } = markersOf(page, { disk: 'points' }, src)
       return convexHull(src, points.map(normaliser(points, LEVEL_SIZE['convex-hull'])))
     }
+    case 'lawn-mowing':
+      throw new Error('lawns are pyutils27 JSON, converted by convertLawns')
     case 'voronoi':
       return convertVoronoiMap(
         { id: `${src.collection}/${src.name}`, name: src.name, number: 0, source: src.source },

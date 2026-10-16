@@ -3,6 +3,7 @@ import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { isSimple, pointInRing, validatePolygonWithHoles } from '../../src/core/geometry/polygon'
 import type { Level, LevelIndex } from '../../src/core/levels/schema'
+import { checkTours, makeLawn } from '../../src/core/games/lawn-mowing/mowing'
 import { parseLevelName } from './convert'
 import { convertAll, levelFiles } from './import'
 
@@ -42,6 +43,7 @@ describe('shipped levels (public/levels)', () => {
       divide: 9,
       'convex-hull': 3,
       voronoi: 3,
+      'lawn-mowing': 6,
     })
     expect(levels.every((l) => l !== null)).toBe(true)
   })
@@ -55,6 +57,7 @@ describe('shipped levels (public/levels)', () => {
 
   it('carry the parameters of their file names', () => {
     for (const level of levels) {
+      if (level.collection === 'lawn-mowing' && level.competition) continue
       const { number, param } = parseLevelName(level.collection, level.name)
       expect(level.number).toBe(number)
       if (level.collection === 'art-gallery') expect(level.torches).toBe(param)
@@ -126,6 +129,29 @@ describe('shipped levels (public/levels)', () => {
       }
       expect(level.cities.length).toBeGreaterThanOrEqual(3)
       expect(level.mines.length).toBeGreaterThanOrEqual(1)
+    })
+  })
+
+  describe.each(levels.filter((l) => l.collection === 'lawn-mowing'))('$id', (level) => {
+    const lawn = makeLawn(level.outer, level.holes, level.cutter, level.cutterCenter)
+
+    it('is a lawn of 300 to 500 cells with a 3 × 3 cutter for 1 and 2 cutters (booth lawns)', () => {
+      if (level.competition) return
+      expect(lawn.cells.count).toBeGreaterThanOrEqual(300)
+      expect(lawn.cells.count).toBeLessThanOrEqual(500)
+      expect(lawn.offsets).toHaveLength(9)
+      expect(level.variants.map((v) => v.cutters)).toEqual([1, 2])
+      expect(level.holes.length).toBeGreaterThan(0)
+    })
+
+    it('has solutions that mow everything, with the stated longest tour', () => {
+      for (const v of level.variants) {
+        if (!v.solution) continue
+        const result = checkTours(lawn, v.solution.tours)
+        expect(result.uncovered, v.uid).toEqual([])
+        expect(result.maxTourLength).toBe(v.solution.maxTourLength)
+        expect(v.solution.tours).toHaveLength(v.cutters)
+      }
     })
   })
 })

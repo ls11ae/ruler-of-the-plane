@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { COLLECTIONS, LEVEL_FORMAT_VERSION, type Level, type LevelIndex } from '../../src/core/levels/schema'
 import { convertLevel, FOLDERS, NEW_FOLDERS } from './convert'
+import { convertLawns } from './lawns'
 
 /** JSON with two-space indentation, but number pairs (points) and bounds on one line. */
 export function formatJson(value: unknown): string {
@@ -47,6 +48,7 @@ export function convertAll(legacyDir: string, levelsDir: string): Level[] {
     }
     levels.push(...converted)
   }
+  levels.push(...convertLawns(join(levelsDir, 'lawn-mowing')))
   return levels
 }
 

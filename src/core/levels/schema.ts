@@ -19,6 +19,7 @@ export type Collection =
   | 'divide'
   | 'convex-hull'
   | 'voronoi'
+  | 'lawn-mowing'
 
 export const COLLECTIONS: readonly Collection[] = [
   'art-gallery',
@@ -28,6 +29,7 @@ export const COLLECTIONS: readonly Collection[] = [
   'divide',
   'convex-hull',
   'voronoi',
+  'lawn-mowing',
 ]
 
 /** Larger side of the bounding box of an imported IPE level, per collection (as in Unity). */
@@ -39,6 +41,7 @@ export const LEVEL_SIZE: Record<Collection, number> = {
   divide: 5,
   'convex-hull': 6,
   voronoi: 16,
+  'lawn-mowing': 1,
 }
 
 interface LevelBase {
@@ -111,7 +114,38 @@ export interface VoronoiLevel extends LevelBase {
   mountains: Vec2[]
 }
 
-export type Level = ArtGalleryLevel | KingsTaxesLevel | DivideLevel | ConvexHullLevel | VoronoiLevel
+/** The best known tours of a lawn for one number of cutters, as corner points (pyutils27 `tours`). */
+export interface LawnSolution {
+  tours: Vec2[][]
+  /** The longest tour: the objective, and the target shown in the game. */
+  maxTourLength: number
+  /** Solution file, relative to the repository root. */
+  source: string
+  /** Who or what computed it (the solution's `meta`, e.g. the algorithm), if given. */
+  meta?: Record<string, unknown>
+}
+
+/**
+ * "Rasenmähen" (CG:SHOP 2027 lawn mowing), from the pyutils27 instances in `levels/lawn-mowing/`. Unlike
+ * the other levels it keeps the competition's integer coordinates with y pointing UP (cell (x, y) is the
+ * square [x, x + 1] × [y, y + 1]); the game flips y to draw. `bounds` is the region's bounding box.
+ */
+export interface LawnMowingLevel extends LevelBase {
+  collection: 'lawn-mowing'
+  /** Outer boundary (counterclockwise) and holes (clockwise), as in pyutils27. */
+  outer: Vec2[]
+  holes: Vec2[][]
+  /** The cutter polyomino and its reference lattice point (`cutter`, `cutter_center`). */
+  cutter: Vec2[]
+  cutterCenter: Vec2
+  /** The instances of this lawn by number of cutters, with the best known solution once available. */
+  variants: { cutters: number; uid: string; solution?: LawnSolution }[]
+  /** A real CG:SHOP instance for the theory view, not a booth lawn. */
+  competition?: boolean
+}
+
+export type Level =
+  ArtGalleryLevel | KingsTaxesLevel | DivideLevel | ConvexHullLevel | VoronoiLevel | LawnMowingLevel
 
 /** `public/levels/index.json`: level ids per collection, in the Unity scene order. */
 export interface LevelIndex {

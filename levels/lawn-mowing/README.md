@@ -26,7 +26,13 @@ once for two cutters.
 - `instances/<lawn>_<k>s3.instance.json`: the ten instances (k = number of cutters).
 - `solutions/<lawn>_<k>s3.solution.json`: solutions of the chair's solver, in the pyutils27 solution
   format. They are kept apart from the instances because pyutils27's instance database treats every JSON
-  file in a folder as an instance.
+  file in a folder as an instance. `npm run levels` puts instances and solutions into
+  `public/levels/lawn-mowing/<lawn>.json` (one file per lawn with both numbers of cutters).
+- `competition/`: a real CG:SHOP 2027 instance with the example solution from pyutils27 (MIT), shown in
+  the theory view.
+- `fixtures/`: tours on some of these instances checked by the pyutils27 verifier
+  (`python3 scripts/lawns/make_fixtures.py`); a test compares the game's coverage and tour lengths with
+  them.
 
 ## Solutions wanted
 
