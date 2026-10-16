@@ -81,8 +81,20 @@ pull request that starts using it.
 
 ### Rasenmähen
 
-| File | Source | Author | Licence | Used for | Changes |
-| ---- | ------ | ------ | ------- | -------- | ------- |
+| File                                                              | Source            | Author | Licence | Used for                        | Changes |
+| ----------------------------------------------------------------- | ----------------- | ------ | ------- | ------------------------------- | ------- |
+| `assets/kenney/scribble-dungeons/tiles.png`                       | Scribble Dungeons | Kenney | CC0 1.0 | Grid paper around the lawn      | none    |
+| `assets/kenney/scribble-dungeons/grass.png`                       | Scribble Dungeons | Kenney | CC0 1.0 | Uncut grass (over a green fill) | none    |
+| `assets/kenney/scribble-dungeons/water.png`                       | Scribble Dungeons | Kenney | CC0 1.0 | Ponds                           | none    |
+| `assets/kenney/scribble-dungeons/tree.png`                        | Scribble Dungeons | Kenney | CC0 1.0 | Trees                           | none    |
+| `assets/kenney/scribble-dungeons/plants.png`                      | Scribble Dungeons | Kenney | CC0 1.0 | Flower beds                     | none    |
+| `assets/kenney/scribble-dungeons/characters/red_character.png`    | Scribble Dungeons | Kenney | CC0 1.0 | Mower 1 (number drawn on top)   | none    |
+| `assets/kenney/scribble-dungeons/characters/purple_character.png` | Scribble Dungeons | Kenney | CC0 1.0 | Mower 2 (number drawn on top)   | none    |
+
+The problem, its file formats and the competition instance `smr_882k_481_3s3` with its example solution
+(`levels/lawn-mowing/competition/`, shown in the theory view) come from CG:SHOP 2027 and
+[pyutils27](https://github.com/CG-SHOP/pyutils27) (MIT, © 2026 Technische Universität Braunschweig,
+Algorithms Group, Phillip Keldenich). The five booth lawns were made for this edition.
 
 ### Straßenbau
 

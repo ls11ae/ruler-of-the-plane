@@ -148,28 +148,35 @@ Status: in the cloud session a "Schwer" move takes 40–110 ms (a test checks < 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
 
-## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct)
+## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct) — done 2026-10-16 (solver targets and playtest open)
 
 - Read instances and solutions in the pyutils27 JSON formats; booth lawns are small polyominoes with
   holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters. — lawns designed 2026-10-16 (five lawns,
-  `levels/lawn-mowing/`); solver solutions requested from the chair.
+  `levels/lawn-mowing/`); solver solutions requested from the chair. Reading and import done 2026-10-16
+  (`npm run levels` picks up `levels/lawn-mowing/solutions/` once the files are there).
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
-  (space) drives every cutter back to its start on the shortest (L1) way and closes the tour.
+  (space) drives every cutter back to its start on the shortest (L1) way and closes the tour. — done
+  2026-10-16
 - On-screen controls for phones: a direction pad for one cutter (holding a direction repeats at the same
   fixed rate as the keys) plus a "Feierabend" button; on phones the lawns are played with one cutter. A
-  phone smoke test mows a lawn with them.
+  phone smoke test mows a lawn with them. — done 2026-10-16
 - Live display: mowed share, steps per cutter, the longest tour (the score), and the target from the
-  chair's solver for this lawn (stored with the level; shown as a placeholder until provided).
+  chair's solver for this lawn (stored with the level; shown as a placeholder until provided). — done
+  2026-10-16 (until the solver's tours arrive, the target is the strip strategy's, marked as such)
 - Theory view: the solver's tours as an animation, the lower bound from the cutter width, the min-max
-  objective, and one real competition instance with a solution.
+  objective, and one real competition instance with a solution. — done 2026-10-16 (the strips stand in
+  for the solver's tours until they arrive)
 - Look as in `docs/look/rasenmaehen.webp`: Scribble grid paper; uncut cells green with grass, mowed cells
   striped light green, holes (pond, tree, flower bed) from the Scribble tiles, cutters as red and purple
-  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines.
+  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines. — done 2026-10-16
 
 Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test fixtures (generated once
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
 laptop keyboard; one player can mow a lawn on a phone with the direction pad.
+Status: coverage and lengths agree with the pyutils27 verifier on the fixtures (three booth lawns and a
+competition instance, 25 tours); the smoke tests mow lawn 1 with two players on the laptop keyboard and
+with the direction pad on a phone; check the key pairs with the key test on the booth laptops.
 
 ## Phase 5 (track B, optional): "Straßenbau" (MST) (target 31 Oct)
 

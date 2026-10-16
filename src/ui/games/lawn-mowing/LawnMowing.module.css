@@ -1,0 +1,460 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--paper);
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.boardArea {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 1.4rem;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.percent {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.percent small {
+  font-size: 1rem;
+  margin-left: 0.3em;
+}
+
+.notice {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  z-index: 5;
+  transform: translateX(-50%);
+  padding: 8px 18px;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 1.15rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Bottom panels as in the mockup: one card per mower, the longest round, "Feierabend". */
+.panels {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 16px 14px;
+  border-top: 2px solid var(--ink-faint);
+}
+
+.cards {
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 8px 16px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.token {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.cardText small {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.big {
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+.keys {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.keyRow {
+  display: flex;
+  gap: 4px;
+}
+
+.homeButton {
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.homeButton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.urgent {
+  background: var(--light-soft);
+  animation: nudge 1.2s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  50% {
+    box-shadow: 0 0 0 6px var(--light);
+  }
+}
+
+/* Direction pad (phones). */
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 50px);
+  gap: 3px;
+  flex: none;
+  touch-action: none;
+}
+
+.padButton {
+  display: grid;
+  place-items: center;
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 3px 0 var(--ink);
+  color: var(--ink);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.padButton.held {
+  background: var(--light-soft);
+  box-shadow: none;
+  transform: translateY(3px);
+}
+
+.up {
+  grid-area: 1 / 2;
+}
+.left {
+  grid-area: 2 / 1;
+}
+.right {
+  grid-area: 2 / 3;
+}
+.down {
+  grid-area: 3 / 2;
+}
+
+.phone {
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 12px;
+}
+
+.phoneSide {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.phoneStats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.phoneLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.phoneStats small {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.phone .big {
+  font-size: 1.3rem;
+}
+
+.phone .homeButton {
+  justify-content: center;
+  min-height: 56px;
+  padding: 6px 10px;
+}
+
+.phone .homeButton .cardText {
+  align-items: center;
+  white-space: normal;
+  text-align: center;
+}
+
+/* Setup ("Neues Spiel"). */
+.setup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: min(720px, 84vw);
+}
+
+.setup h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+}
+
+.setup p {
+  margin: 0;
+}
+
+.lawns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lawnCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.lawnCard[aria-pressed='true'] {
+  background: var(--light-soft);
+  outline: 3px solid var(--light);
+}
+
+.lawnCard svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 1.2;
+}
+
+.lawnName {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.lawnInfo {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Theory panel. */
+.theory {
+  width: 360px;
+  flex: none;
+  overflow: auto;
+  padding: 12px 16px 16px;
+  border-left: 3px solid var(--ink);
+  background: var(--paper);
+  font-size: 1.05rem;
+  user-select: text;
+}
+
+.theory p {
+  margin: 0 0 0.6em;
+}
+
+.theory h3 {
+  margin: 1em 0 0.3em;
+  font-size: 1.2rem;
+}
+
+.theoryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.theoryHead h2 {
+  font-size: 1.6rem;
+}
+
+/* Animations ("So geht's", "Was steckt dahinter?", theory). */
+.animationSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 40vh;
+  margin-bottom: 6px;
+}
+
+/* "So geht's": a 6 s loop. The mower drives the top strip, drops down, drives the bottom strip back. */
+.loop * {
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+}
+
+.mower {
+  animation-name: drive;
+}
+
+.mowTop {
+  animation-name: mowTop;
+  transform-origin: 0 0;
+}
+
+.mowBottom {
+  animation-name: mowBottom;
+  transform-origin: 10px 0;
+}
+
+@keyframes drive {
+  0% {
+    transform: translate(0, 0);
+  }
+  40% {
+    transform: translate(7px, 0);
+  }
+  50% {
+    transform: translate(7px, 3px);
+  }
+  90%,
+  100% {
+    transform: translate(0, 3px);
+  }
+}
+
+@keyframes mowTop {
+  0% {
+    transform: scaleX(0.3);
+  }
+  40%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes mowBottom {
+  0%,
+  50% {
+    transform: scaleX(0);
+  }
+  51% {
+    transform: scaleX(0.3);
+  }
+  90%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop *,
+  .urgent {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .panels:not(.phone) {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
+  .percent {
+    font-size: 1.3rem;
+  }
+  .notice {
+    font-size: 1rem;
+    white-space: normal;
+    width: max-content;
+    max-width: 90%;
+  }
+  .lawns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .lawnCard svg {
+    aspect-ratio: 2 / 1;
+  }
+  .lawnName {
+    font-size: 0.9rem;
+  }
+  .setup {
+    gap: 8px;
+  }
+}
+
+@media (max-aspect-ratio: 1 / 1) {
+  .main {
+    flex-direction: column;
+  }
+  .theory {
+    width: auto;
+    max-height: 45%;
+    border-left: none;
+    border-top: 3px solid var(--ink);
+    font-size: 1rem;
+  }
+}

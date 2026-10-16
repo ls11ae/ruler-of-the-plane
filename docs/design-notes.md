@@ -41,7 +41,8 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 ## 4. Open questions (for Kevin)
 
 - Booth laptops: operating system, browser, external mice; key test on each keyboard.
-- Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations).
+- Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations): the
+  instances are in `levels/lawn-mowing/instances/`, the solutions go to `levels/lawn-mowing/solutions/`.
 - Where tsp-boards is published (it is private and not deployed yet).
 - Whether a floor plan of a TU Dortmund building can be used as a level.
 - Who is responsible for the Impressum and privacy notice of the public site.
@@ -262,5 +263,38 @@ subsection below, so their branches do not conflict.
   attract screen plays behind its text (shared change: discovered like the games, a failing demo just
   disappears). "Erobere das Land" plays Mittel against Schwer with 8 castles each, one castle every
   0.9 s, map after map.
+
+- **2026-10-16 "Rasenmähen" keeps the competition's coordinates**: the lawn levels in
+  `public/levels/lawn-mowing/` store region, cutter and tours as in pyutils27 (integers, y up); the game
+  flips y only to draw, and draws a cutter at the centre of its footprint (the reference point of the
+  3 × 3 cutter is the corner of its middle cell). Alternative: convert to y down at import. Reason: the
+  solver's files and the verifier fixtures can be compared without conversion. Coverage and tour lengths
+  agree with the pyutils27 verifier on committed fixtures (`levels/lawn-mowing/fixtures/`, made by
+  `scripts/lawns/make_fixtures.py`).
+- **2026-10-16 (proposed) Start points and target of "Rasenmähen"**: cutters start on the first point of
+  the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there. Until the
+  chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high as the
+  cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
+  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three
+  up to 1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to
+  20 % above. Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the
+  start as a constraint); "[Wert]" as a placeholder (no goal to play for).
+- **2026-10-16 "Rasenmähen" controls**: cutter 1 WASD, cutter 2 the arrow keys (with one cutter both
+  steer it), gamepads 1 and 2, space or A for "Feierabend". A press moves one lattice step at once (on
+  the key event, so a short tap between two frames counts), then after 220 ms one step every 115 ms
+  (about 9 per second); of several held keys of one cutter the newest counts. Keys and the direction pad
+  mean screen directions, also on a phone board turned by 90°. Cutters may drive up to 2 cells beyond
+  the lawn's bounding box and cross holes. Phones (coarse pointer) play with one cutter: a direction pad
+  with hold buttons at the same rate and a "Feierabend" button; the two-cutter option is not offered there.
+- **2026-10-16 "Feierabend"**: all cutters drive home at once on a shortest L1 way (of the two L shapes
+  the one through more uncut lawn), 70 ms per step. If lawn is left, play continues from the starts ("Da
+  ist noch Gras: n Felder!"); the round ends when everything is mowed and every cutter is home. The live
+  display shows each cutter's steps and its way back ("+6 zurück"), the longest tour including the way
+  back (the score) and the target. Alternative: "Feierabend" only once everything is mowed. Reason:
+  players learn that the way back counts.
+- **2026-10-16 Theory of "Rasenmähen"**: the min-max objective, the lower bound ⌈(N − 9k)/3k⌉ rounded
+  up to an even number (a closed tour on the grid has even length) with the lawn's numbers, the solver's
+  tours (or the strips) played back on a small picture, and the competition instance `smr_882k_481_3s3`
+  (481 cells, three cutters) with the example solution of pyutils27.
 
 ### Track B ("Gassi gehen", "Straßenbau")
