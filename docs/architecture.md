@@ -26,7 +26,9 @@ touches no shared file:
 7. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
-   turned board) and how to do a touch drag with Pointer Events.
+   turned board) and how to do a touch drag with Pointer Events; `e2e/frechet.spec.ts` how to hold keys
+   or several touch buttons at once. Call `expectHeaderLaidOut(page)` (helpers) once the game shows its
+   header: it fails if title, status and buttons overlap.
 
 ## Shared building blocks
 
@@ -38,7 +40,7 @@ touches no shared file:
 | Buttons, keycaps, stars, progress bar  | `components/Button` (`variant`: solid, accent, dashed), `Keycap` (`code`, `pressed`), `Stars`, `ProgressBar`                                                                              |
 | "So geht's"                            | `components/HowToOverlay` (2–3 sentences, optional animation, key hints)                                                                                                                  |
 | End of a round                         | `components/ResultScreen` (outcome, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                                         |
-| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format                                                                                            |
+| Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format (nickname picker with the last name first and a lucky number built in)                     |
 | "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                                                |
 | Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                                              |
 | Levels                                 | `useLevel<ArtGalleryLevel>('art-gallery/agLevel4_8')`, `loadLevelIndex()` (`src/ui/levels.ts`; format in `src/core/levels/schema.ts`)                                                     |
@@ -63,5 +65,7 @@ touches no shared file:
   there after 90 s without input, with the language reset to German.
 - Staff menu: hold the compass on the start map for 3 s, or press Ctrl+Shift+S; then the PIN from
   `VITE_STAFF_PIN` (no PIN if empty).
-- Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version takes
-  over on the next load.
+- Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version
+  installs in the background and waits; the app activates it and reloads as soon as it shows the start
+  map or the attract screen, never during a game (`src/main.tsx`, `shell/update.ts`). An open page checks
+  for a new version every hour.

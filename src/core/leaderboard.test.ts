@@ -3,8 +3,10 @@ import {
   addEntry,
   BOARD_SIZE,
   dayKey,
+  parseLucky,
   rankFor,
   recordVersus,
+  stepLucky,
   todaysBoard,
   todaysVersus,
   type LeaderboardEntry,
@@ -59,5 +61,24 @@ describe('leaderboard', () => {
     expect(t).toEqual({ day: '2026-11-07', human: 2, machine: 1 })
     expect(todaysVersus(t, '2026-11-08')).toEqual({ day: '2026-11-08', human: 0, machine: 0 })
     expect(recordVersus(t, 'machine', '2026-11-08')).toEqual({ day: '2026-11-08', human: 0, machine: 1 })
+  })
+})
+
+describe('lucky numbers', () => {
+  it('accept 1 to 99 typed as digits, nothing else', () => {
+    expect(parseLucky('7')).toBe(7)
+    expect(parseLucky('99')).toBe(99)
+    expect(parseLucky('0')).toBeUndefined()
+    expect(parseLucky('')).toBeUndefined()
+    expect(parseLucky('4a2')).toBe(42)
+    expect(parseLucky('123')).toBe(12)
+  })
+
+  it('step through none, 1 … 99 and back to none', () => {
+    expect(stepLucky(undefined, 1)).toBe(1)
+    expect(stepLucky(98, 1)).toBe(99)
+    expect(stepLucky(99, 1)).toBeUndefined()
+    expect(stepLucky(undefined, -1)).toBe(99)
+    expect(stepLucky(1, -1)).toBeUndefined()
   })
 })

@@ -157,7 +157,7 @@ export function DemoPage() {
         <HowToOverlay
           onClose={() => setOverlay(null)}
           keys={[
-            { codes: ['KeyA'], label: t.demo.owner },
+            { codes: ['KeyA'], label: t.demo.person },
             { codes: ['KeyW', 'KeyA', 'KeyS', 'KeyD'], label: t.demo.mower1 },
             { codes: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], label: t.demo.mower2 },
           ]}

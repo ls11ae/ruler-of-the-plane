@@ -151,7 +151,7 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Offline via vite-plugin-pwa** (Workbox, `generateSW`): the whole build including every
   level JSON is precached; a new service worker takes over at once (`skipWaiting`, `clientsClaim`) and
   the error boundary's way back reloads the page, in case an updated deployment removed an old game
-  chunk. Manifest with `display: fullscreen`; the app icon is a compass rose drawn for this repository.
+  chunk. (Updates changed in Phase 3, see "Updates wait for the start map" under track B.) Manifest with `display: fullscreen`; the app icon is a compass rose drawn for this repository.
   Alternative: a hand-written service worker. Reason: the plugin knows the hashed file names.
 - **2026-10-16 English names of the places** (shown with the language switch): "Light the Dungeon",
   "Conquer the Land", "Walk the Dog", "Mow the Lawn", "Road Works", "Old Ruins", "Round Trip". The map
@@ -162,7 +162,7 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Every game playable on a phone in portrait** (Kevin). Visitors open the QR code on their
   phones, so the laptops stay the booth hardware but phones are no longer only a bonus. Pointer games use
   portrait screens well (e.g. a wide board rotated by 90°), with touch targets of at least 44 px; the
-  keyboard games get on-screen controls: two large hold buttons for owner and dog in "Gassi gehen"
+  keyboard games get on-screen controls: two large hold buttons for person and dog in "Gassi gehen"
   (Phase 3), a direction pad for one cutter plus a "Feierabend" button in "Rasenmähen" (Phase 4). Each
   game's Playwright smoke test plays a level in the laptop and the phone project. Alternative: phones
   only for the start map and the explanations. Reason: most visitors who scan the QR code will play at
@@ -298,3 +298,114 @@ subsection below, so their branches do not conflict.
   (481 cells, three cutters) with the example solution of pyutils27.
 
 ### Track B ("Gassi gehen", "Straßenbau")
+
+- **2026-10-16 Result dialog fits a laptop screen** (shared `ResultScreen`). Outcome and leaderboard
+  share the left column, "Was steckt dahinter?" the right one; the card is up to 1120 px wide and the
+  animation takes the height that is left (`clamp(110px, 100dvh − 530px, 40vh)`), so the dialog with
+  the name picker and nine entries fits 1280 × 800 and 1366 × 768 without scrolling (a smoke test
+  checks both). The leaderboard list switches to one column by container width. Alternatives: fewer
+  nicknames or entries (less choice), the leaderboard on a second page (one more click at the booth).
+  On phones the dialog still scrolls.
+- **2026-10-16 Updates wait for the start map** (shared shell). A new service worker installs in the
+  background and waits (`registerType: 'prompt'`, no `skipWaiting`); as soon as the app shows the start
+  map or the attract screen (staff menu closed), it activates the new version and reloads, so a device
+  that visited before shows a new deployment within seconds of the first load instead of on the second
+  one, and never reloads during a game. Until then the old service worker keeps serving the old files,
+  so a running game cannot lose a chunk. An open page (the booth) checks for a new version every hour.
+  Alternatives: keep `skipWaiting` and reload on `controllerchange` (the new worker would already serve
+  new files to the old page mid-game); a "new version" button (visitors would not press it).
+- **2026-10-16 Game header wraps instead of overlapping** (shared `GameHeader`). It measures the natural
+  width of its parts (back button, titles, status, buttons); when they do not fit in one line, the
+  status moves to a centred line of its own and the buttons wrap. Before, the status could shrink to
+  nothing and its content was drawn over the title between about 721 and 1180 px. A smoke test checks
+  at 768, 1024 and 1280 px that nothing overlaps and the title is not cut off (`expectHeaderLaidOut` in
+  `e2e/helpers.ts`, for every game's test to reuse). Alternatives: a fixed breakpoint (breaks again
+  with a longer status), shrinking fonts and buttons (hit targets below 44 px).
+- **2026-10-16 "Licht ins Verlies" counts torches without a limit in the text.** The header shows
+  "Fackeln: 4" (dots: the level's number dashed, extra torches orange) and the subtitle "Ziel: 3
+  Fackeln" instead of "Fackeln: 4 von 3" and "3 Fackeln erlaubt", which read oddly because more torches
+  may be placed (they cost stars).
+- **2026-10-16 Leaderboard names: remembered, all reachable, optional lucky number** (Kevin). The
+  nickname chosen last is offered first (accent button "Wieder als …") the next time a score makes a
+  board; in kiosk mode it is forgotten when the attract screen takes over (kiosk timeout), otherwise the
+  device keeps it. "Andere Namen" pages through all 32 nicknames in a shuffled order (six per page, with
+  a page counter), so every name can be reached. An optional lucky number 1–99 (digits typed, or − and
+  +) follows the name ("Kluge Eule 7"); entries store it next to the nickname id. Still no free-text
+  names. Alternatives: random subsets only (some names never offered), one list of all 32 names (too
+  tall for the result dialog), letters or initials (free text by the back door).
+- **2026-10-16 "Mensch" and "person", not "Herrchen" and "owner"** (Kevin). The one walking the dog is
+  called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
+  code uses `person` too, e.g. the colour `--person`). The mockup `docs/look/gassi-gehen.webp` still
+  shows the old word.
+- **2026-10-16 (proposed) "Gassi gehen" walks are TypeScript data, not IPE files**
+  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in
+  metres (at most 20 segments), with a pond or bushes where needed; trees, rocks and a well are
+  scattered by a seeded generator away from the paths. The leash is not stored but computed: Fréchet
+  distance × the walk's factor (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up
+  to 0.1 m (3.6 to 6.2 m). Alternatives: IPE files with a new collection in the importer (a shared
+  file that track A changes at the same time for its maps). Reason: no shared importer change in
+  parallel with track A; the paths are few and short. Can move to IPE once both tracks are merged.
+- **2026-10-16 "Gassi gehen" walking rules.** Person and dog walk at 2.2 m/s (about 15–35 s per walk
+  if nobody waits); a frame is checked in four steps and the moment the leash would get longer is found
+  by bisection, so the leash never shows more than its length. The leash sags while slack and turns
+  orange-red from 85 % of its length, when a bubble says "Leine fast straff!"; on the first two walks
+  it also names the key to hold (the walker behind, whose step shortens the leash). As soon as no way to
+  the castle is left with this leash, a banner says "Sackgasse" with a restart button (the computer
+  knows: reachability from the current position). A snapped leash opens "Leine zu straff!" with who
+  should have waited and "Nochmal". Alternatives: the leash stops the walker instead of failing (no
+  tension, against the roadmap); no dead-end hint (visitors would stand stuck).
+- **2026-10-16 (proposed) "Gassi gehen" scoring**: stars by the longest leash the walk needed compared
+  with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk is
+  better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time
+  does not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
+- **2026-10-16 "Gassi gehen" controls.** The footer shows "A Mensch geht" and "L Hund läuft" as hold
+  buttons that also work with the mouse; on touch screens they are two large buttons side by side
+  (left person, right dog), each with its own touch point, so both can be held. Gamepad: left side
+  (stick or d-pad left, X) for the person, right side (right, B) for the dog. Keys are read per frame
+  from the shared key state.
+- **2026-10-16 "Gassi gehen" theory view.** A square free-space diagram (axes are the two paths' arc
+  lengths, each scaled to the square, so holding both keys is a fixed slope but not 45°), painted on a
+  canvas from a distance field (200 × 200, computed once per walk; thresholding is fast enough for the
+  slider), hatched where the leash does not reach, thin lines at the corners of the paths; the
+  player's walk green, the computer's walk dashed (traced back through the reachable boundaries,
+  preferring steps where both walk), the narrowest spot of the computer's walk marked. Ticks on the
+  ε slider are the critical values where a passage opens at a corner (vertex–segment distances and the
+  start and end distances); ‹ and › step through them; the text names the number of all candidates
+  (with the bisector values) and the halving steps. Pointing at the diagram shows ghosts of person and
+  dog in the park. Sandbox: draw the person's path, then the dog's (simplified to at most 20 segments
+  with a 0.35 m tolerance), see their diagram, and walk them ("Ausprobieren", leash 1.2 × Fréchet
+  distance).
+- **2026-10-16 "Schätz die Leine"**: the player sets a length and presses "Probieren"; the computer
+  walks a walk with that leash, or walks its best walk until the leash gets too taut (red). Tries are
+  marked on the slider (green worked, red did not). "Auflösen" shows the Fréchet distance; stars by the
+  shortest guess that worked (within 5 % three, within 15 % two). The explanation is the computer's
+  own method: decide a length in the diagram, halve the range, only critical values. No leaderboard
+  (the answer is the same for everyone).
+- **2026-10-16 "Gassi gehen" smoke test plays closed-loop.** The park exposes the walkers' positions
+  (`data-walk` on the board area); the test reads them every 80 ms and holds what the game's hint
+  advises. A precomputed key schedule failed: each slot ran a little long in the browser and the
+  walkers drifted from the plan.
+- **2026-10-16 "Straßenbau" maps**: the four Unity MST maps (five places each) are short warm-ups, so
+  they are followed by the point sets of Unity's spanner and TSP levels (9, 12, 16 and 19 places, used
+  for the MST), then random villages (8 places, one more per new map up to 14; seeded, the seed shown
+  in the subtitle so a map can be reproduced). Castles (the levels' `square` markers) only look
+  different. Alternatives: random maps only after the Unity ones (four maps of five places are over in
+  a minute); the 26-place spanner map (too long for the booth).
+- **2026-10-16 "Straßenbau" controls and checks.** Drag from a place to another, or tap two places one
+  after the other (phones), to build; tap or click a road to remove it (mouse: a road under the pointer
+  turns red). Places are 66 px icons with 28 px hit radius. The header shows the length (1 unit =
+  1 km) and either how many parts are still separate, "+x % über dem Optimum" (one decimal below 10 %,
+  so it never reads +0 %) or "Optimal!". The round is won as soon as the network connects everything
+  and is as long as a minimum spanning tree (lengths compared, so ties never reject an optimal tree).
+- **2026-10-16 (proposed) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the longest
+  road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
+  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no
+  place. Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time
+  to the optimum plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at
+  a "Fertig" button (the game would end before the optimum, which is the point), no hints (players get
+  stuck on the 19-place map).
+- **2026-10-16 "Straßenbau" explanation and theory**: the result shows Kruskal on the player's map
+  (roads by length, a ring-closing road flashes red and disappears); the theory panel explains why the
+  shortest network is a tree (n − 1 of n(n − 1)/2 possible roads) and runs Kruskal step by step on the
+  map itself (next step, all steps, from the start), and says that solutions are checked by comparing
+  lengths.

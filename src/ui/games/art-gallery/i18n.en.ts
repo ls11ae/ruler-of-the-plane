@@ -3,8 +3,8 @@ import type { ArtGalleryTexts } from './i18n.de'
 export const en: ArtGalleryTexts = {
   title: 'Light the Dungeon',
   subtitle: (i: number, n: number, k: number, expert: boolean) =>
-    `${expert ? 'Expert dungeon' : 'Dungeon'} ${i} of ${n} · ${k} torches allowed`,
-  torches: (n: number, k: number) => `Torches: ${n} of ${k}`,
+    `${expert ? 'Expert dungeon' : 'Dungeon'} ${i} of ${n} · goal: ${k} ${k === 1 ? 'torch' : 'torches'}`,
+  torches: (n: number) => `Torches: ${n}`,
   lit: 'lit',
   litLabel: 'Lit share of the dungeon',
   levels: 'Dungeons',
@@ -12,7 +12,7 @@ export const en: ArtGalleryTexts = {
   hintMouse: 'Click: place a torch · Drag: move it · Drag out of the dungeon: remove it',
   hintTouch: 'Tap: place a torch · Drag: move it · Drag onto the bucket: remove it',
   trash: 'Drag here to remove the torch',
-  board: (k: number) => `Dungeon, ${k} torches allowed`,
+  board: (k: number) => `Dungeon, goal: ${k} ${k === 1 ? 'torch' : 'torches'}`,
   howTo: (k: number) => [
     'Place torches in the dungeon until everything is lit.',
     'Each torch lights everything it can see: walls and pillars cast shadows.',

@@ -9,6 +9,7 @@ import { useSettings } from './shell/settings'
 import { StaffMenu } from './shell/StaffMenu'
 import { StartMap } from './shell/StartMap'
 import { useUi } from './shell/ui'
+import { canReloadNow, useUpdate } from './shell/update'
 import './styles/global.css'
 
 /** Ctrl+Shift+S opens the staff menu (the other way in is a 3 s press on the compass). */
@@ -42,6 +43,16 @@ function useKiosk() {
   )
 }
 
+/** A new version waits: switch to it as soon as a reload loses nothing (start map, attract screen). */
+function useUpdateWhenIdle(safe: boolean) {
+  const install = useUpdate((s) => s.install)
+  useEffect(() => {
+    if (!install || !safe) return
+    useUpdate.setState({ install: null })
+    install()
+  }, [install, safe])
+}
+
 export function App() {
   const route = useRoute()
   const language = useSettings((s) => s.language)
@@ -49,6 +60,7 @@ export function App() {
   const attract = useUi((s) => s.attract)
   useStaffShortcut()
   useKiosk()
+  useUpdateWhenIdle(canReloadNow({ onStartMap: route.name === 'start', attract, staffOpen }))
 
   useEffect(() => {
     document.documentElement.lang = language

@@ -36,7 +36,11 @@ interface ResultScreenProps {
   onClose?: () => void
 }
 
-/** End of a round: outcome and stars, "Was steckt dahinter?" with an animation, buttons, leaderboard. */
+/**
+ * End of a round: outcome and stars, "Was steckt dahinter?" with an animation, buttons, leaderboard.
+ * On a laptop (1280 × 800, 1366 × 768) it fits without scrolling: outcome and leaderboard on the left,
+ * the explanation on the right, its animation as tall as the screen allows.
+ */
 export function ResultScreen(props: ResultScreenProps) {
   const t = useT()
   const { outcome, stars, record, stats, explanation, animation, leaderboard } = props
@@ -44,6 +48,7 @@ export function ResultScreen(props: ResultScreenProps) {
     <Overlay
       title={props.title ?? (outcome === 'won' ? t.result.won : t.result.lost)}
       onClose={props.onClose}
+      className={styles.card}
       actions={
         <>
           {props.onTheory && <Button onClick={props.onTheory}>{t.game.theory}</Button>}
@@ -60,17 +65,17 @@ export function ResultScreen(props: ResultScreenProps) {
     >
       <div className={styles.result}>
         <div className={styles.outcome}>
-          {stars !== undefined && <Stars count={stars} size={48} />}
+          {stars !== undefined && <Stars count={stars} size={44} />}
           {record && <span className={styles.record}>{t.result.record}</span>}
           {stats && <div className={styles.stats}>{stats}</div>}
         </div>
         <section className={styles.behind}>
           <h3>{t.result.behind}</h3>
-          {animation && <div className={styles.animation}>{animation}</div>}
+          {animation && <div className={styles.resultAnimation}>{animation}</div>}
           <p>{explanation}</p>
         </section>
         {leaderboard && (
-          <div className={styles.wide}>
+          <div className={styles.board}>
             <LeaderboardPanel submission={leaderboard} />
           </div>
         )}

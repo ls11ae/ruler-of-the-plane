@@ -15,3 +15,6 @@ The geometry in the screenshots is computed (visibility polygons, Voronoi cells,
 coverage of the cutters); the numbers are sample values, and "[Wert]" marks the solver target that is
 still missing. Match the look (ink on paper or parchment, colour only for players, light and
 territories, Eagle Lake for titles, Patrick Hand for text), not the exact layout.
+
+In `gassi-gehen.webp` the one walking the dog is still called "Herrchen"; the app says "Mensch" (German)
+and "person" (English), see the decision log.
