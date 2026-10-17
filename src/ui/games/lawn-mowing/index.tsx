@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { MARGIN, MowingRound } from '../../../core/games/lawn-mowing/game'
 import { lowerBound, makeLawn } from '../../../core/games/lawn-mowing/mowing'
-import { HOME_STEP_MS, starsFor } from '../../../core/games/lawn-mowing/rules'
+import { HOME_STEP_MS, starsFor, TIER_LAWNS, type LawnId } from '../../../core/games/lawn-mowing/rules'
 import { stripTours } from '../../../core/games/lawn-mowing/strips'
 import { tourLength } from '../../../core/games/lawn-mowing/tour'
 import type { Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
+import { tierPosition, type Tier } from '../../../core/tiers'
 import { Board } from '../../components/Board'
 import { useBoard } from '../../components/boardContext'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
 import { HowToOverlay, type KeyHint } from '../../components/HowToOverlay'
+import { NextLabel } from '../../components/nextLabel'
 import { ProgressBar } from '../../components/ProgressBar'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
 import { useLevel } from '../../levels'
+import { useTierMemory } from '../../shell/tiers'
 import { toLawn, UNDO_KEYS, useCutterControls, type PadHold, type ScreenDirection } from './controls'
 import { CutterTokens, Tours, type CutterView } from './Cutters'
 import { DPad } from './DPad'
@@ -28,6 +31,7 @@ import { CutterCard, HomeCard, LongestCard, PhoneStats } from './Panels'
 import { SetupOverlay } from './SetupOverlay'
 import { usePrefs, type Setup } from './store'
 import { TheoryPanel } from './Theory'
+import { LawnTiers } from './Tiers'
 import { TourAnimation } from './TourAnimation'
 import { useMedia } from './useMedia'
 
@@ -59,11 +63,14 @@ function Round({
   setup,
   t,
   onNew,
+  onNext,
 }: {
   level: LawnMowingLevel
   setup: Setup
   t: LawnTexts
   onNew: () => void
+  /** The next lawn of the tier (or the first of the next tier). */
+  onNext?: () => void
 }) {
   const shell = useT()
   const prefs = usePrefs()
@@ -191,6 +198,13 @@ function Round({
     solver: solution !== undefined,
   })
   const tours = solution?.tours ?? strips
+
+  // The stars of a finished lawn, for the tier screen and the setup.
+  useEffect(() => {
+    if (phase === 'done') prefs.recordStars(setup.lawn, k, result.stars)
+    // Once per finished round; prefs is a stable store.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase])
 
   return (
     <div
@@ -333,6 +347,7 @@ function Round({
             format: t.result.score,
           }}
           onAgain={onNew}
+          onNext={onNext}
           onClose={() => setOverlay(null)}
         />
       )}
@@ -340,55 +355,78 @@ function Round({
   )
 }
 
-/** "Rasenmähen": mow a lawn with one or two cutters on short closed rounds (CG:SHOP 2027). */
+/** The lawn after this one in the order of the tiers, and whether it starts a new tier. */
+function nextLawn(lawn: LawnId): { lawn: LawnId; tier: Tier; newTier: boolean } | null {
+  const position = tierPosition(TIER_LAWNS, lawn)
+  if (!position?.next) return null
+  return {
+    lawn: position.next.level,
+    tier: position.next.tier,
+    newTier: position.next.tier !== position.tier,
+  }
+}
+
+/**
+ * "Rasenmähen": mow a lawn with one or two cutters on short closed rounds (CG:SHOP 2027). Opens on the
+ * tier screen (with the choice of one or two mowers); "Neu" opens the setup with every lawn.
+ */
 export default function LawnMowingGame() {
   const t = useLocalized({ de, en })
+  const shell = useT()
   const prefs = usePrefs()
   const phone = useMedia('(pointer: coarse)')
+  const setLast = useTierMemory((s) => s.setLast)
   const [game, setGame] = useState<{ n: number; setup: Setup } | null>(null)
-  const [overlay, setOverlay] = useState<'howto' | 'setup' | null>(prefs.seenHowTo ? 'setup' : 'howto')
-  const initial: Setup = { lawn: prefs.lawn, cutters: phone ? 1 : prefs.cutters }
-  const level = useLevel<LawnMowingLevel>(game?.setup.lawn ?? initial.lawn)
+  const [overlay, setOverlay] = useState<'setup' | null>(null)
+  const level = useLevel<LawnMowingLevel>(game?.setup.lawn ?? prefs.lawn)
 
   const start = (setup: Setup) => {
     prefs.setSetup(setup)
+    // The rules were on the tier screen.
+    prefs.setSeenHowTo()
+    const position = tierPosition(TIER_LAWNS, setup.lawn)
+    if (position) setLast('lawn-mowing', position.tier)
     setGame({ n: (game?.n ?? 0) + 1, setup })
     setOverlay(null)
   }
 
+  if (!game) {
+    return (
+      <LawnTiers
+        t={t}
+        phone={phone}
+        rules={(cutters) => ({ lines: t.howTo(cutters), keys: howToKeys(t, cutters, phone) })}
+        onStart={start}
+      />
+    )
+  }
+  const next = nextLawn(game.setup.lawn)
   return (
-    <>
-      {game && level.status === 'ready' ? (
-        <Round key={game.n} level={level.value} setup={game.setup} t={t} onNew={() => setOverlay('setup')} />
+    <NextLabel.Provider value={next?.newTier ? shell.tiers.next(shell.tiers.names[next.tier]) : null}>
+      {level.status === 'ready' ? (
+        <Round
+          key={game.n}
+          level={level.value}
+          setup={game.setup}
+          t={t}
+          onNew={() => setOverlay('setup')}
+          onNext={next ? () => start({ ...game.setup, lawn: next.lawn }) : undefined}
+        />
       ) : (
         <div className={styles.game}>
           <GameHeader title={t.title} />
           <div className={styles.loading}>{level.status === 'error' ? level.error : ''}</div>
         </div>
       )}
-      {overlay === 'howto' && (
-        <HowToOverlay
-          animation={<HowToAnimation label={t.howToAnimation} />}
-          keys={howToKeys(t, 2, phone)}
-          onClose={() => {
-            prefs.setSeenHowTo()
-            setOverlay('setup')
-          }}
-        >
-          {t.howTo(initial.cutters).map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </HowToOverlay>
-      )}
       {overlay === 'setup' && (
         <SetupOverlay
-          initial={game?.setup ?? initial}
+          initial={game.setup}
           phone={phone}
           t={t}
           onStart={start}
-          onClose={game ? () => setOverlay(null) : undefined}
+          onClose={() => setOverlay(null)}
         />
       )}
-    </>
+    </NextLabel.Provider>
   )
 }

@@ -32,6 +32,12 @@ export const de = {
   hintPad: 'Halte einen Pfeil: Der Mäher fährt. Mähe alles und fahr zurück zum Start.',
   board: (lawn: string) => `Rasen ${lawn}`,
   pad: { up: 'hoch', down: 'runter', left: 'links', right: 'rechts', undo: 'Schritt zurück' },
+  tierTeasers: {
+    easy: 'Der Vorgarten: klein, mit Teich und Baum – zum Üben.',
+    medium: 'Beete und Obstbäume: größere Wiesen, mehr zu planen.',
+    hard: 'Hier sind einfache Strategien klar schlechter als die Runden des Lösers.',
+  },
+  resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'allein' : 'zu zweit'}`,
   setup: {
     title: 'Neues Spiel',
     lawn: 'Rasen',
