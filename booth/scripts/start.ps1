@@ -41,7 +41,7 @@ if ($env:OS -ne 'Windows_NT') {
 
 # --- Already running? -------------------------------------------------------------------------------
 $old = Read-State
-if ($old -and $old.PSObject.Properties['watchdog'] -and (Test-ProcessAlive $old.watchdog) -and $old.watchdog -ne $PID) {
+if (Test-StandWatchdog $old) {
   Write-Fail 'Der Stand läuft schon (Fenster "Ruler of the Plane - Stand"). Erst Stop-Stand.cmd, dann neu starten.'
   exit 1
 }

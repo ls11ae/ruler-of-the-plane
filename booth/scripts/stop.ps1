@@ -13,9 +13,9 @@ Write-Host ''
 # The start window sees the stop flag within 3 s and ends everything itself; wait for it, then make sure.
 New-Item -ItemType File -Path $StopFlag -Force | Out-Null
 $state = Read-State
-if ($state -and $state.PSObject.Properties['watchdog'] -and $state.watchdog -ne $PID) {
+if (Test-StandWatchdog $state) {
   $deadline = (Get-Date).AddSeconds(15)
-  while ((Get-Date) -lt $deadline -and (Test-ProcessAlive $state.watchdog)) { Start-Sleep -Milliseconds 300 }
+  while ((Get-Date) -lt $deadline -and (Test-StandWatchdog $state)) { Start-Sleep -Milliseconds 300 }
 }
 Stop-Stand
 Write-Host ''

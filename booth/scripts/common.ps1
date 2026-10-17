@@ -36,6 +36,14 @@ function Test-ProcessAlive($Id) {
   return $null -ne (Get-Process -Id $Id -ErrorAction SilentlyContinue)
 }
 
+<# True if the start window of state.json still runs (a PowerShell; Windows reuses the numbers of ended
+   processes, so a stale state.json after a crash may name some other program). #>
+function Test-StandWatchdog($State) {
+  if (-not $State -or -not $State.PSObject.Properties['watchdog'] -or $State.watchdog -eq $PID) { return $false }
+  $process = Get-Process -Id $State.watchdog -ErrorAction SilentlyContinue
+  return $null -ne $process -and $process.ProcessName -match '^(powershell|pwsh)$'
+}
+
 <# True if our server answers on the port (the system proxy is bypassed). #>
 function Test-StandServer([int]$Port) {
   try {
