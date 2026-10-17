@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
-import { PARK, WALKS, type WalkId } from '../../../core/games/frechet/levels'
+import { useState, type ReactNode } from 'react'
+import { PARK, TIERS, WALKS, WALKS_BY_TIER, type Tier, type WalkId } from '../../../core/games/frechet/levels'
 import type { Vec2 } from '../../../core/geometry/types'
 import { Button } from '../../components/Button'
 import { Overlay } from '../../components/Overlay'
@@ -12,22 +12,29 @@ export type Mode = 'walk' | 'guess' | 'sandbox'
 
 const poly = (pts: readonly Vec2[]) => pts.map(([x, y]) => `${x},${y}`).join(' ')
 
-/** Choose a walk, or another mode: "Schätz die Leine" or drawing one's own paths. */
+/**
+ * Choose a walk by difficulty ("Leicht", "Mittel", "Schwer"), or another mode: "Schätz die Leine" or
+ * drawing one's own paths.
+ */
 export function WalkPicker({
   t,
   mode,
+  tier,
   onPick,
   onClose,
   extra,
 }: {
   t: FrechetTexts
   mode: Mode
+  /** The tier shown first (the one of the walk being played). */
+  tier: Tier
   onPick: (walk: WalkId | null, mode: Mode) => void
   onClose: () => void
-  /** More walks below the cards (the bonus set "Im Wald"). */
-  extra?: ReactNode
+  /** More walks of the tier below its cards (the walks "Im Wald"). */
+  extra?: (tier: Tier) => ReactNode
 }) {
   const { walk: current, best } = useProgress()
+  const [shown, setShown] = useState(tier)
   const pickMode = mode === 'sandbox' ? 'walk' : mode
   return (
     <Overlay title={t.pickerTitle} onClose={onClose}>
@@ -47,8 +54,16 @@ export function WalkPicker({
             {t.modes.sandbox}
           </Button>
         </div>
+        <div className={styles.modes} role="group" aria-label={t.tierLabel}>
+          {TIERS.map((x) => (
+            <Button key={x} selected={shown === x} aria-pressed={shown === x} onClick={() => setShown(x)}>
+              {t.tiers[x]}
+            </Button>
+          ))}
+        </div>
+        {shown !== 'easy' && <p className={styles.muted}>{t.tierIntro[shown]}</p>}
         <div className={styles.cards}>
-          {WALKS.map((w) => (
+          {WALKS.filter((w) => WALKS_BY_TIER[shown].includes(w.id)).map((w) => (
             <button
               key={w.id}
               type="button"
@@ -78,7 +93,7 @@ export function WalkPicker({
             </button>
           ))}
         </div>
-        {extra}
+        {extra?.(shown)}
       </div>
     </Overlay>
   )

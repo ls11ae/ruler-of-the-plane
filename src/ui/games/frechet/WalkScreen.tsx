@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PARK, type WalkId, type WalkLevel } from '../../../core/games/frechet/levels'
+import { PARK, type Tier, type WalkId, type WalkLevel } from '../../../core/games/frechet/levels'
 import {
   advice,
   leaderboardScore,
@@ -53,7 +53,10 @@ interface WalkScreenProps {
   level: WalkLevel
   /** Position in the list of walks (0-based); null for paths drawn in the sandbox. */
   index: number | null
+  /** Number of walks in the tier. */
   count: number
+  /** The difficulty tier (hints name the key to hold only on the first easy walks). */
+  tier?: Tier
   t: FrechetTexts
   onPicker: () => void
   onNext?: () => void
@@ -61,7 +64,16 @@ interface WalkScreenProps {
 }
 
 /** One walk: person and dog walk while their keys or buttons are held; the leash must not snap. */
-export function WalkScreen({ level, index, count, t, onPicker, onNext, onSandbox }: WalkScreenProps) {
+export function WalkScreen({
+  level,
+  index,
+  count,
+  tier = 'easy',
+  t,
+  onPicker,
+  onNext,
+  onSandbox,
+}: WalkScreenProps) {
   const shell = useT()
   const progress = useProgress()
   const course = useMemo(() => makeCourse(level), [level])
@@ -128,7 +140,7 @@ export function WalkScreen({ level, index, count, t, onPicker, onNext, onSandbox
   const { person, dog } = positions(course, state.s, state.t)
   const ghost = probe ? positions(course, probe[0], probe[1]) : null
   const ghostLeash = probe ? leashAt(course, probe[0], probe[1]) : 0
-  const tutorial = index !== null && index < 2
+  const tutorial = tier === 'easy' && index !== null && index < 2
   const name = index === null ? t.modes.sandbox : t.walks[course.level.id as WalkId]
   const stars = starsFor(state.longest, course.shortest)
 
@@ -136,7 +148,13 @@ export function WalkScreen({ level, index, count, t, onPicker, onNext, onSandbox
     <div className={styles.game}>
       <GameHeader
         title={t.title}
-        subtitle={index === null ? t.sandboxSubtitle : t.subtitle(index + 1, count, name)}
+        subtitle={
+          index === null
+            ? t.sandboxSubtitle
+            : tier === 'easy'
+              ? t.subtitle(index + 1, count, name)
+              : t.subtitleTier(t.tiers[tier], index + 1, count, name)
+        }
         status={
           <span className={styles.status}>
             <span className={styles.leashValue} data-testid="leash">
