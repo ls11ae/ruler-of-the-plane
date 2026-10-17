@@ -9,6 +9,8 @@ import { pointAt, type Path } from '../../../core/games/frechet/path'
 export interface Field {
   n: number
   values: Float32Array
+  /** Where set (1), free positions are tinted: in the woods, where the leash touches a tree. */
+  tint?: Uint8Array
 }
 
 export function distanceField(person: Path, dog: Path, n: number): Field {
@@ -36,6 +38,10 @@ const FREE = [255, 252, 242]
 const BLOCKED = [226, 211, 176]
 const HATCH = [184, 162, 120]
 const EDGE = [91, 79, 69]
+const TINT = [214, 234, 196]
+const TINT_DOT = [150, 186, 128]
+const BLOCKED_TINT = [206, 214, 168]
+const HATCH_TINT = [146, 164, 108]
 
 /** Paints the field for leash length eps: light where it reaches, hatched where not, ink at the border. */
 export function paintField(image: ImageData, field: Field, eps: number): void {
@@ -52,9 +58,11 @@ export function paintField(image: ImageData, field: Field, eps: number): void {
           (col < n - 1 && !free(row, col + 1)) ||
           (row > 0 && !free(row - 1, col)) ||
           (row < n - 1 && !free(row + 1, col))
-        c = edge ? EDGE : FREE
+        const tinted = field.tint?.[row * n + col] === 1
+        c = edge ? EDGE : tinted ? ((row % 4) + (col % 4) === 0 ? TINT_DOT : TINT) : FREE
       } else {
-        c = (col + row) % 9 < 1.5 ? HATCH : BLOCKED
+        const tinted = field.tint?.[row * n + col] === 1
+        c = (col + row) % 9 < 1.5 ? (tinted ? HATCH_TINT : HATCH) : tinted ? BLOCKED_TINT : BLOCKED
       }
       data[k] = c[0]!
       data[k + 1] = c[1]!
