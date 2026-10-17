@@ -40,12 +40,16 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 
 ## 4. Open questions (for Kevin)
 
-- Booth laptops: operating system, browser, external mice; key test on each keyboard.
+- Booth laptops: answered 2026-10-17: Windows laptops, Chrome or Firefox, standard mice (see the
+  decision log, Phase 6). Open: the key test on each keyboard, the measurements of Phase 6.
 - Solutions for the small booth lawns (targets and animations): answered 2026-10-17 by the offline
   solver `scripts/lawns/solve.py`; a solver of the chair can still replace any file in
   `levels/lawn-mowing/solutions/` with a shorter tour.
-- Whether a floor plan of a TU Dortmund building can be used as a level.
-- Who is responsible for the Impressum and privacy notice of the public site.
+- Whether a floor plan of a TU Dortmund building can be used as a level: answered 2026-10-17, no.
+- Who is responsible for the Impressum and privacy notice of the public site: answered 2026-10-17, the
+  Algorithm Engineering Group (LS 11), Computer Science, TU Dortmund (`https://ae.cs.tu-dortmund.de/`).
+  Open: the exact addresses of its Impressum and privacy notice (the site cannot be reached from the
+  cloud sessions).
 
 ## 5. Decision log
 
@@ -379,6 +383,20 @@ their ends.
   refusing crossing roads (players could not try the easy tree and see why it fails, and would be pushed
   to the greedy strategy); only marking same-kind roads (a rule that is always broken by mistake is
   better enforced).
+- **2026-10-17 The public site's Impressum and privacy notice are those of the Algorithm Engineering
+  Group** (Kevin): LS 11, Computer Science, TU Dortmund, `https://ae.cs.tu-dortmund.de/`. The landing
+  page links to its Impressum and privacy notice; the app itself sends nothing anywhere.
+  Alternatives: an own Impressum (a person would have to be named); the TU's central pages.
+- **2026-10-17 Booth laptops: Windows, Chrome or Firefox, standard mice** (Kevin). The Phase 7 start
+  script is a Windows script.
+- **2026-10-17 (proposed) Chrome at the booth; Firefox and WebKit in CI.** Every test so far runs in
+  Chromium only, so the booth uses Chrome (its `--kiosk` mode and the offline install are the ones
+  tested). Visitors' phones bring Safari (every browser on an iPhone is WebKit) and Firefox, so CI also
+  runs the smoke tests in Firefox and WebKit (Playwright installs them in CI; cloud sessions have only
+  Chromium). Alternatives: Firefox at the booth (untested, and the ink filter is an SVG displacement
+  filter, whose speed differs between engines); Chromium only (iPhones are a large part of the QR
+  visitors).
+- **2026-10-17 No TU Dortmund floor plan as an art-gallery level** (Kevin).
 
 ### Track A ("Erobere das Land", "Rasenmähen")
 

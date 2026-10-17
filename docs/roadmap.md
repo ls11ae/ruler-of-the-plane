@@ -79,7 +79,8 @@ first load; all 37 Unity levels are available as JSON (14 art gallery, 4 + 4 + 3
   one; fewer than k is shown as a record. — done 2026-10-16
 - Levels: the 14 Unity levels re-ordered by difficulty; levels with 12 or more torches go to an expert
   set. If a floor plan is available, add a TU Dortmund building as a level. — done 2026-10-16 (9 main
-  levels, expert set with agLevel13_4 and the levels with k ≥ 12); no floor plan available yet.
+  levels, expert set with agLevel13_4 and the levels with k ≥ 12); no TU Dortmund floor plan (Kevin,
+  2026-10-17).
 - Explanation on hole-free levels (Unity levels 1, 3, 6, 8, 13): animation of Fisk's proof (triangulate,
   3-colour, take the smallest colour class). Theory view: visibility polygons and the triangulation. —
   done 2026-10-16 (levels with pillars show the computer's ray sweep instead).
@@ -218,6 +219,9 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 
 - Playtest with teenagers (not only student assistants) on the booth laptops with external mice; fix
   confusing texts and controls.
+- Browsers: the booth laptops run Windows with Chrome or Firefox, visitors' phones Safari (WebKit),
+  Chrome or Firefox, and so far every test runs in Chromium. Add Firefox and WebKit projects to the
+  Playwright smoke tests in CI (laptop and phone each; CI installs the browsers) and fix what fails.
 - Measure on each booth laptop: a "Schwer" move of "Erobere das Land" takes under 200 ms (Phase 2
   acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
   computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
@@ -259,9 +263,10 @@ test for 15 simulated minutes. Open: the playtest and the measurements on the bo
   serves tsp-boards' build at `/tsp-boards/` next to the app on the same local server, and the app is
   built with `VITE_TSP_BOARDS_URL=/tsp-boards/`, so "Rundreise" works offline in its kiosk frame (see the
   decision log, Phase 6).
-- Start script that opens Chrome in kiosk mode on the local build; touchpad gestures, sleep and system
-  updates switched off.
-- QR-code poster with the GitHub Pages URL; Impressum and privacy notice reachable from the landing page.
+- Start script for the Windows booth laptops that opens Chrome in kiosk mode on the local build;
+  touchpad gestures, sleep and system updates switched off.
+- QR-code poster with the GitHub Pages URL; the Impressum and privacy notice of the Algorithm Engineering
+  Group (`https://ae.cs.tu-dortmund.de/`, Kevin) reachable from the landing page.
 - Cheat sheet for the booth staff: start, kiosk mode, staff menu, key test, fallback to the old version
   at `kbuchin.github.io/ruler/`.
 
