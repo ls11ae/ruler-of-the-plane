@@ -106,7 +106,7 @@ lighting takes at most 10 ms per drag frame on the largest level with 17 torches
   three maps: island, river valley, lake district. — done 2026-10-16 (`levels/voronoi/README.md`)
 - Rules: castles only on land; a minimum distance to every castle, shown as a circle while aiming; score
   = land area of a player's cells plus city and gold-mine bonuses. — done 2026-10-16 (rings of half the
-  distance around every castle; castles also keep off the shore and the towns, proposed)
+  distance around every castle; castles also keep off the shore and the towns; agreed by Kevin 2026-10-17)
 - Two players or against the computer, 5 or 10 castles each. Hovering shows a ghost castle with its
   future cell and the points it would gain; a click places it (touch: press and hold, release). — done
   2026-10-16

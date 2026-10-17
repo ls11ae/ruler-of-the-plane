@@ -72,8 +72,8 @@ subsection below, so their branches do not conflict.
   curves, critical values.
 - **2026-10-16 "Erobere das Land" with land, water, cities and a minimum distance** (Kevin). The AI
   evaluates moves on a land raster.
-- **2026-10-16 (proposed) "Straßenbau" optional for November**; the two research games have priority.
-  Two parallel tracks after Phase 1.
+- **2026-10-16 "Straßenbau" optional for November** (proposed; moot, since Phase 5 was finished the same day);
+  the two research games have priority. Two parallel tracks after Phase 1.
 - **2026-10-16 Art from Kenney (CC0)** (Kevin's suggestion): Cartography Pack, Scribble Dungeons (true
   top-down view for the art gallery), Animal Pack Remastered (the dog). Alternatives: the TU/e art
   (licence unclear, author busy), commissioned drawings (too slow for November), Cube Pets (3D models,
@@ -230,10 +230,10 @@ subsection below, so their branches do not conflict.
   land), a city 5 and a gold mine 10 for the owner of the cell that contains it. Totals are shown and
   compared rounded to whole points; equal totals are a draw. Alternatives: area in map units (meaningless
   numbers); Unity's share of the rectangle including water.
-- **2026-10-16 (proposed) Spacing rules**: castles keep the distance d = 0.55·√(land / castles in the
-  game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a dashed
-  ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring and
-  the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
+- **2026-10-16 (agreed by Kevin 2026-10-17) Spacing rules**: castles keep the distance d = 0.55·√(land /
+  castles in the game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a
+  dashed ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring
+  and the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
   shore seemed to stand in the lake) and 0.55 units from cities and mines (castles covered the town icons).
   Alternatives: a fixed distance per map; no distance to towns. A player with no room left passes.
 - **2026-10-16 Blue starts, the computer is orange and moves second.** Alternatives: random start; the
@@ -283,14 +283,14 @@ subsection below, so their branches do not conflict.
   solver's files and the verifier fixtures can be compared without conversion. Coverage and tour lengths
   agree with the pyutils27 verifier on committed fixtures (`levels/lawn-mowing/fixtures/`, made by
   `scripts/lawns/make_fixtures.py`).
-- **2026-10-16 (proposed) Start points and target of "Rasenmähen"**: cutters start on the first point of
-  the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there. Until the
-  chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high as the
-  cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
-  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three
-  up to 1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to
-  20 % above. Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the
-  start as a constraint); "[Wert]" as a placeholder (no goal to play for).
+- **2026-10-16 (agreed by Kevin 2026-10-17) Start points and target of "Rasenmähen"**: cutters start on the
+  first point of the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there.
+  Until the chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high
+  as the cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
+  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three up to
+  1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to 20 % above.
+  Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the start as a
+  constraint); "[Wert]" as a placeholder (no goal to play for).
 - **2026-10-16 "Rasenmähen" controls**: cutter 1 WASD, cutter 2 the arrow keys (with one cutter both
   steer it), gamepads 1 and 2, space or A for "Feierabend". A press moves one lattice step at once (on
   the key event, so a short tap between two frames counts), then after 220 ms one step every 115 ms
@@ -349,14 +349,14 @@ subsection below, so their branches do not conflict.
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
   code uses `person` too, e.g. the colour `--person`). The mockup `docs/look/gassi-gehen.webp` still
   shows the old word.
-- **2026-10-16 (proposed) "Gassi gehen" walks are TypeScript data, not IPE files**
-  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in
-  metres (at most 20 segments), with a pond or bushes where needed; trees, rocks and a well are
-  scattered by a seeded generator away from the paths. The leash is not stored but computed: Fréchet
-  distance × the walk's factor (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up
-  to 0.1 m (3.6 to 6.2 m). Alternatives: IPE files with a new collection in the importer (a shared
-  file that track A changes at the same time for its maps). Reason: no shared importer change in
-  parallel with track A; the paths are few and short. Can move to IPE once both tracks are merged.
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Gassi gehen" walks are TypeScript data, not IPE files**
+  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in metres (at
+  most 20 segments), with a pond or bushes where needed; trees, rocks and a well are scattered by a seeded
+  generator away from the paths. The leash is not stored but computed: Fréchet distance × the walk's factor
+  (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up to 0.1 m (3.6 to 6.2 m).
+  Alternatives: IPE files with a new collection in the importer (a shared file that track A changes at the
+  same time for its maps). Reason: no shared importer change in parallel with track A; the paths are few and
+  short. Can move to IPE once both tracks are merged.
 - **2026-10-16 "Gassi gehen" walking rules.** Person and dog walk at 2.2 m/s (about 15–35 s per walk
   if nobody waits); a frame is checked in four steps and the moment the leash would get longer is found
   by bisection, so the leash never shows more than its length. The leash sags while slack and turns
@@ -366,10 +366,10 @@ subsection below, so their branches do not conflict.
   knows: reachability from the current position). A snapped leash opens "Leine zu straff!" with who
   should have waited and "Nochmal". Alternatives: the leash stops the walker instead of failing (no
   tension, against the roadmap); no dead-end hint (visitors would stand stuck).
-- **2026-10-16 (proposed) "Gassi gehen" scoring**: stars by the longest leash the walk needed compared
-  with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk is
-  better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time
-  does not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Gassi gehen" scoring**: stars by the longest leash the walk
+  needed compared with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk
+  is better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time does
+  not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
 - **2026-10-16 "Gassi gehen" controls.** The footer shows "A Mensch geht" and "L Hund läuft" as hold
   buttons that also work with the mouse; on touch screens they are two large buttons side by side
   (left person, right dog), each with its own touch point, so both can be held. Gamepad: left side
@@ -409,13 +409,12 @@ subsection below, so their branches do not conflict.
   1 km) and either how many parts are still separate, "+x % über dem Optimum" (one decimal below 10 %,
   so it never reads +0 %) or "Optimal!". The round is won as soon as the network connects everything
   and is as long as a minimum spanning tree (lengths compared, so ties never reject an optimal tree).
-- **2026-10-16 (proposed) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the longest
-  road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
-  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no
-  place. Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time
-  to the optimum plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at
-  a "Fertig" button (the game would end before the optimum, which is the point), no hints (players get
-  stuck on the 19-place map).
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the
+  longest road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
+  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no place.
+  Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time to the optimum
+  plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at a "Fertig" button (the
+  game would end before the optimum, which is the point), no hints (players get stuck on the 19-place map).
 - **2026-10-16 "Straßenbau" explanation and theory**: the result shows Kruskal on the player's map
   (roads by length, a ring-closing road flashes red and disappears); the theory panel explains why the
   shortest network is a tree (n − 1 of n(n − 1)/2 possible roads) and runs Kruskal step by step on the
