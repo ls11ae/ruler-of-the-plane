@@ -20,18 +20,18 @@ tours in `solutions/`, the lower bounds and the best simple strategy, and prints
 (`--table` prints it from the solution files alone). Instance `lawn<n>_<k>s3` has k cutters; lengths
 are the longest tour (the competition's objective).
 
-| Instance  | Lower bound | Best tour |    Gap | Best simple strategy     | Simple above best | Verdict     |
-| --------- | ----------: | --------: | -----: | ------------------------ | ----------------: | ----------- |
-| lawn1_1s3 |         108 |       110 |  1.9 % | 126 (spiral)             |           +14.5 % |             |
-| lawn1_2s3 |          54 |        56 |  3.7 % | 62 (halves with spiral)  |           +10.7 % |             |
-| lawn2_1s3 |         120 |       122 |  1.7 % | 144 (spiral)             |           +18.0 % | interesting |
-| lawn2_2s3 |          60 |        64 |  6.7 % | 68 (halves with nearest) |            +6.2 % |             |
-| lawn3_1s3 |         138 |       146 |  5.8 % | 170 (strips)             |           +16.4 % | interesting |
-| lawn3_2s3 |          70 |        74 |  5.7 % | 84 (halves with spiral)  |           +13.5 % |             |
-| lawn4_1s3 |         160 |       164 |  2.5 % | 174 (spiral)             |            +6.1 % |             |
-| lawn4_2s3 |          80 |        84 |  5.0 % | 92 (halves with spiral)  |            +9.5 % |             |
-| lawn5_1s3 |         167 |       186 | 11.4 % | 216 (strips)             |           +16.1 % | interesting |
-| lawn5_2s3 |          82 |        96 | 17.1 % | 112 (strips)             |           +16.7 % | interesting |
+| Instance  | Lower bound | Best tour |   Gap | Best simple strategy     | Simple above best | Verdict     |
+| --------- | ----------: | --------: | ----: | ------------------------ | ----------------: | ----------- |
+| lawn1_1s3 |         108 |       110 | 1.9 % | 126 (spiral)             |           +14.5 % |             |
+| lawn1_2s3 |          54 |        56 | 3.7 % | 62 (halves with spiral)  |           +10.7 % |             |
+| lawn2_1s3 |         120 |       122 | 1.7 % | 144 (spiral)             |           +18.0 % | interesting |
+| lawn2_2s3 |          60 |        64 | 6.7 % | 68 (halves with nearest) |            +6.2 % |             |
+| lawn3_1s3 |         140 |       144 | 2.9 % | 170 (strips)             |           +18.1 % | interesting |
+| lawn3_2s3 |          70 |        74 | 5.7 % | 84 (halves with spiral)  |           +13.5 % |             |
+| lawn4_1s3 |         160 |       164 | 2.5 % | 174 (spiral)             |            +6.1 % |             |
+| lawn4_2s3 |          80 |        82 | 2.5 % | 92 (halves with spiral)  |           +12.2 % |             |
+| lawn5_1s3 |         170 |       184 | 8.2 % | 216 (strips)             |           +17.4 % | interesting |
+| lawn5_2s3 |          86 |        92 | 7.0 % | 112 (strips)             |           +21.7 % | interesting |
 
 - Lower bound: walking once around a closed tour, every lawn cell is "entered" by some step (it is under
   the cutter after the step but not before), and a step enters at most the three cells of the new row of
