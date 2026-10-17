@@ -284,6 +284,17 @@ their ends.
   Alternatives: small buttons 44 px high (taller theory panels and result dialog, which must fit
   1280 × 800); axe alone (it reports nearly all text over the parchment as undecidable).
 
+- **2026-10-17 The 2-hour unattended run is simulated with a fast clock** (`e2e/soak.spec.ts`). Playwright's
+  fake clock drives timers, animation frames and `performance.now()` in one-second steps, with a short
+  real pause per step for the worker's answer (it computes in real time, so the demo plays its real
+  moves). Every 7 simulated minutes a visitor wakes the booth, opens the next place on the map, clicks
+  and presses a key there, and leaves; the kiosk timeout must bring the attract screen back within 95 s.
+  The test fails on a page or console error, a crash, a demo without a new castle for 60 s, and memory,
+  DOM nodes or event listeners that grow by half from the warmed-up state. The 120-minute run took 15
+  minutes in the session and passed (numbers in the roadmap); CI runs 15 minutes. Alternatives: a real
+  2-hour run in CI (too slow; it belongs on a booth laptop in Phase 7); no visitors (the kiosk cycle,
+  where leaks would come from, would go untested).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,

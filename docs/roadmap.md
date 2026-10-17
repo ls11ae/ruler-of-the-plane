@@ -212,12 +212,26 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 - Final art in place, `CREDITS.md` complete, credits screen in the app. — credits screen and the `CREDITS.md`
   check done 2026-10-17 (`#/credits`, "Mitwirkende" on the start map, with every licence text); the TU
   Dortmund / LS 11 logos are still placeholders.
+- "Rundreise" (Kevin): tsp-boards is online and `VITE_TSP_BOARDS_URL` is set; tests independent of the
+  build variables, a new tab outside kiosk mode, tsp-boards' event mode in a frame in kiosk mode (input
+  there keeps the kiosk timeout away; its workers and its full-screen button work in the frame). — done
+  2026-10-17
+- "Licht ins Verlies" (Kevin): name the stronger bound ⌊n/4⌋ (Kahn, Klawe, Kleitman) for dungeons with
+  only right angles and no pillars, in the theory view and the explanation. — done 2026-10-17 (only
+  agLevel3_2 qualifies)
 - Accessibility pass: contrast, colour never the only cue, readable fonts. — done 2026-10-17 (`e2e/a11y.spec.ts`: axe-core
   plus own checks of contrast against the drawn background, text sizes and 44 px hit targets on every
   screen; see the decision log, Phase 6).
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
+Status (2026-10-17): the 2-hour run passed as a simulation (`e2e/soak.spec.ts`, a fake clock 8 times
+faster than real time, the computer's moves in real time): 4,925 moves of the attract demo, 17 visitors
+who opened every place in turn (the five games, the credits, "Rundreise" with a real tsp-boards build) and
+walked away, the attract screen back 90 s later each time, no page error, and memory flat after the first
+round of visits (JavaScript heap 7.0–7.2 MB from minute 60 on, about 1,600 DOM nodes). CI runs the same
+test for 15 simulated minutes. Open: the playtest and the measurements on the booth laptops; a real
+2-hour run on a booth laptop in Phase 7 (sleep, updates and the browser itself are not simulated).
 
 ## Phase 7: freeze and booth preparation (4–6 Nov)
 

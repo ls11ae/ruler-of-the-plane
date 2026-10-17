@@ -14,10 +14,15 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 ## Status
 
-- Phase 0 merged; Phase 1 ("Licht ins Verlies") done on branch `claude/charming-goldberg-mkxway`
-  (2026-10-16), awaiting merge; then the two tracks of Phase 2–5.
-  **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
-  code fit together and how a game plugs in: `docs/architecture.md`.
+- Phases 0–5 merged into `main` (2026-10-16): the shell, "Licht ins Verlies", track A ("Erobere das
+  Land", "Rasenmähen") and track B ("Gassi gehen", "Straßenbau"); Kevin agreed to all "proposed" decisions
+  of both tracks (2026-10-17). Phase 6 (playtest and polish) on branch `claude/quirky-bohr-1bqbuu`
+  (2026-10-17): credits screen, accessibility pass, simulated 2-hour attract run, "Rundreise" with the
+  online tsp-boards; open are the items that need the booth laptops (playtest, the 200 ms "Schwer" move,
+  the key test). In parallel, other sessions work on the chair's solver solutions for "Rasenmähen" and a
+  bonus set "Im Wald" for "Gassi gehen". **`docs/roadmap.md` is the source of truth for open work**, in
+  its order. How the shell and the shared code fit together and how a game plugs in:
+  `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
 - `legacy/` holds the Unity level files and in-game texts (copied from `kbuchin/ruler` at commit
@@ -52,7 +57,7 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - **Browser-first static web app**, no backend, no accounts. All computation client-side, heavy parts
   (AI search) in Web Workers. Must run offline on the booth laptops (local build or PWA) and from
   GitHub Pages at `ls11ae.github.io/ruler-of-the-plane/` (set Vite's `base` accordingly).
-- **Stack as in `ls11ae/tsp-boards`** (Kevin's private repository; not needed here): TypeScript `~6.0`
+- **Stack as in `ls11ae/tsp-boards`** (Kevin's repository; not needed here): TypeScript `~6.0`
   (strict; not 7, which typescript-eslint does not support yet), React 19, Vite 8, Vitest 5, ESLint 10
   flat config with typescript-eslint, Prettier 3, zustand, own typed i18n dictionaries.
   `"engines": {"node": ">=22.13"}` in `package.json`. If a tool version requires a newer Node, use the
@@ -83,10 +88,14 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   parsing; the generated JSON is committed, and a test checks that it matches a fresh import. New levels
   are authored in IPE as before.
 - **Build variables** (Vite `VITE_*`, set as GitHub Actions repository variables for the Pages build;
-  document them in `.env.example`): `VITE_TSP_BOARDS_URL` for the "Rundreise" tile (hidden while unset;
-  tsp-boards is not deployed yet), `VITE_STAFF_PIN` for the staff menu (a public bundle is readable by
+  document them in `.env.example`): `VITE_TSP_BOARDS_URL` for the "Rundreise" tile (tsp-boards' gallery,
+  `https://ls11ae.github.io/tsp-boards/`, set for the Pages build; hidden while unset; tests stub it with
+  `vi.stubEnv` and never assume it unset), `VITE_STAFF_PIN` for the staff menu (a public bundle is readable by
   anyone: the PIN only keeps booth visitors out).
-- **TSP is not rebuilt here**: the "Rundreise" tile links to the play mode of tsp-boards.
+- **TSP is not rebuilt here**: the "Rundreise" tile opens tsp-boards in a new tab; in kiosk mode it shows
+  tsp-boards' event mode (`#kiosk`) in a frame below "‹ Karte", which must be on the same origin so the
+  kiosk timeout sees the input there (GitHub Pages: both on `ls11ae.github.io`; the booth package serves
+  tsp-boards at `/tsp-boards/`). Nothing in kiosk mode leaves the app ("Alte Ruinen" shows its address).
 - **The old version stays at `kbuchin.github.io/ruler/`**; the start screen links to it ("Alte
   Ruinen", see `docs/look/start-map.webp`). Nothing in this repository changes the old site.
 - **Privacy**: no third-party requests (no Google Fonts, no CDNs, no analytics); fonts and libraries are
@@ -110,7 +119,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   spike box (least liked in the paper's user study, hence in the expert set).
 - Art gallery bounds: ⌊n/3⌋ torches always suffice for polygons without holes (Chvátal); with h holes
   ⌊(n+h)/3⌋, where n counts all vertices including those of the holes; for orthogonal polygons without
-  holes ⌊n/4⌋. Fisk's proof (triangulate, 3-colour, take the smallest colour class) works only without
+  holes ⌊n/4⌋ (Kahn, Klawe, Kleitman; of the shipped levels only agLevel3_2, 18 corners, so 4 instead
+  of 6; the game names it there). Fisk's proof (triangulate, 3-colour, take the smallest colour class) works only without
   holes, so its animation is shown on the hole-free levels (Unity levels 1, 3, 6, 8, 13). Present it as
   a guarantee, not as the solution: the bound ⌊n/3⌋ is 5, 6, 6, 15 and 11 on those levels, far above
   their k = 3, 2, 3, 4, 4, and finding the minimum is NP-hard.
@@ -175,8 +185,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   in `src/ui/games/<game>/i18n.de.ts` and `i18n.en.ts`, so parallel tracks do not edit the same file.
   Code, comments, commits and docs in English.
 - Credits: `CREDITS.md` lists the original Unity team, every asset file the app uses (in the section of
-  the game that uses it, or "Shared"), the fonts and the runtime libraries; the app shows the credits.
-  Update it in the same pull request that starts using a file or library.
+  the game that uses it, or "Shared"), the fonts and the runtime libraries; the app shows the credits
+  (`#/credits`, with CREDITS.md and every licence text in the build's `credits.txt`). Update it in the
+  same pull request that starts using a file or library; `scripts/credits.test.ts` fails otherwise.
 - Asset licences: only CC0, CC BY 3.0/4.0 and (for fonts) OFL; no NC or ND; CC BY-SA only after asking
   Kevin. Use the font files unmodified (no subsetting; Eagle Lake has a Reserved Font Name).
 - Patrick Hand has no arrows (← ↑ → ↓) and no Greek letters: draw arrow keycaps and arrows as SVG, and
@@ -198,6 +209,10 @@ Design decisions go to the decision log in `docs/design-notes.md`.
     text. Key glyphs are drawn as keycaps (as in the mockup), not taken from a pack.
 - Style rules: black ink on paper or parchment; colour only for players, light and territories; a slight
   SVG displacement filter makes outlines look hand-drawn. The old TU/e art is not used.
+- Accessibility (Phase 6): colour is never the only cue (add a shape, hatching, a mark or a word), texts
+  at least 14 px, hit targets 44 px (small buttons have an invisible extension). `e2e/a11y.spec.ts` checks
+  every screen with axe-core and with own checks of text contrast against the drawn background; add new
+  games and screens to it.
 
 ## Working mode
 
