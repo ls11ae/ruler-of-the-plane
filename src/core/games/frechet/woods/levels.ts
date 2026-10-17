@@ -1,6 +1,6 @@
 import type { Walk } from '../frechet'
 import { treesOf, WOODS_SHAPES, type WoodsId, type WoodsShape } from './shapes'
-import stored from './targets.json'
+import stored from './targets.json' with { type: 'json' }
 import type { Tree } from './trees'
 
 /**

@@ -279,3 +279,40 @@ export function woodsSnapReason(
 export function woodsPositions(course: WoodsCourse, s: number, t: number): { person: Vec2; dog: Vec2 } {
   return { person: pointAt(course.person, s), dog: pointAt(course.dog, t) }
 }
+
+/** Is there a walk with leash length eps (judged on the grid of positions)? For the theory view. */
+export function walkExistsInWoods(course: WoodsCourse, eps: number): boolean {
+  return reachable(course.hints.grid, eps)[0] === 1
+}
+
+/** The longest leash on a walk and where (sampled every 5 cm along the walk, with the rope). */
+export function tightestInWoods(course: WoodsCourse, walk: Walk): { leash: number; at: [number, number] } {
+  let rope = course.start
+  let [s, t] = walk[0]!
+  rope = ropeAfter(course, rope, 0, 0, s, t)
+  let leash = leashOf(course, rope)
+  let at: [number, number] = [s, t]
+  for (const [s1, t1] of walk.slice(1)) {
+    const steps = Math.max(1, Math.ceil(Math.max(s1 - s, t1 - t) / 0.05))
+    for (let k = 1; k <= steps; k++) {
+      const ns = s + ((s1 - s) * k) / steps
+      const nt = t + ((t1 - t) * k) / steps
+      rope = ropeAfter(
+        course,
+        rope,
+        s + ((s1 - s) * (k - 1)) / steps,
+        t + ((t1 - t) * (k - 1)) / steps,
+        ns,
+        nt,
+      )
+      const l = leashOf(course, rope)
+      if (l > leash) {
+        leash = l
+        at = [ns, nt]
+      }
+    }
+    s = s1
+    t = t1
+  }
+  return { leash, at }
+}

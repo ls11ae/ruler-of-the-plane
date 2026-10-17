@@ -1,0 +1,36 @@
+/* "Im Wald": the switch with or without trees in the theory panel, and the picker's section. */
+.switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+}
+
+.tintSwatch {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  border: 1.5px solid var(--ink);
+  background:
+    radial-gradient(circle at 30% 30%, #96ba80 18%, transparent 20%) 0 0 / 6px 6px,
+    #d6eac4;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 2px dashed var(--ink-faint);
+}
+
+.section h3 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: normal;
+}
+
+.section p {
+  margin: 0;
+}
