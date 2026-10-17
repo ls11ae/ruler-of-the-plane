@@ -21,6 +21,8 @@ export interface Tree {
    * through the middle of an edge.
    */
   trunk: Vec2[]
+  /** Largest distance of a corner from the centre (a bounding circle). */
+  reach: number
 }
 
 /** A regular polygon with `sides` corners around the centre, its top edge horizontal. */
@@ -31,7 +33,7 @@ export function makeTree(centre: Vec2, radius = 0.45, sides = 8): Tree {
     const angle = -Math.PI / 2 + Math.PI / sides + (2 * Math.PI * k) / sides
     trunk.push([centre[0] + radius * Math.cos(angle), centre[1] + radius * Math.sin(angle)])
   }
-  return { centre, trunk }
+  return { centre, trunk, reach: radius }
 }
 
 /** A homotopy class of curves between two points: the reduced list of ray crossings (see above). */
@@ -160,8 +162,7 @@ export const blocked = (trees: readonly Tree[], p: Vec2, q: Vec2) =>
  * (with `margin` metres to spare).
  */
 export function raysClear(trees: readonly Tree[], margin = 0.1): boolean {
-  const radius = (t: Tree) =>
-    Math.max(...t.trunk.map(([x, y]) => Math.hypot(x - t.centre[0], y - t.centre[1])))
+  const radius = (t: Tree) => t.reach
   return trees.every((a, i) =>
     trees.every((b, j) => {
       if (i === j) return true

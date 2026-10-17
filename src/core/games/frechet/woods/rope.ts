@@ -36,11 +36,15 @@ export function ropePoints(rope: Rope, trees: readonly Tree[]): Vec2[] {
 }
 
 export function ropeLength(rope: Rope, trees: readonly Tree[]): number {
-  const pts = ropePoints(rope, trees)
   let sum = 0
-  for (let i = 1; i < pts.length; i++)
-    sum += Math.hypot(pts[i]![0] - pts[i - 1]![0], pts[i]![1] - pts[i - 1]![1])
-  return sum
+  let [x, y] = rope.a
+  for (const w of rope.wraps) {
+    const [cx, cy] = corner(trees, w)
+    sum += Math.hypot(cx - x, cy - y)
+    x = cx
+    y = cy
+  }
+  return sum + Math.hypot(rope.b[0] - x, rope.b[1] - y)
 }
 
 /** A point of the rope during an update: an end, a corner it bends around, or a corner to release. */
@@ -55,6 +59,16 @@ interface Node {
  */
 export function movePerson(rope: Rope, to: Vec2, trees: readonly Tree[]): Rope {
   if (to[0] === rope.a[0] && to[1] === rope.a[1]) return rope
+  const { wraps } = rope
+  const first = wraps.length > 0 ? corner(trees, wraps[0]!) : rope.b
+  // Usually nothing happens: the rope's first leg sweeps past no trunk, and the first bend stays.
+  if (
+    clearOfTrunks(to, rope.a, first, trees) &&
+    (wraps.length === 0 ||
+      quickTurn(to, first, wraps.length > 1 ? corner(trees, wraps[1]!) : rope.b) === wraps[0]!.turn)
+  ) {
+    return { a: to, b: rope.b, wraps }
+  }
   const nodes: Node[] = [
     { p: to, wrap: null },
     { p: rope.a, wrap: null },
@@ -67,6 +81,15 @@ export function movePerson(rope: Rope, to: Vec2, trees: readonly Tree[]): Rope {
 /** The dog moves in a straight line to `to`; the mirror image of {@link movePerson}. */
 export function moveDog(rope: Rope, to: Vec2, trees: readonly Tree[]): Rope {
   if (to[0] === rope.b[0] && to[1] === rope.b[1]) return rope
+  const { wraps } = rope
+  const n = wraps.length
+  const last = n > 0 ? corner(trees, wraps[n - 1]!) : rope.a
+  if (
+    clearOfTrunks(last, rope.b, to, trees) &&
+    (n === 0 || quickTurn(n > 1 ? corner(trees, wraps[n - 2]!) : rope.a, last, to) === wraps[n - 1]!.turn)
+  ) {
+    return { a: rope.a, b: to, wraps }
+  }
   const nodes: Node[] = [
     { p: rope.a, wrap: null },
     ...rope.wraps.map((w) => ({ p: corner(trees, w), wrap: w })),
@@ -74,6 +97,43 @@ export function moveDog(rope: Rope, to: Vec2, trees: readonly Tree[]): Rope {
     { p: to, wrap: null },
   ]
   return fromNodes(tighten(nodes, trees, nodes.length - 2))
+}
+
+/**
+ * Whether no trunk corner lies in or near the triangle (p, q, r) (a quick test in floating point; when
+ * it fails, the exact update decides).
+ */
+function clearOfTrunks(p: Vec2, q: Vec2, r: Vec2, trees: readonly Tree[]): boolean {
+  const minX = Math.min(p[0], q[0], r[0])
+  const maxX = Math.max(p[0], q[0], r[0])
+  const minY = Math.min(p[1], q[1], r[1])
+  const maxY = Math.max(p[1], q[1], r[1])
+  const area = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+  const sign = area >= 0 ? 1 : -1
+  for (const tree of trees) {
+    const rad = tree.reach
+    const [cx, cy] = tree.centre
+    if (cx + rad <= minX || cx - rad >= maxX || cy + rad <= minY || cy - rad >= maxY) continue
+    for (const [x, y] of tree.trunk) {
+      // A corner of the triangle itself (the rope's last bend) is not caught.
+      if ((x === p[0] && y === p[1]) || (x === q[0] && y === q[1]) || (x === r[0] && y === r[1])) continue
+      // Signed distances (times edge length) to the three sides; all clearly negative = outside.
+      const a = sign * ((q[0] - p[0]) * (y - p[1]) - (q[1] - p[1]) * (x - p[0]))
+      const b = sign * ((r[0] - q[0]) * (y - q[1]) - (r[1] - q[1]) * (x - q[0]))
+      const c = sign * ((p[0] - r[0]) * (y - r[1]) - (p[1] - r[1]) * (x - r[0]))
+      if (a > -NEAR && b > -NEAR && c > -NEAR) return false
+    }
+  }
+  return true
+}
+
+/** Tolerance of the quick tests (square metres). */
+const NEAR = 1e-9
+
+/** The turn p → q → r in floating point, or 0 when too close to call (the exact update decides then). */
+function quickTurn(p: Vec2, q: Vec2, r: Vec2): -1 | 0 | 1 {
+  const o = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+  return o > NEAR ? 1 : o < -NEAR ? -1 : 0
 }
 
 function fromNodes(nodes: Node[]): Rope {

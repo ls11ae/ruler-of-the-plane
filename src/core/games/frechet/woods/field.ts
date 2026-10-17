@@ -1,6 +1,6 @@
 import type { Path } from '../path'
-import { moveDogAlong, movePersonAlong, ropeLength, type Rope } from './rope'
-import type { Tree } from './trees'
+import { moveDog, movePerson, ropeLength, type Rope } from './rope'
+import { subpath, type Tree } from './trees'
 
 /**
  * The taut leash at every pair of positions on a grid: the person at n + 1 evenly spaced positions,
@@ -31,12 +31,15 @@ export function leashGrid(
   const t = Array.from({ length: m + 1 }, (_, j) => (j === m ? dog.length : (j / m) * dog.length))
   const leash = new Float32Array((n + 1) * (m + 1))
   const touches = new Uint32Array((n + 1) * (m + 1))
+  // The points each walker passes from one grid position to the next (its path's corners included).
+  const personSteps = s.map((x, i) => (i === 0 ? [] : subpath(person, s[i - 1]!, x).slice(1)))
+  const dogSteps = t.map((x, j) => (j === 0 ? [] : subpath(dog, t[j - 1]!, x).slice(1)))
   let column = start
   for (let i = 0; i <= n; i++) {
-    if (i > 0) column = movePersonAlong(column, person, s[i - 1]!, s[i]!, trees)
+    for (const p of personSteps[i]!) column = movePerson(column, p, trees)
     let rope = column
     for (let j = 0; j <= m; j++) {
-      if (j > 0) rope = moveDogAlong(rope, dog, t[j - 1]!, t[j]!, trees)
+      for (const q of dogSteps[j]!) rope = moveDog(rope, q, trees)
       const k = i * (m + 1) + j
       leash[k] = ropeLength(rope, trees)
       let mask = 0
