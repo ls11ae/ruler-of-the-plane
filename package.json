@@ -21,7 +21,8 @@
     "e2e": "playwright test",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build",
     "qr": "tsx scripts/booth/qr.ts",
-    "booth:print": "tsx scripts/booth/print.ts"
+    "booth:print": "tsx scripts/booth/print.ts",
+    "texts": "tsx scripts/texts/export-de.ts"
   },
   "dependencies": {
     "clipper2-ts": "^2.0.1-18",
