@@ -75,6 +75,7 @@ function FullText() {
   const toggle = () => {
     setOpen(!open)
     if (text !== null || open) return
+    setFailed(false)
     fetch(`${import.meta.env.BASE_URL}credits.txt`)
       .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
       .then(setText, () => setFailed(true))
