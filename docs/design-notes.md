@@ -296,6 +296,18 @@ their ends.
   2-hour run in CI (too slow; it belongs on a booth laptop in Phase 7); no visitors (the kiosk cycle,
   where leaks would come from, would go untested).
 
+- **2026-10-17 (proposed) "Rasenmähen": a step back per mower** (Kevin's playtest). Q (beside WASD)
+  takes back mower 1's last step, Backspace (on the side of the arrow keys) mower 2's, B on a gamepad; with
+  one mower both keys work, and on phones the dashed middle button of the direction pad does it. Each
+  press takes back one step (holding does not repeat): the mower moves back, the cells only that step
+  mowed grow back (each cell counts the footprints that cover it, also those of the other mower), and its
+  steps go down. The cards show the keys as keycaps with a curved arrow (Q beside W, "Rück" beside ↑),
+  "So geht's" lists them. Undo works while driving; during the drive home and after the round it does
+  nothing. After a "Feierabend" that left grass, play continues from the starts and the way home counts
+  as steps like any others, so undo takes it back step by step. Alternatives: Ctrl+Z (two keys at once,
+  and both players would reach for it); taking back the whole "Feierabend" at once (an exception to one
+  press, one step); undo on the result screen ("Nochmal" starts again).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,

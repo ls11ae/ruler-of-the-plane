@@ -57,6 +57,18 @@ export class MowingRound {
     return this.mowing.mowAt(next)
   }
 
+  /**
+   * Takes back cutter i's last step: it moves back to where it was, and the cells only that step mowed
+   * grow back. Returns their number, or null if the cutter has not moved.
+   */
+  undo(i: number): number | null {
+    const c = this.cutters[i]!
+    if (c.walk.length <= 1) return null
+    const last = c.walk.pop()!
+    c.at = c.walk[c.walk.length - 1]!
+    return this.mowing.unmowAt(last)
+  }
+
   /** Steps walked by cutter i so far. */
   steps(i: number): number {
     return this.cutters[i]!.walk.length - 1

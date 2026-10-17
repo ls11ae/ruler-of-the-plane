@@ -36,6 +36,15 @@ export const CUTTER_KEYS: readonly Record<string, ScreenDirection>[] = [
 export const HOME_KEYS = ['Space', 'Pad0A', 'Pad1A']
 
 /**
+ * A step back, per cutter: Q next to WASD, Backspace on the side of the arrow keys, B on a gamepad. With
+ * one cutter both keys take its steps back.
+ */
+export const UNDO_KEYS: readonly (readonly string[])[] = [
+  ['KeyQ', 'Pad0B'],
+  ['Backspace', 'Pad1B'],
+]
+
+/**
  * The lawn direction of a screen direction. The board shows the competition's y axis upwards; turned by
  * 90° (portrait phones, rotate(90): board (x, y) → screen (−y, x)) screen up is the lawn's left.
  */
@@ -60,7 +69,8 @@ interface Repeat {
  * Steering: per cutter the most recently pressed of its held keys (or the pad, for cutter 1) moves it one
  * lattice step at once (on the press itself, so even a short tap between two frames counts) and then at a
  * fixed rate while held, whatever the operating system's key repeat does. With one cutter, WASD and the
- * arrow keys both steer it. Returns `padDown`, to be called when a pad button is pressed.
+ * arrow keys both steer it. Each press of an undo key takes one step back (no repeat while held). Returns
+ * `padDown`, to be called when a pad button is pressed.
  */
 export function useCutterControls({
   cutters,
@@ -68,16 +78,19 @@ export function useCutterControls({
   pad,
   onStep,
   onHome,
+  onUndo,
 }: {
   cutters: number
   active: boolean
   pad: React.RefObject<PadHold | null>
   onStep: (cutter: number, direction: ScreenDirection) => void
   onHome: () => void
+  onUndo: (cutter: number) => void
 }): { padDown: (direction: ScreenDirection) => void } {
   const keys = cutters === 1 ? [{ ...CUTTER_KEYS[0], ...CUTTER_KEYS[1] }] : CUTTER_KEYS.slice(0, cutters)
+  const undoKeys = cutters === 1 ? [UNDO_KEYS.flat()] : UNDO_KEYS.slice(0, cutters)
   const codes = keys.flatMap((m) => Object.keys(m))
-  useKeyCapture([...codes, ...HOME_KEYS], active)
+  useKeyCapture([...codes, ...HOME_KEYS, ...undoKeys.flat()], active)
   const repeats = useRef<(Repeat | null)[]>([])
   useEffect(() => {
     if (!active) repeats.current = []
@@ -91,6 +104,9 @@ export function useCutterControls({
   useKeyListener(({ code, down }) => {
     if (!down) return
     if (HOME_KEYS.includes(code)) onHome()
+    undoKeys.forEach((list, i) => {
+      if (list.includes(code)) onUndo(i)
+    })
     keys.forEach((map, i) => {
       if (map[code]) press(i, code, map[code])
     })

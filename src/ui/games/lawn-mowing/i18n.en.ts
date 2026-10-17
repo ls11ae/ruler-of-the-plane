@@ -32,7 +32,7 @@ export const en: LawnTexts = {
   hintKeys: 'Hold a key: the mower drives. Mow everything and drive back to the start.',
   hintPad: 'Hold an arrow: the mower drives. Mow everything and drive back to the start.',
   board: (lawn: string) => `Lawn ${lawn}`,
-  pad: { up: 'up', down: 'down', left: 'left', right: 'right' },
+  pad: { up: 'up', down: 'down', left: 'left', right: 'right', undo: 'Step back' },
   setup: {
     title: 'New game',
     lawn: 'Lawn',
@@ -42,6 +42,7 @@ export const en: LawnTexts = {
     phoneOne: 'On a phone you mow with one mower.',
     start: "Let's go!",
   },
+  undoKey: 'Step back',
   newGame: 'New',
   theoryButton: 'Theory',
   howTo: (cutters: number) => [
@@ -51,7 +52,7 @@ export const en: LawnTexts = {
       : 'When everything is mowed: home time! Everyone drives back to the start. The longer round counts.',
     'The fewer steps, the better.',
   ],
-  howToKeys: { one: 'Mower 1', two: 'Mower 2', home: 'Home time' },
+  howToKeys: { one: 'Mower 1', two: 'Mower 2', home: 'Home time', undo: 'Step back' },
   howToAnimation: 'A mower drives in strips and cuts three squares wide',
   result: {
     title: 'Home time!',
