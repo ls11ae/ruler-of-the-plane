@@ -30,7 +30,7 @@ export const woodsDe = {
     `Deine längste Leine: ${metres(longest)} · kürzeste möglich: ${metres(shortest)} (ohne Bäume: ${metres(plain)})`,
   explanation: (shortest: number, longest: number) => [
     'Im Wald legt sich die Leine wie ein straffes Seil um die Stämme: Wie sie liegt, hängt davon ab, wer zuerst an welchem Baum vorbei ist.',
-    'Der Computer hat alle Stellungen im Abstand von 5 cm durchprobiert; im Diagramm ist grün, wo die Leine an einem Baum hängt.',
+    'Der Computer hat alle Stellungen im Abstand von 5 cm durchprobiert; im Diagramm ist grün gepunktet, wo die Leine an einem Baum hängt.',
     `Die kürzeste Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier ${metres(shortest)}, du brauchtest ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagramm der Stellungen im Wald, mit deinem Weg und dem Weg des Computers',

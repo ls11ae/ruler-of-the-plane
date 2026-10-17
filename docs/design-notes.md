@@ -593,9 +593,9 @@ their ends.
   same paths, the computer's walk and its narrowest spot, and pointing shows the ghosts with their
   wrapped leash. "Was steckt dahinter?": "Im Wald legt sich die Leine wie ein straffes Seil um die
   Stämme: Wie sie liegt, hängt davon ab, wer zuerst an welchem Baum vorbei ist. Der Computer hat alle
-  Stellungen im Abstand von 5 cm durchprobiert; im Diagramm ist grün, wo die Leine an einem Baum
-  hängt. Die kürzeste Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier …, du
-  brauchtest …", with the diagram animation of the player's walk. Alternative if a diagram is not
+  Stellungen im Abstand von 5 cm durchprobiert; im Diagramm ist grün gepunktet, wo die Leine an
+  einem Baum hängt. Die kürzeste Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier …,
+  du brauchtest …", with the diagram animation of the player's walk. Alternative if a diagram is not
   wanted: replay the computer's walk in the woods with the rope wrapping and unwrapping, and the leash
   length as a curve over time.
 - **2026-10-17 "Im Wald": play and look.** Same controls, speed, stars (longest leash against the

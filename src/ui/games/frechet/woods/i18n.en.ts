@@ -30,7 +30,7 @@ export const woodsEn: WoodsTexts = {
     `Your longest leash: ${metres(longest)} · shortest possible: ${metres(shortest)} (without trees: ${metres(plain)})`,
   explanation: (shortest: number, longest: number) => [
     'In the woods the leash lies around the trunks like a taut rope: how it lies depends on who passes which tree first.',
-    'The computer tried every position, 5 cm apart; green in the diagram is where the leash is caught on a tree.',
+    'The computer tried every position, 5 cm apart; dotted green in the diagram is where the leash is caught on a tree.',
     `The shortest leash that works is called the homotopic Fréchet distance: here ${metres(shortest)}, you needed ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagram of the positions in the woods, with your walk and the computer’s walk',
