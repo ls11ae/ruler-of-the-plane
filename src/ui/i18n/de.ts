@@ -14,6 +14,7 @@ export const de = {
     comingSoon: 'Kommt bald',
     closed: 'Heute geschlossen',
     logo: 'TU Dortmund · Informatik · LS 11',
+    oldVersionAddress: 'online: kbuchin.github.io/ruler',
     staffHint: 'Personalmenü',
   },
   places: {
@@ -38,6 +39,10 @@ export const de = {
     loading: 'Wird geladen …',
     missing: 'Dieses Spiel gibt es noch nicht.',
     crashed: 'Hoppla, da ist etwas schiefgegangen.',
+  },
+  tsp: {
+    subtitle: 'Die kürzeste Rundreise durch alle Orte',
+    frame: 'Rundreise: das TSP-Spiel tsp-boards',
   },
   demo: {
     title: 'Werkstatt',

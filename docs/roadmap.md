@@ -217,7 +217,10 @@ no crash or stuck state in a 2-hour unattended run of the attract mode.
 
 ## Phase 7: freeze and booth preparation (4–6 Nov)
 
-- Feature freeze and the tag `phase-7`; offline package for the booth laptops; a spare laptop.
+- Feature freeze and the tag `phase-7`; offline package for the booth laptops; a spare laptop. The package
+  serves tsp-boards' build at `/tsp-boards/` next to the app on the same local server, and the app is
+  built with `VITE_TSP_BOARDS_URL=/tsp-boards/`, so "Rundreise" works offline in its kiosk frame (see the
+  decision log, Phase 6).
 - Start script that opens Chrome in kiosk mode on the local build; touchpad gestures, sleep and system
   updates switched off.
 - QR-code poster with the GitHub Pages URL; Impressum and privacy notice reachable from the landing page.

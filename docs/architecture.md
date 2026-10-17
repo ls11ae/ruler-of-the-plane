@@ -54,15 +54,21 @@ touches no shared file:
 
 ## Shell
 
-- Routes are hashes (`#/`, `#/play/<id>`, `#/demo`), so GitHub Pages and a local build need no server
-  rewrites. `src/ui/shell/router.ts`.
+- Routes are hashes (`#/`, `#/play/<id>`, `#/tsp`, `#/demo`), so GitHub Pages and a local build need no
+  server rewrites. `src/ui/shell/router.ts`.
+- "Rundreise" (`VITE_TSP_BOARDS_URL`, read by `tspBoardsUrl()` in `shell/places.ts`): a new tab outside
+  kiosk mode; in kiosk mode `#/tsp` (`shell/TspFrame.tsx`) shows tsp-boards' event mode in a frame below
+  "‹ Karte", and `watchFrame` (`shell/idle.ts`) lets input inside the same-origin frame reset the kiosk
+  timeout. `e2e/tsp-frame.spec.ts` checks it for a build with the variable (stub page, or the real build
+  with `TSP_BOARDS_DIST`). Tests stub build variables with `vi.stubEnv` instead of assuming them unset.
 - Settings (`language`, `kiosk`, `disabledGames`, `difficulty`) and booth data (leaderboards, versus
   tally) are zustand stores persisted in `localStorage` (failures ignored). Nothing leaves the device.
 - Start map: `src/ui/shell/StartMap.tsx`, art in `MapArt.tsx`, positions per layout (landscape for
   laptops, portrait for phones) in `mapLayout.ts`. Labels are HTML over the SVG, sized in container
   query units.
 - Kiosk mode (`?kiosk` in the URL or the staff menu): the app starts on the attract screen and returns
-  there after 90 s without input, with the language reset to German.
+  there after 90 s without input, with the language reset to German. Nothing leaves the app there: "Alte
+  Ruinen" shows its address, "Rundreise" opens in a frame.
 - Staff menu: hold the compass on the start map for 3 s, or press Ctrl+Shift+S; then the PIN from
   `VITE_STAFF_PIN` (no PIN if empty).
 - Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version

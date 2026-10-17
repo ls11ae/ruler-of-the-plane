@@ -43,7 +43,6 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 - Booth laptops: operating system, browser, external mice; key test on each keyboard.
 - Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations): the
   instances are in `levels/lawn-mowing/instances/`, the solutions go to `levels/lawn-mowing/solutions/`.
-- Where tsp-boards is published (it is private and not deployed yet).
 - Whether a floor plan of a TU Dortmund building can be used as a level.
 - Who is responsible for the Impressum and privacy notice of the public site.
 
@@ -203,6 +202,41 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Board turns by 90° on portrait screens** (shared `Board` option `autoRotate`): when a
   turned board is at least 15 % larger; icons stay upright. Alternative: a separate portrait layout per
   level. Reason: one rule for every board game, no level data to maintain.
+
+### Phase 6 (playtest and polish)
+
+Entries of the Phase 6 session; it sits before the track subsections, which other sessions extend at
+their ends.
+
+- **2026-10-17 "Rundreise" opens tsp-boards in a new tab, in kiosk mode in a frame** (Kevin). tsp-boards
+  is online (its gallery at `https://ls11ae.github.io/tsp-boards/`, the repository variable
+  `VITE_TSP_BOARDS_URL`). Outside kiosk mode the place links there with `target="_blank"` and
+  `rel="noopener"`, without a confirmation, so the map stays open. In kiosk mode a new tab would trap
+  visitors (the kiosk browser shows no tabs, and the 90 s return to the attract screen would not reach
+  it), so the place opens `#/tsp`: tsp-boards in its event mode (`#kiosk`: three levels, large buttons,
+  no links out) in a full-size frame below a header with "‹ Karte". Input inside the frame counts for the
+  kiosk timeout (`watchFrame` in `shell/idle.ts`), which needs the same origin: on GitHub Pages both apps
+  are on `ls11ae.github.io`; a cross-origin frame cannot be watched, and then only focus moving into it
+  counts. The frame may go full screen (`allow="fullscreen"`): tsp-boards' "Vollbild" fills the screen
+  with the frame, Esc or the timeout returns. The frame opens in the language of the map (tsp-boards'
+  stored language, same origin). Checked in the session with the real tsp-boards build served at
+  `/tsp-boards/` next to the app (`TSP_BOARDS_DIST=<tsp-boards>/dist npx playwright test tsp-frame`, the
+  app built with `VITE_TSP_BOARDS_URL=/tsp-boards/`): its data and workers load, "Vollbild" works, input
+  in the frame keeps the timeout away, and 90 s without input return to the attract screen. For the
+  offline booth package (Phase 7), serve tsp-boards' build at `/tsp-boards/` on the same local server and
+  build the app with `VITE_TSP_BOARDS_URL=/tsp-boards/` (tsp-boards has no service worker). Alternatives:
+  a new tab in kiosk mode too (a trap); a confirmation before leaving (Kevin: not needed).
+- **2026-10-17 "Alte Ruinen" shows its address in kiosk mode instead of linking there.** Following the
+  link would leave the app in the kiosk browser's only tab, with no way back and no timeout. Visitors
+  read "online: kbuchin.github.io/ruler" and can open it at home. Alternatives: a frame as for
+  "Rundreise" (another origin, so the timeout could not see the input; offline at the booth it would not
+  load at all); hiding the place.
+- **2026-10-17 Tests independent of the build variables.** The Pages build sets `VITE_TSP_BOARDS_URL`,
+  and `StartMap.test.tsx` failed because it assumed the variable unset. `tspBoardsUrl()` now reads the
+  variable when called, the unit tests stub both cases with `vi.stubEnv` (as the staff menu tests already
+  did for `VITE_STAFF_PIN`), the smoke test checks whichever case the build has, and `e2e/tsp-frame.spec.ts`
+  runs only for a build with the variable (with a stub page for tsp-boards unless `TSP_BOARDS_DIST` names
+  a real build).
 
 ### Track A ("Erobere das Land", "Rasenmähen")
 

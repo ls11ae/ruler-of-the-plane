@@ -12,6 +12,7 @@ export const en: ShellTexts = {
     comingSoon: 'Coming soon',
     closed: 'Closed today',
     logo: 'TU Dortmund · Computer Science · LS 11',
+    oldVersionAddress: 'online: kbuchin.github.io/ruler',
     staffHint: 'Staff menu',
   },
   places: {
@@ -36,6 +37,10 @@ export const en: ShellTexts = {
     loading: 'Loading …',
     missing: 'This game does not exist yet.',
     crashed: 'Oops, something went wrong.',
+  },
+  tsp: {
+    subtitle: 'The shortest round trip through every place',
+    frame: 'Round Trip: the TSP game tsp-boards',
   },
   demo: {
     title: 'Workshop',

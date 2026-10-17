@@ -13,8 +13,10 @@ test('start map shows every place and switches the language', async ({ page }, t
     'href',
     'https://kbuchin.github.io/ruler/',
   )
-  // VITE_TSP_BOARDS_URL is not set in CI: the "Rundreise" place is hidden.
-  await expect(page.getByText('Rundreise')).toHaveCount(0)
+  // "Rundreise" follows the build variable VITE_TSP_BOARDS_URL: hidden without it, a new tab with it.
+  const tsp = page.getByRole('link', { name: /Rundreise/ })
+  if (await tsp.count()) await expect(tsp).toHaveAttribute('target', '_blank')
+  else await expect(page.getByText('Rundreise')).toHaveCount(0)
   await shot(page, testInfo, 'start')
 
   await page.getByRole('button', { name: /Switch to English/ }).click()

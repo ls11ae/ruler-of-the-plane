@@ -5,7 +5,7 @@ import { GAME_IDS } from '../games/registry'
 import { useT } from '../i18n'
 import { usePointerGesture } from '../input/hooks'
 import { MapArt } from './MapArt'
-import { OLD_VERSION_URL, TSP_BOARDS_URL, useGameStates } from './places'
+import { OLD_VERSION_URL, tspBoardsUrl, useGameStates } from './places'
 import { MAP_LAYOUTS, type MapLayout, type PlaceId } from './mapLayout'
 import { hrefFor } from './router'
 import { useSettings } from './settings'
@@ -54,21 +54,40 @@ export function StartMap() {
   const fullscreen = useFullscreen()
   const language = useSettings((s) => s.language)
   const setLanguage = useSettings((s) => s.setLanguage)
+  const kiosk = useSettings((s) => s.kiosk)
+  const tspUrl = tspBoardsUrl()
 
-  const hidden = new Set<PlaceId>(TSP_BOARDS_URL ? [] : ['tsp'])
+  const hidden = new Set<PlaceId>(tspUrl ? [] : ['tsp'])
 
   const place = (id: PlaceId) => {
     const texts = t.places[id]
     const style = at(layout, layout.labels[id])
+    if (id === 'old-version' && kiosk) {
+      // Leaving the app would strand the next visitor (a kiosk browser has no back button and the
+      // timeout no longer runs), so the booth shows the address instead of a link.
+      return (
+        <div key={id} className={`${styles.anchored} ${styles.place} ${styles.external}`} style={style}>
+          <span className={styles.name}>{texts.name}</span>
+          <span className={styles.tagline}>{t.start.oldVersionAddress}</span>
+        </div>
+      )
+    }
     if (id === 'old-version' || id === 'tsp') {
       if (hidden.has(id)) return null
+      // Rundreise: in kiosk mode inside the app (a frame below "‹ Karte"), otherwise in a new tab, so
+      // the map stays open.
+      const link =
+        id === 'old-version'
+          ? { href: OLD_VERSION_URL, rel: 'noopener' }
+          : kiosk
+            ? { href: hrefFor({ name: 'tsp' }) }
+            : { href: tspUrl, target: '_blank', rel: 'noopener' }
       return (
         <a
           key={id}
           className={`${styles.anchored} ${styles.place} ${styles.external}`}
           style={style}
-          href={id === 'tsp' ? TSP_BOARDS_URL : OLD_VERSION_URL}
-          rel="noopener"
+          {...link}
         >
           <span className={styles.name}>{texts.name}</span>
           <span className={styles.tagline}>{texts.tagline}</span>

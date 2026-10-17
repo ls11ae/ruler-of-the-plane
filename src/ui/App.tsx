@@ -8,6 +8,7 @@ import { navigate, useRoute } from './shell/router'
 import { useSettings } from './shell/settings'
 import { StaffMenu } from './shell/StaffMenu'
 import { StartMap } from './shell/StartMap'
+import { TspFrame } from './shell/TspFrame'
 import { useUi } from './shell/ui'
 import { canReloadNow, useUpdate } from './shell/update'
 import './styles/global.css'
@@ -75,6 +76,8 @@ export function App() {
       <InkDefs />
       {route.name === 'game' ? (
         <GameRoute game={route.game} />
+      ) : route.name === 'tsp' ? (
+        <TspFrame />
       ) : route.name === 'demo' ? (
         <DemoPage />
       ) : (
