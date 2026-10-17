@@ -56,7 +56,9 @@ $Types = @{
   '.pdf'         = 'application/pdf'
 }
 
-$RootFull = (Resolve-Path -LiteralPath $Root).ProviderPath.TrimEnd([char[]]@('\', '/'))
+# GetFullPath on both sides: Windows PowerShell's .NET expands 8.3 names (C:\Users\RUNNER~1), so a root
+# given in short form must be compared in the same form as the request paths.
+$RootFull = [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Root).ProviderPath).TrimEnd([char[]]@('\', '/'))
 $Separator = [System.IO.Path]::DirectorySeparatorChar
 
 $LogWriter = $null
