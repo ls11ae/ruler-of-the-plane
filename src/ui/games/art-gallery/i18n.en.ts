@@ -21,8 +21,10 @@ export const en: ArtGalleryTexts = {
   howToKeys: 'Drag: move it; drag it out of the dungeon or onto the bucket: remove it',
   stats: (torches: number, time: string) => `${torches} ${torches === 1 ? 'torch' : 'torches'} · ${time}`,
   score: (torches: number, time: string) => `${torches} torches, ${time}`,
-  fisk: (n: number, bound: number, k: number) => [
-    `A dungeon without pillars and with ${n} corners can always be lit with ${bound} torches: a third of the corners.`,
+  fisk: (n: number, bound: number, k: number, quarter: number | null) => [
+    quarter === null
+      ? `A dungeon without pillars and with ${n} corners can always be lit with ${bound} torches: a third of the corners.`
+      : `A dungeon without pillars and with ${n} corners can always be lit with ${bound} torches (a third of the corners), and with only right angles like this one even with ${quarter} (a quarter; Kahn, Klawe and Kleitman, 1983).`,
     'The proof (Steve Fisk, 1978): cut the dungeon into triangles and colour the corners with three colours so that every triangle has each colour once. Torches at the corners of the rarest colour see every triangle.',
     `Finding the smallest number, however, is very hard (NP-hard); here ${k} are enough.`,
   ],
@@ -56,6 +58,10 @@ export const en: ArtGalleryTexts = {
       `${n} corners ÷ 3, rounded down: ${bound} torches always suffice.`,
     boundHoles: (n: number, h: number, bound: number) =>
       `(${n} corners + ${h} pillars) ÷ 3, rounded down: ${bound} torches always suffice.`,
+    boundOrthogonal: (n: number, quarter: number, third: number) =>
+      `Only right angles: ${n} corners ÷ 4, rounded down: ${quarter} torches always suffice (Kahn, Klawe, Kleitman, 1983). With any angles ÷ 3: ${third}.`,
+    orthogonalText:
+      'Their proof cuts the dungeon into quadrilaterals without a reflex corner and colours the corners with four colours so that every quadrilateral has each colour once. Every corner sees its whole quadrilateral, so the rarest colour suffices.',
     level: (k: number) => `This dungeon can be done with ${k}.`,
     yours: (n: number) => `Your torches: ${n}.`,
     np: 'Finding the smallest number is NP-hard: nobody knows a fast method for it.',

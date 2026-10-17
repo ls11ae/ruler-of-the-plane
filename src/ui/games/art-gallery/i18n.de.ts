@@ -20,8 +20,11 @@ export const de = {
   howToKeys: 'Ziehen: verschieben, aus dem Verlies oder auf den Eimer ziehen: wegnehmen',
   stats: (torches: number, time: string) => `${torches} ${torches === 1 ? 'Fackel' : 'Fackeln'} · ${time}`,
   score: (torches: number, time: string) => `${torches} Fackeln, ${time}`,
-  fisk: (n: number, bound: number, k: number) => [
-    `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln: ein Drittel der Ecken.`,
+  /** `quarter`: ⌊n/4⌋ for a dungeon with only right angles, else null. */
+  fisk: (n: number, bound: number, k: number, quarter: number | null) => [
+    quarter === null
+      ? `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln: ein Drittel der Ecken.`
+      : `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln (ein Drittel der Ecken), mit nur rechten Winkeln wie hier sogar ${quarter} (ein Viertel; Kahn, Klawe und Kleitman, 1983).`,
     'Der Beweis (Steve Fisk, 1978): Zerlege das Verlies in Dreiecke und färbe die Ecken mit drei Farben, sodass jedes Dreieck jede Farbe einmal hat. Fackeln an den Ecken der seltensten Farbe sehen dann jedes Dreieck.',
     `Die kleinste Zahl zu finden ist dagegen sehr schwer (NP-schwer); hier genügen schon ${k}.`,
   ],
@@ -54,6 +57,10 @@ export const de = {
     boundNoHoles: (n: number, bound: number) => `${n} Ecken ÷ 3, abgerundet: ${bound} Fackeln reichen immer.`,
     boundHoles: (n: number, h: number, bound: number) =>
       `(${n} Ecken + ${h} Säulen) ÷ 3, abgerundet: ${bound} Fackeln reichen immer.`,
+    boundOrthogonal: (n: number, quarter: number, third: number) =>
+      `Nur rechte Winkel: ${n} Ecken ÷ 4, abgerundet: ${quarter} Fackeln reichen immer (Kahn, Klawe, Kleitman, 1983). Mit beliebigen Winkeln ÷ 3: ${third}.`,
+    orthogonalText:
+      'Ihr Beweis zerlegt das Verlies in Vierecke ohne einspringende Ecke und färbt die Ecken mit vier Farben, sodass jedes Viereck jede Farbe einmal hat. Jede Ecke sieht ihr ganzes Viereck, also reicht die seltenste Farbe.',
     level: (k: number) => `Dieses Verlies schafft man mit ${k}.`,
     yours: (n: number) => `Deine Fackeln: ${n}.`,
     np: 'Die kleinste Zahl zu finden ist NP-schwer: Niemand kennt ein schnelles Verfahren dafür.',

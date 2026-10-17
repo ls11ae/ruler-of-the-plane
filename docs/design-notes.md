@@ -238,6 +238,15 @@ their ends.
   runs only for a build with the variable (with a stub page for tsp-boards unless `TSP_BOARDS_DIST` names
   a real build).
 
+- **2026-10-17 "Licht ins Verlies" names ⌊n/4⌋ for dungeons with only right angles and no pillars**
+  (Kevin): the theory view shows "Nur rechte Winkel: n Ecken ÷ 4, abgerundet: … (Kahn, Klawe, Kleitman,
+  1983)", next to the ⌊n/3⌋ for any angles, with one paragraph on their proof (convex quadrilaterals, four
+  colours); the explanation after the win adds the quarter to its first sentence and keeps Fisk's proof
+  as the animation. A dungeon counts as orthogonal when every corner is a right angle in any orientation
+  (`isOrthogonal` in `core/games/art-gallery/dungeon.ts`, cosine below 10⁻⁶). Of the shipped dungeons
+  only agLevel3_2, the first, qualifies (18 corners: 4 instead of 6). Alternatives: a separate animation
+  of the quadrilateral proof (one dungeon, much work); the bound only in the theory view.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
