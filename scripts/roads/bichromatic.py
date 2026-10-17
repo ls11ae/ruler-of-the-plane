@@ -3,15 +3,17 @@
 Every road joins a castle and a village, and roads must not cross. Without the crossing rule the shortest
 such network is a minimum spanning tree of the castle-village roads (Kruskal); with it the problem is
 NP-hard (Borgelt et al. 2009). This script draws seeded random maps, keeps those where the crossing rule
-matters (the tree without it has crossings) and where the greedy strategy (always the shortest allowed road
-that crosses no chosen road) ends longer than the optimum or gets stuck, and computes the optimum exactly
-with CP-SAT (OR-Tools): a spanning tree on the castle-village roads by a single-commodity flow, and no two
-crossing roads. Maps with at most 8 places are checked against brute force.
+matters (the tree without it has crossings), where the greedy strategy (always the shortest allowed road
+that crosses no chosen road) ends longer than the optimum or gets stuck, and where no road of the networks
+the game draws passes close to another place. It computes the optimum exactly with CP-SAT (OR-Tools): a
+spanning tree on the castle-village roads by a single-commodity flow, and no two crossing roads. Maps with
+at most 8 places are checked against brute force.
 
     pip install ortools
-    python3 scripts/roads/bichromatic.py
+    python3 scripts/roads/bichromatic.py [map numbers]
 
-writes levels/roads/bichromatic/<n>-<name>.json; `npm run levels` imports them.
+writes levels/roads/bichromatic/<n>-<name>.json (all maps, or the numbered ones); `npm run levels`
+imports them. The larger maps take a while: the 10-place map took 2.4 million seeds (an hour).
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ import json
 import math
 import random
 import re
+import sys
 from pathlib import Path
 
 from ortools.sat.python import cp_model
@@ -46,6 +49,9 @@ MIN_COST_OF_RULE = 0.02
 MIN_GREEDY_EXCESS = 0.03
 BOUNDS = (-2.8, -1.8, 2.8, 1.8)
 MIN_SPACING = 0.95
+# Roads of the networks the game draws (the optimum, the tree without the rule) keep this distance from
+# every other place, so no road seems to run through a place.
+CLEARANCE = 0.4
 SCALE = 10**6
 
 
@@ -181,16 +187,31 @@ def place(rng, castles, villages):
     return pts[castles:], pts[:castles]
 
 
+def clearance(points, roads):
+    """The least distance between a road and a place it does not join."""
+    best = math.inf
+    for a, b in roads:
+        (px, py), (qx, qy) = points[a], points[b]
+        dx, dy = qx - px, qy - py
+        for i, (x, y) in enumerate(points):
+            if i in (a, b):
+                continue
+            t = max(0.0, min(1.0, ((x - px) * dx + (y - py) * dy) / (dx * dx + dy * dy)))
+            best = min(best, math.hypot(px + t * dx - x, py + t * dy - y))
+    return best
+
+
 def total(points, tree):
     return sum(length(points, e) for e in tree)
 
 
-def main():
+def main(numbers):
     OUT.mkdir(parents=True, exist_ok=True)
-    for old in OUT.glob("*.json"):
-        old.unlink()
     for number, (name, castles, villages) in enumerate(SPECS, start=1):
-        for seed in itertools.count(1000 * number):
+        if numbers and number not in numbers:
+            continue
+        # Separate seed ranges, so no two maps share their first places.
+        for seed in itertools.count(10**7 * number):
             placed = place(random.Random(seed), castles, villages)
             if not placed:
                 continue
@@ -200,6 +221,8 @@ def main():
             if len(crossings(points, free)) < MIN_CROSSINGS:
                 continue
             chosen, connected = greedy(points, es)
+            if clearance(points, free) < CLEARANCE:
+                continue
             best = optimum(points, es)
             if best is None:
                 continue
@@ -207,6 +230,8 @@ def main():
             if opt < total(points, free) * (1 + MIN_COST_OF_RULE):
                 continue
             if connected and total(points, chosen) < opt * (1 + MIN_GREEDY_EXCESS):
+                continue
+            if clearance(points, best) < CLEARANCE:
                 continue
             if len(points) <= 8:
                 check = brute_force(points, es)
@@ -242,4 +267,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main({int(a) for a in sys.argv[1:]})

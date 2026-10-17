@@ -360,8 +360,8 @@ their ends.
   (the tree without it has at least 2 crossings and is at least 2 % shorter than the optimum), the greedy
   strategy (always the shortest allowed road that crosses no chosen road) is at least 3 % longer than the
   optimum, and no road of the optimum or of the tree without the rule (the networks the game draws)
-  passes within 0.4 of another place (it would seem to run through it); about one random map in 20,000
-  of the larger sizes passes. The greedy strategy never got stuck on random maps of these sizes (none in 14,000 tries:
+  passes within 0.4 of another place (it would seem to run through it; 0.3 on the largest map, 12
+  places, where an hour of search found none at 0.4); the 10-place map took 2.4 million seeds. The greedy strategy never got stuck on random maps of these sizes (none in 14,000 tries:
   a crossing-free forest rarely blocks every castle–village road between two of its groups), so "longer"
   is the criterion. Each map has its own seed range. No random maps in this set.
 - **2026-10-17 (proposed) "Zwei Sorten": what the game refuses and what it marks.** A road between two
