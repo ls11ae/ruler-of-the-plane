@@ -321,7 +321,7 @@
 
 .slider input {
   width: 100%;
-  min-height: 32px;
+  min-height: var(--hit);
   accent-color: var(--ink);
 }
 

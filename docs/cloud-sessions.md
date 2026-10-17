@@ -12,7 +12,7 @@ Repository owner (`kbuchin`):
 2. Add `mbuchin` as a collaborator with the Maintain role (Settings → Collaborators and teams).
 3. Settings → Pages → Build and deployment → Source: "GitHub Actions" (the deploy workflow comes in
    Phase 0). Settings → Secrets and variables → Actions → Variables: `VITE_STAFF_PIN` (any four digits)
-   and, once tsp-boards is online, `VITE_TSP_BOARDS_URL`.
+   and `VITE_TSP_BOARDS_URL` (`https://ls11ae.github.io/tsp-boards/`, set since 2026-10-17).
 4. GitHub access for the cloud sessions, one of:
    - install the Claude GitHub App (`github.com/apps/claude`) on the `ls11ae` organization, at least
      for this repository (organization owners install or approve it); or

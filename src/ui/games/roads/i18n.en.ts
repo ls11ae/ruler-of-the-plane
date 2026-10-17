@@ -21,9 +21,9 @@ export const en: RoadsTexts = {
   hintMouse: 'Drag from place to place: build a road · Click a road: remove it',
   hintTouch: 'Tap two places one after the other, or drag: build a road · Tap a road: remove it',
   hints: {
-    ring: 'There is a ring here: the red road can go, all places stay connected.',
-    tooLong: 'The red road is too long: shorter roads connect the same places.',
-    build: 'Build the green road: the shortest one that joins two separate parts.',
+    ring: 'There is a ring here: the road with the cross can go, all places stay connected.',
+    tooLong: 'The road with the cross is too long: shorter roads connect the same places.',
+    build: 'Build the road with the plus: the shortest one that joins two separate parts.',
   },
   howTo: [
     'The king wants roads between all places – but roads are expensive.',

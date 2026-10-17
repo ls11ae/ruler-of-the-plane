@@ -62,7 +62,7 @@ export const de = {
     `Deine längste Leine: ${metres(longest)} · kürzeste möglich: ${metres(shortest)}`,
   explanation: (shortest: number, longest: number) => [
     'Der Computer zeichnet alle Stellungen in ein Diagramm: Nach rechts läuft der Mensch, nach oben der Hund; hell ist, wo die Leine reicht.',
-    'Jeder Spaziergang ist ein Weg von unten links nach oben rechts, der nie zurückgeht – deiner ist grün.',
+    'Jeder Spaziergang ist ein Weg von unten links nach oben rechts, der nie zurückgeht – deiner ist grün, der des Computers gestrichelt.',
     `Die kürzeste Leine, mit der es noch einen hellen Weg gibt, heißt Fréchet-Abstand: hier ${metres(shortest)}, du brauchtest ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagramm der Stellungen mit deinem Weg und dem Weg des Computers',
@@ -103,7 +103,7 @@ export const de = {
     check: 'Probieren',
     checking: 'Der Computer läuft …',
     works: (m: number) => `${metres(m)} reicht! Geht es noch kürzer?`,
-    fails: (m: number) => `${metres(m)} ist zu kurz: An der roten Stelle wird die Leine zu straff.`,
+    fails: (m: number) => `${metres(m)} ist zu kurz: Wo die beiden stehen bleiben, wird die Leine zu straff.`,
     reveal: 'Auflösen',
     tries: (n: number) => (n === 1 ? '1 Versuch' : `${n} Versuche`),
     stats: (best: number | null, shortest: number) =>

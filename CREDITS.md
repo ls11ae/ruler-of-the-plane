@@ -13,6 +13,11 @@ Ruler of the Plane (Unity, TU Eindhoven, 2017–2020), [github.com/kbuchin/ruler
 
 The level files in `legacy/levels/` and the texts in `legacy/ingameText.md` come from that project.
 
+The app shows these credits on its credits screen ("Mitwirkende" on the start map, `#/credits`), with this
+file and the licence texts of the bundled libraries and fonts on demand (`credits.txt`, written by the
+build from this file and `node_modules`; `scripts/credits.ts`). A test checks that every asset file the
+app imports is listed below, in the section of the game that imports it.
+
 ## Art
 
 All art is by Kenney ([www.kenney.nl](https://www.kenney.nl)) and in the public domain (CC0 1.0); credit
@@ -29,28 +34,34 @@ pull request that starts using it.
 
 ### Shared
 
-| File                                                          | Source           | Author                          | Licence | Used for                                                            | Changes     |
-| ------------------------------------------------------------- | ---------------- | ------------------------------- | ------- | ------------------------------------------------------------------- | ----------- |
-| `assets/kenney/cartography-pack/textures/parchmentFolded.png` | Cartography Pack | Kenney                          | CC0 1.0 | Background of the start map, the attract screen and the page        | none        |
-| `assets/kenney/cartography-pack/compass.png`                  | Cartography Pack | Kenney                          | CC0 1.0 | Compass rose on the start map and the attract screen                | none        |
-| `assets/kenney/cartography-pack/towerWatch.png`               | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Licht ins Verlies"                                      | none        |
-| `assets/kenney/cartography-pack/castle.png`                   | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Erobere das Land"                                       | none        |
-| `assets/kenney/cartography-pack/fence.png`                    | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Gassi gehen"                                            | none        |
-| `assets/kenney/cartography-pack/stable.png`                   | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Rasenmähen"                                             | none        |
-| `assets/kenney/cartography-pack/textureBricks.png`            | Cartography Pack | Kenney                          | CC0 1.0 | Start map: fields at "Rasenmähen"                                   | none        |
-| `assets/kenney/cartography-pack/mill.png`                     | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Rasenmähen"                                             | none        |
-| `assets/kenney/cartography-pack/houses.png`                   | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
-| `assets/kenney/cartography-pack/house.png`                    | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
-| `assets/kenney/cartography-pack/houseSmall.png`               | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
-| `assets/kenney/cartography-pack/watchtower.png`               | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
-| `assets/kenney/cartography-pack/ruins.png`                    | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Alte Ruinen"                                            | none        |
-| `assets/kenney/cartography-pack/ship.png`                     | Cartography Pack | Kenney                          | CC0 1.0 | Start map: "Rundreise"                                              | none        |
-| `assets/kenney/cartography-pack/rocksMountain.png`            | Cartography Pack | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
-| `assets/kenney/cartography-pack/rocks.png`                    | Cartography Pack | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
-| `assets/kenney/cartography-pack/treePines.png`                | Cartography Pack | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
-| `assets/kenney/cartography-pack/treePine.png`                 | Cartography Pack | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
-| `assets/kenney/cartography-pack/textureWater.png`             | Cartography Pack | Kenney                          | CC0 1.0 | Start map: waves                                                    | none        |
-| `public/favicon.svg`, `public/icons/*.png`                    | this repository  | Ruler of the Plane contributors | MIT     | App icon (compass rose); PNGs rendered by `scripts/render-icons.ts` | own drawing |
+| File                                                              | Source                 | Author                          | Licence | Used for                                                            | Changes     |
+| ----------------------------------------------------------------- | ---------------------- | ------------------------------- | ------- | ------------------------------------------------------------------- | ----------- |
+| `assets/kenney/cartography-pack/textures/parchmentFolded.png`     | Cartography Pack       | Kenney                          | CC0 1.0 | Background of the start map, the attract screen and the page        | none        |
+| `assets/kenney/cartography-pack/compass.png`                      | Cartography Pack       | Kenney                          | CC0 1.0 | Compass rose on the start map and the attract screen                | none        |
+| `assets/kenney/cartography-pack/towerWatch.png`                   | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Licht ins Verlies"                                      | none        |
+| `assets/kenney/cartography-pack/castle.png`                       | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Erobere das Land"                                       | none        |
+| `assets/kenney/cartography-pack/fence.png`                        | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Gassi gehen"                                            | none        |
+| `assets/kenney/cartography-pack/stable.png`                       | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Rasenmähen"                                             | none        |
+| `assets/kenney/cartography-pack/textureBricks.png`                | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: fields at "Rasenmähen"                                   | none        |
+| `assets/kenney/cartography-pack/mill.png`                         | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Rasenmähen"                                             | none        |
+| `assets/kenney/cartography-pack/houses.png`                       | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
+| `assets/kenney/cartography-pack/house.png`                        | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
+| `assets/kenney/cartography-pack/houseSmall.png`                   | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
+| `assets/kenney/cartography-pack/watchtower.png`                   | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Straßenbau"                                             | none        |
+| `assets/kenney/cartography-pack/ruins.png`                        | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Alte Ruinen"                                            | none        |
+| `assets/kenney/cartography-pack/ship.png`                         | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: "Rundreise"                                              | none        |
+| `assets/kenney/cartography-pack/rocksMountain.png`                | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
+| `assets/kenney/cartography-pack/rocks.png`                        | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
+| `assets/kenney/cartography-pack/treePines.png`                    | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
+| `assets/kenney/cartography-pack/treePine.png`                     | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: decoration                                               | none        |
+| `assets/kenney/cartography-pack/textureWater.png`                 | Cartography Pack       | Kenney                          | CC0 1.0 | Start map: waves                                                    | none        |
+| `assets/kenney/scribble-dungeons/characters/yellow_character.png` | Scribble Dungeons      | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `assets/kenney/scribble-dungeons/characters/red_character.png`    | Scribble Dungeons      | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `assets/kenney/scribble-dungeons/chest.png`                       | Scribble Dungeons      | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `assets/kenney/scribble-dungeons/barrels.png`                     | Scribble Dungeons      | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `assets/kenney/scribble-dungeons/tree.png`                        | Scribble Dungeons      | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `assets/kenney/animal-pack-remastered/round-outline/dog.png`      | Animal Pack Remastered | Kenney                          | CC0 1.0 | Credits screen: samples of the pack                                 | none        |
+| `public/favicon.svg`, `public/icons/*.png`                        | this repository        | Ruler of the Plane contributors | MIT     | App icon (compass rose); PNGs rendered by `scripts/render-icons.ts` | own drawing |
 
 ### Licht ins Verlies
 

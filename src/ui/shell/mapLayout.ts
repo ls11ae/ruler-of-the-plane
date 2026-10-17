@@ -25,7 +25,10 @@ export interface MapLayout {
   title: Pt
   subtitle: Pt
   controls: Pt
+  /** The logo line at the bottom; in landscape the credits button sits next to it. */
   logo: Pt
+  /** Whether the credits button joins the controls (language, full screen) instead of the logo line. */
+  creditsWithControls: boolean
   /** Label position per place (centre of the label). */
   labels: Record<PlaceId, Pt>
   /** Icons per place, drawn under the label; decorations belong to no place. */
@@ -89,6 +92,7 @@ const landscape: MapLayout = {
   subtitle: [640, 106],
   controls: [1165, 48],
   logo: [640, 772],
+  creditsWithControls: false,
   labels: {
     'art-gallery': [312, 458],
     voronoi: [825, 448],
@@ -205,27 +209,28 @@ const portrait: MapLayout = {
     [552, 892],
   ],
   islet: [
-    [74, 1430],
-    [100, 1404],
-    [150, 1398],
-    [196, 1414],
-    [198, 1440],
-    [158, 1454],
-    [100, 1452],
+    [74, 1416],
+    [100, 1390],
+    [150, 1384],
+    [196, 1400],
+    [198, 1426],
+    [158, 1440],
+    [100, 1438],
   ],
   compass: { at: [92, 286], size: 96 },
   title: [400, 84],
   subtitle: [400, 166],
   controls: [470, 270],
   logo: [400, 1588],
+  creditsWithControls: true,
   labels: {
     'art-gallery': [300, 530],
     voronoi: [500, 718],
     frechet: [300, 912],
     'lawn-mowing': [500, 1106],
     roads: [320, 1296],
-    'old-version': [170, 1512],
-    tsp: [630, 1512],
+    'old-version': [186, 1500],
+    tsp: [614, 1500],
   },
   sprites: {
     'art-gallery': [{ icon: 'towerWatch', at: [300, 418], size: 96 }],
@@ -249,8 +254,8 @@ const portrait: MapLayout = {
       { icon: 'houseSmall', at: [330, 1222], size: 42 },
       { icon: 'house', at: [440, 1196], size: 44 },
     ],
-    'old-version': [{ icon: 'ruins', at: [134, 1424], size: 50 }],
-    tsp: [{ icon: 'ship', at: [640, 1430], size: 72 }],
+    'old-version': [{ icon: 'ruins', at: [134, 1410], size: 50 }],
+    tsp: [{ icon: 'ship', at: [648, 1414], size: 72 }],
     decoration: [
       { icon: 'rocksMountain', at: [176, 430], size: 60 },
       { icon: 'rocksMountain', at: [470, 420], size: 54 },

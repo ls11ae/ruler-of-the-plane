@@ -1,11 +1,11 @@
 import { useState, type CSSProperties } from 'react'
 import { cartography } from '../art/cartography'
-import { Button } from '../components/Button'
+import { Button, LinkButton } from '../components/Button'
 import { GAME_IDS } from '../games/registry'
 import { useT } from '../i18n'
 import { usePointerGesture } from '../input/hooks'
 import { MapArt } from './MapArt'
-import { OLD_VERSION_URL, TSP_BOARDS_URL, useGameStates } from './places'
+import { OLD_VERSION_URL, tspBoardsUrl, useGameStates } from './places'
 import { MAP_LAYOUTS, type MapLayout, type PlaceId } from './mapLayout'
 import { hrefFor } from './router'
 import { useSettings } from './settings'
@@ -54,21 +54,40 @@ export function StartMap() {
   const fullscreen = useFullscreen()
   const language = useSettings((s) => s.language)
   const setLanguage = useSettings((s) => s.setLanguage)
+  const kiosk = useSettings((s) => s.kiosk)
+  const tspUrl = tspBoardsUrl()
 
-  const hidden = new Set<PlaceId>(TSP_BOARDS_URL ? [] : ['tsp'])
+  const hidden = new Set<PlaceId>(tspUrl ? [] : ['tsp'])
 
   const place = (id: PlaceId) => {
     const texts = t.places[id]
     const style = at(layout, layout.labels[id])
+    if (id === 'old-version' && kiosk) {
+      // Leaving the app would strand the next visitor (a kiosk browser has no back button and the
+      // timeout no longer runs), so the booth shows the address instead of a link.
+      return (
+        <div key={id} className={`${styles.anchored} ${styles.place} ${styles.external}`} style={style}>
+          <span className={styles.name}>{texts.name}</span>
+          <span className={styles.tagline}>{t.start.oldVersionAddress}</span>
+        </div>
+      )
+    }
     if (id === 'old-version' || id === 'tsp') {
       if (hidden.has(id)) return null
+      // Rundreise: in kiosk mode inside the app (a frame below "‹ Karte"), otherwise in a new tab, so
+      // the map stays open.
+      const link =
+        id === 'old-version'
+          ? { href: OLD_VERSION_URL, rel: 'noopener' }
+          : kiosk
+            ? { href: hrefFor({ name: 'tsp' }) }
+            : { href: tspUrl, target: '_blank', rel: 'noopener' }
       return (
         <a
           key={id}
           className={`${styles.anchored} ${styles.place} ${styles.external}`}
           style={style}
-          href={id === 'tsp' ? TSP_BOARDS_URL : OLD_VERSION_URL}
-          rel="noopener"
+          {...link}
         >
           <span className={styles.name}>{texts.name}</span>
           <span className={styles.tagline}>{texts.tagline}</span>
@@ -97,6 +116,12 @@ export function StartMap() {
     )
   }
 
+  const credits = (
+    <LinkButton className={styles.credits} href={hrefFor({ name: 'credits' })}>
+      {t.credits.open}
+    </LinkButton>
+  )
+
   return (
     <main className={styles.screen}>
       <div className={styles.stage} data-layout={layoutName}>
@@ -111,7 +136,7 @@ export function StartMap() {
         <div className={`${styles.anchored} ${styles.controls}`} style={at(layout, layout.controls)}>
           <Button
             className={styles.languages}
-            aria-label={t.language.switch}
+            aria-label={`DE·EN – ${t.language.switch}`}
             onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
           >
             <span aria-current={language === 'de'}>DE</span>·<span aria-current={language === 'en'}>EN</span>
@@ -121,11 +146,13 @@ export function StartMap() {
               {fullscreen.active ? t.start.exitFullscreen : t.start.fullscreen}
             </Button>
           )}
+          {layout.creditsWithControls && credits}
         </div>
         {[...GAME_IDS, 'old-version' as const, 'tsp' as const].map(place)}
-        <span className={`${styles.anchored} ${styles.logo}`} style={at(layout, layout.logo)}>
-          {t.start.logo}
-        </span>
+        <div className={`${styles.anchored} ${styles.footer}`} style={at(layout, layout.logo)}>
+          <span className={styles.logo}>{t.start.logo}</span>
+          {!layout.creditsWithControls && credits}
+        </div>
       </div>
     </main>
   )

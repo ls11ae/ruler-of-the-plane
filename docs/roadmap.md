@@ -106,7 +106,7 @@ lighting takes at most 10 ms per drag frame on the largest level with 17 torches
   three maps: island, river valley, lake district. — done 2026-10-16 (`levels/voronoi/README.md`)
 - Rules: castles only on land; a minimum distance to every castle, shown as a circle while aiming; score
   = land area of a player's cells plus city and gold-mine bonuses. — done 2026-10-16 (rings of half the
-  distance around every castle; castles also keep off the shore and the towns, proposed)
+  distance around every castle; castles also keep off the shore and the towns; agreed by Kevin 2026-10-17)
 - Two players or against the computer, 5 or 10 castles each. Hovering shows a ghost castle with its
   future cell and the points it would gain; a click places it (touch: press and hold, release). — done
   2026-10-16
@@ -209,15 +209,36 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
   computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
   lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`.
-- Final art in place, `CREDITS.md` complete, credits screen in the app.
-- Accessibility pass: contrast, colour never the only cue, readable fonts.
+- Final art in place, `CREDITS.md` complete, credits screen in the app. — credits screen and the `CREDITS.md`
+  check done 2026-10-17 (`#/credits`, "Mitwirkende" on the start map, with every licence text); the TU
+  Dortmund / LS 11 logos are still placeholders.
+- "Rundreise" (Kevin): tsp-boards is online and `VITE_TSP_BOARDS_URL` is set; tests independent of the
+  build variables, a new tab outside kiosk mode, tsp-boards' event mode in a frame in kiosk mode (input
+  there keeps the kiosk timeout away; its workers and its full-screen button work in the frame). — done
+  2026-10-17
+- "Licht ins Verlies" (Kevin): name the stronger bound ⌊n/4⌋ (Kahn, Klawe, Kleitman) for dungeons with
+  only right angles and no pillars, in the theory view and the explanation. — done 2026-10-17 (only
+  agLevel3_2 qualifies)
+- Accessibility pass: contrast, colour never the only cue, readable fonts. — done 2026-10-17 (`e2e/a11y.spec.ts`: axe-core
+  plus own checks of contrast against the drawn background, text sizes and 44 px hit targets on every
+  screen; see the decision log, Phase 6).
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
+Status (2026-10-17): the 2-hour run passed as a simulation (`e2e/soak.spec.ts`, a fake clock 8 times
+faster than real time, the computer's moves in real time): 4,925 moves of the attract demo, 17 visitors
+who opened every place in turn (the five games, the credits, "Rundreise" with a real tsp-boards build) and
+walked away, the attract screen back 90 s later each time, no page error, and memory flat after the first
+round of visits (JavaScript heap 7.0–7.2 MB from minute 60 on, about 1,600 DOM nodes). CI runs the same
+test for 15 simulated minutes. Open: the playtest and the measurements on the booth laptops; a real
+2-hour run on a booth laptop in Phase 7 (sleep, updates and the browser itself are not simulated).
 
 ## Phase 7: freeze and booth preparation (4–6 Nov)
 
-- Feature freeze and the tag `phase-7`; offline package for the booth laptops; a spare laptop.
+- Feature freeze and the tag `phase-7`; offline package for the booth laptops; a spare laptop. The package
+  serves tsp-boards' build at `/tsp-boards/` next to the app on the same local server, and the app is
+  built with `VITE_TSP_BOARDS_URL=/tsp-boards/`, so "Rundreise" works offline in its kiosk frame (see the
+  decision log, Phase 6).
 - Start script that opens Chrome in kiosk mode on the local build; touchpad gestures, sleep and system
   updates switched off.
 - QR-code poster with the GitHub Pages URL; Impressum and privacy notice reachable from the landing page.
