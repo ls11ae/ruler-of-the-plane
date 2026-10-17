@@ -3,6 +3,7 @@ assets/
 public/levels/
 docs/look/
 dist/
+build/
 dev-dist/
 coverage/
 playwright-report/
