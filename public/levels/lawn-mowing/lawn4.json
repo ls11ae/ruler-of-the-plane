@@ -103,11 +103,99 @@
   "variants": [
     {
       "cutters": 1,
-      "uid": "lawn4_1s3"
+      "uid": "lawn4_1s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [1, 15],
+            [19, 15],
+            [19, 12],
+            [11, 12],
+            [11, 7],
+            [7, 7],
+            [7, 9],
+            [8, 9],
+            [8, 12],
+            [4, 12],
+            [4, 4],
+            [19, 4],
+            [19, 6],
+            [16, 6],
+            [16, 7],
+            [14, 7],
+            [14, 9],
+            [30, 9],
+            [30, 6],
+            [22, 6],
+            [22, 4],
+            [27, 4],
+            [27, 3],
+            [30, 3],
+            [30, 1]
+          ]
+        ],
+        "maxTourLength": 164,
+        "source": "levels/lawn-mowing/solutions/lawn4_1s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 160,
+          "best_simple_strategy": {
+            "name": "spiral",
+            "longest_tour": 174
+          }
+        }
+      }
     },
     {
       "cutters": 2,
-      "uid": "lawn4_2s3"
+      "uid": "lawn4_2s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [12, 1],
+            [12, 15],
+            [1, 15],
+            [1, 7],
+            [6, 7],
+            [6, 9],
+            [4, 9],
+            [4, 12],
+            [9, 12],
+            [9, 4],
+            [1, 4]
+          ],
+          [
+            [15, 1],
+            [18, 1],
+            [18, 6],
+            [27, 6],
+            [27, 3],
+            [21, 3],
+            [21, 1],
+            [30, 1],
+            [30, 9],
+            [19, 9],
+            [19, 15],
+            [15, 15],
+            [15, 12],
+            [16, 12],
+            [16, 9],
+            [15, 9]
+          ]
+        ],
+        "maxTourLength": 82,
+        "source": "levels/lawn-mowing/solutions/lawn4_2s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 80,
+          "best_simple_strategy": {
+            "name": "halves with spiral",
+            "longest_tour": 92
+          }
+        }
+      }
     }
   ]
 }

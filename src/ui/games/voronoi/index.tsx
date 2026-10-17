@@ -332,11 +332,7 @@ function Match({
       <footer className={styles.footer}>
         {status && (
           <span className={styles.turn} data-testid="turn">
-            <span
-              className={styles.playerDot}
-              style={{ background: mover === 0 ? 'var(--player-1)' : 'var(--player-2)' }}
-              aria-hidden="true"
-            />
+            <span className={styles.playerDot} data-player={mover} aria-hidden="true" />
             {status}
           </span>
         )}

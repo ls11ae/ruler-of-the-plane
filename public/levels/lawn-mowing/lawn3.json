@@ -57,11 +57,125 @@
   "variants": [
     {
       "cutters": 1,
-      "uid": "lawn3_1s3"
+      "uid": "lawn3_1s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [1, 4],
+            [19, 4],
+            [19, 7],
+            [1, 7],
+            [1, 10],
+            [5, 10],
+            [5, 11],
+            [6, 11],
+            [6, 13],
+            [9, 13],
+            [9, 10],
+            [11, 10],
+            [11, 12],
+            [12, 12],
+            [12, 14],
+            [15, 14],
+            [15, 12],
+            [16, 12],
+            [16, 10],
+            [18, 10],
+            [18, 14],
+            [21, 14],
+            [21, 13],
+            [28, 13],
+            [28, 10],
+            [21, 10],
+            [21, 7],
+            [28, 7],
+            [28, 4],
+            [22, 4],
+            [22, 1]
+          ]
+        ],
+        "maxTourLength": 144,
+        "source": "levels/lawn-mowing/solutions/lawn3_1s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 140,
+          "best_simple_strategy": {
+            "name": "strips",
+            "longest_tour": 170
+          }
+        }
+      }
     },
     {
       "cutters": 2,
-      "uid": "lawn3_2s3"
+      "uid": "lawn3_2s3",
+      "solution": {
+        "tours": [
+          [
+            [2, 2],
+            [6, 2],
+            [6, 1],
+            [13, 1],
+            [13, 14],
+            [12, 14],
+            [12, 13],
+            [6, 13],
+            [6, 12],
+            [7, 12],
+            [7, 11],
+            [8, 11],
+            [8, 10],
+            [10, 10],
+            [10, 4],
+            [9, 4],
+            [9, 5],
+            [7, 5],
+            [7, 7],
+            [6, 7],
+            [6, 8],
+            [4, 8],
+            [4, 9],
+            [3, 9],
+            [3, 10],
+            [1, 10],
+            [1, 5],
+            [4, 5],
+            [4, 3],
+            [2, 3]
+          ],
+          [
+            [16, 1],
+            [16, 7],
+            [17, 7],
+            [17, 5],
+            [18, 5],
+            [18, 4],
+            [19, 4],
+            [19, 10],
+            [16, 10],
+            [16, 14],
+            [19, 14],
+            [19, 13],
+            [28, 13],
+            [28, 4],
+            [25, 4],
+            [25, 10],
+            [22, 10],
+            [22, 1]
+          ]
+        ],
+        "maxTourLength": 74,
+        "source": "levels/lawn-mowing/solutions/lawn3_2s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 70,
+          "best_simple_strategy": {
+            "name": "halves with spiral",
+            "longest_tour": 84
+          }
+        }
+      }
     }
   ]
 }

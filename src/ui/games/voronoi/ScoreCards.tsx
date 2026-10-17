@@ -1,6 +1,5 @@
 import type { Player, Score } from '../../../core/games/voronoi/rules'
 import type { VoronoiTexts } from './i18n.de'
-import { PLAYER_COLOURS } from './drawing'
 import styles from './Voronoi.module.css'
 
 /** The two players' points (as in the mockup): name, total, land and bonus; the player to move is marked. */
@@ -28,7 +27,7 @@ export function ScoreCards({
             aria-label={t.scoreLabel(names[p], s.total)}
             aria-current={active === p || undefined}
           >
-            <span className={styles.playerDot} style={{ background: PLAYER_COLOURS[p] }} aria-hidden="true" />
+            <span className={styles.playerDot} data-player={p} aria-hidden="true" />
             <span className={styles.scoreMain}>
               <span className={styles.scoreName}>{names[p]}</span>
               <span className={styles.scoreTotal}>{s.total}</span>

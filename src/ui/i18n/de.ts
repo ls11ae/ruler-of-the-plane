@@ -14,6 +14,7 @@ export const de = {
     comingSoon: 'Kommt bald',
     closed: 'Heute geschlossen',
     logo: 'TU Dortmund · Informatik · LS 11',
+    oldVersionAddress: 'online: kbuchin.github.io/ruler',
     staffHint: 'Personalmenü',
   },
   places: {
@@ -38,6 +39,58 @@ export const de = {
     loading: 'Wird geladen …',
     missing: 'Dieses Spiel gibt es noch nicht.',
     crashed: 'Hoppla, da ist etwas schiefgegangen.',
+  },
+  tsp: {
+    subtitle: 'Die kürzeste Rundreise durch alle Orte',
+    frame: 'Rundreise: das TSP-Spiel tsp-boards',
+  },
+  credits: {
+    open: 'Mitwirkende',
+    title: 'Mitwirkende',
+    subtitle: 'Wer hinter den Spielen steckt',
+    edition: 'Diese Ausgabe',
+    editionText:
+      'Web-Ausgabe 2026 für den Tag der offenen Tür der TU Dortmund, Informatik, Lehrstuhl 11. Freie Software unter der MIT-Lizenz:',
+    original: 'Das Original',
+    originalText:
+      'Ruler of the Plane, die Unity-Version der TU Eindhoven (2017–2020). Von dort stammen die Spielideen, viele Level und Texte.',
+    roles: {
+      lead: 'Projektleitung',
+      programming: 'Programmierung',
+      art: 'Grafik (hier nicht verwendet)',
+      dots: 'Dots & Polygons',
+    },
+    levels: 'Level und Aufgaben',
+    levelTexts: {
+      'art-gallery':
+        'Die 14 Verliese aus „Designing Art Galleries“ (SoCG 2020) von Toon van Benthem, Kevin Buchin, Irina Kostitsyna und Stijn Slot.',
+      'lawn-mowing':
+        'Aufgabe, Dateiformate und eine Wettbewerbsaufgabe mit Lösung aus CG:SHOP 2027 (pyutils27, MIT-Lizenz, TU Braunschweig, Algorithms Group, Phillip Keldenich); die fünf Rasen sind für diese Ausgabe entstanden.',
+      roads: 'Die Orte der Unity-Level von „Kings Taxes“, dann zufällige Dörfer.',
+      new: 'Die Karten von „Erobere das Land“ und die Wege von „Gassi gehen“ sind für diese Ausgabe gezeichnet.',
+    },
+    art: 'Grafiken',
+    artText:
+      'Alle Bilder sind von Kenney (kenney.nl) und gemeinfrei (CC0). Den Kompass der App haben wir selbst gezeichnet.',
+    fonts: 'Schriften',
+    fontsText:
+      'Eagle Lake (© 2012 Brian J. Bonislawsky, Astigmatic) und Patrick Hand (© 2010–2012 Patrick Wagesreiter), beide unter der SIL Open Font License 1.1.',
+    libraries: 'Programmbibliotheken',
+    librariesText: 'Gerechnet wird mit freier Software:',
+    uses: {
+      ui: 'Oberfläche',
+      state: 'Spielstände und Einstellungen',
+      predicates: 'exakte Orientierungstests',
+      clipper: 'Vereinigung und Differenz von Vielecken',
+      earcut: 'Dreiecke für Verliese',
+      delaunay: 'Voronoi-Zellen und Delaunay-Dreiecke',
+      workbox: 'Spielen ohne Netz',
+    },
+    tsp: 'Rundreise',
+    tspText: 'tsp-boards, das TSP-Spiel des Lehrstuhls, ist ein eigenes Projekt mit eigenen Mitwirkenden.',
+    full: 'Alle Dateien und Lizenztexte',
+    hideFull: 'Lizenztexte ausblenden',
+    fullFailed: 'Die Lizenztexte konnten nicht geladen werden.',
   },
   demo: {
     title: 'Werkstatt',

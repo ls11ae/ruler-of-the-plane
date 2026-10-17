@@ -22,8 +22,49 @@ const segmentDistance = (p: Vec2, a: Vec2, b: Vec2) => {
 
 export type Highlight = { road: Road; tone: 'bad' | 'good' } | null
 
-/** A road drawn as a dashed ink line (the style of the start map). */
-function RoadLine({ a, b, tone, ghost }: { a: Vec2; b: Vec2; tone?: 'bad' | 'good'; ghost?: boolean }) {
+/** The mark in the middle of a marked road, so it does not depend on the colour: a cross or a plus. */
+function RoadMark({ at, tone }: { at: Vec2; tone: 'bad' | 'good' }) {
+  const board = useBoard()
+  const px = board.pxToBoard(1)
+  const [x, y] = at
+  const arm = 5 * px
+  const d =
+    tone === 'bad'
+      ? `M${x - arm},${y - arm}L${x + arm},${y + arm}M${x + arm},${y - arm}L${x - arm},${y + arm}`
+      : `M${x - arm * 1.2},${y}L${x + arm * 1.2},${y}M${x},${y - arm * 1.2}L${x},${y + arm * 1.2}`
+  return (
+    <g data-mark={tone}>
+      <circle
+        cx={x}
+        cy={y}
+        r={11 * px}
+        fill="var(--paper)"
+        stroke={tone === 'bad' ? 'var(--warn)' : 'var(--person)'}
+        strokeWidth={3 * px}
+      />
+      <path d={d} stroke="var(--ink)" strokeWidth={2.6 * px} strokeLinecap="round" />
+    </g>
+  )
+}
+
+/**
+ * A road drawn as a dashed ink line (the style of the start map). A marked road is red with a cross
+ * (can go) or green with a plus (to build).
+ */
+function RoadLine({
+  a,
+  b,
+  tone,
+  ghost,
+  mark = !ghost,
+}: {
+  a: Vec2
+  b: Vec2
+  tone?: 'bad' | 'good'
+  ghost?: boolean
+  /** The cross or plus in the middle (default: on marked roads that are not faint). */
+  mark?: boolean
+}) {
   const board = useBoard()
   const px = board.pxToBoard(1)
   const colour = tone === 'bad' ? 'var(--warn)' : tone === 'good' ? 'var(--person)' : 'var(--ink)'
@@ -52,6 +93,7 @@ function RoadLine({ a, b, tone, ghost }: { a: Vec2; b: Vec2; tone?: 'bad' | 'goo
         strokeLinecap="round"
         strokeDasharray={`${10 * px} ${7 * px}`}
       />
+      {tone && mark && <RoadMark at={[(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]} tone={tone} />}
     </g>
   )
 }
@@ -197,7 +239,7 @@ export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }
         return <RoadLine key={key} a={points[r[0]]!} b={points[r[1]]!} tone={tone} />
       })}
       {highlight && highlight.tone === 'good' && (
-        <RoadLine a={points[highlight.road[0]]!} b={points[highlight.road[1]]!} tone="good" ghost />
+        <RoadLine a={points[highlight.road[0]]!} b={points[highlight.road[1]]!} tone="good" ghost mark />
       )}
       {overlay?.map(({ road, taken, current }) => (
         <RoadLine

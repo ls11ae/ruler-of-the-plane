@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GAME_IDS, isImplemented } from '../games/registry'
 import { useSettings } from './settings'
 import { StartMap } from './StartMap'
@@ -12,10 +12,15 @@ beforeEach(() => {
     addEventListener: () => {},
     removeEventListener: () => {},
   })) as unknown as typeof window.matchMedia
-  act(() => useSettings.setState({ language: 'de', disabledGames: [] }))
+  // The tests must not depend on the build variables of the machine (the Pages build sets them).
+  vi.stubEnv('VITE_TSP_BOARDS_URL', '')
+  act(() => useSettings.setState({ language: 'de', disabledGames: [], kiosk: false }))
 })
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.unstubAllEnvs()
+})
 
 describe('StartMap', () => {
   it('shows one place per game, dashed while the game is not built', () => {
@@ -34,6 +39,26 @@ describe('StartMap', () => {
       'https://kbuchin.github.io/ruler/',
     )
     expect(screen.queryByText('Rundreise')).toBeNull()
+  })
+
+  it('opens Rundreise in a new tab when VITE_TSP_BOARDS_URL is set', () => {
+    vi.stubEnv('VITE_TSP_BOARDS_URL', ' https://ls11ae.github.io/tsp-boards/ ')
+    render(<StartMap />)
+    const link = screen.getByRole('link', { name: /Rundreise/ })
+    expect(link.getAttribute('href')).toBe('https://ls11ae.github.io/tsp-boards/')
+    expect(link.getAttribute('target')).toBe('_blank')
+    expect(link.getAttribute('rel')).toBe('noopener')
+  })
+
+  it('keeps kiosk visitors inside the app: Rundreise in a frame, the old version as an address', () => {
+    vi.stubEnv('VITE_TSP_BOARDS_URL', 'https://ls11ae.github.io/tsp-boards/')
+    act(() => useSettings.setState({ kiosk: true }))
+    render(<StartMap />)
+    const link = screen.getByRole('link', { name: /Rundreise/ })
+    expect(link.getAttribute('href')).toBe('#/tsp')
+    expect(link.getAttribute('target')).toBeNull()
+    expect(screen.queryByRole('link', { name: /Alte Ruinen/ })).toBeNull()
+    expect(screen.getByText('online: kbuchin.github.io/ruler')).toBeTruthy()
   })
 
   it('marks a built game switched off by the staff as closed today', () => {

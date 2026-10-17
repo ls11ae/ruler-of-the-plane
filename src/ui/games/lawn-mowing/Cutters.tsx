@@ -107,21 +107,24 @@ export function CutterTokens({ lawn, cutters }: { lawn: Lawn; cutters: readonly 
               <circle
                 cx={cx}
                 cy={cy}
-                r={r * 0.34}
+                r={r * 0.44}
                 fill="var(--paper)"
                 stroke="var(--ink)"
                 strokeWidth={1.5 * px}
               />
-              <text
-                x={cx}
-                y={cy + r * 0.16}
-                textAnchor="middle"
-                fontSize={r * 0.48}
-                fontFamily="var(--font-text)"
-                fill="var(--ink)"
-              >
-                {i + 1}
-              </text>
+              {/* The number tells two cutters apart besides their colour; one alone needs none (phones). */}
+              {cutters.length > 1 && (
+                <text
+                  x={cx}
+                  y={cy + r * 0.23}
+                  textAnchor="middle"
+                  fontSize={r * 0.68}
+                  fontFamily="var(--font-text)"
+                  fill="var(--ink)"
+                >
+                  {i + 1}
+                </text>
+              )}
             </g>
           </g>
         )

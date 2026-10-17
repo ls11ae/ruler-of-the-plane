@@ -10,7 +10,8 @@ export const CASTLE_SIZE = 0.95
 
 /**
  * A castle standing on its site `at` (the middle of its base): the Cartography castle on a base in the
- * player's colour, with a pennant that flies towards `facing` (left or right on screen, -1 or 1).
+ * player's colour, with a flag that flies towards `facing` (left or right on screen, -1 or 1): a
+ * pennant for the first player, a forked banner for the second, so they differ by shape too.
  */
 export function CastleSprite({
   at,
@@ -52,7 +53,12 @@ export function CastleSprite({
         strokeLinecap="round"
       />
       <path
-        d={`M${x},${poleTop} L${x + facing * s * 0.36},${poleTop + s * 0.08} L${x},${poleTop + s * 0.17} Z`}
+        d={
+          owner === 0
+            ? `M${x},${poleTop} L${x + facing * s * 0.36},${poleTop + s * 0.08} L${x},${poleTop + s * 0.17} Z`
+            : `M${x},${poleTop} L${x + facing * s * 0.38},${poleTop} L${x + facing * s * 0.27},${poleTop + s * 0.1}` +
+              ` L${x + facing * s * 0.38},${poleTop + s * 0.2} L${x},${poleTop + s * 0.2} Z`
+        }
         fill={colour}
         stroke="var(--ink)"
         strokeWidth={ink}

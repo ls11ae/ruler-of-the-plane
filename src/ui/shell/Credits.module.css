@@ -1,0 +1,119 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 16px 32px;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.content {
+  max-width: 1040px;
+  margin: 0 auto;
+  columns: 2 440px;
+  column-gap: 20px;
+}
+
+.section {
+  break-inside: avoid;
+  margin: 0 0 20px;
+  padding: 14px 20px 16px;
+  background: var(--card);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.section p {
+  margin: 0 0 8px;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+.address {
+  font-family: var(--font-fallback);
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+.roles {
+  margin: 8px 0 0;
+}
+
+.roles dt {
+  font-weight: bold;
+}
+
+.roles dd {
+  margin: 0 0 6px;
+}
+
+.packs,
+.libraries {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.packs li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 4px 0;
+}
+
+.pictures {
+  display: flex;
+  gap: 6px;
+}
+
+.pictures img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.libraries li {
+  padding: 2px 0;
+}
+
+.full {
+  column-span: all;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.text {
+  justify-self: stretch;
+  margin: 0;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 14px 16px;
+  background: var(--paper);
+  border: var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-fallback);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
