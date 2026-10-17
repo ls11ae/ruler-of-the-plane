@@ -106,6 +106,16 @@ export const en: ShellTexts = {
     mower1: 'Mower 1',
     mower2: 'Mower 2',
   },
+  tiers: {
+    names: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
+    choose: 'How hard?',
+    rules: 'How to play',
+    resume: 'Continue',
+    stars: (got: number, max: number) => `${got} of ${max} stars`,
+    last: 'played last',
+    staff: 'suggested',
+    next: (tier: string) => `On to “${tier}”`,
+  },
   result: {
     won: 'Well done!',
     lost: 'Not this time',
@@ -136,7 +146,7 @@ export const en: ShellTexts = {
   },
   attract: {
     prompt: 'Click, tap or press a key!',
-    invite: 'Come and play!',
+    come: 'Come and play!',
   },
   staff: {
     title: 'Staff menu',
@@ -148,8 +158,8 @@ export const en: ShellTexts = {
     notBuilt: 'not built yet',
     on: 'on',
     off: 'off',
-    difficulty: 'Difficulty',
-    difficulties: { easy: 'Easy', normal: 'Medium', hard: 'Hard' },
+    difficulty: 'Difficulty at the start',
+    difficultyHint: 'Suggested per game until visitors choose; click again: no suggestion.',
     kiosk: 'Kiosk mode',
     kioskHint: 'After 90 s without input, back to the attract screen; language back to German.',
     data: 'Data',
