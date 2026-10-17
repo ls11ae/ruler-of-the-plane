@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 import { cartography } from '../art/cartography'
-import { Button } from '../components/Button'
+import { Button, LinkButton } from '../components/Button'
 import { GAME_IDS } from '../games/registry'
 import { useT } from '../i18n'
 import { usePointerGesture } from '../input/hooks'
@@ -116,6 +116,12 @@ export function StartMap() {
     )
   }
 
+  const credits = (
+    <LinkButton className={styles.credits} href={hrefFor({ name: 'credits' })}>
+      {t.credits.open}
+    </LinkButton>
+  )
+
   return (
     <main className={styles.screen}>
       <div className={styles.stage} data-layout={layoutName}>
@@ -140,11 +146,13 @@ export function StartMap() {
               {fullscreen.active ? t.start.exitFullscreen : t.start.fullscreen}
             </Button>
           )}
+          {layout.creditsWithControls && credits}
         </div>
         {[...GAME_IDS, 'old-version' as const, 'tsp' as const].map(place)}
-        <span className={`${styles.anchored} ${styles.logo}`} style={at(layout, layout.logo)}>
-          {t.start.logo}
-        </span>
+        <div className={`${styles.anchored} ${styles.footer}`} style={at(layout, layout.logo)}>
+          <span className={styles.logo}>{t.start.logo}</span>
+          {!layout.creditsWithControls && credits}
+        </div>
       </div>
     </main>
   )

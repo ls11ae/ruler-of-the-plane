@@ -10,6 +10,7 @@ describe('router', () => {
     expect(parseRoute('#/play/chess')).toEqual({ name: 'unknown' })
     expect(parseRoute('#/demo')).toEqual({ name: 'demo' })
     expect(parseRoute('#/tsp')).toEqual({ name: 'tsp' })
+    expect(parseRoute('#/credits')).toEqual({ name: 'credits' })
   })
   it('round-trips', () => {
     expect(parseRoute(hrefFor({ name: 'game', game: 'frechet' }))).toEqual({ name: 'game', game: 'frechet' })

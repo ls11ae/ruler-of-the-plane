@@ -209,7 +209,9 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
   computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
   lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`.
-- Final art in place, `CREDITS.md` complete, credits screen in the app.
+- Final art in place, `CREDITS.md` complete, credits screen in the app. — credits screen and the `CREDITS.md`
+  check done 2026-10-17 (`#/credits`, "Mitwirkende" on the start map, with every licence text); the TU
+  Dortmund / LS 11 logos are still placeholders.
 - Accessibility pass: contrast, colour never the only cue, readable fonts.
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;

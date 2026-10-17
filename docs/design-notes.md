@@ -247,6 +247,20 @@ their ends.
   only agLevel3_2, the first, qualifies (18 corners: 4 instead of 6). Alternatives: a separate animation
   of the quadrilateral proof (one dungeon, much work); the bound only in the theory view.
 
+- **2026-10-17 Credits screen** (`#/credits`, "Mitwirkende" on the start map: next to the logo line on
+  laptops, a third button beside the language and full-screen buttons on phones). Short bilingual cards:
+  this edition, the Unity original and its team, where the levels come from, the Kenney packs with a few
+  of their pictures, the fonts, the libraries with their licences, and tsp-boards when "Rundreise" is on.
+  "Alle Dateien und Lizenztexte" shows `credits.txt`, which the build writes from CREDITS.md and the
+  licence texts of every bundled package (the runtime dependencies, Workbox and what they depend on)
+  and both fonts (MIT, ISC, BSL and the OFL ask for their notices with every copy); it is precached, so
+  it works offline. Addresses are text in kiosk mode and new-tab links otherwise. A test checks that
+  CREDITS.md lists every asset file the app imports in the section of the importing game (or "Shared"),
+  names every runtime library, and that `credits.txt` holds every licence. Alternatives: rendering
+  CREDITS.md itself (English only, wide tables on phones); a per-file list in the app (nobody reads 60
+  rows at a booth; it is in `credits.txt`); a link to the repository (a trap in kiosk mode, no use
+  offline).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,

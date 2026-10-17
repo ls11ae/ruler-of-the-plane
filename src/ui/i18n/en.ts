@@ -42,6 +42,54 @@ export const en: ShellTexts = {
     subtitle: 'The shortest round trip through every place',
     frame: 'Round Trip: the TSP game tsp-boards',
   },
+  credits: {
+    open: 'Credits',
+    title: 'Credits',
+    subtitle: 'Who is behind the games',
+    edition: 'This edition',
+    editionText:
+      'Web edition 2026 for the open house of TU Dortmund, Computer Science, Chair 11. Free software under the MIT licence:',
+    original: 'The original',
+    originalText:
+      'Ruler of the Plane, the Unity version from TU Eindhoven (2017–2020). The game ideas, many levels and texts come from there.',
+    roles: {
+      lead: 'Project lead',
+      programming: 'Programming',
+      art: 'Art (not used here)',
+      dots: 'Dots & Polygons',
+    },
+    levels: 'Levels and problems',
+    levelTexts: {
+      'art-gallery':
+        'The 14 dungeons from “Designing Art Galleries” (SoCG 2020) by Toon van Benthem, Kevin Buchin, Irina Kostitsyna and Stijn Slot.',
+      'lawn-mowing':
+        'The problem, its file formats and a competition instance with a solution from CG:SHOP 2027 (pyutils27, MIT licence, TU Braunschweig, Algorithms Group, Phillip Keldenich); the five lawns were made for this edition.',
+      roads: 'The places of the Unity levels of “Kings Taxes”, then random villages.',
+      new: 'The maps of “Conquer the Land” and the paths of “Walk the Dog” were drawn for this edition.',
+    },
+    art: 'Art',
+    artText:
+      'All pictures are by Kenney (kenney.nl) and in the public domain (CC0). We drew the app’s compass ourselves.',
+    fonts: 'Fonts',
+    fontsText:
+      'Eagle Lake (© 2012 Brian J. Bonislawsky, Astigmatic) and Patrick Hand (© 2010–2012 Patrick Wagesreiter), both under the SIL Open Font License 1.1.',
+    libraries: 'Libraries',
+    librariesText: 'The computing is done with free software:',
+    uses: {
+      ui: 'user interface',
+      state: 'game progress and settings',
+      predicates: 'exact orientation tests',
+      clipper: 'union and difference of polygons',
+      earcut: 'triangles for the dungeons',
+      delaunay: 'Voronoi cells and Delaunay triangles',
+      workbox: 'playing offline',
+    },
+    tsp: 'Round Trip',
+    tspText: 'tsp-boards, the chair’s TSP game, is a project of its own with its own contributors.',
+    full: 'All files and licence texts',
+    hideFull: 'Hide licence texts',
+    fullFailed: 'The licence texts could not be loaded.',
+  },
   demo: {
     title: 'Workshop',
     subtitle: 'The building blocks shared by the games',

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { InkDefs } from './components/InkDefs'
 import { AttractScreen } from './shell/AttractScreen'
+import { Credits } from './shell/Credits'
 import { DemoPage } from './shell/DemoPage'
 import { GameRoute } from './shell/GameRoute'
 import { KIOSK_IDLE_MS, useIdle } from './shell/idle'
@@ -78,6 +79,8 @@ export function App() {
         <GameRoute game={route.game} />
       ) : route.name === 'tsp' ? (
         <TspFrame />
+      ) : route.name === 'credits' ? (
+        <Credits />
       ) : route.name === 'demo' ? (
         <DemoPage />
       ) : (

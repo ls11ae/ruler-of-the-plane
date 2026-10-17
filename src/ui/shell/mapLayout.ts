@@ -25,7 +25,10 @@ export interface MapLayout {
   title: Pt
   subtitle: Pt
   controls: Pt
+  /** The logo line at the bottom; in landscape the credits button sits next to it. */
   logo: Pt
+  /** Whether the credits button joins the controls (language, full screen) instead of the logo line. */
+  creditsWithControls: boolean
   /** Label position per place (centre of the label). */
   labels: Record<PlaceId, Pt>
   /** Icons per place, drawn under the label; decorations belong to no place. */
@@ -89,6 +92,7 @@ const landscape: MapLayout = {
   subtitle: [640, 106],
   controls: [1165, 48],
   logo: [640, 772],
+  creditsWithControls: false,
   labels: {
     'art-gallery': [312, 458],
     voronoi: [825, 448],
@@ -218,6 +222,7 @@ const portrait: MapLayout = {
   subtitle: [400, 166],
   controls: [470, 270],
   logo: [400, 1588],
+  creditsWithControls: true,
   labels: {
     'art-gallery': [300, 530],
     voronoi: [500, 718],

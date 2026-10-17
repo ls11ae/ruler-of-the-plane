@@ -165,6 +165,18 @@ a.place:active {
   }
 }
 
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 1.2em;
+  font-size: var(--logo);
+}
+
+.footer .credits {
+  min-height: var(--hit);
+  font-size: calc(var(--control) * 0.85);
+}
+
 .logo {
   font-size: var(--logo);
   color: var(--ink-soft);

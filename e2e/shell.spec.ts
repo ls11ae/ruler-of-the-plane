@@ -27,6 +27,23 @@ test('start map shows every place and switches the language', async ({ page }, t
   await expect(page.getByText('Light the Dungeon')).toBeVisible()
 })
 
+test('credits: from the start map, with the licence texts', async ({ page }, testInfo) => {
+  await page.goto('./')
+  await page.getByRole('link', { name: 'Mitwirkende' }).click()
+  await expect(page).toHaveURL(/#\/credits$/)
+  await expect(page.getByRole('heading', { name: 'Mitwirkende', level: 1 })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Das Original' })).toBeVisible()
+  await expect(page.getByText('Patrick Wagesreiter', { exact: false })).toBeVisible()
+  await shot(page, testInfo, 'credits')
+  await page.getByRole('button', { name: 'Alle Dateien und Lizenztexte' }).click()
+  const text = page.locator('pre')
+  await expect(text).toContainText('assets/kenney/cartography-pack/compass.png')
+  await expect(text).toContainText('SIL OPEN FONT LICENSE')
+  await expect(text).toContainText('zustand')
+  await page.getByRole('link', { name: 'Zurück zur Karte' }).click()
+  await expect(page.getByRole('heading', { name: 'Ruler of the Plane' })).toBeVisible()
+})
+
 test('demo page: board, tokens, how-to, result and leaderboard', async ({ page }, testInfo) => {
   await page.goto('./#/demo')
   const board = page.getByRole('img', { name: 'Werkstatt' })

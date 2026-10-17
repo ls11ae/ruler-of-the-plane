@@ -3,13 +3,14 @@ import { isGameId, type GameId } from '../games/registry'
 
 /**
  * Hash routes (work on GitHub Pages and from a local build without server rewrites):
- * `#/` start map, `#/play/<game>` a game, `#/tsp` tsp-boards in a frame (kiosk mode), `#/demo` the shared
- * UI components.
+ * `#/` start map, `#/play/<game>` a game, `#/tsp` tsp-boards in a frame (kiosk mode), `#/credits` the
+ * credits, `#/demo` the shared UI components.
  */
 export type Route =
   | { name: 'start' }
   | { name: 'game'; game: GameId }
   | { name: 'tsp' }
+  | { name: 'credits' }
   | { name: 'demo' }
   | { name: 'unknown' }
 
@@ -18,6 +19,7 @@ export function parseRoute(hash: string): Route {
   if (path === '/' || path === '') return { name: 'start' }
   if (path === '/demo') return { name: 'demo' }
   if (path === '/tsp') return { name: 'tsp' }
+  if (path === '/credits') return { name: 'credits' }
   const game = /^\/play\/([\w-]+)$/.exec(path)?.[1]
   if (game && isGameId(game)) return { name: 'game', game }
   return { name: 'unknown' }
@@ -29,6 +31,8 @@ export function hrefFor(route: Route): string {
       return `#/play/${route.game}`
     case 'tsp':
       return '#/tsp'
+    case 'credits':
+      return '#/credits'
     case 'demo':
       return '#/demo'
     default:
