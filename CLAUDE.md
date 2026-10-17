@@ -21,8 +21,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   playtest: two harder sets of "Straßenbau" ("Kreuzungen", "Zwei Sorten") with exact optima computed
   offline (`scripts/roads/`) and a step back per mower in "Rasenmähen" (merged 2026-10-17), and harder
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
-  `scripts/gassi/`; branch `claude/epic-ramanujan-ifv6wh`). Open are the items that need the booth
-  laptops (playtest, the 200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
+  `scripts/gassi/`; merged 2026-10-17). Open are the items that need the booth laptops (playtest, the
+  200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
   for open work**, in its order. How the shell and the shared code fit together and how a game plugs in:
   `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
@@ -70,8 +70,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - **German first**, English via a switch. Texts short: 2–3 sentences per screen, rules shown as a short
   animation where possible.
 - **Booth hardware = laptops** (decided 2026-10-16): mouse or touchpad plus keyboard are the normal case
-  at the booth. Pointer Events cover mouse, pen and touch; hit targets ≥ 44 px. Hover may add previews,
-  but every action must also work by click or tap.
+  at the booth: Windows laptops with Chrome or Firefox and standard mice (Kevin, 2026-10-17). Pointer
+  Events cover mouse, pen and touch; hit targets ≥ 44 px. Hover may add previews, but every action must
+  also work by click or tap.
 - **Phones in portrait** (Kevin, 2026-10-16): visitors open the QR code on their phones, so every game
   must be playable on a phone in portrait: use the screen well (e.g. rotate a wide board by 90°), keep
   touch targets ≥ 44 px, and give the keyboard games on-screen controls (hold buttons, direction pad).
@@ -101,7 +102,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - **The old version stays at `kbuchin.github.io/ruler/`**; the start screen links to it ("Alte
   Ruinen", see `docs/look/start-map.webp`). Nothing in this repository changes the old site.
 - **Privacy**: no third-party requests (no Google Fonts, no CDNs, no analytics); fonts and libraries are
-  bundled. The QR-code landing page links to an Impressum and a privacy notice.
+  bundled. The QR-code landing page links to the Impressum and privacy notice of the Algorithm
+  Engineering Group, TU Dortmund (`https://ae.cs.tu-dortmund.de/`; Kevin, 2026-10-17).
 
 ## Domain facts (do not rediscover)
 
