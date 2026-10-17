@@ -21,9 +21,9 @@ export const de = {
   hintMouse: 'Von Ort zu Ort ziehen: Straße bauen · Straße anklicken: abreißen',
   hintTouch: 'Zwei Orte nacheinander antippen oder ziehen: Straße bauen · Straße antippen: abreißen',
   hints: {
-    ring: 'Hier ist ein Ring: Die rote Straße kann weg, alle Orte bleiben verbunden.',
-    tooLong: 'Die rote Straße ist zu lang: Kürzere Straßen verbinden dieselben Orte.',
-    build: 'Bau die grüne Straße: die kürzeste, die zwei getrennte Teile verbindet.',
+    ring: 'Hier ist ein Ring: Die Straße mit dem Kreuz kann weg, alle Orte bleiben verbunden.',
+    tooLong: 'Die Straße mit dem Kreuz ist zu lang: Kürzere Straßen verbinden dieselben Orte.',
+    build: 'Bau die Straße mit dem Plus: die kürzeste, die zwei getrennte Teile verbindet.',
   } satisfies Record<NonNullable<Hint>['kind'], string>,
   howTo: [
     'Der König will alle Orte mit Straßen verbinden – aber Straßen sind teuer.',

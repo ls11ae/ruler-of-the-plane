@@ -83,6 +83,11 @@ a {
   color: inherit;
 }
 
+/* Sliders: the native track, but the pointer hits over the full 44 px. */
+input[type='range'] {
+  min-height: var(--hit);
+}
+
 h1,
 h2,
 h3 {

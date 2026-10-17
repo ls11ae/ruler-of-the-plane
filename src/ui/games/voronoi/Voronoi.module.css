@@ -94,6 +94,12 @@
   height: 20px;
   border: 2px solid var(--ink);
   border-radius: 50%;
+  background: var(--player-1);
+}
+
+/* The second player is striped, as their land on the map. */
+.playerDot[data-player='1'] {
+  background: repeating-linear-gradient(45deg, var(--player-2) 0 3px, var(--card) 3px 5px);
 }
 
 .scoreMain {

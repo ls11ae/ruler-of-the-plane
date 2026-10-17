@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { thickestDarkSpot } from '../../../core/games/art-gallery/coverage'
-import { cornerCount, guaranteedTorches } from '../../../core/games/art-gallery/dungeon'
+import { cornerCount, guaranteedTorches, orthogonalTorches } from '../../../core/games/art-gallery/dungeon'
 import {
   ALL_LEVELS,
   EXPERT_LEVELS,
@@ -287,7 +287,10 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
           stars={result.stars}
           record={result.record}
           stats={t.stats(result.torches, formatTime(result.seconds))}
-          explanation={(level.holes.length === 0 ? t.fisk(n, bound, k) : t.sweep(bound)).join(' ')}
+          explanation={(level.holes.length === 0
+            ? t.fisk(n, bound, k, orthogonalTorches(level))
+            : t.sweep(bound)
+          ).join(' ')}
           animation={
             level.holes.length === 0 ? (
               <FiskAnimation level={level} label={t.fiskAnimation} replay={t.replay} />

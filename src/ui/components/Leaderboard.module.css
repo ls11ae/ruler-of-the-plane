@@ -73,7 +73,7 @@
 
 .luckyInput {
   width: 3.2em;
-  min-height: 36px;
+  min-height: var(--hit);
   padding: 0 4px;
   border: 2px solid var(--ink);
   border-radius: 8px;

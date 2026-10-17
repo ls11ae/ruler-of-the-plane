@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { InkDefs } from './components/InkDefs'
 import { AttractScreen } from './shell/AttractScreen'
+import { Credits } from './shell/Credits'
 import { DemoPage } from './shell/DemoPage'
 import { GameRoute } from './shell/GameRoute'
 import { KIOSK_IDLE_MS, useIdle } from './shell/idle'
@@ -8,6 +9,7 @@ import { navigate, useRoute } from './shell/router'
 import { useSettings } from './shell/settings'
 import { StaffMenu } from './shell/StaffMenu'
 import { StartMap } from './shell/StartMap'
+import { TspFrame } from './shell/TspFrame'
 import { useUi } from './shell/ui'
 import { canReloadNow, useUpdate } from './shell/update'
 import './styles/global.css'
@@ -75,6 +77,10 @@ export function App() {
       <InkDefs />
       {route.name === 'game' ? (
         <GameRoute game={route.game} />
+      ) : route.name === 'tsp' ? (
+        <TspFrame />
+      ) : route.name === 'credits' ? (
+        <Credits />
       ) : route.name === 'demo' ? (
         <DemoPage />
       ) : (

@@ -63,3 +63,25 @@ export function dungeonBounds(d: Dungeon) {
 export function guaranteedTorches(d: Dungeon): number {
   return Math.floor((cornerCount(d) + d.holes.length) / 3)
 }
+
+/** Whether every corner of every wall is a right angle (90° or 270°), in any orientation. */
+export function isOrthogonal(d: Dungeon): boolean {
+  return rings(d).every((ring) =>
+    ring.every((p, i) => {
+      const a = ring[(i - 1 + ring.length) % ring.length]!
+      const b = ring[(i + 1) % ring.length]!
+      const u = [p[0] - a[0], p[1] - a[1]] as const
+      const v = [b[0] - p[0], b[1] - p[1]] as const
+      // Level coordinates are rounded to 6 decimals, so allow a tiny cosine.
+      return Math.abs(u[0] * v[0] + u[1] * v[1]) <= 1e-6 * Math.hypot(...u) * Math.hypot(...v)
+    }),
+  )
+}
+
+/**
+ * The stronger bound for dungeons with only right angles and no pillars: ⌊n/4⌋ torches always suffice
+ * (Kahn, Klawe, Kleitman 1983); null for other dungeons.
+ */
+export function orthogonalTorches(d: Dungeon): number | null {
+  return d.holes.length === 0 && isOrthogonal(d) ? Math.floor(cornerCount(d) / 4) : null
+}

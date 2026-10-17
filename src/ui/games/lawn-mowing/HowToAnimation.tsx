@@ -39,14 +39,14 @@ export function HowToAnimation({ label }: { label: string }) {
           strokeWidth={0.08}
           strokeDasharray="0.25 0.15"
         />
-        <circle cx={1.5} cy={1.5} r={0.5} fill="var(--cutter-1)" stroke="var(--ink)" strokeWidth={0.07} />
+        <circle cx={1.5} cy={1.5} r={0.5} fill="var(--paper)" stroke="var(--cutter-1)" strokeWidth={0.16} />
         <text
           x={1.5}
-          y={1.68}
+          y={1.7}
           textAnchor="middle"
-          fontSize={0.55}
+          fontSize={0.6}
           fontFamily="var(--font-text)"
-          fill="var(--paper)"
+          fill="var(--ink)"
         >
           1
         </text>

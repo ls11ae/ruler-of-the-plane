@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { cornerCount, guaranteedTorches } from '../../../core/games/art-gallery/dungeon'
+import { cornerCount, guaranteedTorches, orthogonalTorches } from '../../../core/games/art-gallery/dungeon'
 import { fisk, triangulate } from '../../../core/games/art-gallery/triangulation'
 import type { Vec2 } from '../../../core/geometry/types'
 import type { ArtGalleryLevel } from '../../../core/levels/schema'
@@ -104,6 +104,7 @@ export function TheoryPanel({
   const n = cornerCount(level)
   const h = level.holes.length
   const bound = guaranteedTorches(level)
+  const quarter = orthogonalTorches(level)
   const toggle = (key: keyof TheoryLayers, label: string) => (
     <Button
       small
@@ -123,8 +124,15 @@ export function TheoryPanel({
         </Button>
       </div>
       <p>
-        <strong>{h === 0 ? t.theory.boundNoHoles(n, bound) : t.theory.boundHoles(n, h, bound)}</strong>
+        <strong>
+          {quarter !== null
+            ? t.theory.boundOrthogonal(n, quarter, bound)
+            : h === 0
+              ? t.theory.boundNoHoles(n, bound)
+              : t.theory.boundHoles(n, h, bound)}
+        </strong>
       </p>
+      {quarter !== null && <p>{t.theory.orthogonalText}</p>}
       <p>
         {t.theory.level(level.torches)} {t.theory.yours(torches)}
       </p>

@@ -44,7 +44,6 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 - Solutions for the small booth lawns (targets and animations): answered 2026-10-17 by the offline
   solver `scripts/lawns/solve.py`; a solver of the chair can still replace any file in
   `levels/lawn-mowing/solutions/` with a shorter tour.
-- Where tsp-boards is published (it is private and not deployed yet).
 - Whether a floor plan of a TU Dortmund building can be used as a level.
 - Who is responsible for the Impressum and privacy notice of the public site.
 
@@ -73,8 +72,8 @@ subsection below, so their branches do not conflict.
   curves, critical values.
 - **2026-10-16 "Erobere das Land" with land, water, cities and a minimum distance** (Kevin). The AI
   evaluates moves on a land raster.
-- **2026-10-16 (proposed) "Straßenbau" optional for November**; the two research games have priority.
-  Two parallel tracks after Phase 1.
+- **2026-10-16 "Straßenbau" optional for November** (proposed; moot, since Phase 5 was finished the same day);
+  the two research games have priority. Two parallel tracks after Phase 1.
 - **2026-10-16 Art from Kenney (CC0)** (Kevin's suggestion): Cartography Pack, Scribble Dungeons (true
   top-down view for the art gallery), Animal Pack Remastered (the dog). Alternatives: the TU/e art
   (licence unclear, author busy), commissioned drawings (too slow for November), Cube Pets (3D models,
@@ -205,6 +204,98 @@ subsection below, so their branches do not conflict.
   turned board is at least 15 % larger; icons stay upright. Alternative: a separate portrait layout per
   level. Reason: one rule for every board game, no level data to maintain.
 
+### Phase 6 (playtest and polish)
+
+Entries of the Phase 6 session; it sits before the track subsections, which other sessions extend at
+their ends.
+
+- **2026-10-17 "Rundreise" opens tsp-boards in a new tab, in kiosk mode in a frame** (Kevin). tsp-boards
+  is online (its gallery at `https://ls11ae.github.io/tsp-boards/`, the repository variable
+  `VITE_TSP_BOARDS_URL`). Outside kiosk mode the place links there with `target="_blank"` and
+  `rel="noopener"`, without a confirmation, so the map stays open. In kiosk mode a new tab would trap
+  visitors (the kiosk browser shows no tabs, and the 90 s return to the attract screen would not reach
+  it), so the place opens `#/tsp`: tsp-boards in its event mode (`#kiosk`: three levels, large buttons,
+  no links out) in a full-size frame below a header with "‹ Karte". Input inside the frame counts for the
+  kiosk timeout (`watchFrame` in `shell/idle.ts`), which needs the same origin: on GitHub Pages both apps
+  are on `ls11ae.github.io`; a cross-origin frame cannot be watched, and then only focus moving into it
+  counts. The frame may go full screen (`allow="fullscreen"`): tsp-boards' "Vollbild" fills the screen
+  with the frame, Esc or the timeout returns. The frame opens in the language of the map (tsp-boards'
+  stored language, same origin). Checked in the session with the real tsp-boards build served at
+  `/tsp-boards/` next to the app (`TSP_BOARDS_DIST=<tsp-boards>/dist npx playwright test tsp-frame`, the
+  app built with `VITE_TSP_BOARDS_URL=/tsp-boards/`): its data and workers load, "Vollbild" works, input
+  in the frame keeps the timeout away, and 90 s without input return to the attract screen. For the
+  offline booth package (Phase 7), serve tsp-boards' build at `/tsp-boards/` on the same local server and
+  build the app with `VITE_TSP_BOARDS_URL=/tsp-boards/` (tsp-boards has no service worker). Alternatives:
+  a new tab in kiosk mode too (a trap); a confirmation before leaving (Kevin: not needed).
+- **2026-10-17 "Alte Ruinen" shows its address in kiosk mode instead of linking there.** Following the
+  link would leave the app in the kiosk browser's only tab, with no way back and no timeout. Visitors
+  read "online: kbuchin.github.io/ruler" and can open it at home. Alternatives: a frame as for
+  "Rundreise" (another origin, so the timeout could not see the input; offline at the booth it would not
+  load at all); hiding the place.
+- **2026-10-17 Tests independent of the build variables.** The Pages build sets `VITE_TSP_BOARDS_URL`,
+  and `StartMap.test.tsx` failed because it assumed the variable unset. `tspBoardsUrl()` now reads the
+  variable when called, the unit tests stub both cases with `vi.stubEnv` (as the staff menu tests already
+  did for `VITE_STAFF_PIN`), the smoke test checks whichever case the build has, and `e2e/tsp-frame.spec.ts`
+  runs only for a build with the variable (with a stub page for tsp-boards unless `TSP_BOARDS_DIST` names
+  a real build).
+
+- **2026-10-17 "Licht ins Verlies" names ⌊n/4⌋ for dungeons with only right angles and no pillars**
+  (Kevin): the theory view shows "Nur rechte Winkel: n Ecken ÷ 4, abgerundet: … (Kahn, Klawe, Kleitman,
+  1983)", next to the ⌊n/3⌋ for any angles, with one paragraph on their proof (convex quadrilaterals, four
+  colours); the explanation after the win adds the quarter to its first sentence and keeps Fisk's proof
+  as the animation. A dungeon counts as orthogonal when every corner is a right angle in any orientation
+  (`isOrthogonal` in `core/games/art-gallery/dungeon.ts`, cosine below 10⁻⁶). Of the shipped dungeons
+  only agLevel3_2, the first, qualifies (18 corners: 4 instead of 6). Alternatives: a separate animation
+  of the quadrilateral proof (one dungeon, much work); the bound only in the theory view.
+
+- **2026-10-17 Credits screen** (`#/credits`, "Mitwirkende" on the start map: next to the logo line on
+  laptops, a third button beside the language and full-screen buttons on phones). Short bilingual cards:
+  this edition, the Unity original and its team, where the levels come from, the Kenney packs with a few
+  of their pictures, the fonts, the libraries with their licences, and tsp-boards when "Rundreise" is on.
+  "Alle Dateien und Lizenztexte" shows `credits.txt`, which the build writes from CREDITS.md and the
+  licence texts of every bundled package (the runtime dependencies, Workbox and what they depend on)
+  and both fonts (MIT, ISC, BSL and the OFL ask for their notices with every copy); it is precached, so
+  it works offline. Addresses are text in kiosk mode and new-tab links otherwise. A test checks that
+  CREDITS.md lists every asset file the app imports in the section of the importing game (or "Shared"),
+  names every runtime library, and that `credits.txt` holds every licence. Alternatives: rendering
+  CREDITS.md itself (English only, wide tables on phones); a per-file list in the app (nobody reads 60
+  rows at a booth; it is in `credits.txt`); a link to the repository (a trap in kiosk mode, no use
+  offline).
+
+- **2026-10-17 Accessibility pass.** `e2e/a11y.spec.ts` checks every screen (start map in both languages,
+  credits, attract screen, staff menu, how-to, result with the leaderboard, and each game's how-to,
+  setup, board and theory, on the laptop and the phone) with axe-core (WCAG 2.1 A and AA; serious and
+  critical violations fail) and three own checks in `e2e/contrast.ts`: the contrast of every visible text
+  against the pixels behind it (the median of the background under the text, from a screenshot with all
+  text hidden; axe cannot judge text over parchment, washes and SVG boards), texts under 14 px, and
+  controls that do not take the pointer anywhere in the 44 × 44 px around their centre. Fixes: small
+  buttons keep their 36 px look but take the pointer over 44 px (an invisible extension; their rows keep
+  8 px gaps, the staff menu's rows got them), sliders and the lucky-number field are 44 px high; on phones
+  the start map's taglines and logo line are at least 14 px (labels and islands moved a little,
+  "Vollbild" no longer wraps); the language button and the hold buttons of "Gassi gehen" have accessible
+  names that contain their visible text (the hold hint became a tooltip); the mower number is larger,
+  ink on paper in the how-to as on the board (white on red was 4.2:1), and left out with one mower
+  (phones). Colour is never the only cue any more: the second player of "Erobere das Land" has hatched
+  land, a forked banner and a hatched dot (the first a pennant); a marked road in "Straßenbau" carries a
+  cross (can go; also the road under the mouse) or a plus (to build), and the hints say "die Straße mit
+  dem Kreuz/Plus" instead of "die rote/grüne Straße"; "Gassi gehen" mentions that the computer's walk is
+  dashed and says "where the two stop" instead of "at the red spot". Already fine: ink on paper and
+  parchment (every measured text at least 4.5:1, large text 3:1), Fisk's colours with three shapes,
+  numbered mowers, mowed stripes against grass, hatched free space, texts next to every colour bar.
+  Alternatives: small buttons 44 px high (taller theory panels and result dialog, which must fit
+  1280 × 800); axe alone (it reports nearly all text over the parchment as undecidable).
+
+- **2026-10-17 The 2-hour unattended run is simulated with a fast clock** (`e2e/soak.spec.ts`). Playwright's
+  fake clock drives timers, animation frames and `performance.now()` in one-second steps, with a short
+  real pause per step for the worker's answer (it computes in real time, so the demo plays its real
+  moves). Every 7 simulated minutes a visitor wakes the booth, opens the next place on the map, clicks
+  and presses a key there, and leaves; the kiosk timeout must bring the attract screen back within 95 s.
+  The test fails on a page or console error, a crash, a demo without a new castle for 60 s, and memory,
+  DOM nodes or event listeners that grow by half from the warmed-up state. The 120-minute run took 15
+  minutes in the session and passed (numbers in the roadmap); CI runs 15 minutes. Alternatives: a real
+  2-hour run in CI (too slow; it belongs on a booth laptop in Phase 7); no visitors (the kiosk cycle,
+  where leaks would come from, would go untested).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
@@ -231,10 +322,10 @@ subsection below, so their branches do not conflict.
   land), a city 5 and a gold mine 10 for the owner of the cell that contains it. Totals are shown and
   compared rounded to whole points; equal totals are a draw. Alternatives: area in map units (meaningless
   numbers); Unity's share of the rectangle including water.
-- **2026-10-16 (proposed) Spacing rules**: castles keep the distance d = 0.55·√(land / castles in the
-  game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a dashed
-  ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring and
-  the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
+- **2026-10-16 (agreed by Kevin 2026-10-17) Spacing rules**: castles keep the distance d = 0.55·√(land /
+  castles in the game) from each other (on the island 1.1 units with 10 castles each, 1.5 with 5), shown as a
+  dashed ring of radius d/2 around every castle, so the rule reads "rings may not overlap"; the ghost's ring
+  and the rings it collides with turn red. Castles also keep 0.15 units from the water (a castle drawn at the
   shore seemed to stand in the lake) and 0.55 units from cities and mines (castles covered the town icons).
   Alternatives: a fixed distance per map; no distance to towns. A player with no room left passes.
 - **2026-10-16 Blue starts, the computer is orange and moves second.** Alternatives: random start; the
@@ -284,14 +375,14 @@ subsection below, so their branches do not conflict.
   solver's files and the verifier fixtures can be compared without conversion. Coverage and tour lengths
   agree with the pyutils27 verifier on committed fixtures (`levels/lawn-mowing/fixtures/`, made by
   `scripts/lawns/make_fixtures.py`).
-- **2026-10-16 (proposed) Start points and target of "Rasenmähen"**: cutters start on the first point of
-  the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there. Until the
-  chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high as the
-  cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
-  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three
-  up to 1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to
-  20 % above. Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the
-  start as a constraint); "[Wert]" as a placeholder (no goal to play for).
+- **2026-10-16 (agreed by Kevin 2026-10-17) Start points and target of "Rasenmähen"**: cutters start on the
+  first point of the solver's tours, so the solver's longest tour ("Ziel vom Löser") is reachable from there.
+  Until the chair's solutions arrive, the game uses a simple strip strategy (back and forth in strips as high
+  as the cutter, best orientation and offset, split into groups for two cutters) for the start points, as the
+  target ("Ziel (Streifen-Strategie)") and for the animations. Stars: with the solver's target T three up to
+  1.1·T, two up to 1.3·T, a record below T; against the strips three for matching them, two up to 20 % above.
+  Tune in the playtest. Alternatives: a fixed shed as the start (the solver would need the start as a
+  constraint); "[Wert]" as a placeholder (no goal to play for).
 - **2026-10-16 "Rasenmähen" controls**: cutter 1 WASD, cutter 2 the arrow keys (with one cutter both
   steer it), gamepads 1 and 2, space or A for "Feierabend". A press moves one lattice step at once (on
   the key event, so a short tap between two frames counts), then after 220 ms one step every 115 ms
@@ -383,14 +474,14 @@ subsection below, so their branches do not conflict.
   called "Mensch" in German texts and "person" in English texts (buttons, hints, explanations, docs;
   code uses `person` too, e.g. the colour `--person`). The mockup `docs/look/gassi-gehen.webp` still
   shows the old word.
-- **2026-10-16 (proposed) "Gassi gehen" walks are TypeScript data, not IPE files**
-  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in
-  metres (at most 20 segments), with a pond or bushes where needed; trees, rocks and a well are
-  scattered by a seeded generator away from the paths. The leash is not stored but computed: Fréchet
-  distance × the walk's factor (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up
-  to 0.1 m (3.6 to 6.2 m). Alternatives: IPE files with a new collection in the importer (a shared
-  file that track A changes at the same time for its maps). Reason: no shared importer change in
-  parallel with track A; the paths are few and short. Can move to IPE once both tracks are merged.
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Gassi gehen" walks are TypeScript data, not IPE files**
+  (`src/core/games/frechet/levels.ts`). Six walks in a 36 × 22 m castle park, two polylines each in metres (at
+  most 20 segments), with a pond or bushes where needed; trees, rocks and a well are scattered by a seeded
+  generator away from the paths. The leash is not stored but computed: Fréchet distance × the walk's factor
+  (1.6, 1.4, 1.3, 1.25, 1.15, 1.08), at least 0.2 m above it, rounded up to 0.1 m (3.6 to 6.2 m).
+  Alternatives: IPE files with a new collection in the importer (a shared file that track A changes at the
+  same time for its maps). Reason: no shared importer change in parallel with track A; the paths are few and
+  short. Can move to IPE once both tracks are merged.
 - **2026-10-16 "Gassi gehen" walking rules.** Person and dog walk at 2.2 m/s (about 15–35 s per walk
   if nobody waits); a frame is checked in four steps and the moment the leash would get longer is found
   by bisection, so the leash never shows more than its length. The leash sags while slack and turns
@@ -400,10 +491,10 @@ subsection below, so their branches do not conflict.
   knows: reachability from the current position). A snapped leash opens "Leine zu straff!" with who
   should have waited and "Nochmal". Alternatives: the leash stops the walker instead of failing (no
   tension, against the roadmap); no dead-end hint (visitors would stand stuck).
-- **2026-10-16 (proposed) "Gassi gehen" scoring**: stars by the longest leash the walk needed compared
-  with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk is
-  better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time
-  does not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Gassi gehen" scoring**: stars by the longest leash the walk
+  needed compared with the Fréchet distance (within 10 % three, within 25 % two, else one), so a careful walk
+  is better than a lucky one; the leaderboard per walk ranks the longest leash (lower is better). Time does
+  not count. Alternatives: time (not the lesson), stars by finishing only (every level 3 stars).
 - **2026-10-16 "Gassi gehen" controls.** The footer shows "A Mensch geht" and "L Hund läuft" as hold
   buttons that also work with the mouse; on touch screens they are two large buttons side by side
   (left person, right dog), each with its own touch point, so both can be held. Gamepad: left side
@@ -443,13 +534,12 @@ subsection below, so their branches do not conflict.
   1 km) and either how many parts are still separate, "+x % über dem Optimum" (one decimal below 10 %,
   so it never reads +0 %) or "Optimal!". The round is won as soon as the network connects everything
   and is as long as a minimum spanning tree (lengths compared, so ties never reject an optimal tree).
-- **2026-10-16 (proposed) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the longest
-  road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
-  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no
-  place. Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time
-  to the optimum plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at
-  a "Fertig" button (the game would end before the optimum, which is the point), no hints (players get
-  stuck on the 19-place map).
+- **2026-10-16 (agreed by Kevin 2026-10-17) "Straßenbau" hints and scoring.** "Tipp" names, in this order, the
+  longest road of a ring, a road that no shortest network uses (a path of shorter roads joins its places), or
+  Kruskal's next road between two separate parts; the hint is shown in the footer, where it covers no place.
+  Stars by hints (none three, one two, more one); the leaderboard per fixed map ranks the time to the optimum
+  plus 20 s per hint. Random maps have no leaderboard. Alternatives: stars by "+x %" at a "Fertig" button (the
+  game would end before the optimum, which is the point), no hints (players get stuck on the 19-place map).
 - **2026-10-16 "Straßenbau" explanation and theory**: the result shows Kruskal on the player's map
   (roads by length, a ring-closing road flashes red and disappears); the theory panel explains why the
   shortest network is a tree (n − 1 of n(n − 1)/2 possible roads) and runs Kruskal step by step on the
