@@ -5,18 +5,55 @@ Five small lawns for the booth, each as a CG:SHOP 2027 instance in the pyutils27
 from (0, 0) to (3, 3), `cutter_center` (1, 1), as in the competition's `…s3` instances), once for one and
 once for two cutters.
 
-| Lawn  | Name          | Cells | Holes                                 | Lower bound, 1 / 2 cutters | Strip heuristic, 1 / 2 cutters |
-| ----- | ------------- | ----: | ------------------------------------- | -------------------------: | -----------------------------: |
-| lawn1 | Vorgarten     |   304 | pond, tree                            |                    99 / 48 |                       140 / 74 |
-| lawn2 | Gemüsegarten  |   345 | six flower beds                       |                   112 / 55 |                       168 / 96 |
-| lawn3 | Schlossgarten |   399 | pond, tree, flower bed                |                   130 / 64 |                       170 / 92 |
-| lawn4 | Obstwiese     |   426 | 13 trees                              |                   139 / 68 |                      182 / 108 |
-| lawn5 | Stadtpark     |   462 | pond around an island, tree, two beds |                   151 / 74 |                      216 / 112 |
+| Lawn  | Name          | Cells | Holes                                 |
+| ----- | ------------- | ----: | ------------------------------------- |
+| lawn1 | Vorgarten     |   304 | pond, tree                            |
+| lawn2 | Gemüsegarten  |   345 | six flower beds                       |
+| lawn3 | Schlossgarten |   399 | pond, tree, flower bed                |
+| lawn4 | Obstwiese     |   426 | 13 trees                              |
+| lawn5 | Stadtpark     |   462 | pond around an island, tree, two beds |
 
-- Lower bound: a unit step of a 3 × 3 cutter sweeps at most 3 new cells and its first position 9, so with
-  k cutters on N cells the longest tour has length at least ⌈(N − 9k) / 3k⌉.
-- Strip heuristic: back-and-forth strips of height 3 (best of both orientations and three offsets, for two
-  cutters the best split into two groups of strips). A baseline only; the solver should beat it clearly.
+## Solutions
+
+`python3 scripts/lawns/solve.py` (after `pip install -r scripts/lawns/requirements.txt`) computes the
+tours in `solutions/`, the lower bounds and the best simple strategy, and prints this table
+(`--table` prints it from the solution files alone). Instance `lawn<n>_<k>s3` has k cutters; lengths
+are the longest tour (the competition's objective).
+
+| Instance  | Lower bound | Best tour |    Gap | Best simple strategy     | Simple above best | Verdict     |
+| --------- | ----------: | --------: | -----: | ------------------------ | ----------------: | ----------- |
+| lawn1_1s3 |         108 |       110 |  1.9 % | 126 (spiral)             |           +14.5 % |             |
+| lawn1_2s3 |          54 |        56 |  3.7 % | 62 (halves with spiral)  |           +10.7 % |             |
+| lawn2_1s3 |         120 |       122 |  1.7 % | 144 (spiral)             |           +18.0 % | interesting |
+| lawn2_2s3 |          60 |        64 |  6.7 % | 68 (halves with nearest) |            +6.2 % |             |
+| lawn3_1s3 |         138 |       146 |  5.8 % | 170 (strips)             |           +16.4 % | interesting |
+| lawn3_2s3 |          70 |        74 |  5.7 % | 84 (halves with spiral)  |           +13.5 % |             |
+| lawn4_1s3 |         160 |       164 |  2.5 % | 174 (spiral)             |            +6.1 % |             |
+| lawn4_2s3 |          80 |        84 |  5.0 % | 92 (halves with spiral)  |            +9.5 % |             |
+| lawn5_1s3 |         167 |       186 | 11.4 % | 216 (strips)             |           +16.1 % | interesting |
+| lawn5_2s3 |          82 |        96 | 17.1 % | 112 (strips)             |           +16.7 % | interesting |
+
+- Lower bound: walking once around a closed tour, every lawn cell is "entered" by some step (it is under
+  the cutter after the step but not before), and a step enters at most the three cells of the new row of
+  the cutter, fewer at the lawn's edge and at holes. The shortest circulation (as many steps into every
+  position as out of it, but not necessarily connected) that enters every lawn cell is therefore a lower
+  bound for the total length of all tours; CP-SAT computes it, and dividing by k and rounding up to an
+  even number (a closed tour on the grid has even length) bounds the longest tour. On these lawns it is 2
+  to 18 steps above the area bound ⌈N / 3k⌉ (N cells, rounded up to even); the game's theory view
+  explains the even simpler ⌈(N − 9k) / 3k⌉.
+- Best tour: the best of the simple strategies below, improved by large neighbourhood search: CP-SAT
+  repeatedly re-optimises a window of the tours (a stretch of 10–60 steps, two nearby stretches, or all
+  edges in a small rectangle) and keeps the result if the longest tour does not get longer
+  (`scripts/lawns/lns.py`). Gap: how far the best tour is above the lower bound.
+- Best simple strategy: the best of the strategies a visitor might follow (`scripts/lawns/heuristics.py`):
+  back-and-forth strips as high as the cutter (as in the game; both orientations, every offset, for two
+  cutters split into two groups of strips), a spiral along the edge of the grass that is left, always to
+  the nearest grass; for two cutters also the lawn cut into two halves mowed alone with one of these, and
+  both cutters mowing at the same time with spiral or nearest. A lawn is interesting if the best simple
+  strategy is at least 15 % above the best tour, boring if it is within 5 %. No booth lawn is boring.
+
+The solution files keep the lower bound and the best simple strategy in their `meta`. A new run starts
+from the existing solution file as well and only replaces it by a better one.
 
 ## Files
 
@@ -24,8 +61,8 @@ once for two cutters.
   `python3 scripts/lawns/make_instances.py` (needs `pip install cgshop2027-pyutils`) regenerates
   `instances/` from it and validates every file with the pyutils27 schema.
 - `instances/<lawn>_<k>s3.instance.json`: the ten instances (k = number of cutters).
-- `solutions/<lawn>_<k>s3.solution.json`: solutions of the chair's solver, in the pyutils27 solution
-  format. They are kept apart from the instances because pyutils27's instance database treats every JSON
+- `solutions/<lawn>_<k>s3.solution.json`: the best tours found by `scripts/lawns/solve.py`, in the
+  pyutils27 solution format. They are kept apart from the instances because pyutils27's instance database treats every JSON
   file in a folder as an instance. `npm run levels` puts instances and solutions into
   `public/levels/lawn-mowing/<lawn>.json` (one file per lawn with both numbers of cutters).
 - `competition/`: a real CG:SHOP 2027 instance with the example solution from pyutils27 (MIT), shown in
@@ -34,10 +71,9 @@ once for two cutters.
   (`python3 scripts/lawns/make_fixtures.py`); a test compares the game's coverage and tour lengths with
   them.
 
-## Solutions wanted
+## Checking a solution
 
-For each of the ten instances, the best solution the chair's solver finds, with the competition's
-objective (the longest tour). Check a file with:
+Every solution file is checked by the pyutils27 verifier when it is written; by hand:
 
 ```python
 from cgshop2027_pyutils.io import read_instance, read_solution
@@ -50,8 +86,9 @@ errors = check_for_errors(
 ```
 
 The game shows the longest tour as the target ("Ziel vom Löser") and animates the tours in the theory
-view. The instances have no start position, as in the competition: the game starts each cutter on a point
-of the solver's tour, so any closed tour works and the target stays reachable.
+view. The instances have no start position, as in the competition: the game starts each cutter on the
+first point of its tour (the point nearest to the lawn's lower left corner), so the target stays
+reachable.
 
 ## Conventions
 

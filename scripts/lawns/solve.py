@@ -44,7 +44,7 @@ def existing(lawn: Lawn) -> tuple[list[Walk], dict] | None:
     return walks, solution.meta or {}
 
 
-def solve(uid: str, seconds: float, seed: int, workers: int) -> str:
+def solve(uid: str, seconds: float, seed: int, workers: int, bound_seconds: float) -> str:
     started = time.monotonic()
     lawn = load(uid)
     results = all_heuristics(lawn)
@@ -63,10 +63,13 @@ def solve(uid: str, seconds: float, seed: int, workers: int) -> str:
     log: list[str] = []
     best = rotated(lawn, improve(lawn, starts, seconds, seed=seed, workers=workers, log=log.append))
     value = max(map(length, best))
-    bound, total, proven = circulation_bound(lawn, workers=workers)
-    if before is not None and max(map(length, before[0])) <= value:
-        best = before[0]
-        value = max(map(length, best))
+    bound, total, proven = circulation_bound(lawn, seconds=bound_seconds, workers=workers)
+    if before is not None:
+        # Both bounds are valid (CP-SAT may prove a weaker one within its time); keep the better.
+        bound = max(bound, before[1].get("lower_bound", 0))
+        if max(map(length, before[0])) <= value:
+            best = before[0]
+            value = max(map(length, best))
     meta = {
         "algorithm": ALGORITHM,
         "lower_bound": bound,
@@ -84,22 +87,20 @@ def table() -> str:
     """The README table from the solution files."""
     header = [
         "Instance",
-        "Cells",
         "Lower bound",
         "Best tour",
-        "Best simple strategy",
         "Gap",
-        "Simple / best",
-        "",
+        "Best simple strategy",
+        "Simple above best",
+        "Verdict",
     ]
-    align = ["---", "---:", "---:", "---:", "---", "---:", "---:", "---"]
+    align = ["---", "---:", "---:", "---:", "---", "---:", "---"]
     rows = ["| " + " | ".join(header) + " |", "| " + " | ".join(align) + " |"]
     for path in sorted(INSTANCES.glob("*.instance.json")):
         uid = path.name.removesuffix(".instance.json")
-        lawn = load(uid)
-        found = existing(lawn)
+        found = existing(load(uid))
         if found is None:
-            rows.append(f"| {uid} | {len(lawn.cells)} | | | | | | no solution |")
+            rows.append(f"| {uid} | | | | | | no solution |")
             continue
         walks, meta = found
         best = max(map(length, walks))
@@ -109,10 +110,10 @@ def table() -> str:
         verdict = "interesting" if ratio >= INTERESTING else "boring" if ratio <= BORING else ""
         gap = (best - bound) / bound
         rows.append(
-            f"| {uid} | {len(lawn.cells)} | {bound} | {best} | {simple['longest_tour']} ({simple['name']}) "
-            f"| {gap:.0%} | {ratio:.2f} | {verdict} |"
+            f"| {uid} | {bound} | {best} | {100 * gap:.1f} % | {simple['longest_tour']} ({simple['name']}) "
+            f"| +{100 * (ratio - 1):.1f} % | {verdict} |"
         )
-    return "\n".join(rows).replace("%", " %")
+    return "\n".join(rows)
 
 
 def main() -> None:
@@ -122,6 +123,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--jobs", type=int, default=4, help="instances solved at the same time")
     parser.add_argument("--workers", type=int, default=1, help="CP-SAT workers per instance")
+    parser.add_argument("--bound-seconds", type=float, default=120, help="time for the lower bound")
     parser.add_argument("--table", action="store_true", help="only print the README table")
     args = parser.parse_args()
     if not args.table:
@@ -129,7 +131,10 @@ def main() -> None:
             p.name.removesuffix(".instance.json") for p in INSTANCES.glob("*.json")
         )
         with ProcessPoolExecutor(max_workers=args.jobs) as pool:
-            jobs = [pool.submit(solve, uid, args.seconds, args.seed, args.workers) for uid in uids]
+            jobs = [
+                pool.submit(solve, uid, args.seconds, args.seed, args.workers, args.bound_seconds)
+                for uid in uids
+            ]
             for job in jobs:
                 print(job.result(), flush=True)
     print(table())
