@@ -97,8 +97,8 @@ const EIGHT_B: Vec2 = [19.5, 10.5]
 /** A figure-eight: anticlockwise round A from its lower right to its bottom, across to B's top, B clockwise. */
 const eightPath = (r: number, from: Vec2, to: Vec2): Vec2[] => [
   from,
-  ...spiral(EIGHT_A, r, r, 58, -328 / 360),
-  ...spiral(EIGHT_B, r, r, 270, 1),
+  ...spiral(EIGHT_A, r, r, 58, -328 / 360, 12),
+  ...spiral(EIGHT_B, r, r, 270, 1, 12),
   to,
 ]
 
@@ -108,8 +108,8 @@ const EASY_SHAPES: readonly WoodsShape[] = [
     // pace and the leash stays free; fall a loop behind and it coils round the post. The leash allows
     // one coil (the dog a whole loop ahead: from 3.1 m), not two (from 3.7 m).
     id: 'lamp',
-    person: [[3, 19], ...spiral(LAMP, 2, 2.2, 135, 2.5), [33, 4]],
-    dog: [[3.8, 19.9], ...spiral(LAMP, 0.8, 0.95, 135, 2.5), [33.8, 4.9]],
+    person: [[3, 19], ...spiral(LAMP, 2, 2.2, 135, 2.5, 12), [33, 4]],
+    dog: [[3.8, 19.9], ...spiral(LAMP, 0.8, 0.95, 135, 2.5, 12), [33.8, 4.9]],
     trunks: [{ at: LAMP, radius: 0.15 }],
     slack: 1,
     leash: 3.4,
@@ -128,7 +128,7 @@ const EASY_SHAPES: readonly WoodsShape[] = [
       [33, 4],
     ],
     dog: [
-      ...spiral(BAKERY_POST, 0.9, 0.9, 0, -2),
+      ...spiral(BAKERY_POST, 0.9, 0.9, 0, -2, 12),
       [10, 16.2],
       [12.6, 16.8],
       [15.4, 12],
@@ -138,7 +138,7 @@ const EASY_SHAPES: readonly WoodsShape[] = [
       [28.2, 6.2],
       [33.8, 4.9],
     ],
-    before: spiral(BAKERY_POST, 0.9, 0.9, 0, 2),
+    before: spiral(BAKERY_POST, 0.9, 0.9, 0, 2, 12),
     trunks: [{ at: BAKERY_POST, radius: 0.1 }],
     bakery: [3.4, 19.8],
     slack: 1,
