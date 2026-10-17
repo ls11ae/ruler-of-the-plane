@@ -31,27 +31,27 @@ from ortools.sat.python import cp_model
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "levels" / "roads" / "bichromatic"
 
-# The maps: name, castles, villages. Level units as the other maps (about 6 x 4).
+# The maps: name, castles, villages, clearance (see below). Level units as the other maps (about 6 x 4).
 SPECS = [
-    ("burgen", 2, 4),
-    ("weiler", 3, 4),
-    ("mark", 3, 5),
-    ("grafschaft", 4, 5),
-    ("herzogtum", 4, 6),
-    ("koenigreich", 5, 7),
+    ("burgen", 2, 4, 0.4),
+    ("weiler", 3, 4, 0.4),
+    ("mark", 3, 5, 0.4),
+    ("grafschaft", 4, 5, 0.4),
+    ("herzogtum", 4, 6, 0.4),
+    # With 12 places hardly a map keeps 0.4 (none in an hour of search); 0.3 is still outside the icons.
+    ("koenigreich", 5, 7, 0.3),
 ]
 # The crossing rule must matter: the tree without it has at least this many crossings, and the optimum is
 # at least this much longer than it. The greedy strategy must get stuck or end at least this much longer
-# than the optimum. (On random maps of this size it never got stuck in 14,000 tries: a crossing-free
+# than the optimum. (On random maps of these sizes it never got stuck in 14,000 tries: a crossing-free
 # forest rarely blocks every castle-village road between two of its groups.)
 MIN_CROSSINGS = 2
 MIN_COST_OF_RULE = 0.02
 MIN_GREEDY_EXCESS = 0.03
 BOUNDS = (-2.8, -1.8, 2.8, 1.8)
 MIN_SPACING = 0.95
-# Roads of the networks the game draws (the optimum, the tree without the rule) keep this distance from
-# every other place, so no road seems to run through a place.
-CLEARANCE = 0.4
+# Roads of the networks the game draws (the optimum, the tree without the rule) keep the clearance given per
+# map from every other place, so no road seems to run through a place.
 SCALE = 10**6
 
 
@@ -207,7 +207,7 @@ def total(points, tree):
 
 def main(numbers):
     OUT.mkdir(parents=True, exist_ok=True)
-    for number, (name, castles, villages) in enumerate(SPECS, start=1):
+    for number, (name, castles, villages, min_clearance) in enumerate(SPECS, start=1):
         if numbers and number not in numbers:
             continue
         # Separate seed ranges, so no two maps share their first places.
@@ -221,7 +221,7 @@ def main(numbers):
             if len(crossings(points, free)) < MIN_CROSSINGS:
                 continue
             chosen, connected = greedy(points, es)
-            if clearance(points, free) < CLEARANCE:
+            if clearance(points, free) < min_clearance:
                 continue
             best = optimum(points, es)
             if best is None:
@@ -231,7 +231,7 @@ def main(numbers):
                 continue
             if connected and total(points, chosen) < opt * (1 + MIN_GREEDY_EXCESS):
                 continue
-            if clearance(points, best) < CLEARANCE:
+            if clearance(points, best) < min_clearance:
                 continue
             if len(points) <= 8:
                 check = brute_force(points, es)
