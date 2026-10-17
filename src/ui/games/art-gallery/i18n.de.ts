@@ -20,14 +20,22 @@ export const de = {
   howToKeys: 'Ziehen: verschieben, aus dem Verlies oder auf den Eimer ziehen: wegnehmen',
   stats: (torches: number, time: string) => `${torches} ${torches === 1 ? 'Fackel' : 'Fackeln'} · ${time}`,
   score: (torches: number, time: string) => `${torches} Fackeln, ${time}`,
-  /** `quarter`: ⌊n/4⌋ for a dungeon with only right angles, else null. */
-  fisk: (n: number, bound: number, k: number, quarter: number | null) => [
+  /**
+   * `quarter`: ⌊n/4⌋ for a dungeon with only right angles, else null. With it the sentences are tighter,
+   * so the result dialog keeps the length that fits a laptop screen.
+   */
+  fisk: (n: number, bound: number, k: number, quarter: number | null) =>
     quarter === null
-      ? `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln: ein Drittel der Ecken.`
-      : `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln (ein Drittel der Ecken), mit nur rechten Winkeln wie hier sogar ${quarter} (ein Viertel; Kahn, Klawe und Kleitman, 1983).`,
-    'Der Beweis (Steve Fisk, 1978): Zerlege das Verlies in Dreiecke und färbe die Ecken mit drei Farben, sodass jedes Dreieck jede Farbe einmal hat. Fackeln an den Ecken der seltensten Farbe sehen dann jedes Dreieck.',
-    `Die kleinste Zahl zu finden ist dagegen sehr schwer (NP-schwer); hier genügen schon ${k}.`,
-  ],
+      ? [
+          `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln: ein Drittel der Ecken.`,
+          'Der Beweis (Steve Fisk, 1978): Zerlege das Verlies in Dreiecke und färbe die Ecken mit drei Farben, sodass jedes Dreieck jede Farbe einmal hat. Fackeln an den Ecken der seltensten Farbe sehen dann jedes Dreieck.',
+          `Die kleinste Zahl zu finden ist dagegen sehr schwer (NP-schwer); hier genügen schon ${k}.`,
+        ]
+      : [
+          `Für ein Verlies ohne Säulen mit ${n} Ecken reichen immer ${bound} Fackeln (ein Drittel), mit nur rechten Winkeln sogar ${quarter} (ein Viertel; Kahn, Klawe, Kleitman).`,
+          'Fisks Beweis: Zerlege das Verlies in Dreiecke und färbe die Ecken mit drei Farben, sodass jedes Dreieck jede Farbe hat; Fackeln an der seltensten Farbe sehen alles.',
+          `Die kleinste Zahl zu finden ist sehr schwer (NP-schwer); hier genügen schon ${k}.`,
+        ],
   sweep: (bound: number) => [
     'So prüft der Computer deine Fackeln: Für jede Fackel schwenkt er einen Strahl einmal im Kreis und merkt sich, wo er an Wände stößt. Das ergibt ihren Sichtbereich.',
     'Dann vereinigt er alle Sichtbereiche und zieht sie vom Verlies ab: Bleibt nichts übrig, ist alles hell.',
