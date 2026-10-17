@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../../geometry/types'
 import { frechetDistance, optimalWalk } from '../frechet'
 import { makePath, pointAt, pointSegmentDistance } from '../path'
-import { WALK_SPEED } from '../rules'
 import { WOODS } from './levels'
 import { moveDogAlong, movePersonAlong, ropeLength, ropePoints, straightRope } from './rope'
 import {
@@ -16,7 +15,7 @@ import {
   type WoodsState,
 } from './rules'
 import { searchWoods } from './search'
-import { SEARCH_STEP, treesOf, WOODS_SHAPES } from './shapes'
+import { EASY_WOODS_IDS, SEARCH_STEP, treesOf, WOODS_SHAPES } from './shapes'
 import { blocked, insideBy, polylineWord, raysClear } from './trees'
 
 const FRAME = 1 / 60
@@ -59,7 +58,7 @@ function replay(course: WoodsCourse, walk: [number, number][]): WoodsState {
     for (let guard = 0; guard < 100000 && state.status === 'walking'; guard++) {
       const rest = Math.max(person ? s1 - state.s : 0, dog ? t1 - state.t : 0)
       if (rest <= 1e-9) break
-      state = stepWoods(course, state, { person, dog }, Math.min(FRAME, rest / WALK_SPEED))
+      state = stepWoods(course, state, { person, dog }, Math.min(FRAME, rest / course.speed))
     }
   }
   return state
@@ -86,13 +85,15 @@ describe('walks in the woods', () => {
         expect(insideBy(tree, shape.person[0]!)).toBeLessThan(0)
       }
       expect(blocked(trees, shape.person[0]!, shape.dog[0]!)).toBe(false)
+      if (!(EASY_WOODS_IDS as readonly string[]).includes(shape.id)) continue
       expect(shape.slack).toBeLessThan(lastSlack)
       lastSlack = shape.slack
     }
   })
 
-  it('store the targets and walks of a fresh search, and the rope agrees with the search', () => {
-    for (const walk of WOODS) {
+  // One search per walk: several seconds for the longer generated walks.
+  for (const walk of WOODS) {
+    it(`${walk.id}: stores the target and walk of a fresh search, and the rope agrees with the search`, () => {
       const found = searchWoods(walk.person, walk.dog, walk.trees, SEARCH_STEP)
       expect(walk.target, walk.id).toBeCloseTo(found.target, 4)
       expect(walk.computer.length, walk.id).toBe(found.walk.length)
@@ -121,8 +122,8 @@ describe('walks in the woods', () => {
       // Not trivially: on its walk, the computer lets the leash touch a trunk somewhere (except where
       // walking round together keeps it clear).
       if (walk.id === 'fetch') expect(wrapped).toBeGreaterThan(0)
-    }
-  })
+    }, 30_000)
+  }
 
   it('can be walked with the stored walk and by following the hint, but not by walking together', () => {
     for (const walk of WOODS) {

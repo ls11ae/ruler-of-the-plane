@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { frechetDistance, walkLeash } from './frechet'
-import { WALKS, type WalkLevel } from './levels'
+import { EASY_WALK_IDS, WALKS, type WalkLevel } from './levels'
 import {
   advice,
   leashAt,
@@ -52,6 +52,8 @@ describe('levels', () => {
       expect(walkLeash(course.person, course.dog, course.computer)).toBeLessThanOrEqual(
         course.shortest + 1e-6,
       )
+      // The easy walks get tighter from walk to walk (the generated tiers have one factor each).
+      if (!(EASY_WALK_IDS as readonly string[]).includes(level.id)) continue
       expect(level.slack).toBeLessThan(lastSlack)
       lastSlack = level.slack
     }

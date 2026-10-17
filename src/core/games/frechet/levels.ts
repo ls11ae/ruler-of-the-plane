@@ -1,10 +1,12 @@
 import type { Bounds, Vec2 } from '../../geometry/types'
+import { GENERATED } from './generated'
 
 /**
  * The walks of "Gassi gehen" in the castle park, in metres (y points down, as on screen). Each walk
  * starts at the gate (lower left) and ends at the castle (upper right). Every level is two polylines
- * with at most 20 segments; the leash is a factor above their Fréchet distance (computed, not stored),
- * and the factors shrink from level to level.
+ * with at most 20 segments; the leash is a factor above their Fréchet distance (computed, not stored).
+ * Three tiers: the six hand-made walks are "Leicht" (the factors shrink from walk to walk); "Mittel" and
+ * "Schwer" are generated offline (`generated.json`, see `scripts/gassi/generate.ts`) and played slower.
  */
 export interface WalkLevel {
   /** A walk of the game, or `own` for paths drawn in the sandbox. */
@@ -30,10 +32,25 @@ export interface GameWalk extends WalkLevel {
 
 export const PARK: Bounds = { minX: 0, minY: 0, maxX: 36, maxY: 22 }
 
-export const WALK_IDS = ['avenue', 'sniffing', 'pond', 'fetch', 'braid', 'expert'] as const
+export const EASY_WALK_IDS = ['avenue', 'sniffing', 'pond', 'fetch', 'braid', 'expert'] as const
+export const MEDIUM_WALK_IDS = ['m1', 'm2', 'm3', 'm4'] as const
+export const HARD_WALK_IDS = ['s1', 's2', 's3', 's4'] as const
+export const WALK_IDS = [...EASY_WALK_IDS, ...MEDIUM_WALK_IDS, ...HARD_WALK_IDS] as const
 export type WalkId = (typeof WALK_IDS)[number]
 
-export const WALKS: readonly GameWalk[] = [
+/** Difficulty tiers: "Leicht", "Mittel", "Schwer". */
+export const TIERS = ['easy', 'medium', 'hard'] as const
+export type Tier = (typeof TIERS)[number]
+
+export const WALKS_BY_TIER: Record<Tier, readonly WalkId[]> = {
+  easy: EASY_WALK_IDS,
+  medium: MEDIUM_WALK_IDS,
+  hard: HARD_WALK_IDS,
+}
+
+export const tierOfWalk = (id: WalkId): Tier => TIERS.find((tier) => WALKS_BY_TIER[tier].includes(id))!
+
+const EASY_WALKS: readonly GameWalk[] = [
   {
     // Side by side along the avenue; the dog's trail swings a little.
     id: 'avenue',
@@ -199,5 +216,14 @@ export const WALKS: readonly GameWalk[] = [
     slack: 1.08,
   },
 ]
+
+/** The generated walks, in the order of their ids. */
+const GENERATED_WALKS: GameWalk[] = [...MEDIUM_WALK_IDS, ...HARD_WALK_IDS].map((id) => {
+  const walk = GENERATED.park.find((w) => w.id === id)
+  if (!walk) throw new Error(`generated.json has no walk ${id}: run npx tsx scripts/gassi/generate.ts`)
+  return { id, person: walk.person, dog: walk.dog, slack: walk.slack, speed: GENERATED.speed }
+})
+
+export const WALKS: readonly GameWalk[] = [...EASY_WALKS, ...GENERATED_WALKS]
 
 export const walkById = (id: WalkId): GameWalk => WALKS.find((w) => w.id === id)!
