@@ -21,8 +21,8 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   playtest: two harder sets of "Straßenbau" ("Kreuzungen", "Zwei Sorten") with exact optima computed
   offline (`scripts/roads/`) and a step back per mower in "Rasenmähen" (merged 2026-10-17), and harder
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
-  `scripts/gassi/`; branch `claude/epic-ramanujan-ifv6wh`). Open are the items that need the booth
-  laptops (playtest, the 200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
+  `scripts/gassi/`; merged 2026-10-17). Open are the items that need the booth laptops (playtest, the
+  200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
   for open work**, in its order. How the shell and the shared code fit together and how a game plugs in:
   `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
