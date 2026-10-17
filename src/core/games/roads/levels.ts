@@ -57,9 +57,6 @@ export function setOf(index: number): { set: RoadsSet; index: number; count: num
   throw new Error(`no fixed map ${index}`)
 }
 
-/** Index (into LEVEL_IDS) of the first map of a set. */
-export const firstOf = (set: RoadsSet) => LEVEL_IDS.indexOf(SETS.find((s) => s.set === set)!.ids[0]!)
-
 /** A map to connect: settlements (villages first, then castles; they differ only in look). */
 export interface RoadsMap {
   points: Vec2[]

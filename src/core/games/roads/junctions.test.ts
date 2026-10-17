@@ -22,7 +22,8 @@ import {
   type JunctionNetwork,
   type SteinerOptimum,
 } from './junctions'
-import { STEINER_LEVELS } from './levels.fixture'
+import { BICHROMATIC_IDS, LEVEL_IDS, setOf, STEINER_IDS } from './levels'
+import { BICHROMATIC_LEVELS, STEINER_LEVELS } from './levels.fixture'
 import { kruskal, roadKey, type Road } from './mst'
 
 const TRIANGLE: Vec2[] = [
@@ -240,5 +241,16 @@ describe('hints of "Kreuzungen"', () => {
     const off: JunctionNetwork = { ...optimum, junctions: [[1.3, 0.3]], roads: [...optimum.roads] }
     expect(junctionHint(TRIANGLE, off, optimum)).toEqual({ kind: 'angle', junction: 3 })
     expect(junctionHint(TRIANGLE, { ...off, junctions: [CENTRE] }, optimum)).toBeNull()
+  })
+})
+
+describe('the sets of "Straßenbau"', () => {
+  it('lists every shipped map of the new sets, in order', () => {
+    expect(STEINER_IDS).toEqual(STEINER_LEVELS.map((l) => l.id))
+    expect(BICHROMATIC_IDS).toEqual(BICHROMATIC_LEVELS.map((l) => l.id))
+    expect(setOf(0)).toEqual({ set: 'mst', index: 0, count: 8 })
+    expect(setOf(8)).toEqual({ set: 'steiner', index: 0, count: 6 })
+    expect(setOf(19)).toEqual({ set: 'bichromatic', index: 5, count: 6 })
+    expect(LEVEL_IDS).toHaveLength(20)
   })
 })
