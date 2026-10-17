@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -91,11 +91,8 @@ test('demo page: board, tokens, how-to, result and leaderboard', async ({ page }
   await expect(result.getByTestId('nickname').first()).toHaveAccessibleName(`Wieder als ${signature}`)
 })
 
-test('staff menu: open with Ctrl+Shift+S, key test, switch a game off', async ({
-  page,
-  isMobile,
-}, testInfo) => {
-  test.skip(isMobile, 'keyboard test on the laptop only')
+test('staff menu: open with Ctrl+Shift+S, key test, switch a game off', async ({ page, phone }, testInfo) => {
+  test.skip(phone, 'keyboard test on the laptop only')
   await page.goto('./')
   await page.keyboard.press('Control+Shift+KeyS')
   const menu = page.getByRole('dialog', { name: 'Personalmenü' })

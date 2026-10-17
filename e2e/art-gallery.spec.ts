@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from './fixtures'
 import { freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -42,7 +42,7 @@ async function touchDrag(
 
 test('plays the first dungeon: place, remove, light it with two torches', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
   await page.goto('./#/play/art-gallery')
   const howTo = page.getByRole('dialog', { name: "So geht's" })
@@ -51,11 +51,11 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
   // The subtitle names the goal (phones hide the subtitle).
-  if (!isMobile) await expect(page.getByText('Verlies 1 von 9 · Ziel: 2 Fackeln')).toBeVisible()
+  if (!phone) await expect(page.getByText('Verlies 1 von 9 · Ziel: 2 Fackeln')).toBeVisible()
 
   const place = async (x: number, y: number) => {
     const p = await toScreen(page, x, y)
-    if (isMobile) await page.touchscreen.tap(p.x, p.y)
+    if (phone) await page.touchscreen.tap(p.x, p.y)
     else await page.mouse.click(p.x, p.y)
   }
 
@@ -67,7 +67,7 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
 
   // Remove it again: laptop by dragging it off the dungeon, phone by dragging it onto the bucket.
   const torch = await toScreen(page, -2.5, 3.5)
-  if (isMobile) {
+  if (phone) {
     const input = page.locator('svg[role=img] rect[fill="transparent"]')
     await touchDrag(input, torch, async () => {
       const box = (await page.getByText('Hierher ziehen: Fackel wegnehmen').boundingBox())!

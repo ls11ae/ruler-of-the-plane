@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { walkById, type WalkId } from '../src/core/games/frechet/levels'
 import { advice, makeCourse, startState } from '../src/core/games/frechet/rules'
 import { de } from '../src/ui/games/frechet/i18n.de'
@@ -55,7 +55,7 @@ async function walkToTheCastle(
 
 test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
   test.setTimeout(120_000)
   await page.goto('./#/play/frechet')
@@ -64,13 +64,13 @@ test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', a
   await shot(page, testInfo, 'frechet-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('leash')).toContainText('von 3,6 m Leine')
-  if (!isMobile) await expectHeaderLaidOut(page)
+  if (!phone) await expectHeaderLaidOut(page)
   await shot(page, testInfo, 'frechet-start')
 
   // Half way: a screenshot of the walk under way.
-  await walkToTheCastle(page, isMobile, (s) => s > 15)
+  await walkToTheCastle(page, phone, (s) => s > 15)
   await shot(page, testInfo, 'frechet-walking')
-  await walkToTheCastle(page, isMobile, () => false)
+  await walkToTheCastle(page, phone, () => false)
 
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible({ timeout: 10_000 })
@@ -85,7 +85,7 @@ test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', a
   await expect(theory.getByTestId('theory-verdict')).toHaveText(/führt ein Weg/)
   const diagram = theory.getByRole('img', { name: 'Diagramm der Stellungen von Mensch und Hund' })
   const box = (await diagram.boundingBox())!
-  if (!isMobile) await page.mouse.move(box.x + box.width * 0.4, box.y + box.height * 0.6)
+  if (!phone) await page.mouse.move(box.x + box.width * 0.4, box.y + box.height * 0.6)
   await shot(page, testInfo, 'frechet-theory')
 })
 
@@ -111,8 +111,8 @@ test('Schätz die Leine: the computer tries a leash, then the answer', async ({ 
   await expect(result.getByText(/Deine kürzeste Leine, die reichte: 3,0 m/)).toBeVisible()
 })
 
-test('sandbox: draw two paths and see their diagram', async ({ page, isMobile }, testInfo) => {
-  test.skip(isMobile, 'drawing with the mouse')
+test('sandbox: draw two paths and see their diagram', async ({ page, phone }, testInfo) => {
+  test.skip(phone, 'drawing with the mouse')
   await page.goto('./#/play/frechet')
   await page.getByRole('button', { name: "Los geht's!" }).click()
   await page.getByRole('button', { name: 'Theorie' }).click()
@@ -148,7 +148,7 @@ test('sandbox: draw two paths and see their diagram', async ({ page, isMobile },
 
 test('a walk of "Mittel": picked by its tier, and a careful player gets to the castle', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
   test.setTimeout(180_000)
   await page.goto('./#/play/frechet')
@@ -163,12 +163,12 @@ test('a walk of "Mittel": picked by its tier, and a careful player gets to the c
   await expect(page.getByTestId('leash')).toContainText(
     `von ${course.leash.toFixed(1).replace('.', ',')} m Leine`,
   )
-  if (!isMobile) {
+  if (!phone) {
     await expect(page.getByText(`Schlosspark · Mittel · ${de.walks.m1} · 1 von 4`)).toBeVisible()
     await expectHeaderLaidOut(page)
   }
-  await walkToTheCastle(page, isMobile, (s) => s > course.person.length / 2, 'm1')
+  await walkToTheCastle(page, phone, (s) => s > course.person.length / 2, 'm1')
   await shot(page, testInfo, 'frechet-medium-walking')
-  await walkToTheCastle(page, isMobile, () => false, 'm1')
+  await walkToTheCastle(page, phone, () => false, 'm1')
   await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toBeVisible({ timeout: 10_000 })
 })

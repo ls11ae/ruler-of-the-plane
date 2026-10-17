@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -11,9 +11,9 @@ for (const viewport of [
 ]) {
   test(`result dialog fits ${viewport.width} × ${viewport.height} without scrolling`, async ({
     page,
-    isMobile,
+    phone,
   }, testInfo) => {
-    test.skip(isMobile, 'laptop screens only')
+    test.skip(phone, 'laptop screens only')
     await page.setViewportSize(viewport)
     await page.addInitScript(() => {
       const d = new Date()

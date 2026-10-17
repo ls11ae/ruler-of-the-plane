@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { readFileSync } from 'node:fs'
 import type { Road } from '../src/core/games/roads/mst'
 import { freeTree } from '../src/core/games/roads/plane'
@@ -13,7 +13,7 @@ const read = <T>(path: string) =>
 const steiner = read<RoadsSteinerLevel>('roads/steiner/1-dreieck')
 const plane = read<RoadsBichromaticLevel>('roads/bichromatic/1-burgen')
 
-test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ page, isMobile }, testInfo) => {
+test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ page, phone }, testInfo) => {
   await openMap(page, 'Kreuzungen', 1)
   // The rules changed: "So geht's" of the new set.
   const howTo = page.getByRole('dialog', { name: "So geht's" })
@@ -21,16 +21,16 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await shot(page, testInfo, 'roads-steiner-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.locator('header')).toContainText('Kreuzungen 1 von 6')
-  if (!isMobile) await expectHeaderLaidOut(page)
+  if (!phone) await expectHeaderLaidOut(page)
 
   const places: Pt[] = [...steiner.villages, ...steiner.castles]
   const best = steiner.optimum.junctions[0]!
   // A junction well off its best spot: a road dragged onto open land there, then the others to it.
   const off: Pt = [best[0] + 0.5, best[1] + 0.25]
-  await drag(page, places[0]!, off, isMobile)
+  await drag(page, places[0]!, off, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(1)
-  await drag(page, places[1]!, off, isMobile)
-  await drag(page, places[2]!, off, isMobile)
+  await drag(page, places[1]!, off, phone)
+  await drag(page, places[2]!, off, phone)
   await expect(page.getByTestId('roads-state')).toHaveText(/über dem Optimum/)
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await page.getByRole('button', { name: 'Tipp' }).click()
@@ -38,7 +38,7 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await shot(page, testInfo, 'roads-steiner-building')
 
   // Moved close to its best spot (within 1 % of the optimum): optimal.
-  await drag(page, off, [best[0] + 0.05, best[1] - 0.03], isMobile)
+  await drag(page, off, [best[0] + 0.05, best[1] - 0.03], phone)
   await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
   await expect(page.getByTestId('junction-angles')).toContainText('120°')
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
@@ -56,27 +56,24 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await shot(page, testInfo, 'roads-steiner-theory')
 })
 
-test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ page, isMobile }) => {
+test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ page, phone }) => {
   await openMap(page, 'Kreuzungen', 1)
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
   const places: Pt[] = [...steiner.villages, ...steiner.castles]
   const [a, b] = [places[0]!, places[1]!]
-  await drag(page, a, b, isMobile)
+  await drag(page, a, b, phone)
   // Dragged at its middle, the road bends at a new junction; dropped onto a village, the junction is gone.
   const mid: Pt = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
   const bend: Pt = [mid[0], mid[1] - 0.8]
-  await drag(page, mid, bend, isMobile)
+  await drag(page, mid, bend, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(1)
   await expect(page.getByTestId('junction-angles')).toContainText('°')
-  await drag(page, bend, a, isMobile)
+  await drag(page, bend, a, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(0)
   await expect(page.getByTestId('roads-state')).toHaveText('Noch 2 Teile verbinden')
 })
 
-test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({
-  page,
-  isMobile,
-}, testInfo) => {
+test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({ page, phone }, testInfo) => {
   await openMap(page, 'Zwei Sorten', 1)
   const howTo = page.getByRole('dialog', { name: "So geht's" })
   await expect(howTo.getByText(/Burgen und Dörfer/)).toBeVisible()
@@ -85,7 +82,7 @@ test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({
   await expect(page.locator('header')).toContainText('Zwei Sorten 1 von 6')
 
   const places: Pt[] = [...plane.villages, ...plane.castles]
-  const build = ([u, v]: Road) => drag(page, places[u]!, places[v]!, isMobile)
+  const build = ([u, v]: Road) => drag(page, places[u]!, places[v]!, phone)
   // Two villages: refused.
   await build([0, 1])
   await expect(page.getByTestId('roads-hint')).toContainText('nie zwei Burgen oder zwei Dörfer')

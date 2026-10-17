@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test, type Page, type TestInfo } from './fixtures'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -74,8 +74,8 @@ async function startGame(page: Page, players: 1 | 2, testInfo: TestInfo) {
   return setup
 }
 
-test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMobile }, testInfo) => {
-  test.skip(isMobile, 'phones play with one mower and the direction pad')
+test('two players mow a lawn with WASD and the arrow keys', async ({ page, phone }, testInfo) => {
+  test.skip(phone, 'phones play with one mower and the direction pad')
   const setup = await startGame(page, 2, testInfo)
   await shot(page, testInfo, 'lawn-mowing-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
@@ -127,8 +127,8 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMob
   await shot(page, testInfo, 'lawn-mowing-theory')
 })
 
-test('one player mows a lawn with the direction pad', async ({ page, isMobile }, testInfo) => {
-  test.skip(!isMobile, 'the direction pad is for phones')
+test('one player mows a lawn with the direction pad', async ({ page, phone }, testInfo) => {
+  test.skip(!phone, 'the direction pad is for phones')
   const setup = await startGame(page, 1, testInfo)
   await expect(setup.getByText('Auf dem Handy mähst du mit einem Mäher.')).toBeVisible()
   await shot(page, testInfo, 'lawn-mowing-setup')

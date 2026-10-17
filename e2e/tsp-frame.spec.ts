@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { freshDevice, shot } from './helpers'
 import { serveTspBoards, tspBoardsAddress } from './tsp-boards'
 

@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test, type Page, type TestInfo } from './fixtures'
 import { woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
 import type { WoodsId } from '../src/core/games/frechet/woods/shapes'
@@ -69,7 +69,7 @@ async function openWoods(page: Page, name: string, testInfo?: TestInfo) {
 
 test('walks round the oak in the woods: keys on a laptop, hold buttons on a phone', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
   test.setTimeout(150_000)
   await openWoods(page, 'Um die Eiche', testInfo)
@@ -78,16 +78,16 @@ test('walks round the oak in the woods: keys on a laptop, hold buttons on a phon
   await shot(page, testInfo, 'frechet-woods-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('leash')).toContainText('von 2,7 m Leine')
-  if (!isMobile) {
+  if (!phone) {
     await expect(page.getByText('Im Wald · Um die Eiche · Spaziergang 1 von 4')).toBeVisible()
     await expectHeaderLaidOut(page)
   }
   await shot(page, testInfo, 'frechet-woods-start')
 
   // In the middle of the loop round the oak.
-  await walkThroughTheWoods(page, 'oak', isMobile, (s) => s > 26)
+  await walkThroughTheWoods(page, 'oak', phone, (s) => s > 26)
   await shot(page, testInfo, 'frechet-woods-walking')
-  await walkThroughTheWoods(page, 'oak', isMobile, () => false)
+  await walkThroughTheWoods(page, 'oak', phone, () => false)
 
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible({ timeout: 10_000 })
@@ -102,15 +102,15 @@ test('walks round the oak in the woods: keys on a laptop, hold buttons on a phon
   await expect(theory.getByTestId('theory-verdict')).toHaveText(/führt ein Weg/)
   const diagram = theory.getByRole('img', { name: 'Diagramm der Stellungen von Mensch und Hund' })
   const box = (await diagram.boundingBox())!
-  if (!isMobile) await page.mouse.move(box.x + box.width * 0.62, box.y + box.height * 0.45)
+  if (!phone) await page.mouse.move(box.x + box.width * 0.62, box.y + box.height * 0.45)
   await shot(page, testInfo, 'frechet-woods-theory')
 })
 
 test('behind the beech: the leash catches on the trunk when the dog runs ahead', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
-  test.skip(isMobile, 'one project is enough for this check')
+  test.skip(phone, 'one project is enough for this check')
   await openWoods(page, 'Hinterm Baum')
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('leash')).toContainText('von 6,1 m Leine')

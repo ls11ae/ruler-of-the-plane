@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -33,7 +33,7 @@ const SITES: [number, number][] = [
   [3.0, -1.0],
 ]
 
-test('plays a short game against the computer on the island', async ({ page, isMobile }, testInfo) => {
+test('plays a short game against the computer on the island', async ({ page, phone }, testInfo) => {
   await page.goto('./#/play/voronoi')
   const howTo = page.getByRole('dialog', { name: "So geht's" })
   await expect(howTo).toBeVisible()
@@ -47,7 +47,7 @@ test('plays a short game against the computer on the island', async ({ page, isM
   await shot(page, testInfo, 'voronoi-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.locator('[data-castles]')).toHaveAttribute('data-turn', '0')
-  if (!isMobile) await expectHeaderLaidOut(page)
+  if (!phone) await expectHeaderLaidOut(page)
 
   const game = page.locator('[data-castles]')
   const input = page.locator('svg[role=img] rect[fill="transparent"]')
@@ -56,7 +56,7 @@ test('plays a short game against the computer on the island', async ({ page, isM
   /** Builds at a site: click with the mouse; press, hold and release with a finger (ghost 64 px above). */
   const build = async (x: number, y: number) => {
     const p = await toScreen(page, x, y)
-    if (!isMobile) {
+    if (!phone) {
       await page.mouse.move(p.x, p.y)
       await page.mouse.click(p.x, p.y)
       return
@@ -77,7 +77,7 @@ test('plays a short game against the computer on the island', async ({ page, isM
   }
 
   // Aim first: the ghost shows the land a castle would win.
-  if (!isMobile) {
+  if (!phone) {
     const p = await toScreen(page, ...SITES[0]!)
     await page.mouse.move(p.x, p.y)
     await expect(page.getByText('Neue Burg hier:')).toBeVisible()
