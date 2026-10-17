@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PARK, type Tier } from '../../../../core/games/frechet/levels'
-import { coils } from '../../../../core/games/frechet/woods/rope'
+import type { Tier } from '../../../../core/games/frechet/levels'
+import { coils, ropePoints } from '../../../../core/games/frechet/woods/rope'
 import { starsFor, leaderboardScore, TAUT_SHARE } from '../../../../core/games/frechet/rules'
 import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
 import {
@@ -15,7 +15,6 @@ import {
   woodsStart,
   type WoodsState,
 } from '../../../../core/games/frechet/woods/rules'
-import { Board } from '../../../components/Board'
 import { Button } from '../../../components/Button'
 import { GameHeader } from '../../../components/GameHeader'
 import { HowToOverlay } from '../../../components/HowToOverlay'
@@ -26,6 +25,8 @@ import { useT } from '../../../i18n'
 import { useAnimationFrame, useHeldKeys, useKeyCapture } from '../../../input/hooks'
 import { keyboard } from '../../../input/keyboard'
 import styles from '../Frechet.module.css'
+import { FollowCamera } from '../FollowCamera'
+import { strainOf, towards } from '../leashShape'
 import { KEYS, type Walker } from '../helpers'
 import { HoldControls } from '../HoldControls'
 import type { FrechetTexts } from '../i18n.de'
@@ -119,6 +120,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
   const leash = leashOf(course, state.rope)
   const taut = leash >= TAUT_SHARE * course.leash
   const caught = state.rope.wraps.length > 0
+  const trunkCentres = useMemo(() => course.trees.map((tree) => tree.centre), [course])
   const touched = useMemo(() => new Set(state.rope.wraps.map((x) => x.tree)), [state.rope])
   // The most turns the leash makes round one post (0 while it only bends round trunks).
   const coiled = useMemo(
@@ -135,6 +137,15 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
     [course, state, taut, possible],
   )
   const { person, dog } = woodsPositions(course, state.s, state.t)
+  // Which way the leash pulls at each end: towards its first and last bend.
+  const pull = useMemo(() => {
+    const pts = ropePoints(state.rope, course.trees)
+    return {
+      person: towards(pts[0]!, pts[1]!),
+      dog: towards(pts[pts.length - 1]!, pts[pts.length - 2]!),
+      strain: strainOf(leashOf(course, state.rope) / course.leash),
+    }
+  }, [state.rope, course])
   const ghost = useMemo(() => {
     if (!probe) return null
     const rope = ropeAt(course, probe[0], probe[1])
@@ -191,7 +202,15 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           data-walk={`${state.s.toFixed(3)},${state.t.toFixed(3)}`}
           data-caught={caught || undefined}
         >
-          <Board bounds={PARK} padding={0.6} autoRotate label={w.board(course.leash)}>
+          <FollowCamera
+            enabled={!theory}
+            leash={course.leash}
+            person={course.person}
+            dog={course.dog}
+            at={[state.s, state.t]}
+            marks={trunkCentres}
+            label={w.board(course.leash)}
+          >
             <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
             <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
             <Trunks trees={course.trees} trunks={walk.trunks} touched={touched} />
@@ -201,7 +220,6 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
                   rope={ghost.rope}
                   trees={course.trees}
                   length={eps}
-                  taut={ghost.leash > eps}
                   ghost
                   label={t.metres(ghost.leash)}
                 />
@@ -212,11 +230,11 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               rope={state.rope}
               trees={course.trees}
               length={course.leash}
-              taut={taut || state.status === 'snapped'}
+              snapped={state.status === 'snapped'}
               label={ghost ? undefined : t.metres(leash)}
             />
-            <Walkers person={person} dog={dog} />
-          </Board>
+            <Walkers person={person} dog={dog} pull={state.status === 'walking' ? pull : undefined} />
+          </FollowCamera>
           {!possible && state.status === 'walking' && overlay === null && (
             <div className={styles.deadEnd} role="status">
               <span>{t.deadEnd}</span>

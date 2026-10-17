@@ -8,7 +8,8 @@ import { Board } from '../../components/Board'
 import { useBoard } from '../../components/boardContext'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
-import { Leash, MapLabel, Walkers } from './ParkArt'
+import { LiveLeash } from './LiveLeash'
+import { MapLabel, Walkers } from './ParkArt'
 import styles from './Frechet.module.css'
 import type { FrechetTexts } from './i18n.de'
 import { TheoryPanel } from './Theory'
@@ -169,11 +170,10 @@ export function SandboxScreen({
             {dog && <MapLabel at={dog[0]!} text={t.dog} />}
             {ghost && course && probe && (
               <>
-                <Leash
-                  from={ghost.person}
-                  to={ghost.dog}
+                <LiveLeash
+                  points={[ghost.person, ghost.dog]}
                   length={eps}
-                  taut={leashAt(course, probe[0], probe[1]) > eps}
+                  leash={leashAt(course, probe[0], probe[1])}
                   label={t.metres(leashAt(course, probe[0], probe[1]))}
                 />
                 <Walkers person={ghost.person} dog={ghost.dog} />

@@ -1,12 +1,13 @@
 import { memo, useMemo } from 'react'
 import { PARK } from '../../../../core/games/frechet/levels'
-import { coils, type Rope } from '../../../../core/games/frechet/woods/rope'
+import { coils, ropeLength, type Rope } from '../../../../core/games/frechet/woods/rope'
 import { trunkKind, type Trunk, type WoodsShape } from '../../../../core/games/frechet/woods/shapes'
 import type { Tree } from '../../../../core/games/frechet/woods/trees'
 import type { Vec2 } from '../../../../core/geometry/types'
 import { useBoard } from '../../../components/boardContext'
 import { art } from '../art'
-import { Leash, MapLabel } from '../ParkArt'
+import { LiveLeash } from '../LiveLeash'
+import { MapLabel } from '../ParkArt'
 import { CASTLE, GATE, GOAL_LABEL, START_LABEL } from '../scenery'
 import { woodsArt } from './art'
 import { drawnRadius, drawnRope } from './coil'
@@ -175,22 +176,21 @@ export function Trunks({
 }
 
 /**
- * The leash as a rope: straight (and sagging while slack) when it touches no trunk, otherwise a taut
- * line around the trunk corners; where it winds round a trunk more than once, each turn a little
- * further out, with a badge "2×" and the direction at the trunk.
+ * The leash as a rope around the trunks, alive (see {@link LiveLeash}); where it winds round a trunk
+ * more than once, each turn lies a little further out, with a badge "2×" and the direction at the trunk.
  */
 export function RopeLeash({
   rope,
   trees,
   length,
-  taut,
+  snapped = false,
   label,
   ghost = false,
 }: {
   rope: Rope
   trees: readonly Tree[]
   length: number
-  taut: boolean
+  snapped?: boolean
   label?: string
   ghost?: boolean
 }) {
@@ -201,33 +201,16 @@ export function RopeLeash({
     [rope, trees, px],
   )
   const wound = useMemo(() => coils(rope, trees), [rope, trees])
-  if (pts.length === 2) {
-    return <Leash from={pts[0]!} to={pts[1]!} length={length} taut={taut} label={label} ghost={ghost} />
-  }
-  const colour = taut ? 'var(--warn)' : 'var(--ink)'
-  // The badge beside the middle of the longest straight piece.
-  let best = 0
-  for (let i = 1; i + 1 < pts.length; i++) {
-    const d = (k: number) => Math.hypot(pts[k + 1]![0] - pts[k]![0], pts[k + 1]![1] - pts[k]![1])
-    if (d(i) > d(best)) best = i
-  }
-  const [a, b] = [pts[best]!, pts[best + 1]!]
-  const d = Math.hypot(b[0] - a[0], b[1] - a[1])
-  const nx = d > 0 ? -(b[1] - a[1]) / d : 0
-  const ny = d > 0 ? (b[0] - a[0]) / d : 1
-  const mid: Vec2 = [(a[0] + b[0]) / 2 - nx * 20 * px, (a[1] + b[1]) / 2 - ny * 20 * px]
   return (
-    <g pointerEvents="none" opacity={ghost ? 0.7 : 1}>
-      <polyline
-        points={points(pts)}
-        fill="none"
-        stroke={colour}
-        strokeWidth={(taut ? 4.5 : 3.5) * px}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray={ghost ? `${8 * px} ${5 * px}` : undefined}
+    <g pointerEvents="none">
+      <LiveLeash
+        points={pts}
+        length={length}
+        leash={ropeLength(rope, trees)}
+        snapped={snapped}
+        ghost={ghost}
+        label={label}
       />
-      {label && d > 64 * px && <Badge at={mid} text={label} taut={taut} />}
       {!ghost &&
         wound.map(({ tree, turns }) => (
           <CoilBadge
@@ -282,37 +265,6 @@ function CoilBadge({ at, out, turns }: { at: Vec2; out: number; turns: number })
         {Math.abs(turns)}×
       </text>
       <path d={arc + head} fill="none" stroke="var(--ink)" strokeWidth={2 * px} strokeLinecap="round" />
-    </g>
-  )
-}
-
-function Badge({ at, text, taut }: { at: Vec2; text: string; taut: boolean }) {
-  const board = useBoard()
-  const px = board.pxToBoard(1)
-  const w = (text.length * 8 + 14) * px
-  const h = 24 * px
-  return (
-    <g transform={board.upright(at[0], at[1])}>
-      <rect
-        x={at[0] - w / 2}
-        y={at[1] - h / 2}
-        width={w}
-        height={h}
-        rx={6 * px}
-        fill="var(--paper)"
-        stroke={taut ? 'var(--warn)' : 'var(--ink)'}
-        strokeWidth={2 * px}
-      />
-      <text
-        x={at[0]}
-        y={at[1] + 5 * px}
-        textAnchor="middle"
-        fontSize={15 * px}
-        fontFamily="var(--font-text)"
-        fill="var(--ink)"
-      >
-        {text}
-      </text>
     </g>
   )
 }
