@@ -22,6 +22,8 @@ export interface WoodsShape {
   trunks: { at: Vec2; radius: number }[]
   /** Leash length = target × this factor (at least 0.2 m more), rounded up to 0.1 m. */
   slack: number
+  /** Walking speed of both in metres per second (default `WALK_SPEED`; slower on the hard walks). */
+  speed?: number
 }
 
 /** How densely the search samples both paths (metres). */

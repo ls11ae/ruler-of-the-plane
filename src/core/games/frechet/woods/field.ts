@@ -29,11 +29,25 @@ export function leashGrid(
 ): LeashGrid {
   const s = Array.from({ length: n + 1 }, (_, i) => (i === n ? person.length : (i / n) * person.length))
   const t = Array.from({ length: m + 1 }, (_, j) => (j === m ? dog.length : (j / m) * dog.length))
+  return leashAt(person, dog, trees, start, s, t)
+}
+
+/** The taut leash at the given positions of the person (`s`, increasing) and the dog (`t`). */
+export function leashAt(
+  person: Path,
+  dog: Path,
+  trees: readonly Tree[],
+  start: Rope,
+  s: number[],
+  t: number[],
+): LeashGrid {
+  const n = s.length - 1
+  const m = t.length - 1
   const leash = new Float32Array((n + 1) * (m + 1))
   const touches = new Uint32Array((n + 1) * (m + 1))
   // The points each walker passes from one grid position to the next (its path's corners included).
-  const personSteps = s.map((x, i) => (i === 0 ? [] : subpath(person, s[i - 1]!, x).slice(1)))
-  const dogSteps = t.map((x, j) => (j === 0 ? [] : subpath(dog, t[j - 1]!, x).slice(1)))
+  const personSteps = s.map((x, i) => subpath(person, i === 0 ? 0 : s[i - 1]!, x).slice(1))
+  const dogSteps = t.map((x, j) => subpath(dog, j === 0 ? 0 : t[j - 1]!, x).slice(1))
   let column = start
   for (let i = 0; i <= n; i++) {
     for (const p of personSteps[i]!) column = movePerson(column, p, trees)

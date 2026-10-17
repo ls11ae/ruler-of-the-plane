@@ -32,6 +32,8 @@ export interface WoodsCourse {
   computer: Walk
   /** The leash at grid positions, and from which of them the castle can still be reached. */
   hints: Hints
+  /** Walking speed of both, metres per second. */
+  speed: number
 }
 
 interface Hints {
@@ -67,6 +69,7 @@ export function makeWoodsCourse(walk: WoodsWalk): WoodsCourse {
     leash,
     computer: walk.computer,
     hints: { grid, safe: reachable(grid, leash - spacing), loose: reachable(grid, leash) },
+    speed: walk.speed ?? WALK_SPEED,
   }
 }
 
@@ -152,8 +155,8 @@ export const leashOf = (course: WoodsCourse, rope: Rope) => ropeLength(rope, cou
  */
 export function stepWoods(course: WoodsCourse, state: WoodsState, input: Input, dt: number): WoodsState {
   if (state.status !== 'walking' || (!input.person && !input.dog) || dt <= 0) return state
-  const ds = input.person ? WALK_SPEED * dt : 0
-  const dt2 = input.dog ? WALK_SPEED * dt : 0
+  const ds = input.person ? course.speed * dt : 0
+  const dt2 = input.dog ? course.speed * dt : 0
   const at = (f: number): [number, number] => [
     Math.min(course.person.length, state.s + f * ds),
     Math.min(course.dog.length, state.t + f * dt2),

@@ -19,6 +19,8 @@ export interface WalkLevel {
   pond?: Vec2[]
   /** Bushes or rocks the dog visits (drawn at these points). */
   sniff?: Vec2[]
+  /** Walking speed of both in metres per second (default `WALK_SPEED`; slower on the hard walks). */
+  speed?: number
 }
 
 /** One of the game's walks (the sandbox's drawn paths have the id `own`). */
