@@ -548,19 +548,19 @@ their ends.
 
 ### Bonus "Im Wald" ("Gassi gehen", homotopic Fréchet distance)
 
-- **2026-10-17 (proposed) Four bonus walks in the woods.** Trunks are small regular octagons (radius
-  0.45–0.6 m) that the leash cannot pass; the leash is the shortest curve in its homotopy class (a taut
-  rope around the trunks, Chambers et al., "Walking your dog in the woods in polynomial time") and
-  starts straight at the gate. Walks: "Um die Eiche" (both once round an oak, the dog close to the
-  trunk), "Slalom" (six trees, the dog in wider bends), "Hinterm Baum" (the dog fetches a stick behind
-  a beech; the person must wait before the beech) and "Dickicht" (slalom, then the oak, short leash).
-  Leash = target × 1.35, 1.25, 1.2, 1.12, at least 0.2 m more, rounded up (2.7, 2.4, 6.1, 2.2 m).
-  Walking together snaps the leash on every walk; on "Hinterm Baum" the trees raise the shortest
-  leash from 3.8 m (without trees) to 5.0 m. No trunk lies in the area enclosed by the two paths
-  (winding number 0, tested): there it would catch the leash for good. Alternatives: a combined expert
-  walk with a fetch and a loop (tried: the fetch's long leash leaves the loop slack, so walking
-  together sufficed after the fetch); trunks as points (a rope bending at a point looks wrong).
-  The walks are TypeScript data (`src/core/games/frechet/woods/shapes.ts`), like the six walks.
+- **2026-10-17 (agreed by Kevin 2026-10-17) Four bonus walks in the woods.** Trunks are small regular
+  octagons (radius 0.45–0.6 m) that the leash cannot pass; the leash is the shortest curve in its
+  homotopy class (a taut rope around the trunks, Chambers et al., "Walking your dog in the woods in
+  polynomial time") and starts straight at the gate. Walks: "Um die Eiche" (both once round an oak, the
+  dog close to the trunk), "Slalom" (six trees, the dog in wider bends), "Hinterm Baum" (the dog fetches
+  a stick behind a beech; the person must wait before the beech) and "Dickicht" (slalom, then the oak,
+  short leash). Leash = target × 1.35, 1.25, 1.2, 1.12, at least 0.2 m more, rounded up (2.7, 2.4, 6.1,
+  2.2 m). Walking together snaps the leash on every walk; on "Hinterm Baum" the trees raise the shortest
+  leash from 3.8 m (without trees) to 5.0 m. No trunk lies in the area enclosed by the two paths (winding
+  number 0, tested): there it would catch the leash for good. Alternatives: a combined expert walk with a
+  fetch and a loop (tried: the fetch's long leash leaves the loop slack, so walking together sufficed
+  after the fetch); trunks as points (a rope bending at a point looks wrong). The walks are TypeScript
+  data (`src/core/games/frechet/woods/shapes.ts`), like the six walks.
 - **2026-10-17 "Im Wald": rope update, leash classes and the offline search.** How the leash lies is
   a word of ray crossings (a ray from each trunk straight up; disjoint rays are tested). The game
   updates the rope incrementally: a moving end sweeps a triangle and the rope catches on the trunk
@@ -577,27 +577,26 @@ their ends.
   stored walk and by following the hint. Hints and the dead-end banner use a 15 cm grid of positions
   (advice with one grid step to spare). Alternatives: the free-space cell propagation in the
   universal cover (exact, but much more code for four walks).
-- **2026-10-17 (proposed) "Im Wald": theory view and "Was steckt dahinter?".** Finding: with the leash
-  starting straight at the gate and moving continuously, how it lies at positions (s, t) does not
-  depend on the walk: it is the class of "back along the person's path, the start leash, along the
-  dog's path" (P[s→0] · ℓ₀ · Q[0→t]). The search confirms one class per pair of positions on all
-  four walks (tested). So a diagram of positions still exists here, with the leash measured around
-  the trees; with convex trunks even each cell's light part stays convex (the universal cover of the
-  plane minus convex obstacles is CAT(0), where the distance between two straight walks is convex).
-  What does not carry over: the light part is no longer an ellipse per cell, the special leash lengths
-  run around trunks, and in the general homotopic Fréchet distance, where the start leash may be
-  chosen around trees, there is one diagram per start class (a stack of sheets), which is the case the
-  paper solves. Proposal: the theory panel shows the park's diagram with the woods leash, tinted green
-  (dotted, not colour alone) where the leash touches a trunk (light: touches and reaches; hatched:
-  touches and too short), a switch "Mit Bäumen / Ohne Bäume" that shows the park's diagram of the
-  same paths, the computer's walk and its narrowest spot, and pointing shows the ghosts with their
-  wrapped leash. "Was steckt dahinter?": "Im Wald legt sich die Leine wie ein straffes Seil um die
-  Stämme: Wie sie liegt, hängt davon ab, wer zuerst an welchem Baum vorbei ist. Der Computer hat alle
-  Stellungen im Abstand von 5 cm durchprobiert; im Diagramm ist grün gepunktet, wo die Leine an
-  einem Baum hängt. Die kürzeste Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier …,
-  du brauchtest …", with the diagram animation of the player's walk. Alternative if a diagram is not
-  wanted: replay the computer's walk in the woods with the rope wrapping and unwrapping, and the leash
-  length as a curve over time.
+- **2026-10-17 (agreed by Kevin 2026-10-17) "Im Wald": theory view and "Was steckt dahinter?".** Finding:
+  with the leash starting straight at the gate and moving continuously, how it lies at positions (s, t)
+  does not depend on the walk: it is the class of "back along the person's path, the start leash, along
+  the dog's path" (P[s→0] · ℓ₀ · Q[0→t]). The search confirms one class per pair of positions on all four
+  walks (tested). So a diagram of positions still exists here, with the leash measured around the trees;
+  with convex trunks even each cell's light part stays convex (the universal cover of the plane minus
+  convex obstacles is CAT(0), where the distance between two straight walks is convex). What does not
+  carry over: the light part is no longer an ellipse per cell, the special leash lengths run around
+  trunks, and in the general homotopic Fréchet distance, where the start leash may be chosen around
+  trees, there is one diagram per start class (a stack of sheets), which is the case the paper solves.
+  Proposal: the theory panel shows the park's diagram with the woods leash, tinted green (dotted, not
+  colour alone) where the leash touches a trunk (light: touches and reaches; hatched: touches and too
+  short), a switch "Mit Bäumen / Ohne Bäume" that shows the park's diagram of the same paths, the
+  computer's walk and its narrowest spot, and pointing shows the ghosts with their wrapped leash. "Was
+  steckt dahinter?": "Im Wald legt sich die Leine wie ein straffes Seil um die Stämme: Wie sie liegt,
+  hängt davon ab, wer zuerst an welchem Baum vorbei ist. Der Computer hat alle Stellungen im Abstand von
+  5 cm durchprobiert; im Diagramm ist grün gepunktet, wo die Leine an einem Baum hängt. Die kürzeste
+  Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier …, du brauchtest …", with the diagram
+  animation of the player's walk. Alternative if a diagram is not wanted: replay the computer's walk in
+  the woods with the rope wrapping and unwrapping, and the leash length as a curve over time.
 - **2026-10-17 "Im Wald": play and look.** Same controls, speed, stars (longest leash against the
   target) and leaderboard rule as in the park (boards `frechet/woods-<id>`). A trunk the leash touches
   gets a thick orange-red outline, and the "Leine fast straff!" bubble adds "Die Leine hängt am Baum.";

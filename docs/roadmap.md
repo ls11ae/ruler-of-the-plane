@@ -153,7 +153,7 @@ target is measured on a booth laptop in the playtest (Phase 6).
 - Bonus set "Im Wald" (homotopic Fréchet distance): trees whose trunks catch the leash like a taut
   rope; four walks where timing decides how the leash lies; targets from an offline search over
   (person's position, dog's position, leash class), stored with the walks and tested against the
-  rope update. — done 2026-10-17 (theory view and explanation proposed)
+  rope update. — done 2026-10-17 (theory view and explanation agreed by Kevin 2026-10-17)
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
