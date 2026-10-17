@@ -608,3 +608,78 @@ their ends.
   its progress is stored apart (`rotp-frechet-woods`), reset by the kiosk timeout, and the woods
   have their own "So geht's" (shown once per device) with an animation of the leash winding round a
   trunk and coming free.
+
+### Harder tiers ("Gassi gehen", 2026-10-17)
+
+Kevin played "Gassi gehen" and found the walks too easy. The numbers of every walk are in
+[`gassi-walks.md`](gassi-walks.md) (written by `scripts/gassi/table.ts`).
+
+- **2026-10-17 (proposed) Three tiers "Leicht", "Mittel", "Schwer".** The hand-made walks stay as
+  "Leicht" (six in the park, four in the woods, unchanged; the tutorial hints only there). "Mittel" and
+  "Schwer" have four walks in the park and three in the woods each, generated offline. The picker of
+  walks gets three tier buttons (it opens on the tier of the current walk; the woods walks of a tier
+  below its park walks; one sentence on the tier above the cards), the header reads "Schlosspark ·
+  Mittel · Taubenjagd · 1 von 4", and "Nächstes Level" leads easy park → easy woods → medium park →
+  medium woods → hard park → hard woods. Stars, leaderboards (`frechet/<id>`, `frechet/woods-<id>`) and
+  stored progress work as before. Alternatives: the staff menu's difficulty (it is meant for computer
+  opponents, and visitors should choose; the easy start must stay for everyone); replacing the walks
+  (Kevin: keep them as the easy start); more hand-made walks (nothing guarantees they are hard for each
+  simple strategy).
+- **2026-10-17 (proposed) What "hard" means.** Four strategies a visitor might use are played with the
+  game's own step at 60 frames per second (`src/core/games/frechet/strategies.ts`): both walk all the
+  time; the one behind walks (along the line from the gate to the castle; both when level within
+  0.25 m); keep pace by the share of the path walked (both when within 0.25 m of the dog's due
+  position); always the move after which the leash is shortest (each of the three moves probed for
+  10 cm). A walk is hard when all four snap the leash with its leash length. A careful player follows
+  the game's hint (who should walk), but reads it only every 0.25 s; that player must get through.
+  Calibration on the easy walks: at their speed of 2.2 m/s the careful player already snaps on "Für
+  Profis", "Hinterm Baum" and "Dickicht", at 1.8 m/s on "Slalom" and "Dickicht", at 1.5 m/s on none.
+  So the harder tiers walk at 1.5 m/s (a `speed` per walk; the easy walks keep 2.2 m/s), which the
+  tier's sentence says ("Beide gehen langsamer, damit du Zeit zum Überlegen hast."). Leash: "Mittel"
+  1.15 × the shortest leash in the park and 1.12 × in the woods, "Schwer" 1.08 and 1.06 (the easy
+  walks have 1.6 down to 1.08 in the park, 1.35 down to 1.12 in the woods). Alternatives: hard by the
+  leash factor alone (at 1.08 some simple strategy still gets through on 370 of the generator's 524
+  pleasant pairs, at 1.15 on 436; keeping pace and "the one behind walks" most often); a model of a
+  visitor with noise (more parameters to argue about than a hint read every 0.25 s).
+- **2026-10-17 Free-space measures** (`src/core/games/frechet/hardness.ts`). On a raster of the
+  free-space diagram (positions every 5 cm along both paths for the table, 10 cm while generating; moves
+  as in the game: person, dog or both one step): the positions reachable from the start, those from
+  which the castle can still be reached, and the dead ones in between, grouped into dead ends
+  (8-connected, at least 0.25 m² of the diagram, smaller ones are raster noise), their sizes and their
+  share of the reachable positions. "Cells with free space" counts the pairs of segments whose cell
+  contains positions within the leash, as the complexity of the free space (at most the product of the
+  segment counts). "Changes" counts how often who walks changes on the computer's walk (the offline
+  search's walk with the shortest leash and the fewest changes). Finding: within 6–15 % above the
+  shortest leash the free space hugs the computer's walk, so it never spreads over most cells: the
+  generated walks have free space in 26–54 % of their cells (43–103 of 91–247 cells), the easy walks in
+  20–71 % of mostly far fewer (11–67 of 21–323). The maze shows as many dead ends along the way (4–12
+  per generated walk, 0–6 on the easy walks) rather than as free space everywhere.
+- **2026-10-17 (proposed) The generator** (`scripts/gassi/generate.ts`, seed 20261107, the day of the
+  open house; about 16 minutes; the walks go to `src/core/games/frechet/generated.json`, a test checks
+  that they still pass). Footpaths and dog's trails between the gate and the castle from three families:
+  zigzag, wander (random corners in a band) and meander (sweeps at a given turning angle), with a
+  common random bend. Pleasant to look at (`pleasant.ts`, tested): inside the park with a 1.2 m margin,
+  at most 20 segments, no segment shorter than 1 m (person) or 0.8 m (dog), the footpath without
+  self-crossings or turns sharper than 115°, the dog's trail crossing itself at most once, at most 65 m
+  and 85 m long. Of 1600 pairs, those hard in a tier are ranked by 2 × dead ends (up to 10) + 40 × dead
+  share + 10 × share of cells with free space + 0.5 × changes (up to 20), at most two of one pair of
+  families per tier, "Schwer" first, then "Mittel" from the rest; 524 pairs are pleasant, 242 of their
+  1048 (pair, tier) combinations are hard. Alternative tried: interleaved "snake" paths that cross each
+  other (long, and still a single corridor in the diagram).
+- **2026-10-17 (proposed) Woods: the trees must matter.** Separate pairs (4000) whose dog's trail
+  runs out in spikes across and beside the footpath. Places for trunks: points that the straight leash
+  of the computer's best walk without trees sweeps over and back (the loop "person's path so far, leash,
+  dog's path back, start leash" winds around them at some moment), outside the area the two whole
+  paths enclose (there a trunk would catch the leash for good), at least 1.05 m from both paths and
+  3 m from the gate and the castle; trunks of radius 0.6 m. Up to three trunks are added greedily, each
+  round the place that best serves both conditions: the shortest leash in the woods at least 1.12 ×
+  the one without trees, and the computer's best walk without trees needing at least 1.13 × that in the
+  woods. A walk is kept when, with its tier's leash, the walk without trees needs at least 5 % more
+  than the leash (it clearly snaps on a trunk: a first run accepted three walks where it needed only
+  5–15 cm more, which a player copying the walk from the park would not notice), all four strategies
+  snap and the careful player gets through; ranked as in the park plus 20 × (shortest in the woods /
+  without − 1); all six chosen walks have a single tree. "Mittel" is chosen first here: with its
+  looser leash fewer walks qualify (some simple strategy gets through more often), and choosing
+  "Schwer" first left it only weak walks. First attempt: the park's pairs with trunks on the
+  computer's leash at its narrowest moment; no walk passed, since those places lie inside the enclosed
+  area.
