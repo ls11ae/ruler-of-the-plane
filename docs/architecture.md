@@ -18,15 +18,26 @@ touches no shared file:
    `useLocalized({ de, en })`. Shared texts (buttons, result screen) come from `useT()`.
 4. Art: import files from `assets/` in the game's folder and add a row per file to the game's section
    of `CREDITS.md`.
-5. Optionally `src/ui/games/<id>/attract.tsx` default-exports a demo that the kiosk's attract screen plays
-   behind its text (e.g. the computer against itself); it is discovered like the game.
-6. New level sources (made for this edition) go to `levels/<id>/` and are converted by `npm run levels`
+5. The game opens on the shared tier screen (`components/TierScreen`): its rules, "Leicht", "Mittel" and
+   "Schwer" with a teaser and the stars so far, and "Weiterspielen"; map the game's levels to the tiers
+   in `src/core/games/<id>/` (`Tier` and helpers in `src/core/tiers.ts`), mark the tier played with
+   `useTierMemory`, take the marked tier from `useSuggestedTier(<id>)`, and set `NextLabel`
+   (`components/nextLabel.ts`) around the screen of a tier's last level. The level picker shows the tiers
+   as sections, with the same names and order.
+6. Optionally `src/ui/games/<id>/attract.tsx` default-exports a demo that the kiosk's attract screen shows
+   in turn with the other games' (e.g. the computer solving a level). It gets `round` and `onDone`
+   (`AttractProps` in `games/registry.ts`): tell the story in about 20–30 s with precomputed solutions,
+   then call `onDone`; put `data-step` (anything that changes as the story goes on) on its root element
+   for the soak test. It is discovered like the game.
+7. New level sources (made for this edition) go to `levels/<id>/` and are converted by `npm run levels`
    (folder → collection in `NEW_FOLDERS` of `scripts/levels/convert.ts`); `legacy/` stays the read-only
    copy of the Unity files. JSON sources have their own converter, called from `scripts/levels/import.ts`
    (`lawns.ts` for pyutils27 lawns, `roads.ts` for the bonus maps of "Straßenbau", which also checks
    their stored optima); maps whose optima are computed offline keep their generator in `scripts/<game>/`
    (e.g. `scripts/roads/`).
-7. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
+8. A Playwright smoke test `e2e/<id>.spec.ts` starts the game with `startGame(page, '<id>', tier)` or
+   `chooseTier` (`e2e/helpers.ts`; add its first level per tier to `e2e/tiers.spec.ts`), plays a level in
+   both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
    turned board) and how to do a touch drag with Pointer Events; `e2e/frechet.spec.ts` how to hold keys
@@ -47,7 +58,7 @@ touches no shared file:
 | End of a round                         | `components/ResultScreen` (outcome or an own `title`, stars, "Was steckt dahinter?" text and animation, theory button, leaderboard)                                                       |
 | Leaderboard                            | `ResultScreen`'s `leaderboard` prop: board key `<id>/<level>`, `higherIsBetter`, score, format (nickname picker with the last name first and a lucky number built in)                     |
 | "Mensch gegen Maschine"                | `useBooth.getState().recordVersus('human' \| 'machine')` after a game against the computer                                                                                                |
-| Difficulty set by the staff            | `useSettings((s) => s.difficulty)` (`easy`, `normal`, `hard`) as the default                                                                                                              |
+| Tiers at the start of a game           | `components/TierScreen`; `useSuggestedTier(id)` (last tier here, else the staff's `tierDefaults`), `useTierMemory`; `startGame(page, id, 'Mittel')` in e2e tests                          |
 | Levels                                 | `useLevel<ArtGalleryLevel>('art-gallery/agLevel4_8')`, `loadLevelIndex()` (`src/ui/levels.ts`; format in `src/core/levels/schema.ts`)                                                     |
 | Pointer input (mouse, touchpad, touch) | `usePointerGesture({ onPress, onTap, onDragStart, onDragMove, onDragEnd, onLongPress })`                                                                                                  |
 | Keys (two players on one keyboard)     | `keyboard.isDown(code)` per frame with `useAnimationFrame`; `useKeyRepeat(codes, onStep, { delay, interval })` for lattice steps; `useKeyCapture(codes)` stops scrolling                  |
@@ -66,14 +77,16 @@ touches no shared file:
   "‹ Karte", and `watchFrame` (`shell/idle.ts`) lets input inside the same-origin frame reset the kiosk
   timeout. `e2e/tsp-frame.spec.ts` checks it for a build with the variable (stub page, or the real build
   with `TSP_BOARDS_DIST`). Tests stub build variables with `vi.stubEnv` instead of assuming them unset.
-- Settings (`language`, `kiosk`, `disabledGames`, `difficulty`) and booth data (leaderboards, versus
+- Settings (`language`, `kiosk`, `disabledGames`, `tierDefaults`) and booth data (leaderboards, versus
   tally) are zustand stores persisted in `localStorage` (failures ignored). Nothing leaves the device.
 - Start map: `src/ui/shell/StartMap.tsx`, art in `MapArt.tsx`, positions per layout (landscape for
   laptops, portrait for phones) in `mapLayout.ts`. Labels are HTML over the SVG, sized in container
   query units.
 - Kiosk mode (`?kiosk` in the URL or the staff menu): the app starts on the attract screen and returns
-  there after 90 s without input, with the language reset to German. Nothing leaves the app there: "Alte
-  Ruinen" shows its address, "Rundreise" opens in a frame.
+  there after 90 s without input, with the language reset to German and the games' progress and last
+  tiers forgotten. The attract screen (`shell/AttractScreen.tsx`) shows the games' demos in turn, each
+  above a band with the game's name and "Komm spielen!". Nothing leaves the app there: "Alte Ruinen"
+  shows its address, "Rundreise" opens in a frame.
 - Staff menu: hold the compass on the start map for 3 s, or press Ctrl+Shift+S; then the PIN from
   `VITE_STAFF_PIN` (no PIN if empty).
 - Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version

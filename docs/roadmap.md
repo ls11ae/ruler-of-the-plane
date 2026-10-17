@@ -246,6 +246,14 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   decision log, Phase 6)
 - "Rasenmähen" (Kevin's playtest): a step back per mower (a key per mower on the laptop, the middle of
   the direction pad on phones). — done 2026-10-17
+- Difficulty at game start (Kevin's playtest: he did not find the harder sets of "Straßenbau"): every
+  game opens on a tier screen with the rules and "Leicht", "Mittel", "Schwer" (a teaser and the stars so
+  far each, "Weiterspielen" when there is progress), one click from the start map to playing; the last
+  tier per game remembered on the device (cleared by the kiosk reset), a suggested tier per game in the
+  staff menu, "Weiter mit „Mittel“" after a tier's last level, the pickers in the same three sections.
+  — done 2026-10-17 (the tier mapping proposed, see the decision log, Phase 6)
+- Attract demos for all five games, shown in turn (about 20–30 s each, with the game's name and "Komm
+  spielen!"), only precomputed solutions; the soak test checks all five. — done 2026-10-17
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
