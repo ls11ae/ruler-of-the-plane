@@ -21,8 +21,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   playtest: two harder sets of "Straßenbau" ("Kreuzungen", "Zwei Sorten") with exact optima computed
   offline (`scripts/roads/`) and a step back per mower in "Rasenmähen" (merged 2026-10-17), and harder
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
-  `scripts/gassi/`; merged 2026-10-17). Open are the items that need the booth laptops (playtest, the
-  200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
+  `scripts/gassi/`; merged 2026-10-17). Phase 7 prepared without the laptops (2026-10-17): the offline
+  booth package (`booth/`, workflow `booth.yml`, release asset for `phase-*` tags), Start-Stand.cmd and
+  Stop-Stand.cmd, QR poster and card, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
+  notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Open are
+  the items that need the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth
   for open work**, in its order. How the shell and the shared code fit together and how a game plugs in:
   `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
@@ -170,7 +173,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   `components/` (shared UI: board, header, overlays, result screen, leaderboard), `input/` (pointer,
   keyboard, gamepad), `i18n/`, and `games/<game>/` per game (discovered by `games/registry.ts`).
 - `src/workers/` Web Worker entry points.
-- `scripts/` level import and helper scripts (`cloud-session-start.sh` belongs to the session setup).
+- `scripts/` level import and helper scripts (`cloud-session-start.sh` belongs to the session setup);
+  `scripts/booth/` builds and tests the booth package and the print files, `scripts/texts/` writes
+  `docs/texts-de.md` (run `npm run texts` after changing a German text; a test checks it).
+- `booth/` the Windows side of the offline booth package (server, start and stop scripts, `LIESMICH.txt`);
+  `docs/booth/` the booth papers (cheat sheet, laptop checklist, posters), German.
 - `public/levels/` generated level JSON, committed.
 - `assets/` source art and fonts with their licence files; import what you use from code, Vite then
   bundles only the imported files. `assets/kenney/<pack>/` holds the subsets listed in `CREDITS.md`.

@@ -76,6 +76,11 @@ touches no shared file:
   Ruinen" shows its address, "Rundreise" opens in a frame.
 - Staff menu: hold the compass on the start map for 3 s, or press Ctrl+Shift+S; then the PIN from
   `VITE_STAFF_PIN` (no PIN if empty).
+- "Impressum · Datenschutz" in the start map's logo line (`shell/LegalDialog.tsx`, addresses in
+  `shell/legal.ts`): links to the Algorithm Engineering Group's pages; in kiosk mode their addresses with
+  QR codes from the generated `shell/legalQr.ts` (`npm run qr`).
+- Booth: the offline package for the Windows laptops serves this build at `/ruler-of-the-plane/` and
+  tsp-boards at `/tsp-boards/` from a PowerShell server (`booth/README.md`).
 - Offline: vite-plugin-pwa precaches the build (code, fonts, art, every level JSON). A new version
   installs in the background and waits; the app activates it and reloads as soon as it shows the start
   map or the attract screen, never during a game (`src/main.tsx`, `shell/update.ts`). An open page checks
