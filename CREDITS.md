@@ -160,3 +160,10 @@ Runtime libraries and their licences (add them when they are introduced):
 | [clipper2-ts](https://github.com/countertype/clipper2-ts) (TypeScript port of Angus Johnson's Clipper2: the lit areas, the land of the castles' cells, the coast lines)   | BSL-1.0                   |
 | [earcut](https://github.com/mapbox/earcut) (triangulation of the dungeons)                                                                                                | ISC                       |
 | [d3-delaunay](https://github.com/d3/d3-delaunay) and [Delaunator](https://github.com/mapbox/delaunator) (Voronoi cells and Delaunay triangulations in "Erobere das Land") | ISC                       |
+
+Tools for the booth papers and QR codes (`scripts/booth/`, dev dependencies, not bundled into the app):
+[qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT; also writes the QR codes of
+`src/ui/shell/legalQr.ts`), [opentype.js](https://github.com/opentypejs/opentype.js) (MIT; poster texts as
+outlines), [marked](https://github.com/markedjs/marked) (MIT; cheat sheet and checklist), and
+[jsQR](https://github.com/cozmo/jsQR) (Apache-2.0; tests read the QR codes back). The poster and the card
+use the fonts above and the Cartography Pack and Animal Pack pictures of the start map and "Gassi gehen".
