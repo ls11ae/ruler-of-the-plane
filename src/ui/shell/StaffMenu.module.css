@@ -48,6 +48,11 @@
   gap: 10px;
 }
 
+/* Room between the rows' buttons, so each keeps its 44 px hit target. */
+.row + .row {
+  margin-top: 8px;
+}
+
 .muted {
   color: var(--ink-soft);
   font-size: 0.9rem;

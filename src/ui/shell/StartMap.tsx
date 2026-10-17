@@ -136,7 +136,7 @@ export function StartMap() {
         <div className={`${styles.anchored} ${styles.controls}`} style={at(layout, layout.controls)}>
           <Button
             className={styles.languages}
-            aria-label={t.language.switch}
+            aria-label={`DE·EN – ${t.language.switch}`}
             onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
           >
             <span aria-current={language === 'de'}>DE</span>·<span aria-current={language === 'en'}>EN</span>

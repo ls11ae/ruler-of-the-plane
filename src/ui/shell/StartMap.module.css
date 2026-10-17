@@ -21,7 +21,7 @@
   --name: 2.15cqw;
   --tagline: 1.3cqw;
   --control: 1.45cqw;
-  --logo: 1.05cqw;
+  --logo: 1.1cqw;
 }
 
 .stage[data-layout='portrait'] {
@@ -31,9 +31,9 @@
   --title: 8.6cqw;
   --subtitle: 4.1cqw;
   --name: 4.9cqw;
-  --tagline: 3.3cqw;
+  --tagline: 3.6cqw;
   --control: 4.2cqw;
-  --logo: 2.7cqw;
+  --logo: 3.6cqw;
 }
 
 .anchored {
@@ -62,6 +62,7 @@
 
 .controls > * {
   min-height: max(var(--hit), 2.6em);
+  white-space: nowrap;
 }
 
 .languages span[aria-current='true'] {
@@ -108,7 +109,7 @@ a.place:active {
   font-size: calc(var(--name) * 0.85);
 }
 
-.place.external .tagline {
+.stage[data-layout='landscape'] .place.external .tagline {
   font-size: calc(var(--tagline) * 0.9);
 }
 
