@@ -87,3 +87,48 @@ for (const game of ['art-gallery', 'voronoi', 'frechet', 'lawn-mowing', 'roads']
     }
   })
 }
+
+test('game frechet, "Im Wald": picker, how-to, board, theory and a snapped leash', async ({ page }) => {
+  await page.goto('./#/play/frechet')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await page.getByRole('button', { name: 'Spaziergänge' }).click()
+  const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
+  await woods.scrollIntoViewIfNeeded()
+  await expectAccessible(page, 'frechet: picker with the woods')
+  await woods.getByRole('button', { name: /Um die Eiche/ }).click()
+  const howTo = page.getByRole('dialog', { name: "So geht's" })
+  await expect(howTo.getByText(/bleibt die Leine an den Baumstämmen hängen/)).toBeVisible()
+  await expectAccessible(page, 'frechet woods: how-to')
+  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByTestId('leash')).toContainText('von 2,7 m Leine')
+  await expectAccessible(page, 'frechet woods: board')
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  await expect(page.getByRole('complementary', { name: 'Theorie' })).toBeVisible()
+  await expectAccessible(page, 'frechet woods: theory')
+  await page
+    .getByRole('complementary', { name: 'Theorie' })
+    .getByRole('button', { name: 'Ohne Bäume' })
+    .click()
+  await expectAccessible(page, 'frechet woods: theory without trees')
+  await page.getByRole('button', { name: 'Theorie schließen' }).click()
+  // The person walks on alone until the leash snaps.
+  await page.getByTestId('hold-person').dispatchEvent('pointerdown', {
+    pointerId: 21,
+    pointerType: 'touch',
+    isPrimary: true,
+    button: 0,
+    buttons: 1,
+    bubbles: true,
+  })
+  const snapped = page.getByRole('dialog', { name: 'Leine zu straff!' })
+  await expect(snapped).toBeVisible({ timeout: 10_000 })
+  await page.getByTestId('hold-person').dispatchEvent('pointerup', {
+    pointerId: 21,
+    pointerType: 'touch',
+    isPrimary: true,
+    button: 0,
+    buttons: 0,
+    bubbles: true,
+  })
+  await expectAccessible(page, 'frechet woods: leash snapped')
+})

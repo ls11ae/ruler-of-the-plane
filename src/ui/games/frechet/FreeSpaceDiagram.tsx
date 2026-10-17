@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react'
 import type { Walk } from '../../../core/games/frechet/frechet'
 import type { Path } from '../../../core/games/frechet/path'
 import styles from './Frechet.module.css'
-import { distanceField, paintField } from './freeSpace'
+import { distanceField, paintField, type Field } from './freeSpace'
 
 /** Resolution of the painted free space (the canvas is scaled smoothly to the diagram size). */
 const FIELD_SIZE = 200
@@ -26,6 +26,8 @@ interface DiagramProps {
   onProbe?: (at: [number, number] | null) => void
   label: string
   axes: { person: string; dog: string }
+  /** The leash at every position, if not the straight distance (in the woods: around the trees). */
+  field?: Field
 }
 
 /**
@@ -57,9 +59,10 @@ export function FreeSpaceDiagram({
   onProbe,
   label,
   axes,
+  field: given,
 }: DiagramProps) {
   const canvas = useRef<HTMLCanvasElement>(null)
-  const field = useMemo(() => distanceField(person, dog, FIELD_SIZE), [person, dog])
+  const field = useMemo(() => given ?? distanceField(person, dog, FIELD_SIZE), [given, person, dog])
 
   useLayoutEffect(() => {
     const ctx = canvas.current?.getContext('2d')

@@ -34,7 +34,7 @@ const LOOP_S = SCRIPT[SCRIPT.length - 1]![0]
 
 const poly = (pts: readonly Vec2[]) => pts.map(([x, y]) => `${x},${y}`).join(' ')
 
-function Key({ x, label, down }: { x: number; label: string; down: boolean }) {
+export function Key({ x, label, down }: { x: number; label: string; down: boolean }) {
   return (
     <g transform={`translate(${x} 0.3)`}>
       <rect

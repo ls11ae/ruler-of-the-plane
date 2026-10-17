@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { PARK, WALKS, type WalkId } from '../../../core/games/frechet/levels'
 import type { Vec2 } from '../../../core/geometry/types'
 import { Button } from '../../components/Button'
@@ -17,11 +18,14 @@ export function WalkPicker({
   mode,
   onPick,
   onClose,
+  extra,
 }: {
   t: FrechetTexts
   mode: Mode
   onPick: (walk: WalkId | null, mode: Mode) => void
   onClose: () => void
+  /** More walks below the cards (the bonus set "Im Wald"). */
+  extra?: ReactNode
 }) {
   const { walk: current, best } = useProgress()
   const pickMode = mode === 'sandbox' ? 'walk' : mode
@@ -74,6 +78,7 @@ export function WalkPicker({
             </button>
           ))}
         </div>
+        {extra}
       </div>
     </Overlay>
   )
