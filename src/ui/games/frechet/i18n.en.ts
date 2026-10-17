@@ -61,7 +61,7 @@ export const en: FrechetTexts = {
     `Your longest leash: ${metres(longest)} · shortest possible: ${metres(shortest)}`,
   explanation: (shortest: number, longest: number) => [
     'The computer draws every position in a diagram: to the right the person walks, upwards the dog; it is light where the leash is long enough.',
-    'Every walk is a path from the bottom left to the top right that never goes back – yours is green.',
+    'Every walk is a path from the bottom left to the top right that never goes back – yours is green, the computer’s dashed.',
     `The shortest leash that still leaves a light path is called the Fréchet distance: here ${metres(shortest)}, you needed ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagram of the positions with your walk and the computer’s walk',
@@ -101,7 +101,7 @@ export const en: FrechetTexts = {
     check: 'Try',
     checking: 'The computer is walking …',
     works: (m: number) => `${metres(m)} is enough! Can it be shorter?`,
-    fails: (m: number) => `${metres(m)} is too short: at the red spot the leash gets too taut.`,
+    fails: (m: number) => `${metres(m)} is too short: where the two stop, the leash gets too taut.`,
     reveal: 'Reveal',
     tries: (n: number) => (n === 1 ? '1 try' : `${n} tries`),
     stats: (best: number | null, shortest: number) =>

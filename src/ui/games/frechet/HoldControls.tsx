@@ -19,6 +19,7 @@ function HoldButton({
 }: {
   walker: Walker
   label: string
+  /** How to use it, as a tooltip (the name comes from the visible key and label). */
   aria: string
   held: boolean
   /** The keycap (on a laptop; phones have no keys). */
@@ -36,7 +37,7 @@ function HoldButton({
       className={styles.hold}
       data-held={held || undefined}
       aria-pressed={held}
-      aria-label={aria}
+      title={aria}
       data-testid={`hold-${walker}`}
       onPointerDown={(e) => {
         if (e.pointerType === 'mouse' && e.button !== 0) return
