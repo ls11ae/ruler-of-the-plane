@@ -14,15 +14,15 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 ## Status
 
-- Phases 0–5 merged into `main` (2026-10-16): the shell, "Licht ins Verlies", track A ("Erobere das
-  Land", "Rasenmähen") and track B ("Gassi gehen", "Straßenbau"); Kevin agreed to all "proposed" decisions
-  of both tracks (2026-10-17). Phase 6 (playtest and polish) on branch `claude/quirky-bohr-1bqbuu`
-  (2026-10-17): credits screen, accessibility pass, simulated 2-hour attract run, "Rundreise" with the
-  online tsp-boards; open are the items that need the booth laptops (playtest, the 200 ms "Schwer" move,
-  the key test). In parallel, other sessions work on the chair's solver solutions for "Rasenmähen" and a
-  bonus set "Im Wald" for "Gassi gehen". **`docs/roadmap.md` is the source of truth for open work**, in
-  its order. How the shell and the shared code fit together and how a game plugs in:
-  `docs/architecture.md`.
+- Phases 0–6 merged into `main` (2026-10-17): the shell, all five games, the Phase 6 items that need no
+  booth laptop (credits screen, accessibility pass, simulated 2-hour attract run, "Rundreise" with the
+  online tsp-boards), the chair's solver solutions for "Rasenmähen" and the bonus set "Im Wald" for
+  "Gassi gehen"; Kevin agreed to all "proposed" decisions so far (2026-10-17). Open are the items that
+  need the booth laptops (playtest, the 200 ms "Schwer" move, the key test). In parallel (2026-10-17):
+  harder tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks, in the park and in the woods;
+  branch `claude/epic-ramanujan-ifv6wh`), and another session on "Straßenbau" and "Rasenmähen".
+  **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
+  code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
 - `legacy/` holds the Unity level files and in-game texts (copied from `kbuchin/ruler` at commit
