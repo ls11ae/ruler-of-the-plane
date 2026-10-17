@@ -59,11 +59,87 @@
   "variants": [
     {
       "cutters": 1,
-      "uid": "lawn2_1s3"
+      "uid": "lawn2_1s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [1, 6],
+            [4, 6],
+            [4, 5],
+            [10, 5],
+            [10, 9],
+            [1, 9],
+            [1, 13],
+            [12, 13],
+            [12, 12],
+            [14, 12],
+            [14, 13],
+            [25, 13],
+            [25, 8],
+            [24, 8],
+            [24, 9],
+            [13, 9],
+            [13, 4],
+            [16, 4],
+            [16, 5],
+            [25, 5],
+            [25, 1]
+          ]
+        ],
+        "maxTourLength": 122,
+        "source": "levels/lawn-mowing/solutions/lawn2_1s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 120,
+          "best_simple_strategy": {
+            "name": "spiral",
+            "longest_tour": 144
+          }
+        }
+      }
     },
     {
       "cutters": 2,
-      "uid": "lawn2_2s3"
+      "uid": "lawn2_2s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [1, 5],
+            [9, 5],
+            [9, 9],
+            [4, 9],
+            [4, 8],
+            [1, 8],
+            [1, 13],
+            [12, 13],
+            [12, 1]
+          ],
+          [
+            [15, 1],
+            [19, 1],
+            [19, 5],
+            [18, 5],
+            [18, 9],
+            [22, 9],
+            [22, 1],
+            [25, 1],
+            [25, 13],
+            [15, 13]
+          ]
+        ],
+        "maxTourLength": 64,
+        "source": "levels/lawn-mowing/solutions/lawn2_2s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 60,
+          "best_simple_strategy": {
+            "name": "halves with nearest",
+            "longest_tour": 68
+          }
+        }
+      }
     }
   ]
 }

@@ -1,0 +1,3 @@
+# Python packages for the scripts in scripts/lawns/ (pip install -r scripts/lawns/requirements.txt)
+cgshop2027-pyutils==0.2.0
+ortools==9.15.6755
