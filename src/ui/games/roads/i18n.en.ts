@@ -120,7 +120,7 @@ export const en: RoadsTexts = {
     howTo: [
       'Now there are castles and villages: every road joins a castle and a village.',
       'And no two roads may cross – the king cannot pay for bridges.',
-      'Can you build the shortest network? Crossings are marked with a cross.',
+      'Can you build the shortest network? Crossings are circled in red.',
     ],
     howToAnimation: 'Roads between castles and villages; one crosses another and is replaced',
     explanation: (crossings: number) => [

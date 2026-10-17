@@ -366,8 +366,8 @@ their ends.
   is the criterion. Each map has its own seed range. No random maps in this set.
 - **2026-10-17 (proposed) "Zwei Sorten": what the game refuses and what it marks.** A road between two
   villages or two castles is refused: its preview turns red while dragging, and letting go explains the
-  rule in the footer. Roads that cross may be built: both turn red, the crossing gets a red ring with a
-  cross, the state says "2 Schnittpunkte", and the network does not count until no roads cross. The texts
+  rule in the footer. Roads that cross may be built: both turn red, the crossing is circled in red (a
+  ring, so that the cross keeps marking the road a hint means), the state says "2 Schnittpunkte", and the network does not count until no roads cross. The texts
   say "schneiden" and "Schnittpunkt", so that "Kreuzung" keeps meaning a junction, as in the set before.
   Hints: a crossing road (the longer of the two), then a road the optimum does not use, then a missing
   one. Theory: the tree without the rule with its crossings next to the player's network (two sketches),

@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react'
 import type { RoadsMap } from '../../../core/games/roads/levels'
 import { networkLength, roadKey, type Road } from '../../../core/games/roads/mst'
 import { crossings } from '../../../core/games/roads/plane'
-import type { Vec2 } from '../../../core/geometry/types'
 import { Button } from '../../components/Button'
 import { useAnimationFrame } from '../../input/hooks'
 import { CASTLE, VILLAGES } from './art'
+import { CrossingRing } from './RoadsBoard'
 import styles from './Roads.module.css'
 import type { RoadsTexts } from './i18n.de'
 import { useMedia } from './useMedia'
@@ -13,22 +13,6 @@ import { useMedia } from './useMedia'
 const STEP_MS = 550
 /** The how-to loop (ms). */
 const LOOP_MS = 6500
-
-/** A crossing: a red ring with a cross (drawn without a board; `unit` is one pixel in drawing units). */
-function CrossingMark({ at: [x, y], unit }: { at: Vec2; unit: number }) {
-  const arm = 4.5 * unit
-  return (
-    <g data-mark="bad">
-      <circle cx={x} cy={y} r={10 * unit} fill="var(--paper)" stroke="var(--warn)" strokeWidth={3 * unit} />
-      <path
-        d={`M${x - arm},${y - arm}L${x + arm},${y + arm}M${x + arm},${y - arm}L${x - arm},${y + arm}`}
-        stroke="var(--ink)"
-        strokeWidth={2.4 * unit}
-        strokeLinecap="round"
-      />
-    </g>
-  )
-}
 
 /** Places and roads without a board; roads that cross are red and their crossings marked. */
 function Sketch({
@@ -78,7 +62,7 @@ function Sketch({
         )
       })}
       {found.map((c) => (
-        <CrossingMark key={`${roadKey(c.roads[0])}x${roadKey(c.roads[1])}`} at={c.at} unit={unit} />
+        <CrossingRing key={`${roadKey(c.roads[0])}x${roadKey(c.roads[1])}`} at={c.at} unit={unit} />
       ))}
     </>
   )

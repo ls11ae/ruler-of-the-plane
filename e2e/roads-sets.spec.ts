@@ -95,7 +95,7 @@ test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({
   const free = freeTree(places, plane.villages.length)
   for (const road of free) await build(road)
   await expect(page.getByTestId('roads-state')).toHaveText(`${plane.free.crossings} Schnittpunkte`)
-  await expect(page.locator('[data-mark=bad]')).toHaveCount(plane.free.crossings)
+  await expect(page.locator('[data-mark=crossing]')).toHaveCount(plane.free.crossings)
   await page.getByRole('button', { name: 'Tipp' }).click()
   await expect(page.getByTestId('roads-hint')).toContainText('schneidet eine andere')
   await shot(page, testInfo, 'roads-plane-crossings')
@@ -112,7 +112,9 @@ test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({
   await shot(page, testInfo, 'roads-plane-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
   const theory = page.getByRole('complementary', { name: 'Theorie' })
-  await expect(theory.getByTestId('plane-free').locator('[data-mark=bad]')).toHaveCount(plane.free.crossings)
+  await expect(theory.getByTestId('plane-free').locator('[data-mark=crossing]')).toHaveCount(
+    plane.free.crossings,
+  )
   await expect(theory).toContainText('O(log n)')
   await shot(page, testInfo, 'roads-plane-theory')
 })

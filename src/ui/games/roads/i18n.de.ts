@@ -125,7 +125,7 @@ export const de = {
     howTo: [
       'Jetzt gibt es Burgen und Dörfer: Jede Straße verbindet eine Burg mit einem Dorf.',
       'Und keine zwei Straßen dürfen sich schneiden – Brücken kann der König nicht bezahlen.',
-      'Schaffst du das kürzeste Netz? Schnittpunkte werden mit einem Kreuz markiert.',
+      'Schaffst du das kürzeste Netz? Schnittpunkte werden rot eingekreist.',
     ],
     howToAnimation: 'Straßen zwischen Burgen und Dörfern; eine schneidet eine andere und wird ersetzt',
     explanation: (crossings: number) => [

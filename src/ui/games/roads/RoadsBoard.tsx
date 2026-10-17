@@ -70,6 +70,27 @@ export function RoadMark({ at, tone }: { at: Vec2; tone: Tone }) {
   )
 }
 
+/**
+ * Where two roads cross ("Zwei Sorten"): a red ring around the point, with an ink ring around it for
+ * contrast (a ring, not a cross: the cross marks the road a hint means). `unit` is one pixel.
+ */
+export function CrossingRing({ at: [x, y], unit }: { at: Vec2; unit: number }) {
+  return (
+    <g data-mark="crossing" pointerEvents="none">
+      <circle
+        cx={x}
+        cy={y}
+        r={12 * unit}
+        fill="var(--paper)"
+        fillOpacity={0.45}
+        stroke="var(--warn)"
+        strokeWidth={4 * unit}
+      />
+      <circle cx={x} cy={y} r={14.5 * unit} fill="none" stroke="var(--ink)" strokeWidth={1.5 * unit} />
+    </g>
+  )
+}
+
 const toneColour = (tone?: Tone) =>
   tone === 'bad' ? 'var(--warn)' : tone === 'good' ? 'var(--person)' : 'var(--ink)'
 
@@ -470,9 +491,6 @@ export function RoadsLayer({
         <RoadLine a={nodes[highlight.road[0]]!} b={nodes[highlight.road[1]]!} tone="good" ghost mark />
       )}
       {ghost && <RoadLine a={nodes[ghost.from]!} b={ghost.at} tone="good" ghost mark />}
-      {crossings?.map((c) => (
-        <RoadMark key={`${c[0]},${c[1]}`} at={c} tone="bad" />
-      ))}
       {overlay?.map(({ key, a, b, tone, ghost }) => (
         <RoadLine key={`o${key}`} a={a} b={b} tone={tone} ghost={ghost} />
       ))}
@@ -504,6 +522,10 @@ export function RoadsLayer({
           castle={i >= map.villages}
           selected={i === selected || i === from}
         />
+      ))}
+      {/* Above the places: a crossing next to a place must not hide under its icon. */}
+      {crossings?.map((c) => (
+        <CrossingRing key={`${c[0]},${c[1]}`} at={c} unit={board.pxToBoard(1)} />
       ))}
       <rect
         x={minX - pad}
