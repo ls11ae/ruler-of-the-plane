@@ -228,6 +228,13 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 - Accessibility pass: contrast, colour never the only cue, readable fonts. — done 2026-10-17 (`e2e/a11y.spec.ts`: axe-core
   plus own checks of contrast against the drawn background, text sizes and 44 px hit targets on every
   screen; see the decision log, Phase 6).
+- "Straßenbau" is too easy (Kevin's playtest): two harder sets after the current maps, "Kreuzungen"
+  (Steiner tree: junctions placed by hand, angles shown, within 1 % of the stored optimum counts) and
+  "Zwei Sorten" (castles and villages, every road joins one of each, no two roads cross), each map with
+  its exact optimum computed offline. — done 2026-10-17 (six maps each; `scripts/roads/`, see the
+  decision log, Phase 6)
+- "Rasenmähen" (Kevin's playtest): a step back per mower (a key per mower on the laptop, the middle of
+  the direction pad on phones). — done 2026-10-17
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
@@ -255,8 +262,8 @@ Acceptance: the release runs offline on every booth laptop and the spare one fro
 
 ## Phase 8: after the open house (backlog)
 
-- "Straßenbau" bonus "Kreuzungen erlaubt" (Steiner trees) with precomputed optima; t-spanner as
-  "Umwege" (tap two villages to see the route and its detour factor).
+- "Straßenbau": t-spanner as "Umwege" (tap two villages to see the route and its detour factor). (The
+  Steiner trees came in Phase 6 as the set "Kreuzungen".)
 - "Faire Teilung" (ham sandwich): two kinds of items with live counters and a line moved by two handles;
   three kinds with swaps as an expert mode; the dual view on demand.
 - Dots & Polygons: port the rules from branch `MultiThreadedalfabeta` of `kbuchin/ruler` (see legacy

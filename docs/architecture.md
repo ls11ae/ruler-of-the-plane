@@ -22,7 +22,10 @@ touches no shared file:
    behind its text (e.g. the computer against itself); it is discovered like the game.
 6. New level sources (made for this edition) go to `levels/<id>/` and are converted by `npm run levels`
    (folder → collection in `NEW_FOLDERS` of `scripts/levels/convert.ts`); `legacy/` stays the read-only
-   copy of the Unity files.
+   copy of the Unity files. JSON sources have their own converter, called from `scripts/levels/import.ts`
+   (`lawns.ts` for pyutils27 lawns, `roads.ts` for the bonus maps of "Straßenbau", which also checks
+   their stored optima); maps whose optima are computed offline keep their generator in `scripts/<game>/`
+   (e.g. `scripts/roads/`).
 7. A Playwright smoke test `e2e/<id>.spec.ts` plays a level in both projects (laptop and phone) and saves
    screenshots to `screenshots/<project>/<id>-*.png` with `shot()` from `e2e/helpers.ts` (animations
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a

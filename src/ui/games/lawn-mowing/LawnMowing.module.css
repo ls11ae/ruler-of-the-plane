@@ -188,6 +188,19 @@
 .down {
   grid-area: 3 / 2;
 }
+/* The step back in the middle of the pad: dashed, so it does not read as a fifth direction. */
+.padButton.undo {
+  grid-area: 2 / 2;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* The undo key on a cutter's card, with the curved arrow beside it. */
+.undoKey {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
 
 .phone {
   align-items: center;

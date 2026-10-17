@@ -44,6 +44,8 @@ describe('shipped levels (public/levels)', () => {
       'convex-hull': 3,
       voronoi: 3,
       'lawn-mowing': 6,
+      'roads/steiner': 6,
+      'roads/bichromatic': 6,
     })
     expect(levels.every((l) => l !== null)).toBe(true)
   })

@@ -83,6 +83,19 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, isMob
   await expectHeaderLaidOut(page)
   await shot(page, testInfo, 'lawn-mowing-start')
 
+  // A step and a step back with each mower's undo key (Q, Backspace): the steps go down again.
+  const percent = await page.getByTestId('mowed-percent').textContent()
+  for (const [i, step, back] of [
+    [1, 'KeyD', 'KeyQ'],
+    [2, 'ArrowLeft', 'Backspace'],
+  ] as const) {
+    await page.keyboard.press(step)
+    await expect(page.getByTestId(`steps-${i}`).locator('strong')).toHaveText('1 Schritt')
+    await page.keyboard.press(back)
+    await expect(page.getByTestId(`steps-${i}`).locator('strong')).toHaveText('0 Schritte')
+  }
+  await expect(page.getByTestId('mowed-percent')).toHaveText(percent!)
+
   const [one, two] = await cutterPositions(page)
   const mid = Math.floor((lawn1.bounds.minY + lawn1.bounds.maxY) / 2)
   const plan1 = stepsThrough(one!, sweep(lawn1.bounds.minY, mid))
@@ -125,16 +138,22 @@ test('one player mows a lawn with the direction pad', async ({ page, isMobile },
 
   const [start] = await cutterPositions(page)
   const plan = stepsThrough(start!, sweep(lawn1.bounds.minY, lawn1.bounds.maxY))
+  const ev = (buttons: number) => ({
+    pointerId: 5,
+    pointerType: 'touch',
+    isPrimary: true,
+    button: 0,
+    buttons,
+    bubbles: true,
+  })
+  // The middle of the pad takes the last step back.
+  await page.getByTestId(`pad-${await screenDir(page, 'right')}`).dispatchEvent('pointerdown', ev(1))
+  await page.getByTestId(`pad-${await screenDir(page, 'right')}`).dispatchEvent('pointerup', ev(0))
+  await expect(page.getByTestId('steps-1').locator('strong')).toHaveText('1 Schritt')
+  await page.getByTestId('pad-undo').dispatchEvent('pointerdown', ev(1))
+  await expect(page.getByTestId('steps-1').locator('strong')).toHaveText('0 Schritte')
   for (const [i, d] of plan.entries()) {
     const pad = page.getByTestId(`pad-${await screenDir(page, d)}`)
-    const ev = (buttons: number) => ({
-      pointerId: 5,
-      pointerType: 'touch',
-      isPrimary: true,
-      button: 0,
-      buttons,
-      bubbles: true,
-    })
     await pad.dispatchEvent('pointerdown', ev(1))
     await pad.dispatchEvent('pointerup', ev(0))
     if (i === 40) await shot(page, testInfo, 'lawn-mowing-playing')

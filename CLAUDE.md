@@ -16,11 +16,13 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 
 - Phases 0–5 merged into `main` (2026-10-16): the shell, "Licht ins Verlies", track A ("Erobere das
   Land", "Rasenmähen") and track B ("Gassi gehen", "Straßenbau"); Kevin agreed to all "proposed" decisions
-  of both tracks (2026-10-17). Phase 6 (playtest and polish) on branch `claude/quirky-bohr-1bqbuu`
-  (2026-10-17): credits screen, accessibility pass, simulated 2-hour attract run, "Rundreise" with the
-  online tsp-boards; open are the items that need the booth laptops (playtest, the 200 ms "Schwer" move,
-  the key test). In parallel, other sessions work on the chair's solver solutions for "Rasenmähen" and a
-  bonus set "Im Wald" for "Gassi gehen". **`docs/roadmap.md` is the source of truth for open work**, in
+  of both tracks (2026-10-17). Phase 6 (playtest and polish): credits screen, accessibility pass,
+  simulated 2-hour attract run, "Rundreise" with the online tsp-boards, and the bonus set "Im Wald" of
+  "Gassi gehen" merged (2026-10-17); then, after Kevin's first playtest, on branch
+  `claude/quirky-bohr-1bqbuu`: two harder sets of "Straßenbau" ("Kreuzungen", "Zwei Sorten") with exact
+  optima computed offline (`scripts/roads/`), and a step back per mower in "Rasenmähen". Open are the items
+  that need the booth laptops (playtest, the 200 ms "Schwer" move, the key test); another session works
+  on the chair's solver solutions for "Rasenmähen". **`docs/roadmap.md` is the source of truth for open work**, in
   its order. How the shell and the shared code fit together and how a game plugs in:
   `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
@@ -133,7 +135,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   not edge sets, because of ties). Kruskal is the teaching animation.
 - Steiner trees: Steiner points have degree 3 and 120° angles; for an equilateral triangle the Steiner
   tree is 13.4 % shorter than the MST. No exact solver in the browser: curated levels carry precomputed
-  optima in their JSON.
+  optima in their JSON ("Kreuzungen": every full topology with Smith's iteration, `scripts/roads/steiner.ts`).
+- Plane bichromatic spanning tree ("Zwei Sorten"): every road joins a castle and a village, no two roads
+  cross. Without the crossing rule Kruskal on the castle–village roads; with it NP-hard (Borgelt et al.
+  2009), the optimum at most O(log n) times longer (Akitaya et al., ISAAC 2024; a constant is open).
+  Optima by CP-SAT offline (`scripts/roads/bichromatic.py`, `pip install ortools`).
 - t-spanner: dilation = max over pairs of graph distance / Euclidean distance. Greedy spanner: take
   edges by increasing length, add one when the current graph distance exceeds t times its length.
 - Ham sandwich: two finite point sets can always be bisected by one line; three sets in general cannot

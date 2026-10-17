@@ -1,12 +1,14 @@
 import type { Bounds, Vec2 } from '../../geometry/types'
-import type { KingsTaxesLevel } from '../../levels/schema'
+import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../../levels/schema'
 import { mulberry32 } from '../../random'
 
 /**
- * Levels of "Straßenbau": the four Unity MST levels (five settlements each), then the larger point sets
- * of Unity's spanner and TSP levels (9 to 19 settlements, used here for the MST), then random villages.
+ * Levels of "Straßenbau", in three sets and then random villages. "Ohne Kreuzungen" (minimum spanning
+ * tree): the four Unity MST levels (five settlements each), then the larger point sets of Unity's spanner
+ * and TSP levels (9 to 19 settlements). "Kreuzungen" (Steiner tree): roads may branch at junctions.
+ * "Zwei Sorten" (plane bichromatic spanning tree): every road joins a castle and a village, none cross.
  */
-export const LEVEL_IDS = [
+export const MST_IDS = [
   'kings-taxes/mst/ktLevel1',
   'kings-taxes/mst/ktLevel2',
   'kings-taxes/mst/ktLevel3',
@@ -16,7 +18,44 @@ export const LEVEL_IDS = [
   'kings-taxes/spanner/ktLevel3_2',
   'kings-taxes/tsp/ktLevel3',
 ] as const
-export type RoadsLevelId = (typeof LEVEL_IDS)[number]
+export const STEINER_IDS = [
+  'roads/steiner/1-dreieck',
+  'roads/steiner/2-viereck',
+  'roads/steiner/3-zickzack',
+  'roads/steiner/4-leiter',
+  'roads/steiner/5-kette',
+  'roads/steiner/6-wabe',
+] as const
+export const BICHROMATIC_IDS = [
+  'roads/bichromatic/1-burgen',
+  'roads/bichromatic/2-weiler',
+  'roads/bichromatic/3-mark',
+  'roads/bichromatic/4-grafschaft',
+  'roads/bichromatic/5-herzogtum',
+  'roads/bichromatic/6-koenigreich',
+] as const
+
+export type RoadsSet = 'mst' | 'steiner' | 'bichromatic'
+export const SETS: { set: RoadsSet; ids: readonly RoadsLevelId[] }[] = [
+  { set: 'mst', ids: MST_IDS },
+  { set: 'steiner', ids: STEINER_IDS },
+  { set: 'bichromatic', ids: BICHROMATIC_IDS },
+]
+
+/** Every fixed map in playing order; the index after the last one means random villages. */
+export const LEVEL_IDS = [...MST_IDS, ...STEINER_IDS, ...BICHROMATIC_IDS] as const
+export type RoadsLevelId =
+  (typeof MST_IDS)[number] | (typeof STEINER_IDS)[number] | (typeof BICHROMATIC_IDS)[number]
+
+/** The set of a fixed map and its number in the set (from 0). */
+export function setOf(index: number): { set: RoadsSet; index: number; count: number } {
+  let i = index
+  for (const { set, ids } of SETS) {
+    if (i < ids.length) return { set, index: i, count: ids.length }
+    i -= ids.length
+  }
+  throw new Error(`no fixed map ${index}`)
+}
 
 /** A map to connect: settlements (villages first, then castles; they differ only in look). */
 export interface RoadsMap {
@@ -26,7 +65,7 @@ export interface RoadsMap {
   bounds: Bounds
 }
 
-export function mapOf(level: KingsTaxesLevel): RoadsMap {
+export function mapOf(level: KingsTaxesLevel | RoadsSteinerLevel | RoadsBichromaticLevel): RoadsMap {
   return {
     points: [...level.villages, ...level.castles],
     villages: level.villages.length,

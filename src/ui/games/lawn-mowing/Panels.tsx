@@ -1,6 +1,8 @@
 import { Keycap } from '../../components/Keycap'
 import { useHeldKeys } from '../../input/hooks'
 import { CUTTER_COLOURS } from './art'
+import { UNDO_KEYS } from './controls'
+import { UndoIcon } from './DPad'
 import type { LawnTexts } from './i18n.de'
 import styles from './LawnMowing.module.css'
 
@@ -14,13 +16,23 @@ export interface CutterStats {
   home: number
 }
 
-/** Keycaps of a cutter, lit while held (as in the mockup: W over A S D, the arrows alike). */
-function Keys({ cutter }: { cutter: 0 | 1 }) {
+/**
+ * Keycaps of a cutter, lit while held (as in the mockup: W over A S D, the arrows alike), and its key for
+ * a step back to the left of the top row (Q beside W, as on the keyboard).
+ */
+function Keys({ cutter, undo }: { cutter: 0 | 1; undo: string }) {
   const held = useHeldKeys()
+  const undoCode = UNDO_KEYS[cutter]![0]!
   return (
     <span className={styles.keys} aria-hidden="true">
       {KEY_ROWS[cutter].map((row, r) => (
         <span key={r} className={styles.keyRow}>
+          {r === 0 && (
+            <span className={styles.undoKey} title={undo}>
+              <Keycap code={undoCode} pressed={held.includes(undoCode)} />
+              <UndoIcon size={18} />
+            </span>
+          )}
           {row.map((code) => (
             <Keycap key={code} code={code} pressed={held.includes(code)} />
           ))}
@@ -50,7 +62,7 @@ export function CutterCard({
         <strong className={styles.big}>{t.steps(stats.steps)}</strong>
         <small>{t.home(stats.home)}</small>
       </span>
-      {keys && <Keys cutter={index} />}
+      {keys && <Keys cutter={index} undo={t.undoKey} />}
     </div>
   )
 }

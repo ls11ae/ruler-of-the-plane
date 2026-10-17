@@ -1,0 +1,51 @@
+{
+  "name": "weiler",
+  "villages": [
+    [2.049, 1.33],
+    [2.503, -1.441],
+    [2.667, -0.475],
+    [-0.577, -1.448]
+  ],
+  "castles": [
+    [-1.653, 0.085],
+    [-1.566, 1.783],
+    [-2.056, -1.248]
+  ],
+  "optimum": {
+    "roads": [
+      [0, 4],
+      [0, 5],
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [3, 6]
+    ],
+    "length": 19.697855
+  },
+  "free": {
+    "roads": [
+      [0, 5],
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [3, 5],
+      [3, 6]
+    ],
+    "length": 19.171088,
+    "crossings": 2
+  },
+  "greedy": {
+    "roads": [
+      [0, 5],
+      [1, 5],
+      [2, 5],
+      [3, 4],
+      [3, 5],
+      [3, 6]
+    ],
+    "length": 20.376657,
+    "stuck": false
+  },
+  "seed": 20038578,
+  "method": "exact: CP-SAT (OR-Tools), flow model with pairwise crossing constraints (scripts/roads/bichromatic.py)"
+}
