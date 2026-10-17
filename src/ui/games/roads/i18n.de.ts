@@ -65,6 +65,13 @@ export const de = {
     random: 'Zufallsdörfer',
     map: (i: number) => `Karte ${i}`,
   },
+  /** The tier screen: one sentence per tier (the set's name stands above it). */
+  tierTeasers: {
+    easy: 'Verbinde alle Orte mit möglichst wenig Straße.',
+    medium: 'Straßen dürfen sich verzweigen: Wo lohnt sich eine Kreuzung?',
+    hard: 'Selbst die Forschung weiß noch nicht, wie nah ein Computer dem besten Netz immer kommt.',
+  },
+  resume: (set: string, i: number) => `${set}, Karte ${i}`,
   /** The three sets of maps (the picker's sections). */
   sets: {
     mst: 'Von Ort zu Ort',
