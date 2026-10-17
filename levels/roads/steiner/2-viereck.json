@@ -1,0 +1,27 @@
+{
+  "name": "viereck",
+  "villages": [
+    [-2.14378, -1.442],
+    [2.148471, -1.390891],
+    [2.290069, 1.4314]
+  ],
+  "castles": [
+    [-2.200192, 1.365739]
+  ],
+  "optimum": {
+    "junctions": [
+      [-1.361579, -0.092368],
+      [1.404282, -0.096961]
+    ],
+    "roads": [
+      [0, 4],
+      [1, 5],
+      [2, 5],
+      [4, 5],
+      [3, 4]
+    ],
+    "length": 9.267018
+  },
+  "mstLength": 9.926702,
+  "method": "exact: every full Steiner topology, each solved by Smith’s iteration (scripts/roads/steiner.ts, steiner-maps.ts)"
+}
