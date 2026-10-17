@@ -3,7 +3,17 @@ import type { Vec2 } from '../../../geometry/types'
 import { mulberry32, type Rng } from '../../../random'
 import { makePath, pointAt, pointSegmentDistance } from '../path'
 import { cornerGraph, geodesic } from './geodesic'
-import { moveDog, movePerson, ropeLength, ropePoints, straightRope, type Rope } from './rope'
+import {
+  coils,
+  moveDog,
+  moveDogAlong,
+  movePerson,
+  ropeLength,
+  ropePoints,
+  straightRope,
+  turnsAround,
+  type Rope,
+} from './rope'
 import {
   blocked,
   concat,
@@ -168,5 +178,57 @@ describe('taut leash', () => {
       for (const p of subpath(person, 0, s).slice(1)) two = movePerson(two, p, trees)
       expect(two.wraps).toEqual(one.wraps)
     }
+  })
+
+  it('coils round a thin post: three circles of the dog are three turns, three perimeters longer', () => {
+    // A lamp post of radius 0.1 m; the person stands 3 m to its left, the dog starts 1 m below it.
+    const post = makeTree([5, 5], 0.1)
+    const trees = [post]
+    const perimeter = post.trunk.reduce(
+      (sum, c, i) => sum + Math.hypot(c[0] - post.trunk[(i + 1) % 8]![0], c[1] - post.trunk[(i + 1) % 8]![1]),
+      0,
+    )
+    const person: Vec2 = [2, 5]
+    const start: Vec2 = [5, 6]
+    // The dog runs round the post three times at a radius of 1 m, back to where it started.
+    const circle: Vec2[] = [start]
+    for (let k = 1; k <= 3 * 16; k++) {
+      const a = Math.PI / 2 + (2 * Math.PI * k) / 16
+      circle.push([5 + Math.cos(a), 5 + Math.sin(a)])
+    }
+    const path = makePath(circle)
+    let rope = straightRope(person, start)
+    expect(turnsAround(rope, trees, 0)).toBe(0)
+    const turnsAt: number[] = []
+    const lengthAt: number[] = []
+    for (let lap = 1; lap <= 3; lap++) {
+      rope = moveDogAlong(rope, path, ((lap - 1) / 3) * path.length, (lap / 3) * path.length, trees)
+      turnsAt.push(turnsAround(rope, trees, 0))
+      lengthAt.push(ropeLength(rope, trees))
+    }
+    // One more turn per lap, all the same way round.
+    expect(turnsAt.map(Math.abs)).toEqual([1, 2, 3])
+    expect(new Set(turnsAt.map(Math.sign)).size).toBe(1)
+    expect(coils(rope, trees)).toEqual([{ tree: 0, turns: turnsAt[2] }])
+    // Each lap adds exactly one perimeter; in all about three perimeters plus the distances of person
+    // and dog from the post (less the parts of a turn that the straight legs to the post cover).
+    expect(lengthAt[1]! - lengthAt[0]!).toBeCloseTo(perimeter, 9)
+    expect(lengthAt[2]! - lengthAt[1]!).toBeCloseTo(perimeter, 9)
+    const plain = Math.hypot(3, 0) + Math.hypot(0, 1)
+    expect(lengthAt[2]!).toBeGreaterThan(plain + 2 * perimeter)
+    expect(lengthAt[2]!).toBeLessThan(plain + 3 * perimeter)
+    // The rope agrees with the shortest curve of its class computed from scratch.
+    const word = polylineWord(ropePoints(rope, trees), trees)
+    expect(word).toHaveLength(3)
+    expect(ropeLength(rope, trees)).toBeCloseTo(geodesic(cornerGraph(trees), person, start, word)!.length, 9)
+    // The person walks the same circles the other way round, wider: the leash unwinds turn by turn.
+    for (let lap = 1; lap <= 3; lap++) {
+      for (let k = 1; k <= 16; k++) {
+        const a = Math.PI + (2 * Math.PI * ((lap - 1) * 16 + k)) / 16
+        rope = movePerson(rope, [5 + 3 * Math.cos(a), 5 + 3 * Math.sin(a)], trees)
+      }
+      expect(Math.abs(turnsAround(rope, trees, 0))).toBe(3 - lap)
+    }
+    expect(rope.wraps).toEqual([])
   })
 })
