@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { anglesAt, toDegrees } from '../../../core/games/roads/junctions'
 import { normalise, roadKey, type Road } from '../../../core/games/roads/mst'
 import type { RoadsMap } from '../../../core/games/roads/levels'
 import type { Vec2 } from '../../../core/geometry/types'
@@ -9,8 +10,13 @@ import { CASTLE, VILLAGES } from './art'
 /** Settlement icons and their hit targets, in screen pixels (at least 44 px to tap). */
 const ICON_PX = 66
 const HIT_PX = 28
+/** Junctions: drawn radius and hit target (pixels). */
+const JUNCTION_PX = 9
+const JUNCTION_HIT_PX = 24
 /** A road is hit within this distance (pixels) of its line. */
 const ROAD_HIT_PX = 12
+/** Junctions stay this far (level units) around the places' bounding box. */
+const LAND_PAD = 0.6
 
 const segmentDistance = (p: Vec2, a: Vec2, b: Vec2) => {
   const dx = b[0] - a[0]
@@ -20,10 +26,27 @@ const segmentDistance = (p: Vec2, a: Vec2, b: Vec2) => {
   return Math.hypot(a[0] + t * dx - p[0], a[1] + t * dy - p[1])
 }
 
-export type Highlight = { road: Road; tone: 'bad' | 'good' } | null
+type Tone = 'bad' | 'good'
 
-/** The mark in the middle of a marked road, so it does not depend on the colour: a cross or a plus. */
-function RoadMark({ at, tone }: { at: Vec2; tone: 'bad' | 'good' }) {
+/**
+ * A marked part of the network: a road (red with a cross: can go; green with a plus: to build), a
+ * junction (red ring with a cross: can go; green ring: move it), or a junction to build (a ghost with a
+ * road to it from node `from`).
+ */
+export type Highlight =
+  { road: Road; tone: Tone } | { node: number; tone: Tone } | { at: Vec2; from: number; tone: 'good' } | null
+
+/** A line drawn on top of the network (the theory view): its ends, colour and whether it is faint. */
+export interface Segment {
+  key: string
+  a: Vec2
+  b: Vec2
+  tone?: Tone
+  ghost?: boolean
+}
+
+/** The mark of a marked road or a crossing, so it does not depend on the colour: a cross or a plus. */
+export function RoadMark({ at, tone }: { at: Vec2; tone: Tone }) {
   const board = useBoard()
   const px = board.pxToBoard(1)
   const [x, y] = at
@@ -33,7 +56,7 @@ function RoadMark({ at, tone }: { at: Vec2; tone: 'bad' | 'good' }) {
       ? `M${x - arm},${y - arm}L${x + arm},${y + arm}M${x + arm},${y - arm}L${x - arm},${y + arm}`
       : `M${x - arm * 1.2},${y}L${x + arm * 1.2},${y}M${x},${y - arm * 1.2}L${x},${y + arm * 1.2}`
   return (
-    <g data-mark={tone}>
+    <g data-mark={tone} pointerEvents="none">
       <circle
         cx={x}
         cy={y}
@@ -47,11 +70,14 @@ function RoadMark({ at, tone }: { at: Vec2; tone: 'bad' | 'good' }) {
   )
 }
 
+const toneColour = (tone?: Tone) =>
+  tone === 'bad' ? 'var(--warn)' : tone === 'good' ? 'var(--person)' : 'var(--ink)'
+
 /**
  * A road drawn as a dashed ink line (the style of the start map). A marked road is red with a cross
  * (can go) or green with a plus (to build).
  */
-function RoadLine({
+export function RoadLine({
   a,
   b,
   tone,
@@ -60,14 +86,14 @@ function RoadLine({
 }: {
   a: Vec2
   b: Vec2
-  tone?: 'bad' | 'good'
+  tone?: Tone
   ghost?: boolean
   /** The cross or plus in the middle (default: on marked roads that are not faint). */
   mark?: boolean
 }) {
   const board = useBoard()
   const px = board.pxToBoard(1)
-  const colour = tone === 'bad' ? 'var(--warn)' : tone === 'good' ? 'var(--person)' : 'var(--ink)'
+  const colour = toneColour(tone)
   return (
     <g pointerEvents="none">
       {tone && (
@@ -113,7 +139,11 @@ function Settlement({
   const board = useBoard()
   const s = board.pxToBoard(ICON_PX)
   return (
-    <g transform={board.upright(at[0], at[1])} pointerEvents="none">
+    <g
+      transform={board.upright(at[0], at[1])}
+      pointerEvents="none"
+      data-place={castle ? 'castle' : 'village'}
+    >
       <circle
         cx={at[0]}
         cy={at[1]}
@@ -134,34 +164,193 @@ function Settlement({
   )
 }
 
+/** A junction: an ink ring on the road; selected (or being moved) with a dashed halo; ghost: faint. */
+function Junction({
+  at,
+  selected,
+  ghost,
+  tone,
+}: {
+  at: Vec2
+  selected?: boolean
+  ghost?: boolean
+  tone?: Tone
+}) {
+  const board = useBoard()
+  const px = board.pxToBoard(1)
+  const [x, y] = at
+  return (
+    <g pointerEvents="none" data-junction={ghost ? 'ghost' : 'built'} opacity={ghost ? 0.75 : 1}>
+      {(selected || tone) && (
+        <circle
+          cx={x}
+          cy={y}
+          r={18 * px}
+          fill={tone ? toneColour(tone) : 'var(--light-soft)'}
+          fillOpacity={tone ? 0.25 : 0.8}
+          stroke={tone ? toneColour(tone) : 'var(--ink)'}
+          strokeWidth={(tone ? 3 : 2.5) * px}
+          strokeDasharray={selected || ghost ? `${5 * px} ${4 * px}` : undefined}
+        />
+      )}
+      <circle
+        cx={x}
+        cy={y}
+        r={JUNCTION_PX * px}
+        fill="var(--paper)"
+        stroke="var(--ink)"
+        strokeWidth={3 * px}
+        strokeDasharray={ghost ? `${4 * px} ${3 * px}` : undefined}
+      />
+      <circle cx={x} cy={y} r={3 * px} fill="var(--ink)" />
+      {tone === 'bad' && <RoadMark at={[x + 18 * px, y - 18 * px]} tone="bad" />}
+    </g>
+  )
+}
+
+/**
+ * The angles between the roads at a junction: an arc and the size in degrees (rounded) for each angle
+ * below 180°. An angle of 120° (to the degree) has a solid arc, the others a dotted one.
+ */
+function JunctionAngles({
+  nodes,
+  roads,
+  node,
+}: {
+  nodes: readonly Vec2[]
+  roads: readonly Road[]
+  node: number
+}) {
+  const board = useBoard()
+  const px = board.pxToBoard(1)
+  const [x, y] = nodes[node]!
+  const r = 24 * px
+  const label = 46 * px
+  return (
+    <g pointerEvents="none" data-testid="junction-angles">
+      {anglesAt(nodes, roads, node)
+        .filter((a) => a.size < Math.PI - 1e-6)
+        .map(({ from, size }) => {
+          const degrees = Math.round(toDegrees(size))
+          const right = degrees === 120
+          const to = from + size
+          const mid = from + size / 2
+          const [lx, ly] = [x + label * Math.cos(mid), y + label * Math.sin(mid)]
+          const text = `${degrees}°`
+          return (
+            <g key={from}>
+              <path
+                d={`M${x + r * Math.cos(from)},${y + r * Math.sin(from)}A${r},${r} 0 0 1 ${x + r * Math.cos(to)},${y + r * Math.sin(to)}`}
+                fill="none"
+                stroke={right ? 'var(--person)' : 'var(--ink)'}
+                strokeWidth={(right ? 3.5 : 2) * px}
+                strokeDasharray={right ? undefined : `${2 * px} ${3 * px}`}
+              />
+              <g transform={board.upright(lx, ly)}>
+                <rect
+                  x={lx - 19 * px}
+                  y={ly - 11 * px}
+                  width={38 * px}
+                  height={22 * px}
+                  rx={6 * px}
+                  fill="var(--paper)"
+                  fillOpacity={0.9}
+                  stroke={right ? 'var(--person)' : 'none'}
+                  strokeWidth={2 * px}
+                />
+                <text
+                  x={lx}
+                  y={ly + 5.5 * px}
+                  textAnchor="middle"
+                  fontSize={16 * px}
+                  fontWeight={right ? 'bold' : undefined}
+                  fontFamily="var(--font-text)"
+                  fill="var(--ink)"
+                >
+                  {text}
+                </text>
+              </g>
+            </g>
+          )
+        })}
+    </g>
+  )
+}
+
+/** Junction editing ("Kreuzungen"): new junctions, bends in roads, moving and merging junctions. */
+export interface JunctionEditing {
+  junctions: readonly Vec2[]
+  /** A road from node `from` to a new junction at `at` (dragged or tapped onto empty land). */
+  onExtend(from: number, at: Vec2): void
+  /** A road dragged at its middle: a new junction takes its place; returns the junction's node. */
+  onSplit(road: Road, at: Vec2): number
+  onMove(node: number, at: Vec2): void
+  /** The junction let go, on another node (`onto`) or on empty land (null). */
+  onMoveEnd(node: number, onto: number | null): void
+}
+
 interface RoadsLayerProps {
   map: RoadsMap
   roads: readonly Road[]
   highlight: Highlight
-  /** Roads drawn faintly on top (the theory view's Kruskal steps): taken green, skipped red. */
-  overlay?: { road: Road; taken: boolean; current: boolean }[]
+  /** Lines drawn faintly on top (the theory view). */
+  overlay?: readonly Segment[]
+  /** Roads in the warning colour (they cross another road), and the points where roads cross. */
+  warn?: ReadonlySet<string>
+  crossings?: readonly Vec2[]
+  /** Whether two nodes may be joined; a refused road previews red, and letting go calls onRefuse. */
+  canJoin?(a: number, b: number): boolean
+  onRefuse?(): void
+  edit?: JunctionEditing
   onBuild(road: Road): void
   onRemove(road: Road): void
 }
 
+type Drag =
+  | { kind: 'build'; from: number }
+  | { kind: 'move'; node: number }
+  | { kind: 'bend'; road: Road; node: number | null }
+
 /**
- * The map: settlements, the player's roads, and pointer input. Dragging from a settlement to another
- * builds a road; tapping two settlements one after the other does too; tapping a road removes it.
+ * The map: settlements, junctions, the player's roads, and pointer input. Dragging from a settlement to
+ * another builds a road; tapping two nodes one after the other does too; tapping a road removes it. With
+ * junction editing, a road dragged onto empty land ends at a new junction there, a dragged junction moves
+ * (dropped onto a node it merges into it), and a road dragged at its middle bends at a new junction.
  */
-export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }: RoadsLayerProps) {
+export function RoadsLayer({
+  map,
+  roads,
+  highlight,
+  overlay,
+  warn,
+  crossings,
+  canJoin = () => true,
+  onRefuse,
+  edit,
+  onBuild,
+  onRemove,
+}: RoadsLayerProps) {
   const board = useBoard()
-  const { points } = map
-  const [from, setFrom] = useState<number | null>(null)
+  const places = map.points.length
+  const nodes: Vec2[] = edit ? [...map.points, ...edit.junctions] : map.points
   const [selected, setSelected] = useState<number | null>(null)
   const [pointer, setPointer] = useState<Vec2 | null>(null)
   const [hoverRoad, setHoverRoad] = useState<string | null>(null)
+  // The current drag, also as a ref: the handlers of one gesture run before React renders again.
+  const [drag, setDragState] = useState<Drag | null>(null)
+  const dragRef = useRef<Drag | null>(null)
+  const setDrag = (d: Drag | null) => {
+    dragRef.current = d
+    setDragState(d)
+  }
 
-  const settlementAt = (p: Vec2): number | null => {
+  const nodeAt = (p: Vec2, except?: number): number | null => {
     let best: number | null = null
-    let bestD = board.pxToBoard(HIT_PX)
-    points.forEach((q, i) => {
+    let bestD = Infinity
+    nodes.forEach((q, i) => {
+      if (i === except) return
       const d = Math.hypot(q[0] - p[0], q[1] - p[1])
-      if (d <= bestD) {
+      if (d <= board.pxToBoard(i < places ? HIT_PX : JUNCTION_HIT_PX) && d < bestD) {
         best = i
         bestD = d
       }
@@ -172,7 +361,7 @@ export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }
     let best: Road | null = null
     let bestD = board.pxToBoard(ROAD_HIT_PX)
     for (const r of roads) {
-      const d = segmentDistance(p, points[r[0]]!, points[r[1]]!)
+      const d = segmentDistance(p, nodes[r[0]]!, nodes[r[1]]!)
       if (d <= bestD) {
         best = r
         bestD = d
@@ -180,41 +369,72 @@ export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }
     }
     return best
   }
+  const { minX, minY, maxX, maxY } = map.bounds
+  const onLand = ([x, y]: Vec2): Vec2 => [
+    Math.min(maxX + LAND_PAD, Math.max(minX - LAND_PAD, x)),
+    Math.min(maxY + LAND_PAD, Math.max(minY - LAND_PAD, y)),
+  ]
   const at = (e: React.PointerEvent): Vec2 => board.toBoard(e.clientX, e.clientY)
-  const build = (a: number, b: number) => {
-    if (a !== b) onBuild(normalise(a, b))
+  const join = (a: number, b: number) => {
+    if (a === b) return
+    if (canJoin(a, b)) onBuild(normalise(a, b))
+    else onRefuse?.()
   }
 
   const gesture = usePointerGesture(
     {
       onPress: (e) => {
         const p = at(e)
-        setFrom(settlementAt(p))
+        const node = nodeAt(p)
         setPointer(p)
+        if (node !== null)
+          setDrag(edit && node >= places ? { kind: 'move', node } : { kind: 'build', from: node })
+        else {
+          const road = edit ? roadAt(p) : null
+          setDrag(road ? { kind: 'bend', road, node: null } : null)
+        }
       },
-      onDragMove: (e) => setPointer(at(e)),
+      onDragMove: (e) => {
+        const p = at(e)
+        setPointer(p)
+        const d = dragRef.current
+        if (!d || !edit) return
+        if (d.kind === 'move') edit.onMove(d.node, onLand(p))
+        else if (d.kind === 'bend') {
+          if (d.node === null) setDrag({ ...d, node: edit.onSplit(d.road, onLand(p)) })
+          else edit.onMove(d.node, onLand(p))
+        }
+      },
       onDragEnd: (e) => {
-        const target = settlementAt(at(e))
-        if (from !== null && target !== null) build(from, target)
-        setFrom(null)
+        const p = at(e)
+        const d = dragRef.current
+        if (d?.kind === 'build') {
+          const target = nodeAt(p)
+          if (target !== null) join(d.from, target)
+          else if (edit) edit.onExtend(d.from, onLand(p))
+        } else if (edit && d && d.node !== null) {
+          edit.onMoveEnd(d.node, nodeAt(p, d.node))
+        }
+        setDrag(null)
         setPointer(null)
         setSelected(null)
       },
       onTap: (e) => {
         const p = at(e)
-        const s = settlementAt(p)
-        setFrom(null)
+        const node = nodeAt(p)
+        setDrag(null)
         setPointer(null)
-        if (s !== null) {
-          if (selected === null || selected === s) setSelected(selected === s ? null : s)
+        if (node !== null) {
+          if (selected === null || selected === node) setSelected(selected === node ? null : node)
           else {
-            build(selected, s)
+            join(selected, node)
             setSelected(null)
           }
           return
         }
         const r = roadAt(p)
         if (r) onRemove(r)
+        else if (edit && selected !== null) edit.onExtend(selected, onLand(p))
         setSelected(null)
       },
     },
@@ -222,36 +442,61 @@ export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }
     { dragThreshold: 8, longPressMs: 1e9 },
   )
 
-  const target = pointer ? settlementAt(pointer) : null
-  const previewEnd = target !== null && target !== from ? points[target]! : pointer
-  const { minX, minY, maxX, maxY } = map.bounds
+  const from = drag?.kind === 'build' ? drag.from : null
+  const target = pointer && from !== null ? nodeAt(pointer) : null
+  const previewEnd = target !== null && target !== from ? nodes[target]! : pointer
+  const refused = from !== null && target !== null && target !== from && !canJoin(from, target)
+  const moving = drag && drag.kind !== 'build' ? drag.node : null
   const pad = 1
+  const ghost = highlight && 'at' in highlight ? highlight : null
+  const markedNode = highlight && 'node' in highlight ? highlight : null
   return (
     <g>
       {roads.map((r) => {
         const key = roadKey(r)
         const tone =
-          highlight && roadKey(highlight.road) === key
+          highlight && 'road' in highlight && roadKey(highlight.road) === key
             ? highlight.tone
-            : hoverRoad === key
+            : warn?.has(key)
               ? 'bad'
-              : undefined
-        return <RoadLine key={key} a={points[r[0]]!} b={points[r[1]]!} tone={tone} />
+              : hoverRoad === key
+                ? 'bad'
+                : undefined
+        // Crossing roads carry their marks where they cross, not in the middle.
+        const mark = !warn?.has(key) || (highlight && 'road' in highlight && roadKey(highlight.road) === key)
+        return <RoadLine key={key} a={nodes[r[0]]!} b={nodes[r[1]]!} tone={tone} mark={!!mark} />
       })}
-      {highlight && highlight.tone === 'good' && (
-        <RoadLine a={points[highlight.road[0]]!} b={points[highlight.road[1]]!} tone="good" ghost mark />
+      {highlight && 'road' in highlight && highlight.tone === 'good' && (
+        <RoadLine a={nodes[highlight.road[0]]!} b={nodes[highlight.road[1]]!} tone="good" ghost mark />
       )}
-      {overlay?.map(({ road, taken, current }) => (
-        <RoadLine
-          key={`k${roadKey(road)}`}
-          a={points[road[0]]!}
-          b={points[road[1]]!}
-          tone={current ? (taken ? 'good' : 'bad') : taken ? 'good' : undefined}
-          ghost={!current}
+      {ghost && <RoadLine a={nodes[ghost.from]!} b={ghost.at} tone="good" ghost mark />}
+      {crossings?.map((c) => (
+        <RoadMark key={`${c[0]},${c[1]}`} at={c} tone="bad" />
+      ))}
+      {overlay?.map(({ key, a, b, tone, ghost }) => (
+        <RoadLine key={`o${key}`} a={a} b={b} tone={tone} ghost={ghost} />
+      ))}
+      {from !== null && previewEnd && (
+        <RoadLine a={nodes[from]!} b={previewEnd} ghost tone={refused ? 'bad' : undefined} mark={refused} />
+      )}
+      {edit?.junctions.map((_, k) => {
+        const v = places + k
+        return (
+          roads.some((r) => r[0] === v || r[1] === v) && (
+            <JunctionAngles key={`a${v}`} nodes={nodes} roads={roads} node={v} />
+          )
+        )
+      })}
+      {edit?.junctions.map((j, k) => (
+        <Junction
+          key={`j${k}`}
+          at={j}
+          selected={places + k === selected || places + k === moving}
+          tone={markedNode?.node === places + k ? markedNode.tone : undefined}
         />
       ))}
-      {from !== null && previewEnd && <RoadLine a={points[from]!} b={previewEnd} ghost />}
-      {points.map((p, i) => (
+      {ghost && <Junction at={ghost.at} ghost tone="good" />}
+      {map.points.map((p, i) => (
         <Settlement
           key={i}
           at={p}
@@ -267,13 +512,13 @@ export function RoadsLayer({ map, roads, highlight, overlay, onBuild, onRemove }
         height={maxY - minY + 2 * pad}
         fill="transparent"
         data-testid="roads-input"
-        style={{ cursor: from !== null ? 'grabbing' : 'pointer' }}
+        style={{ cursor: drag ? 'grabbing' : 'pointer' }}
         {...gesture}
         onPointerMove={(e) => {
           gesture.onPointerMove(e)
-          if (e.pointerType === 'mouse' && from === null) {
+          if (e.pointerType === 'mouse' && !drag) {
             const p = at(e)
-            const r = settlementAt(p) === null ? roadAt(p) : null
+            const r = nodeAt(p) === null ? roadAt(p) : null
             setHoverRoad(r ? roadKey(r) : null)
           }
         }}

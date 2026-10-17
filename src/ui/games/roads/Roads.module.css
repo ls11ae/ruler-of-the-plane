@@ -222,6 +222,46 @@
   font-size: 1.05rem;
 }
 
+.setTitle {
+  margin: 0 0 8px;
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+}
+
+.animationCaption {
+  margin: 4px 0 8px;
+  min-height: 1.4em;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* "Zwei Sorten": the tree without the crossing rule next to the player's network. */
+.sketches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sketches figure {
+  margin: 0;
+  text-align: center;
+}
+
+.sketches svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 22vh;
+  border: 2px solid var(--ink-faint);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.sketches figcaption {
+  font-size: 0.95rem;
+}
+
 @media (max-width: 720px) {
   .length {
     font-size: 1.3rem;
