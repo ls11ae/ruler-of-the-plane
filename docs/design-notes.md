@@ -41,8 +41,9 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 ## 4. Open questions (for Kevin)
 
 - Booth laptops: operating system, browser, external mice; key test on each keyboard.
-- Solutions of the chair's CG:SHOP solver for the small booth lawns (targets and animations): the
-  instances are in `levels/lawn-mowing/instances/`, the solutions go to `levels/lawn-mowing/solutions/`.
+- Solutions for the small booth lawns (targets and animations): answered 2026-10-17 by the offline
+  solver `scripts/lawns/solve.py`; a solver of the chair can still replace any file in
+  `levels/lawn-mowing/solutions/` with a shorter tour.
 - Where tsp-boards is published (it is private and not deployed yet).
 - Whether a floor plan of a TU Dortmund building can be used as a level.
 - Who is responsible for the Impressum and privacy notice of the public site.
@@ -308,6 +309,39 @@ subsection below, so their branches do not conflict.
   up to an even number (a closed tour on the grid has even length) with the lawn's numbers, the solver's
   tours (or the strips) played back on a small picture, and the competition instance `smr_882k_481_3s3`
   (481 cells, three cutters) with the example solution of pyutils27.
+- **2026-10-17 Offline solver for the booth lawns** (`scripts/lawns/solve.py`, Python with OR-Tools
+  CP-SAT and pyutils27, versions pinned in `scripts/lawns/requirements.txt`): first the simple strategies
+  of `heuristics.py`, then large neighbourhood search from the three best of them. CP-SAT re-routes a
+  stretch of 10–60 steps of a tour between its ends (a circuit constraint, each point at most once or
+  twice), two nearby stretches together (so grass can change hands, also between the two cutters), or
+  all edges inside a small rectangle (tours as edge multisets with even degrees, connectivity by a flow;
+  this can reconnect passes); a move is kept if the longest tour does not get longer, and the solution is
+  kicked when the search stalls. 15 minutes per instance (four at a time on four cores), then 20–40
+  more for those with the largest gaps; the files keep their lower bound and the best simple strategy in
+  `meta`, and a new run only replaces a file by a better one.
+  Alternatives: one CP-SAT model of the whole tour (visited points, edges used 0–2 times, even degrees,
+  connectivity by a flow; after two minutes worse than the strips); connectivity in the windows by cuts
+  added when a solution falls apart (tried, slower than the flow). The game's start points, targets and
+  animations come from these files.
+- **2026-10-17 Lower bound of the booth lawns: a circulation relaxation.** Walking once around a closed
+  tour, every lawn cell is "entered" by some step (it is under the cutter after the step but not before)
+  unless it lies under every position of the tour, which only a tour within a 3 × 3 block of positions
+  can manage. A step enters at most the three cells of the new row of its footprint, fewer at the lawn's
+  edge and at holes, so the shortest circulation (as many steps into each position as out of it,
+  connectivity dropped) that enters every lawn cell bounds the total length of the tours. CP-SAT solves
+  it in seconds on the smaller lawns; on Schlossgarten and Stadtpark SCIP (bundled with OR-Tools) proves
+  better bounds than CP-SAT within five minutes. On the booth lawns it is 2–18 steps above the area bound
+  ⌈N/3k⌉, and the best tours are 2–8 % above it. The theory view keeps the simpler area argument
+  ⌈(N − 9k)/3k⌉.
+- **2026-10-17 Simple strategies and "boring" lawns**: the yardstick for the solver is what a visitor
+  might do: the game's strips; a spiral along the edge of the grass that is left (straight on while that
+  mows something); always to the nearest grass (the step that mows most first); for two cutters also two
+  halves of the lawn mowed alone with one of these, and both cutters at once. A lawn counts as
+  interesting if the best of these is at least 15 % above the best tour and as boring if within 5 % (rule
+  of the person running the session); boring lawns would be redesigned. None is boring: the best simple
+  strategy is 6–22 % above the best tour (closest: Obstwiese with one cutter, where the spiral needs 174
+  steps and the best tour 164, and Gemüsegarten with two, 68 against 64); four instances are
+  interesting. Since better tours only raise these numbers, the verdict holds.
 
 ### Track B ("Gassi gehen", "Straßenbau")
 

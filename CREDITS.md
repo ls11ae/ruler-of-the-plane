@@ -103,7 +103,9 @@ pull request that starts using it.
 The problem, its file formats and the competition instance `smr_882k_481_3s3` with its example solution
 (`levels/lawn-mowing/competition/`, shown in the theory view) come from CG:SHOP 2027 and
 [pyutils27](https://github.com/CG-SHOP/pyutils27) (MIT, © 2026 Technische Universität Braunschweig,
-Algorithms Group, Phillip Keldenich). The five booth lawns were made for this edition.
+Algorithms Group, Phillip Keldenich). The five booth lawns were made for this edition; their target
+tours were computed offline by `scripts/lawns/` with [OR-Tools](https://github.com/google/or-tools)
+(CP-SAT, Apache 2.0, Google) and checked with pyutils27. Neither ships with the app.
 
 ### Straßenbau
 

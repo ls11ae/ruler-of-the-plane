@@ -158,12 +158,14 @@ every walk can be finished at 60 frames per second by following the hint (unit t
 walks the first walk with the keys (laptop) and with both hold buttons at once (phone). Open: A + L on
 the booth laptops' keyboards (key test in the staff menu).
 
-## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct) — done 2026-10-16 (solver targets and playtest open)
+## Phase 4 (track A): "Rasenmähen" (CG:SHOP 2027 lawn mowing) (target 31 Oct) — done 2026-10-16, solver targets 2026-10-17 (playtest open)
 
 - Read instances and solutions in the pyutils27 JSON formats; booth lawns are small polyominoes with
   holes (300–500 cells) and a 3 × 3 cutter; 1 or 2 cutters. — lawns designed 2026-10-16 (five lawns,
-  `levels/lawn-mowing/`); solver solutions requested from the chair. Reading and import done 2026-10-16
-  (`npm run levels` picks up `levels/lawn-mowing/solutions/` once the files are there).
+  `levels/lawn-mowing/`). Reading and import done 2026-10-16. Solutions done 2026-10-17: an offline
+  solver in `scripts/lawns/` (simple strategies, large neighbourhood search with CP-SAT, lower bounds)
+  wrote the ten solutions to `levels/lawn-mowing/solutions/`; the table of `levels/lawn-mowing/README.md`
+  compares them with the lower bounds and the best simple strategy (no lawn is boring).
 - Controls: cutter 1 with WASD, cutter 2 with the arrow keys; holding a key moves one lattice step at a
   fixed rate. Cutters may leave the lawn and cross holes (holes need no mowing). A "Feierabend" key
   (space) drives every cutter back to its start on the shortest (L1) way and closes the tour. — done
@@ -173,10 +175,10 @@ the booth laptops' keyboards (key test in the staff menu).
   phone smoke test mows a lawn with them. — done 2026-10-16
 - Live display: mowed share, steps per cutter, the longest tour (the score), and the target from the
   chair's solver for this lawn (stored with the level; shown as a placeholder until provided). — done
-  2026-10-16 (until the solver's tours arrive, the target is the strip strategy's, marked as such)
+  2026-10-16 (the solver's targets since 2026-10-17)
 - Theory view: the solver's tours as an animation, the lower bound from the cutter width, the min-max
-  objective, and one real competition instance with a solution. — done 2026-10-16 (the strips stand in
-  for the solver's tours until they arrive)
+  objective, and one real competition instance with a solution. — done 2026-10-16 (the solver's tours
+  since 2026-10-17)
 - Look as in `docs/look/rasenmaehen.webp`: Scribble grid paper; uncut cells green with grass, mowed cells
   striped light green, holes (pond, tree, flower bed) from the Scribble tiles, cutters as red and purple
   tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines. — done 2026-10-16
