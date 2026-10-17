@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import { lowContrastTexts, tooSmall } from './contrast'
 import { de } from '../src/ui/games/frechet/i18n.de'
 import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
-import { freshDevice } from './helpers'
+import { chooseTier, freshDevice, startGame } from './helpers'
 import { drag, type Pt } from './roads-helpers'
 
 freshDevice()
@@ -71,30 +71,42 @@ test('attract screen and staff menu', async ({ page, isMobile }) => {
 })
 
 for (const game of ['art-gallery', 'voronoi', 'frechet', 'lawn-mowing', 'roads']) {
-  test(`game ${game}: how-to, setup, board and theory`, async ({ page }) => {
+  test(`game ${game}: tier screen, board, how-to, setup and theory`, async ({ page }) => {
     await page.goto(`./#/play/${game}`)
+    await expect(page.getByTestId('tier-screen')).toBeVisible()
+    await expectAccessible(page, `${game}: tier screen`)
+    await chooseTier(page, 'Leicht')
+    await expect(page.getByTestId('tier-screen')).toHaveCount(0)
+    await expect(page.locator('header h1')).toBeVisible()
+    await expectAccessible(page, `${game}: board`)
+    await page.locator('header').getByRole('button', { name: "So geht's" }).click()
     const howTo = page.getByRole('dialog', { name: "So geht's" })
     await expect(howTo).toBeVisible()
     await expectAccessible(page, `${game}: how-to`)
     await howTo.getByRole('button', { name: "Los geht's!" }).click()
-    const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
-    if (await setup.count()) {
+    // "Neu" opens the setup with every map or lawn in the games that have one.
+    if (game === 'voronoi' || game === 'lawn-mowing') {
+      await page.locator('header').getByRole('button', { name: 'Neu' }).click()
+      const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
+      await expect(setup).toBeVisible()
       await expectAccessible(page, `${game}: setup`)
       await setup.getByRole('button', { name: "Los geht's!" }).click()
     }
-    await expect(page.locator('header h1')).toBeVisible()
-    await expectAccessible(page, `${game}: board`)
     const theory = page.locator('header').getByRole('button', { name: 'Theorie' })
     if (await theory.count()) {
       await theory.click()
       await expectAccessible(page, `${game}: theory`)
     }
+    // Back on the tier screen: the tier played last is marked.
+    await page.goto('./#/')
+    await page.goto(`./#/play/${game}`)
+    await expect(page.getByTestId('tier-screen').getByText('zuletzt gespielt')).toBeVisible()
+    await expectAccessible(page, `${game}: tier screen, played before`)
   })
 }
 
 test('game frechet, "Im Wald": picker, how-to, board, theory and a snapped leash', async ({ page }) => {
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
   await woods.scrollIntoViewIfNeeded()
@@ -138,8 +150,7 @@ test('game frechet, "Im Wald": picker, how-to, board, theory and a snapped leash
 })
 
 test('game frechet, harder tiers: picker, a hard walk in the park and in the woods', async ({ page }) => {
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   const open = async () => {
     await page.getByRole('button', { name: 'Spaziergänge' }).click()
     const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
@@ -174,8 +185,7 @@ test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory'
       optimum: { junctions?: Pt[] }
       free?: { roads: [number, number][] }
     }
-  await page.goto('./#/play/roads')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'roads')
   await page.getByRole('button', { name: 'Karten' }).click()
   await expectAccessible(page, 'roads: picker with the three sets')
   await page.getByRole('button', { name: 'Kreuzungen: Karte 2' }).click()
