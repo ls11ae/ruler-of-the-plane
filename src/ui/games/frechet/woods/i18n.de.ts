@@ -5,16 +5,16 @@ const metres = (m: number) => `${m.toFixed(1).replace('.', ',')} m`
 /** Texts of the bonus walks "Im Wald" (German; the source of the dictionary type). */
 export const woodsDe = {
   setTitle: 'Im Wald',
-  setIntro: 'Bonus: Hier bleibt die Leine an Bäumen hängen.',
-  setIntroHarder: 'Noch kniffliger: Hier bleibt die Leine an Bäumen hängen.',
+  setIntro: 'Bonus: Hier wickelt sich die Leine um Bäume und Laternenpfähle.',
+  setIntroHarder: 'Noch kniffliger: Hier wickelt sich die Leine um Bäume und Pfähle.',
   subtitle: (i: number, n: number, name: string) => `Im Wald · ${name} · Spaziergang ${i} von ${n}`,
   subtitleTier: (tier: string, i: number, n: number, name: string) =>
     `Im Wald · ${tier} · ${name} · ${i} von ${n}`,
   walks: {
-    oak: 'Um die Eiche',
-    slalom: 'Slalom',
+    lamp: 'Laternenpfahl',
+    bakery: 'Vor dem Bäcker',
     fetch: 'Hinterm Baum',
-    thicket: 'Dickicht',
+    eight: 'Achterbahn',
     wm1: 'Pilze suchen',
     wm2: 'Eicheln',
     wm3: 'Fuchsbau',
@@ -24,17 +24,22 @@ export const woodsDe = {
   } satisfies Record<WoodsId, string>,
   board: (leash: number) => `Wald: zwei Wege zum Schloss zwischen Bäumen, Leine ${metres(leash)}`,
   caught: 'Die Leine hängt am Baum.',
+  coiledTitle: (n: number) => `Leine ${n}× aufgewickelt!`,
+  coiled: (n: number) => `Die Leine ist ${n}× um den Pfahl gewickelt.`,
+  tied: 'Der Hund hat die Leine 2× um den Pfahl gewickelt: erst abwickeln, dann los!',
   howTo: (leash: number, touch: boolean) => [
-    'Im Wald bleibt die Leine an den Baumstämmen hängen und wickelt sich darum – dann wird sie länger.',
-    'Wer zuerst um einen Baum läuft, muss auf den anderen warten, bis die Leine wieder frei ist.',
+    'Im Wald bleibt die Leine an Stämmen und Pfählen hängen. Läuft einer um einen dünnen Pfahl, wickelt sie sich auf – jede Runde kostet Leine.',
+    'Wer vorne ist, wartet, bis der andere hinterherkommt und die Leine wieder abwickelt.',
     touch
       ? `Halte „Mensch“ oder „Hund“ gedrückt; die Leine ist ${metres(leash)} lang.`
       : `A: Mensch geht, L: Hund läuft; die Leine ist ${metres(leash)} lang.`,
   ],
   howToAnimation:
-    'Der Hund läuft um einen Baum, die Leine wickelt sich darum; der Mensch folgt, die Leine wird frei',
+    'Der Hund läuft um einen Laternenpfahl, die Leine wickelt sich auf; der Mensch folgt, die Leine wird frei',
   snappedTree:
     'Die Leine hing an einem Baum. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.',
+  snappedCoil: (n: number) =>
+    `Die Leine war ${n}× um einen Pfahl gewickelt. Wer vorne war, hätte warten müssen, bis der andere hinterherkommt.`,
   stats: (longest: number, shortest: number, plain: number) =>
     `Deine längste Leine: ${metres(longest)} · kürzeste möglich: ${metres(shortest)} (ohne Bäume: ${metres(plain)})`,
   explanation: (shortest: number, longest: number) => [

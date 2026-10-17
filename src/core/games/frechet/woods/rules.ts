@@ -4,7 +4,8 @@ import { makePath, pointAt, type Path } from '../path'
 import { roundUp, TAUT_SHARE, WALK_SPEED, type Advice, type Input } from '../rules'
 import { leashGrid, type LeashGrid } from './field'
 import type { WoodsWalk } from './levels'
-import { moveDogAlong, movePersonAlong, ropeLength, straightRope, type Rope } from './rope'
+import { moveDogAlong, movePersonAlong, ropeLength, type Rope } from './rope'
+import { startOf } from './shapes'
 import type { Tree } from './trees'
 
 /**
@@ -20,7 +21,7 @@ export interface WoodsCourse {
   person: Path
   dog: Path
   trees: Tree[]
-  /** The leash at the gate: straight. */
+  /** The leash at the gate: straight, or wound as the walk says. */
   start: Rope
   /** The target: the shortest leash that allows the walk in the woods (from the offline search). */
   shortest: number
@@ -47,8 +48,8 @@ interface Hints {
 export function makeWoodsCourse(walk: WoodsWalk): WoodsCourse {
   const person = makePath(walk.person)
   const dog = makePath(walk.dog)
-  const start = straightRope(pointAt(person, 0), pointAt(dog, 0))
-  const leash = roundUp(Math.max(walk.target * walk.slack, walk.target + 0.2))
+  const start = startOf(walk, walk.trees)
+  const leash = walk.leash ?? roundUp(Math.max(walk.target * walk.slack, walk.target + 0.2))
   const grid = leashGrid(
     person,
     dog,

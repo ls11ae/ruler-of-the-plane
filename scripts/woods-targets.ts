@@ -10,7 +10,7 @@
 import { writeFileSync } from 'node:fs'
 import { format, resolveConfig } from 'prettier'
 import type { StoredTargets } from '../src/core/games/frechet/woods/levels'
-import { SEARCH_STEP, treesOf, WOODS_SHAPES } from '../src/core/games/frechet/woods/shapes'
+import { SEARCH_STEP, startOf, treesOf, WOODS_SHAPES } from '../src/core/games/frechet/woods/shapes'
 import { searchWoods } from '../src/core/games/frechet/woods/search'
 
 const out = new URL('../src/core/games/frechet/woods/targets.json', import.meta.url)
@@ -19,7 +19,8 @@ const round = (x: number) => Math.round(x * 1e4) / 1e4
 const result: StoredTargets = { step: SEARCH_STEP, walks: {} }
 for (const shape of WOODS_SHAPES) {
   const started = performance.now()
-  const found = searchWoods(shape.person, shape.dog, treesOf(shape), SEARCH_STEP)
+  const trees = treesOf(shape)
+  const found = searchWoods(shape.person, shape.dog, trees, SEARCH_STEP, { start: startOf(shape, trees) })
   result.walks[shape.id] = {
     target: round(found.target),
     walk: found.walk.map(([s, t]) => [round(s), round(t)]),

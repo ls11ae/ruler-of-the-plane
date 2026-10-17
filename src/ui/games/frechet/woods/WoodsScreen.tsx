@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { PARK, type Tier } from '../../../../core/games/frechet/levels'
+import { coils } from '../../../../core/games/frechet/woods/rope'
 import { starsFor, leaderboardScore, TAUT_SHARE } from '../../../../core/games/frechet/rules'
 import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
-import { ropePoints } from '../../../../core/games/frechet/woods/rope'
 import {
   leashOf,
   makeWoodsCourse,
@@ -120,6 +120,12 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
   const taut = leash >= TAUT_SHARE * course.leash
   const caught = state.rope.wraps.length > 0
   const touched = useMemo(() => new Set(state.rope.wraps.map((x) => x.tree)), [state.rope])
+  // The most turns the leash makes round one post (0 while it only bends round trunks).
+  const coiled = useMemo(
+    () => coils(state.rope, course.trees).reduce((most, c) => Math.max(most, Math.abs(c.turns)), 0),
+    [state.rope, course.trees],
+  )
+  const atStart = state.s === 0 && state.t === 0
   const possible = useMemo(
     () => state.status !== 'walking' || stillPossibleInWoods(course, state),
     [course, state],
@@ -188,11 +194,12 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           <Board bounds={PARK} padding={0.6} autoRotate label={w.board(course.leash)}>
             <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
             <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
-            <Trunks trees={course.trees} touched={touched} />
+            <Trunks trees={course.trees} trunks={walk.trunks} touched={touched} />
             {ghost && (
               <>
                 <RopeLeash
-                  points={ropePoints(ghost.rope, course.trees)}
+                  rope={ghost.rope}
+                  trees={course.trees}
                   length={eps}
                   taut={ghost.leash > eps}
                   ghost
@@ -202,7 +209,8 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </>
             )}
             <RopeLeash
-              points={ropePoints(state.rope, course.trees)}
+              rope={state.rope}
+              trees={course.trees}
               length={course.leash}
               taut={taut || state.status === 'snapped'}
               label={ghost ? undefined : t.metres(leash)}
@@ -217,10 +225,16 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </Button>
             </div>
           )}
-          {possible && taut && state.status === 'walking' && overlay === null && (
+          {possible && (taut || coiled > 0) && state.status === 'walking' && overlay === null && (
             <div className={styles.bubble} role="status" data-testid="taut-hint">
-              <strong>{t.taut}</strong>
-              {caught && <span>{w.caught} </span>}
+              <strong>{taut ? t.taut : w.coiledTitle(coiled)}</strong>
+              {walk.before && atStart ? (
+                <span>{w.tied} </span>
+              ) : coiled > 0 ? (
+                <span>{w.coiled(coiled)} </span>
+              ) : (
+                caught && <span>{w.caught} </span>
+              )}
               {tutorial &&
                 (hint === 'person' || hint === 'dog') &&
                 (touch ? t.adviceTouch[hint] : t.advice[hint])}
@@ -296,7 +310,13 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           }
         >
           <p className={styles.sandboxHint}>
-            {reason === 'tree' ? w.snappedTree : reason ? t.snapped[reason] : null}
+            {coiled > 0
+              ? w.snappedCoil(coiled)
+              : reason === 'tree'
+                ? w.snappedTree
+                : reason
+                  ? t.snapped[reason]
+                  : null}
           </p>
         </Overlay>
       )}

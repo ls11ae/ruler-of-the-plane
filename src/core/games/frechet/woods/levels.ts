@@ -22,7 +22,7 @@ export interface StoredTargets {
   walks: Partial<Record<WoodsId, { target: number; walk: [number, number][] }>>
 }
 
-const targets = stored as StoredTargets
+const targets = stored as unknown as StoredTargets
 
 export const WOODS: readonly WoodsWalk[] = WOODS_SHAPES.map((shape) => {
   const found = targets.walks[shape.id]

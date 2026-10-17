@@ -5,16 +5,16 @@ const metres = (m: number) => `${m.toFixed(1)} m`
 /** Texts of the bonus walks "In the Woods" in English. */
 export const woodsEn: WoodsTexts = {
   setTitle: 'In the woods',
-  setIntro: 'Bonus: here the leash catches on trees.',
-  setIntroHarder: 'Even trickier: here the leash catches on trees.',
+  setIntro: 'Bonus: here the leash winds round trees and lamp posts.',
+  setIntroHarder: 'Even trickier: here the leash winds round trees and posts.',
   subtitle: (i: number, n: number, name: string) => `In the woods · ${name} · walk ${i} of ${n}`,
   subtitleTier: (tier: string, i: number, n: number, name: string) =>
     `In the woods · ${tier} · ${name} · ${i} of ${n}`,
   walks: {
-    oak: 'Round the oak',
-    slalom: 'Slalom',
+    lamp: 'Lamp post',
+    bakery: 'Outside the bakery',
     fetch: 'Behind the tree',
-    thicket: 'Thicket',
+    eight: 'Figure of eight',
     wm1: 'Mushroom hunt',
     wm2: 'Acorns',
     wm3: 'Fox den',
@@ -24,17 +24,22 @@ export const woodsEn: WoodsTexts = {
   },
   board: (leash: number) => `Woods: two paths to the castle between trees, leash ${metres(leash)}`,
   caught: 'The leash is caught on a tree.',
+  coiledTitle: (n: number) => `Leash wound up ${n}×!`,
+  coiled: (n: number) => `The leash is wound ${n}× round the post.`,
+  tied: 'The dog has wound the leash twice round the post: unwind it first, then off you go!',
   howTo: (leash: number, touch: boolean) => [
-    'In the woods the leash catches on the tree trunks and winds around them – then it gets longer.',
-    'Whoever goes round a tree first must wait for the other until the leash is free again.',
+    'In the woods the leash catches on trunks and posts. If one of them runs round a thin post, it winds up – every turn costs leash.',
+    'Whoever is ahead waits until the other one follows and unwinds the leash again.',
     touch
       ? `Hold “Person” or “Dog”; the leash is ${metres(leash)} long.`
       : `A: the person walks, L: the dog runs; the leash is ${metres(leash)} long.`,
   ],
   howToAnimation:
-    'The dog runs round a tree and the leash winds around it; the person follows and the leash comes free',
+    'The dog runs round a lamp post and the leash winds up; the person follows and the leash comes free',
   snappedTree:
     'The leash was caught on a tree. The one behind should have caught up earlier – or the other should have waited.',
+  snappedCoil: (n: number) =>
+    `The leash was wound ${n}× round a post. Whoever was ahead should have waited for the other to follow.`,
   stats: (longest: number, shortest: number, plain: number) =>
     `Your longest leash: ${metres(longest)} · shortest possible: ${metres(shortest)} (without trees: ${metres(plain)})`,
   explanation: (shortest: number, longest: number) => [

@@ -101,6 +101,7 @@ pull request that starts using it.
 | `assets/kenney/scribble-dungeons/tree.png`                       | Scribble Dungeons      | Kenney | CC0 1.0 | "Im Wald": tree crowns seen from above     | none    |
 | `assets/kenney/cartography-pack/treePineLarge.png`               | Cartography Pack       | Kenney | CC0 1.0 | "Im Wald": forest                          | none    |
 | `assets/kenney/cartography-pack/treePinesSmall.png`              | Cartography Pack       | Kenney | CC0 1.0 | "Im Wald": forest                          | none    |
+| `assets/kenney/cartography-pack/houseSmall.png`                  | Cartography Pack       | Kenney | CC0 1.0 | "Im Wald": the bakery ("Vor dem Bäcker")   | none    |
 
 ### Rasenmähen
 

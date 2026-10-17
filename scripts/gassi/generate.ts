@@ -256,7 +256,7 @@ function rateInWoods(
 ): WoodsRated | null {
   const target = found.target
   const walk = {
-    id: 'oak' as const,
+    id: 'wm1' as const,
     person: c.person,
     dog: c.dog,
     trunks: trunks.map((at) => ({ at, radius: TRUNK })),
@@ -332,7 +332,7 @@ function woodsFor(c: Candidate): WoodsRated[] {
         continue
       }
       const course = makeWoodsCourse({
-        id: 'oak',
+        id: 'wm1',
         person: c.person,
         dog: c.dog,
         trunks: next.map((at) => ({ at, radius: TRUNK })),

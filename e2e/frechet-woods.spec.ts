@@ -67,38 +67,38 @@ async function openWoods(page: Page, name: string, testInfo?: TestInfo) {
   await woods.getByRole('button', { name: new RegExp(name) }).click()
 }
 
-test('walks round the oak in the woods: keys on a laptop, hold buttons on a phone', async ({
+test('walks round the lamp post in the woods: keys on a laptop, hold buttons on a phone', async ({
   page,
   isMobile,
 }, testInfo) => {
   test.setTimeout(150_000)
-  await openWoods(page, 'Um die Eiche', testInfo)
+  await openWoods(page, 'Laternenpfahl', testInfo)
   const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo.getByText(/bleibt die Leine an den Baumstämmen hängen/)).toBeVisible()
+  await expect(howTo.getByText(/bleibt die Leine an Stämmen und Pfählen hängen/)).toBeVisible()
   await shot(page, testInfo, 'frechet-woods-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
-  await expect(page.getByTestId('leash')).toContainText('von 2,7 m Leine')
+  await expect(page.getByTestId('leash')).toContainText('von 3,4 m Leine')
   if (!isMobile) {
-    await expect(page.getByText('Im Wald · Um die Eiche · Spaziergang 1 von 4')).toBeVisible()
+    await expect(page.getByText('Im Wald · Laternenpfahl · Spaziergang 1 von 4')).toBeVisible()
     await expectHeaderLaidOut(page)
   }
   await shot(page, testInfo, 'frechet-woods-start')
 
-  // In the middle of the loop round the oak.
-  await walkThroughTheWoods(page, 'oak', isMobile, (s) => s > 26)
+  // In the middle of the loops round the lamp post.
+  await walkThroughTheWoods(page, 'lamp', isMobile, (s) => s > 26)
   await shot(page, testInfo, 'frechet-woods-walking')
-  await walkThroughTheWoods(page, 'oak', isMobile, () => false)
+  await walkThroughTheWoods(page, 'lamp', isMobile, () => false)
 
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible({ timeout: 10_000 })
-  await expect(result.getByText(/kürzeste möglich: 2,0 m \(ohne Bäume: 2,0 m\)/)).toBeVisible()
+  await expect(result.getByText(/kürzeste möglich: 1,3 m \(ohne Bäume: 1,3 m\)/)).toBeVisible()
   await expect(result.getByText(/homotoper Fréchet-Abstand/)).toBeVisible()
   await expect(result.getByTestId('diagram-player')).toBeVisible()
   await shot(page, testInfo, 'frechet-woods-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
 
   const theory = page.getByRole('complementary', { name: 'Theorie' })
-  await expect(theory.getByText('Kürzeste Leine im Wald: 2,0 m')).toBeVisible()
+  await expect(theory.getByText('Kürzeste Leine im Wald: 1,3 m')).toBeVisible()
   await expect(theory.getByTestId('theory-verdict')).toHaveText(/führt ein Weg/)
   const diagram = theory.getByRole('img', { name: 'Diagramm der Stellungen von Mensch und Hund' })
   const box = (await diagram.boundingBox())!
