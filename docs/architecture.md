@@ -28,7 +28,9 @@ touches no shared file:
    disabled); `e2e/art-gallery.spec.ts` shows how to map level coordinates to the screen (also on a
    turned board) and how to do a touch drag with Pointer Events; `e2e/frechet.spec.ts` how to hold keys
    or several touch buttons at once. Call `expectHeaderLaidOut(page)` (helpers) once the game shows its
-   header: it fails if title, status and buttons overlap.
+   header: it fails if title, status and buttons overlap. Add the game's id to the loop at the end of
+   `e2e/a11y.spec.ts`, which checks its how-to, setup, board and theory with axe-core and with own checks
+   of text contrast against the drawn background, text sizes (at least 14 px) and 44 px hit targets.
 
 ## Shared building blocks
 

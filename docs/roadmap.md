@@ -212,7 +212,9 @@ force for up to 8 villages; following the hints from a random tangle of roads al
 - Final art in place, `CREDITS.md` complete, credits screen in the app. — credits screen and the `CREDITS.md`
   check done 2026-10-17 (`#/credits`, "Mitwirkende" on the start map, with every licence text); the TU
   Dortmund / LS 11 logos are still placeholders.
-- Accessibility pass: contrast, colour never the only cue, readable fonts.
+- Accessibility pass: contrast, colour never the only cue, readable fonts. — done 2026-10-17 (`e2e/a11y.spec.ts`: axe-core
+  plus own checks of contrast against the drawn background, text sizes and 44 px hit targets on every
+  screen; see the decision log, Phase 6).
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

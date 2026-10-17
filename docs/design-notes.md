@@ -261,6 +261,29 @@ their ends.
   rows at a booth; it is in `credits.txt`); a link to the repository (a trap in kiosk mode, no use
   offline).
 
+- **2026-10-17 Accessibility pass.** `e2e/a11y.spec.ts` checks every screen (start map in both languages,
+  credits, attract screen, staff menu, how-to, result with the leaderboard, and each game's how-to,
+  setup, board and theory, on the laptop and the phone) with axe-core (WCAG 2.1 A and AA; serious and
+  critical violations fail) and three own checks in `e2e/contrast.ts`: the contrast of every visible text
+  against the pixels behind it (the median of the background under the text, from a screenshot with all
+  text hidden; axe cannot judge text over parchment, washes and SVG boards), texts under 14 px, and
+  controls that do not take the pointer anywhere in the 44 × 44 px around their centre. Fixes: small
+  buttons keep their 36 px look but take the pointer over 44 px (an invisible extension; their rows keep
+  8 px gaps, the staff menu's rows got them), sliders and the lucky-number field are 44 px high; on phones
+  the start map's taglines and logo line are at least 14 px (labels and islands moved a little,
+  "Vollbild" no longer wraps); the language button and the hold buttons of "Gassi gehen" have accessible
+  names that contain their visible text (the hold hint became a tooltip); the mower number is larger,
+  ink on paper in the how-to as on the board (white on red was 4.2:1), and left out with one mower
+  (phones). Colour is never the only cue any more: the second player of "Erobere das Land" has hatched
+  land, a forked banner and a hatched dot (the first a pennant); a marked road in "Straßenbau" carries a
+  cross (can go; also the road under the mouse) or a plus (to build), and the hints say "die Straße mit
+  dem Kreuz/Plus" instead of "die rote/grüne Straße"; "Gassi gehen" mentions that the computer's walk is
+  dashed and says "where the two stop" instead of "at the red spot". Already fine: ink on paper and
+  parchment (every measured text at least 4.5:1, large text 3:1), Fisk's colours with three shapes,
+  numbered mowers, mowed stripes against grass, hatched free space, texts next to every colour bar.
+  Alternatives: small buttons 44 px high (taller theory panels and result dialog, which must fit
+  1280 × 800); axe alone (it reports nearly all text over the parchment as undecidable).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
