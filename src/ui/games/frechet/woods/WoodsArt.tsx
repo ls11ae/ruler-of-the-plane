@@ -18,7 +18,7 @@ const FOREST_ART: Record<ForestKind, string> = {
 }
 
 /** Width of a tree's crown seen from above (metres), by the radius of its trunk. */
-export const crownWidth = (radius: number) => Math.max(2.6, 5.5 * radius)
+const crownWidth = (radius: number) => Math.max(2.6, 5.5 * radius)
 
 const points = (pts: readonly Vec2[]) => pts.map(([x, y]) => `${x},${y}`).join(' ')
 
