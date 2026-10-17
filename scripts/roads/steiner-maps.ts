@@ -126,7 +126,9 @@ const MAPS: MapSpec[] = [
       0,
     ),
     jitter: 0.12,
-    seed: 6,
+    // Most jitters of this patch put a junction right next to the middle village (closer than 0.3, hard to
+    // place by hand next to its icon); this one keeps it 0.49 away.
+    seed: 36,
   },
 ]
 
