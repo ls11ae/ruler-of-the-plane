@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
-import { walkById } from '../src/core/games/frechet/levels'
+import { walkById, type WalkId } from '../src/core/games/frechet/levels'
 import { advice, makeCourse, startState } from '../src/core/games/frechet/rules'
+import { de } from '../src/ui/games/frechet/i18n.de'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -10,8 +11,13 @@ freshDevice()
  * park's data-walk attribute) and hold what the game's own hint advises. Keys on a laptop; on a phone
  * the two hold buttons, each with its own touch point.
  */
-async function walkToTheCastle(page: Page, touch: boolean, until: (s: number, t: number) => boolean) {
-  const course = makeCourse(walkById('avenue'))
+async function walkToTheCastle(
+  page: Page,
+  touch: boolean,
+  until: (s: number, t: number) => boolean,
+  id: WalkId = 'avenue',
+) {
+  const course = makeCourse(walkById(id))
   const keys = { person: 'KeyA', dog: 'KeyL' } as const
   const ids = { person: 11, dog: 12 } as const
   const now = { person: false, dog: false }
@@ -31,7 +37,7 @@ async function walkToTheCastle(page: Page, touch: boolean, until: (s: number, t:
       bubbles: true,
     })
   }
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 3000; i++) {
     const [s, t] = (await page.getByTestId('park').getAttribute('data-walk'))!.split(',').map(Number) as [
       number,
       number,
@@ -138,4 +144,31 @@ test('sandbox: draw two paths and see their diagram', async ({ page, isMobile },
   await shot(page, testInfo, 'frechet-sandbox')
   await page.getByRole('button', { name: 'Ausprobieren' }).click()
   await expect(page.getByTestId('leash')).toBeVisible()
+})
+
+test('a walk of "Mittel": picked by its tier, and a careful player gets to the castle', async ({
+  page,
+  isMobile,
+}, testInfo) => {
+  test.setTimeout(180_000)
+  await page.goto('./#/play/frechet')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await page.getByRole('button', { name: 'Spaziergänge' }).click()
+  const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+  await picker.getByRole('button', { name: 'Mittel', exact: true }).click()
+  await expect(picker.getByText(/Einfach mitlaufen klappt hier nicht/)).toBeVisible()
+  await shot(page, testInfo, 'frechet-picker-medium')
+  await picker.getByRole('button', { name: new RegExp(de.walks.m1) }).click()
+  const course = makeCourse(walkById('m1'))
+  await expect(page.getByTestId('leash')).toContainText(
+    `von ${course.leash.toFixed(1).replace('.', ',')} m Leine`,
+  )
+  if (!isMobile) {
+    await expect(page.getByText(`Schlosspark · Mittel · ${de.walks.m1} · 1 von 4`)).toBeVisible()
+    await expectHeaderLaidOut(page)
+  }
+  await walkToTheCastle(page, isMobile, (s) => s > course.person.length / 2, 'm1')
+  await shot(page, testInfo, 'frechet-medium-walking')
+  await walkToTheCastle(page, isMobile, () => false, 'm1')
+  await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toBeVisible({ timeout: 10_000 })
 })

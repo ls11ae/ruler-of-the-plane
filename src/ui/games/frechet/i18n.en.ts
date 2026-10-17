@@ -6,6 +6,8 @@ const metres = (m: number) => `${m.toFixed(1)} m`
 export const en: FrechetTexts = {
   title: 'Walk the Dog',
   subtitle: (i: number, n: number, name: string) => `Castle park · ${name} · walk ${i} of ${n}`,
+  subtitleTier: (tier: string, i: number, n: number, name: string) =>
+    `Castle park · ${tier} · ${name} · ${i} of ${n}`,
   sandboxSubtitle: 'Castle park · your own paths',
   walks: {
     avenue: 'The avenue',
@@ -14,6 +16,21 @@ export const en: FrechetTexts = {
     fetch: 'Fetch!',
     braid: 'Criss-cross',
     expert: 'For experts',
+    m1: 'Chasing pigeons',
+    m2: "Hare's track",
+    m3: 'To and fro',
+    m4: 'Up and down',
+    s1: 'Zigzag',
+    s2: 'Stairway',
+    s3: 'Waves',
+    s4: 'Sawtooth',
+  },
+  tiers: { easy: 'Easy', medium: 'Medium', hard: 'Hard' },
+  tierLabel: 'Difficulty',
+  tierIntro: {
+    easy: '',
+    medium: 'Tricky: just walking along does not work here. Both walk slower, so you have time to think.',
+    hard: 'For experts: many dead ends and a short leash. Both walk slower.',
   },
   metres,
   leashOf: (m: number) => `of ${metres(m)} leash`,

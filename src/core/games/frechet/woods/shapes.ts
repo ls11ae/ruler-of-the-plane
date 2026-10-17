@@ -1,4 +1,6 @@
 import type { Vec2 } from '../../../geometry/types'
+import { GENERATED } from '../generated'
+import type { Tier } from '../levels'
 import { makeTree, type Tree } from './trees'
 
 /**
@@ -8,11 +10,25 @@ import { makeTree, type Tree } from './trees'
  * around a tree, the leash winds around its trunk. No tree stands inside the area enclosed by the two
  * paths (it would catch the leash for good, as both only walk forwards).
  *
- * The geometry is written here; `levels.ts` adds the target (the shortest leash that allows the walk,
+ * The four hand-made walks are the tier "Leicht"; "Mittel" and "Schwer" are generated offline
+ * (`generated.json`, see `scripts/gassi/generate.ts`), with trees that make the shortest leash clearly
+ * longer than without them. `levels.ts` adds the target (the shortest leash that allows the walk,
  * found offline by the search in `search.ts`) and the computer's walk, stored in `targets.json`.
  */
-export const WOODS_IDS = ['oak', 'slalom', 'fetch', 'thicket'] as const
+export const EASY_WOODS_IDS = ['oak', 'slalom', 'fetch', 'thicket'] as const
+export const MEDIUM_WOODS_IDS = ['wm1', 'wm2', 'wm3'] as const
+export const HARD_WOODS_IDS = ['ws1', 'ws2', 'ws3'] as const
+export const WOODS_IDS = [...EASY_WOODS_IDS, ...MEDIUM_WOODS_IDS, ...HARD_WOODS_IDS] as const
 export type WoodsId = (typeof WOODS_IDS)[number]
+
+export const WOODS_BY_TIER: Record<Tier, readonly WoodsId[]> = {
+  easy: EASY_WOODS_IDS,
+  medium: MEDIUM_WOODS_IDS,
+  hard: HARD_WOODS_IDS,
+}
+
+export const tierOfWoods = (id: WoodsId): Tier =>
+  (['easy', 'medium', 'hard'] as const).find((tier) => WOODS_BY_TIER[tier].includes(id))!
 
 export interface WoodsShape {
   id: WoodsId
@@ -22,12 +38,14 @@ export interface WoodsShape {
   trunks: { at: Vec2; radius: number }[]
   /** Leash length = target × this factor (at least 0.2 m more), rounded up to 0.1 m. */
   slack: number
+  /** Walking speed of both in metres per second (default `WALK_SPEED`; slower on the hard walks). */
+  speed?: number
 }
 
 /** How densely the search samples both paths (metres). */
 export const SEARCH_STEP = 0.05
 
-export const WOODS_SHAPES: readonly WoodsShape[] = [
+const EASY_SHAPES: readonly WoodsShape[] = [
   {
     // Both go once round an old oak: the dog close to the trunk, the person on a wider circle. If one
     // gets ahead round the oak, the leash winds around the trunk.
@@ -190,5 +208,21 @@ export const WOODS_SHAPES: readonly WoodsShape[] = [
     slack: 1.12,
   },
 ]
+
+/** The generated walks, in the order of their ids. */
+const GENERATED_SHAPES: WoodsShape[] = [...MEDIUM_WOODS_IDS, ...HARD_WOODS_IDS].map((id) => {
+  const walk = GENERATED.woods.find((w) => w.id === id)
+  if (!walk) throw new Error(`generated.json has no walk ${id}: run npx tsx scripts/gassi/generate.ts`)
+  return {
+    id,
+    person: walk.person,
+    dog: walk.dog,
+    trunks: walk.trunks,
+    slack: walk.slack,
+    speed: GENERATED.speed,
+  }
+})
+
+export const WOODS_SHAPES: readonly WoodsShape[] = [...EASY_SHAPES, ...GENERATED_SHAPES]
 
 export const treesOf = (shape: WoodsShape): Tree[] => shape.trunks.map((t) => makeTree(t.at, t.radius))

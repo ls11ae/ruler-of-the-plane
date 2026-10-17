@@ -153,7 +153,14 @@ target is measured on a booth laptop in the playtest (Phase 6).
 - Bonus set "Im Wald" (homotopic Fréchet distance): trees whose trunks catch the leash like a taut
   rope; four walks where timing decides how the leash lies; targets from an offline search over
   (person's position, dog's position, leash class), stored with the walks and tested against the
-  rope update. — done 2026-10-17 (theory view and explanation proposed)
+  rope update. — done 2026-10-17 (theory view and explanation agreed by Kevin 2026-10-17)
+- Harder tiers (Kevin, 2026-10-17: the walks are too easy): the walks so far are "Leicht"; "Mittel"
+  and "Schwer" are generated offline with a fixed seed and kept only if hard (every simple strategy of a
+  visitor snaps the leash, a careful player gets through at a slower walking speed; ranked by dead ends
+  and the complexity of the free space), in the park and in the woods, where the trees must also make
+  the shortest leash clearly longer and catch the computer's best walk without trees. A table of every
+  walk's numbers for Kevin in `docs/gassi-walks.md`. — done 2026-10-17 (tiers, the measure of hard and
+  the generator proposed)
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.

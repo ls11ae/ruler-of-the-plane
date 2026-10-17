@@ -6,12 +6,21 @@ const metres = (m: number) => `${m.toFixed(1).replace('.', ',')} m`
 export const woodsDe = {
   setTitle: 'Im Wald',
   setIntro: 'Bonus: Hier bleibt die Leine an Bäumen hängen.',
+  setIntroHarder: 'Noch kniffliger: Hier bleibt die Leine an Bäumen hängen.',
   subtitle: (i: number, n: number, name: string) => `Im Wald · ${name} · Spaziergang ${i} von ${n}`,
+  subtitleTier: (tier: string, i: number, n: number, name: string) =>
+    `Im Wald · ${tier} · ${name} · ${i} von ${n}`,
   walks: {
     oak: 'Um die Eiche',
     slalom: 'Slalom',
     fetch: 'Hinterm Baum',
     thicket: 'Dickicht',
+    wm1: 'Pilze suchen',
+    wm2: 'Eicheln',
+    wm3: 'Fuchsbau',
+    ws1: 'Die alte Linde',
+    ws2: 'Spechtbaum',
+    ws3: 'Hasenhaken',
   } satisfies Record<WoodsId, string>,
   board: (leash: number) => `Wald: zwei Wege zum Schloss zwischen Bäumen, Leine ${metres(leash)}`,
   caught: 'Die Leine hängt am Baum.',

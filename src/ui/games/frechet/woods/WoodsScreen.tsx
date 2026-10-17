@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PARK } from '../../../../core/games/frechet/levels'
+import { PARK, type Tier } from '../../../../core/games/frechet/levels'
 import { starsFor, leaderboardScore, TAUT_SHARE } from '../../../../core/games/frechet/rules'
 import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
 import { ropePoints } from '../../../../core/games/frechet/woods/rope'
@@ -47,9 +47,11 @@ const ALL_CODES = [...KEYS.person, ...KEYS.dog]
 
 interface WoodsScreenProps {
   walk: WoodsWalk
-  /** Position in the list of woods walks (0-based). */
+  /** Position in the tier's list of woods walks (0-based). */
   index: number
   count: number
+  /** The difficulty tier (hints name the key to hold only on the easy woods walks). */
+  tier?: Tier
   t: FrechetTexts
   w: WoodsTexts
   onPicker: () => void
@@ -57,7 +59,7 @@ interface WoodsScreenProps {
 }
 
 /** A walk in the woods: as in the park, but the leash catches on the trunks and winds around them. */
-export function WoodsScreen({ walk, index, count, t, w, onPicker, onNext }: WoodsScreenProps) {
+export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker, onNext }: WoodsScreenProps) {
   const shell = useT()
   const progress = useWoodsProgress()
   const course = useMemo(() => makeWoodsCourse(walk), [walk])
@@ -132,7 +134,7 @@ export function WoodsScreen({ walk, index, count, t, w, onPicker, onNext }: Wood
     const rope = ropeAt(course, probe[0], probe[1])
     return { ...woodsPositions(course, probe[0], probe[1]), rope, leash: leashOf(course, rope) }
   }, [course, probe])
-  const tutorial = index < count - 1
+  const tutorial = tier === 'easy' && index < count - 1
   const stars = starsFor(state.longest, course.shortest)
   const reason = state.status === 'snapped' ? woodsSnapReason(course, state) : null
 
@@ -140,7 +142,11 @@ export function WoodsScreen({ walk, index, count, t, w, onPicker, onNext }: Wood
     <div className={styles.game}>
       <GameHeader
         title={t.title}
-        subtitle={w.subtitle(index + 1, count, w.walks[walk.id])}
+        subtitle={
+          tier === 'easy'
+            ? w.subtitle(index + 1, count, w.walks[walk.id])
+            : w.subtitleTier(t.tiers[tier], index + 1, count, w.walks[walk.id])
+        }
         status={
           <span className={styles.status}>
             <span className={styles.leashValue} data-testid="leash">

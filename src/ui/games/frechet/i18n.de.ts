@@ -1,4 +1,4 @@
-import type { WalkId } from '../../../core/games/frechet/levels'
+import type { Tier, WalkId } from '../../../core/games/frechet/levels'
 import type { Advice } from '../../../core/games/frechet/rules'
 
 const metres = (m: number) => `${m.toFixed(1).replace('.', ',')} m`
@@ -7,6 +7,8 @@ const metres = (m: number) => `${m.toFixed(1).replace('.', ',')} m`
 export const de = {
   title: 'Gassi gehen',
   subtitle: (i: number, n: number, name: string) => `Schlosspark · ${name} · Spaziergang ${i} von ${n}`,
+  subtitleTier: (tier: string, i: number, n: number, name: string) =>
+    `Schlosspark · ${tier} · ${name} · ${i} von ${n}`,
   sandboxSubtitle: 'Schlosspark · eigene Wege',
   walks: {
     avenue: 'Die Allee',
@@ -15,7 +17,23 @@ export const de = {
     fetch: 'Stöckchen holen',
     braid: 'Kreuz und quer',
     expert: 'Für Profis',
+    m1: 'Taubenjagd',
+    m2: 'Hasenspur',
+    m3: 'Hin und her',
+    m4: 'Auf und ab',
+    s1: 'Zickzack',
+    s2: 'Treppauf',
+    s3: 'Wellen',
+    s4: 'Sägezahn',
   } satisfies Record<WalkId, string>,
+  tiers: { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' } satisfies Record<Tier, string>,
+  tierLabel: 'Schwierigkeit',
+  tierIntro: {
+    easy: '',
+    medium:
+      'Knifflig: Einfach mitlaufen klappt hier nicht. Beide gehen langsamer, damit du Zeit zum Überlegen hast.',
+    hard: 'Für Profis: viele Sackgassen und eine knappe Leine. Beide gehen langsamer.',
+  } satisfies Record<Tier, string>,
   metres,
   leashOf: (m: number) => `von ${metres(m)} Leine`,
   leashLabel: 'Wie straff die Leine ist',

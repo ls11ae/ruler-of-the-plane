@@ -6,12 +6,21 @@ const metres = (m: number) => `${m.toFixed(1)} m`
 export const woodsEn: WoodsTexts = {
   setTitle: 'In the woods',
   setIntro: 'Bonus: here the leash catches on trees.',
+  setIntroHarder: 'Even trickier: here the leash catches on trees.',
   subtitle: (i: number, n: number, name: string) => `In the woods · ${name} · walk ${i} of ${n}`,
+  subtitleTier: (tier: string, i: number, n: number, name: string) =>
+    `In the woods · ${tier} · ${name} · ${i} of ${n}`,
   walks: {
     oak: 'Round the oak',
     slalom: 'Slalom',
     fetch: 'Behind the tree',
     thicket: 'Thicket',
+    wm1: 'Mushroom hunt',
+    wm2: 'Acorns',
+    wm3: 'Fox den',
+    ws1: 'The old lime tree',
+    ws2: 'Woodpecker tree',
+    ws3: 'Dodging hare',
   },
   board: (leash: number) => `Woods: two paths to the castle between trees, leash ${metres(leash)}`,
   caught: 'The leash is caught on a tree.',

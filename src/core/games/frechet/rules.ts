@@ -20,6 +20,8 @@ export interface Course {
   leash: number
   /** A walk that needs only the shortest leash. */
   computer: Walk
+  /** Walking speed of both, metres per second. */
+  speed: number
 }
 
 /** Rounds a leash length up to 0.1 m (shown with one decimal). */
@@ -35,6 +37,7 @@ export function makeCourse(level: WalkLevel): Course {
     // At least 0.2 m above the minimum, so a walk stays possible with human reaction times.
     leash: roundUp(Math.max(shortest * level.slack, shortest + 0.2)),
     computer: walk,
+    speed: level.speed ?? WALK_SPEED,
   }
 }
 
@@ -72,8 +75,8 @@ export interface Input {
  */
 export function step(course: Course, state: WalkState, input: Input, dt: number): WalkState {
   if (state.status !== 'walking' || (!input.person && !input.dog) || dt <= 0) return state
-  const ds = input.person ? WALK_SPEED * dt : 0
-  const dt2 = input.dog ? WALK_SPEED * dt : 0
+  const ds = input.person ? course.speed * dt : 0
+  const dt2 = input.dog ? course.speed * dt : 0
   const at = (f: number): [number, number] => [
     Math.min(course.person.length, state.s + f * ds),
     Math.min(course.dog.length, state.t + f * dt2),

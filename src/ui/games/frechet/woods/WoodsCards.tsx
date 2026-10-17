@@ -1,5 +1,5 @@
-import { PARK } from '../../../../core/games/frechet/levels'
-import { WOODS_SHAPES, type WoodsId } from '../../../../core/games/frechet/woods/shapes'
+import { PARK, type Tier } from '../../../../core/games/frechet/levels'
+import { WOODS_BY_TIER, WOODS_SHAPES, type WoodsId } from '../../../../core/games/frechet/woods/shapes'
 import type { Vec2 } from '../../../../core/geometry/types'
 import { Stars } from '../../../components/Stars'
 import styles from '../Frechet.module.css'
@@ -10,15 +10,17 @@ import woods from './Woods.module.css'
 
 const poly = (pts: readonly Vec2[]) => pts.map(([x, y]) => `${x},${y}`).join(' ')
 
-/** The bonus walks "Im Wald" in the picker of walks: one card per walk, with its trees. */
+/** The walks "Im Wald" of a tier in the picker of walks: one card per walk, with its trees. */
 export function WoodsCards({
   t,
   w,
+  tier,
   current,
   onPick,
 }: {
   t: FrechetTexts
   w: WoodsTexts
+  tier: Tier
   current: WoodsId | null
   onPick: (walk: WoodsId) => void
 }) {
@@ -26,9 +28,9 @@ export function WoodsCards({
   return (
     <section className={woods.section} aria-label={w.setTitle}>
       <h3>{w.setTitle}</h3>
-      <p className={styles.muted}>{w.setIntro}</p>
+      <p className={styles.muted}>{tier === 'easy' ? w.setIntro : w.setIntroHarder}</p>
       <div className={styles.cards}>
-        {WOODS_SHAPES.map((walk) => (
+        {WOODS_SHAPES.filter((walk) => WOODS_BY_TIER[tier].includes(walk.id)).map((walk) => (
           <button
             key={walk.id}
             type="button"

@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { WALK_IDS, WALKS, walkById, type WalkLevel } from '../../../core/games/frechet/levels'
+import { tierOfWalk, walkById, WALKS_BY_TIER, type WalkLevel } from '../../../core/games/frechet/levels'
 import { woodsById } from '../../../core/games/frechet/woods/levels'
-import { WOODS_IDS, type WoodsId } from '../../../core/games/frechet/woods/shapes'
+import { tierOfWoods, WOODS_BY_TIER, type WoodsId } from '../../../core/games/frechet/woods/shapes'
 import { useLocalized } from '../../i18n'
 import { GuessScreen } from './GuessScreen'
 import { de } from './i18n.de'
 import { en } from './i18n.en'
+import { nextStop, type Stop } from './ladder'
 import { SandboxScreen } from './SandboxScreen'
 import { useProgress } from './store'
 import { WalkPicker, type Mode } from './WalkPicker'
@@ -18,8 +19,8 @@ import { WoodsScreen } from './woods/WoodsScreen'
 /**
  * "Gassi gehen": a person and a dog walk to the castle on their own paths, both only forwards; the
  * leash must not get too taut (Fréchet distance). Modes: the walks, "Schätz die Leine" (guess the
- * shortest leash), and a sandbox for drawing one's own paths; the bonus walks "Im Wald" follow the
- * six walks.
+ * shortest leash), and a sandbox for drawing one's own paths. The walks come in three tiers ("Leicht",
+ * "Mittel", "Schwer"), each in the park and "Im Wald"; "Nächstes Level" climbs through them.
  */
 export default function FrechetGame() {
   const t = useLocalized({ de, en })
@@ -30,9 +31,15 @@ export default function FrechetGame() {
   const [own, setOwn] = useState<WalkLevel | null>(null)
   const [picker, setPicker] = useState(false)
   const [woods, setWoods] = useState<WoodsId | null>(null)
-  const index = WALK_IDS.indexOf(walk)
-  const next = WALK_IDS[index + 1]
+  const tier = woods ? tierOfWoods(woods) : tierOfWalk(walk)
   const level = walkById(walk)
+  const go = (stop: Stop | undefined) =>
+    stop &&
+    (() => {
+      if (stop.kind === 'woods') return setWoods(stop.id)
+      setWoods(null)
+      setWalk(stop.id)
+    })
   const openSandbox = () => {
     setOwn(null)
     setMode('sandbox')
@@ -40,17 +47,17 @@ export default function FrechetGame() {
 
   let screen
   if (woods) {
-    const nextWoods = WOODS_IDS[WOODS_IDS.indexOf(woods) + 1]
     screen = (
       <WoodsScreen
         key={`woods-${woods}`}
         walk={woodsById(woods)}
-        index={WOODS_IDS.indexOf(woods)}
-        count={WOODS_IDS.length}
+        index={WOODS_BY_TIER[tier].indexOf(woods)}
+        count={WOODS_BY_TIER[tier].length}
+        tier={tier}
         t={t}
         w={w}
         onPicker={() => setPicker(true)}
-        onNext={nextWoods ? () => setWoods(nextWoods) : undefined}
+        onNext={go(nextStop({ kind: 'woods', id: woods }))}
       />
     )
   } else if (mode === 'sandbox' && !own) {
@@ -61,7 +68,7 @@ export default function FrechetGame() {
         key={`own-${own.person.length}-${own.dog.length}`}
         level={own}
         index={null}
-        count={WALKS.length}
+        count={0}
         t={t}
         onPicker={() => setPicker(true)}
         onSandbox={openSandbox}
@@ -74,11 +81,12 @@ export default function FrechetGame() {
       <WalkScreen
         key={walk}
         level={level}
-        index={index}
-        count={WALKS.length}
+        index={WALKS_BY_TIER[tier].indexOf(walk)}
+        count={WALKS_BY_TIER[tier].length}
+        tier={tier}
         t={t}
         onPicker={() => setPicker(true)}
-        onNext={() => (next ? setWalk(next) : setWoods(WOODS_IDS[0]))}
+        onNext={go(nextStop({ kind: 'park', id: walk }))}
         onSandbox={openSandbox}
       />
     )
@@ -91,18 +99,20 @@ export default function FrechetGame() {
         <WalkPicker
           t={t}
           mode={mode}
+          tier={tier}
           onClose={() => setPicker(false)}
-          extra={
+          extra={(shown) => (
             <WoodsCards
               t={t}
               w={w}
+              tier={shown}
               current={woods}
               onPick={(id) => {
                 setPicker(false)
                 setWoods(id)
               }}
             />
-          }
+          )}
           onPick={(picked, m) => {
             setPicker(false)
             setWoods(null)
