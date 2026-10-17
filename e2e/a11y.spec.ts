@@ -1,6 +1,8 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { lowContrastTexts, tooSmall } from './contrast'
+import { de } from '../src/ui/games/frechet/i18n.de'
+import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
 import { freshDevice } from './helpers'
 
 freshDevice()
@@ -131,4 +133,30 @@ test('game frechet, "Im Wald": picker, how-to, board, theory and a snapped leash
     bubbles: true,
   })
   await expectAccessible(page, 'frechet woods: leash snapped')
+})
+
+test('game frechet, harder tiers: picker, a hard walk in the park and in the woods', async ({ page }) => {
+  await page.goto('./#/play/frechet')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  const open = async () => {
+    await page.getByRole('button', { name: 'Spaziergänge' }).click()
+    const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+    await picker.getByRole('button', { name: 'Schwer', exact: true }).click()
+    return picker
+  }
+  const picker = await open()
+  await expect(picker.getByText(/viele Sackgassen/)).toBeVisible()
+  // Not a text cut in half at the dialog's lower edge (on a phone the woods section starts there).
+  await picker.getByRole('region', { name: 'Im Wald' }).scrollIntoViewIfNeeded()
+  await expectAccessible(page, 'frechet: picker, tier Schwer')
+  await picker.getByRole('button', { name: new RegExp(de.walks.s1) }).click()
+  await expect(page.getByTestId('leash')).toBeVisible()
+  await expectAccessible(page, 'frechet: a hard walk in the park')
+  const again = await open()
+  const woods = again.getByRole('region', { name: 'Im Wald' })
+  await woods.getByRole('button', { name: new RegExp(woodsDe.walks.ws1) }).click()
+  const howTo = page.getByRole('dialog', { name: "So geht's" })
+  if (await howTo.count()) await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByTestId('trunks')).toBeVisible()
+  await expectAccessible(page, 'frechet: a hard walk in the woods')
 })
