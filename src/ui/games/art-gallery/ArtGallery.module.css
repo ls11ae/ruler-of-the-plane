@@ -121,6 +121,12 @@
   gap: 14px;
 }
 
+.picker section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .picker h3 {
   font-size: 1.3rem;
 }

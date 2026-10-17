@@ -1,28 +1,30 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { thickestDarkSpot } from '../../../core/games/art-gallery/coverage'
 import { cornerCount, guaranteedTorches, orthogonalTorches } from '../../../core/games/art-gallery/dungeon'
 import {
   ALL_LEVELS,
-  EXPERT_LEVELS,
   isRecord,
   leaderboardScore,
   levelId,
-  MAIN_LEVELS,
   MAX_TORCHES,
   splitScore,
   starsFor,
+  TIER_LEVELS,
   type LevelName,
 } from '../../../core/games/art-gallery/rules'
+import { tierPosition } from '../../../core/tiers'
 import type { Vec2 } from '../../../core/geometry/types'
 import type { ArtGalleryLevel } from '../../../core/levels/schema'
 import { Board } from '../../components/Board'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
 import { HowToOverlay } from '../../components/HowToOverlay'
+import { NextLabel } from '../../components/nextLabel'
 import { ProgressBar } from '../../components/ProgressBar'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
 import { useLevel } from '../../levels'
+import { useTierMemory } from '../../shell/tiers'
 import styles from './ArtGallery.module.css'
 import { DarkHint, DungeonFloor, DungeonWalls, LightLayer } from './DungeonArt'
 import { FiskAnimation, SweepAnimation } from './Explanation'
@@ -32,6 +34,7 @@ import { en } from './i18n.en'
 import { LevelPicker } from './LevelPicker'
 import { makeLighting } from './lighting'
 import { useProgress } from './store'
+import { ArtGalleryTiers } from './Tiers'
 import { TheoryLayer, TheoryPanel, type TheoryLayers } from './Theory'
 import { TorchControls, type DragState, type PlacedTorch } from './TorchControls'
 import { TrashIcon } from './TrashIcon'
@@ -42,12 +45,6 @@ const RESULT_DELAY_MS = 900
 
 const formatTime = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')} min`
-
-function positionInSet(name: LevelName) {
-  const expert = (EXPERT_LEVELS as readonly string[]).includes(name)
-  const set: readonly LevelName[] = expert ? EXPERT_LEVELS : MAIN_LEVELS
-  return { expert, index: set.indexOf(name), count: set.length }
-}
 
 function TorchDots({ count, k, t }: { count: number; k: number; t: ArtGalleryTexts }) {
   const slots = Math.max(count, k)
@@ -103,7 +100,7 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
   const touch = useMedia('(pointer: coarse)')
   const narrow = useMedia('(max-width: 720px)')
   const k = level.torches
-  const { expert, index, count } = positionInSet(name)
+  const { tier, index, count } = tierPosition(TIER_LEVELS, name)!
 
   // While dragging, the dragged torch lights from where it is now (or not at all, off the floor).
   const shown = useMemo(
@@ -166,7 +163,7 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
     <div className={styles.game}>
       <GameHeader
         title={t.title}
-        subtitle={t.subtitle(index + 1, count, k, expert)}
+        subtitle={t.subtitle(shell.tiers.names[tier], index + 1, count, k)}
         status={
           <span className={styles.status}>
             <TorchDots count={torches.length} k={k} t={t} />
@@ -328,8 +325,17 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
 /** "Licht ins Verlies": light a dungeon with as few torches as possible (art gallery problem). */
 export default function ArtGalleryGame() {
   const t = useLocalized({ de, en })
+  const shell = useT()
   const name = useProgress((s) => s.level)
+  const setLast = useTierMemory((s) => s.setLast)
+  const [entered, setEntered] = useState(false)
   const level = useLevel<ArtGalleryLevel>(levelId(name))
+  const position = tierPosition(TIER_LEVELS, name)!
+  // The tier being played is the one the tier screen marks next time.
+  useEffect(() => {
+    if (entered) setLast('art-gallery', position.tier)
+  }, [entered, position.tier, setLast])
+  if (!entered) return <ArtGalleryTiers t={t} onStart={() => setEntered(true)} />
   if (level.status !== 'ready') {
     return (
       <div className={styles.game}>
@@ -338,5 +344,11 @@ export default function ArtGalleryGame() {
       </div>
     )
   }
-  return <LevelScreen key={name} level={level.value} name={name} t={t} />
+  // On a tier's last dungeon, "Nächstes Level" starts the next tier.
+  const last = position.index === position.count - 1 && position.next
+  return (
+    <NextLabel.Provider value={last ? shell.tiers.next(shell.tiers.names[last.tier]) : null}>
+      <LevelScreen key={name} level={level.value} name={name} t={t} />
+    </NextLabel.Provider>
+  )
 }
