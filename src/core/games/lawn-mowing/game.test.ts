@@ -58,4 +58,38 @@ describe('a round of mowing', () => {
     expect(round.longest()).toBe(4)
     expect(round.tourLength(0)).toBe(0)
   })
+
+  it('takes steps back: only the cells that step alone mowed grow back', () => {
+    const round = new MowingRound(lawn, [[1, 1]])
+    round.step(0, 'right')
+    round.step(0, 'right')
+    expect(round.mowing.count).toBe(15)
+    expect(round.undo(0)).toBe(3)
+    expect(round.cutters[0]!.at).toEqual([2, 1])
+    expect(round.steps(0)).toBe(1)
+    expect(round.mowing.count).toBe(12)
+    // Back and forth: the position stepped back from was mowed before, so nothing grows back.
+    round.step(0, 'left')
+    expect(round.undo(0)).toBe(0)
+    expect(round.mowing.count).toBe(12)
+    expect(round.undo(0)).toBe(3)
+    expect(round.undo(0)).toBeNull()
+    expect(round.mowing.count).toBe(9)
+    expect(round.steps(0)).toBe(0)
+  })
+
+  it("keeps cells another cutter's footprint covers", () => {
+    const round = new MowingRound(lawn, [
+      [1, 1],
+      [4, 1],
+    ])
+    round.step(0, 'right')
+    round.step(0, 'right')
+    expect(round.mowing.done).toBe(true)
+    // Every cell the two steps mowed is also covered by cutter 1's start or by cutter 2.
+    expect(round.undo(0)).toBe(0)
+    expect(round.undo(0)).toBe(0)
+    expect(round.mowing.count).toBe(18)
+    expect(round.undo(1)).toBeNull()
+  })
 })

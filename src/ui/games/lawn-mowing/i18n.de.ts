@@ -31,7 +31,7 @@ export const de = {
   hintKeys: 'Halte eine Taste: Der Mäher fährt. Mähe alles und fahr zurück zum Start.',
   hintPad: 'Halte einen Pfeil: Der Mäher fährt. Mähe alles und fahr zurück zum Start.',
   board: (lawn: string) => `Rasen ${lawn}`,
-  pad: { up: 'hoch', down: 'runter', left: 'links', right: 'rechts' },
+  pad: { up: 'hoch', down: 'runter', left: 'links', right: 'rechts', undo: 'Schritt zurück' },
   setup: {
     title: 'Neues Spiel',
     lawn: 'Rasen',
@@ -41,6 +41,7 @@ export const de = {
     phoneOne: 'Auf dem Handy mähst du mit einem Mäher.',
     start: "Los geht's!",
   },
+  undoKey: 'Schritt zurück',
   newGame: 'Neu',
   theoryButton: 'Theorie',
   howTo: (cutters: number) => [
@@ -50,7 +51,7 @@ export const de = {
       : 'Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.',
     'Je weniger Schritte, desto besser.',
   ],
-  howToKeys: { one: 'Mäher 1', two: 'Mäher 2', home: 'Feierabend' },
+  howToKeys: { one: 'Mäher 1', two: 'Mäher 2', home: 'Feierabend', undo: 'Schritt zurück' },
   howToAnimation: 'Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit',
   result: {
     title: 'Feierabend!',

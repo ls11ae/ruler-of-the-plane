@@ -1,0 +1,75 @@
+{
+  "id": "roads/bichromatic/6-koenigreich",
+  "collection": "roads/bichromatic",
+  "name": "6-koenigreich",
+  "number": 6,
+  "source": "levels/roads/bichromatic/6-koenigreich.json",
+  "bounds": { "minX": -1.72, "minY": -1.741, "maxX": 2.775, "maxY": 1.783 },
+  "villages": [
+    [-1.72, -0.673],
+    [-0.816, 1.783],
+    [-0.927, -1.741],
+    [1.236, 0.489],
+    [0.554, 1.582],
+    [2.775, 0.731],
+    [1.926, 1.671]
+  ],
+  "castles": [
+    [-0.873, 0.683],
+    [0.42, -1.497],
+    [1.251, -0.596],
+    [1.708, -1.447],
+    [-0.141, -0.523]
+  ],
+  "optimum": {
+    "roads": [
+      [0, 7],
+      [0, 11],
+      [1, 7],
+      [2, 8],
+      [2, 11],
+      [3, 9],
+      [3, 11],
+      [4, 7],
+      [5, 9],
+      [5, 10],
+      [6, 9]
+    ],
+    "length": 18.396896
+  },
+  "free": {
+    "roads": [
+      [0, 7],
+      [0, 11],
+      [1, 7],
+      [2, 8],
+      [2, 11],
+      [3, 9],
+      [3, 10],
+      [3, 11],
+      [4, 7],
+      [5, 9],
+      [6, 9]
+    ],
+    "length": 17.964284,
+    "crossings": 2
+  },
+  "greedy": {
+    "roads": [
+      [0, 7],
+      [0, 11],
+      [1, 7],
+      [2, 8],
+      [2, 11],
+      [3, 9],
+      [3, 10],
+      [3, 11],
+      [4, 7],
+      [5, 10],
+      [6, 7]
+    ],
+    "length": 18.971733,
+    "stuck": false
+  },
+  "method": "exact: CP-SAT (OR-Tools), flow model with pairwise crossing constraints (scripts/roads/bichromatic.py)"
+}

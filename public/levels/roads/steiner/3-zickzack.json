@@ -1,0 +1,34 @@
+{
+  "id": "roads/steiner/3-zickzack",
+  "collection": "roads/steiner",
+  "name": "3-zickzack",
+  "number": 3,
+  "source": "levels/roads/steiner/3-zickzack.json",
+  "bounds": { "minX": -2.547146, "minY": -0.986424, "maxX": 1.863121, "maxY": 0.995483 },
+  "villages": [
+    [-2.547146, 0.889279],
+    [-0.410514, 0.897983],
+    [1.863121, 0.995483],
+    [-1.503185, -0.986424]
+  ],
+  "castles": [
+    [0.643182, -0.89263]
+  ],
+  "optimum": {
+    "junctions": [
+      [-1.49749, 0.276934],
+      [0.642773, 0.290353]
+    ],
+    "roads": [
+      [0, 5],
+      [2, 6],
+      [1, 5],
+      [3, 5],
+      [1, 6],
+      [4, 6]
+    ],
+    "length": 7.538859
+  },
+  "mstLength": 8.608875,
+  "method": "exact: every full Steiner topology, each solved by Smith’s iteration (scripts/roads/steiner.ts, steiner-maps.ts)"
+}

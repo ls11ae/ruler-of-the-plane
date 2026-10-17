@@ -24,13 +24,19 @@ export function makeLawn(
   return { cells: rasterize([outer, ...holes]), offsets, cutterWidth: width }
 }
 
-/** Which lawn cells are mowed: the union of the cutter's footprints at every position so far. */
+/**
+ * Which lawn cells are mowed: the union of the cutter's footprints at every position so far. Each cell
+ * counts the footprints that cover it, so taking a position back lets exactly the cells grow back that
+ * only it mowed.
+ */
 export class Mowing {
   readonly mowed: Uint8Array
+  private readonly covers: Uint32Array
   private mowedCount = 0
 
   constructor(readonly lawn: Lawn) {
     this.mowed = new Uint8Array(lawn.cells.mask.length)
+    this.covers = new Uint32Array(lawn.cells.mask.length)
   }
 
   get total(): number {
@@ -60,12 +66,31 @@ export class Mowing {
     let n = 0
     for (const [ox, oy] of this.lawn.offsets) {
       const i = this.lawn.cells.index(px + ox, py + oy)
-      if (i >= 0 && this.lawn.cells.mask[i] && !this.mowed[i]) {
+      if (i < 0 || !this.lawn.cells.mask[i]) continue
+      if (this.covers[i]!++ === 0) {
         this.mowed[i] = 1
         n++
       }
     }
     this.mowedCount += n
+    return n
+  }
+
+  /**
+   * Takes back one footprint at p (mowed there before): cells no other footprint covers grow back.
+   * Returns their number.
+   */
+  unmowAt([px, py]: Vec2): number {
+    let n = 0
+    for (const [ox, oy] of this.lawn.offsets) {
+      const i = this.lawn.cells.index(px + ox, py + oy)
+      if (i < 0 || !this.lawn.cells.mask[i] || this.covers[i] === 0) continue
+      if (--this.covers[i]! === 0) {
+        this.mowed[i] = 0
+        n++
+      }
+    }
+    this.mowedCount -= n
     return n
   }
 

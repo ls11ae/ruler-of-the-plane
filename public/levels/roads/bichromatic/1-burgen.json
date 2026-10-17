@@ -1,0 +1,51 @@
+{
+  "id": "roads/bichromatic/1-burgen",
+  "collection": "roads/bichromatic",
+  "name": "1-burgen",
+  "number": 1,
+  "source": "levels/roads/bichromatic/1-burgen.json",
+  "bounds": { "minX": -2.076, "minY": -1.759, "maxX": 2.515, "maxY": 1.74 },
+  "villages": [
+    [2.515, 0.398],
+    [0.745, 1.74],
+    [-1.174, 1.645],
+    [-1.338, -1.759]
+  ],
+  "castles": [
+    [-1.915, 0.894],
+    [-2.076, -0.578]
+  ],
+  "optimum": {
+    "roads": [
+      [0, 4],
+      [1, 4],
+      [2, 4],
+      [3, 4],
+      [3, 5]
+    ],
+    "length": 12.411646
+  },
+  "free": {
+    "roads": [
+      [0, 4],
+      [1, 4],
+      [2, 4],
+      [2, 5],
+      [3, 5]
+    ],
+    "length": 12.095653,
+    "crossings": 2
+  },
+  "greedy": {
+    "roads": [
+      [0, 5],
+      [1, 5],
+      [2, 4],
+      [2, 5],
+      [3, 5]
+    ],
+    "length": 13.191464,
+    "stuck": false
+  },
+  "method": "exact: CP-SAT (OR-Tools), flow model with pairwise crossing constraints (scripts/roads/bichromatic.py)"
+}

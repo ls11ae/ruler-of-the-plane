@@ -62,6 +62,22 @@
       "lawn-mowing/lawn4",
       "lawn-mowing/lawn5",
       "lawn-mowing/smr_882k_481_3s3"
+    ],
+    "roads/steiner": [
+      "roads/steiner/1-dreieck",
+      "roads/steiner/2-viereck",
+      "roads/steiner/3-zickzack",
+      "roads/steiner/4-leiter",
+      "roads/steiner/5-kette",
+      "roads/steiner/6-wabe"
+    ],
+    "roads/bichromatic": [
+      "roads/bichromatic/1-burgen",
+      "roads/bichromatic/2-weiler",
+      "roads/bichromatic/3-mark",
+      "roads/bichromatic/4-grafschaft",
+      "roads/bichromatic/5-herzogtum",
+      "roads/bichromatic/6-koenigreich"
     ]
   }
 }

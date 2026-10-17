@@ -1,0 +1,59 @@
+{
+  "id": "roads/bichromatic/3-mark",
+  "collection": "roads/bichromatic",
+  "name": "3-mark",
+  "number": 3,
+  "source": "levels/roads/bichromatic/3-mark.json",
+  "bounds": { "minX": -2.436, "minY": -1.768, "maxX": 1.868, "maxY": 1.706 },
+  "villages": [
+    [0.361, -1.336],
+    [1.42, -1.768],
+    [-1.704, 0.539],
+    [-1.91, -0.934],
+    [1.868, 0.277]
+  ],
+  "castles": [
+    [1.314, 1.305],
+    [-2.436, -0.134],
+    [-0.249, 1.706]
+  ],
+  "optimum": {
+    "roads": [
+      [0, 5],
+      [0, 6],
+      [1, 5],
+      [2, 6],
+      [2, 7],
+      [3, 6],
+      [4, 5]
+    ],
+    "length": 13.911606
+  },
+  "free": {
+    "roads": [
+      [0, 5],
+      [1, 5],
+      [2, 6],
+      [2, 7],
+      [3, 6],
+      [4, 5],
+      [4, 7]
+    ],
+    "length": 13.421424,
+    "crossings": 2
+  },
+  "greedy": {
+    "roads": [
+      [0, 6],
+      [1, 7],
+      [2, 6],
+      [2, 7],
+      [3, 6],
+      [4, 5],
+      [4, 7]
+    ],
+    "length": 14.437373,
+    "stuck": false
+  },
+  "method": "exact: CP-SAT (OR-Tools), flow model with pairwise crossing constraints (scripts/roads/bichromatic.py)"
+}

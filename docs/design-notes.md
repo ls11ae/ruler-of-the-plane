@@ -296,6 +296,88 @@ their ends.
   2-hour run in CI (too slow; it belongs on a booth laptop in Phase 7); no visitors (the kiosk cycle,
   where leaks would come from, would go untested).
 
+- **2026-10-17 (proposed) "Rasenmähen": a step back per mower** (Kevin's playtest). Q (beside WASD)
+  takes back mower 1's last step, Backspace (on the side of the arrow keys) mower 2's, B on a gamepad; with
+  one mower both keys work, and on phones the dashed middle button of the direction pad does it. Each
+  press takes back one step (holding does not repeat): the mower moves back, the cells only that step
+  mowed grow back (each cell counts the footprints that cover it, also those of the other mower), and its
+  steps go down. The cards show the keys as keycaps with a curved arrow (Q beside W, "Rück" beside ↑),
+  "So geht's" lists them. Undo works while driving; during the drive home and after the round it does
+  nothing. After a "Feierabend" that left grass, play continues from the starts and the way home counts
+  as steps like any others, so undo takes it back step by step. Alternatives: Ctrl+Z (two keys at once,
+  and both players would reach for it); taking back the whole "Feierabend" at once (an exception to one
+  press, one step); undo on the result screen ("Nochmal" starts again).
+
+- **2026-10-17 (proposed) "Straßenbau" gets two harder sets** (Kevin's playtest: too easy). The picker
+  shows three sections: the eight maps so far as "Von Ort zu Ort", then six maps "Kreuzungen" (Euclidean
+  Steiner tree), then six maps "Zwei Sorten" (minimum plane bichromatic spanning tree), then the random
+  villages (still without junctions); "Nächstes Level" walks through them in this order. Each set shows
+  its own "So geht's" the first time (the rules change), the header says "Kreuzungen 2 von 6"; stars,
+  hints and the leaderboard per map work as before (boards `roads/steiner/<map>`, `roads/bichromatic/<map>`).
+  Stored progress moves to version 2: the single how-to flag becomes one per set, and whoever had reached
+  the random villages continues with the first map of "Kreuzungen" (the same index now). Alternatives: the
+  new sets as separate places on the start map (the map has one place per game); behind the random
+  villages (nobody reaches them at the booth).
+- **2026-10-17 "Kreuzungen": optima computed offline, exactly.** `scripts/roads/steiner.ts` enumerates
+  every full Steiner topology ((2n − 5)!!: 945 for 7 places) and solves each by Smith's iteration (a
+  weighted linear solve per round); topologies within 0.1 % of the best are refined to convergence,
+  junctions closer than 0.01 to a place or to each other are merged (degenerate topologies), and the
+  merged tree is placed again. Tests: the equilateral triangle (one junction at the centre, 13.4 % shorter
+  than the MST), the square (1 + √3 with two junctions), an obtuse triangle (no junction), and random sets
+  (never longer than the MST, never below √3/2 of it, every junction three roads at 120°). Maps
+  (`scripts/roads/steiner-maps.ts`): patches of a triangular lattice with a little seeded jitter, 3 to 7
+  places, 1 to 4 junctions, the network without junctions 6–14 % longer. Random villages save only 1–3 %,
+  too close to the 1 % rule to be worth the effort; the hexagon's jitter seed keeps its junctions 0.49
+  away from the middle village (most seeds put one under its icon). The importer checks every stored
+  optimum: a tree, its length, degree 3 and 120° (± 1°) at every junction, the MST length.
+- **2026-10-17 (proposed) "Kreuzungen": junctions by hand, within 1 %** (the 1 % is Kevin's). A road dragged
+  onto open land ends at a new junction there (on phones: tap a place, then open land); a junction is
+  dragged to move it and dropped onto a place or junction to merge into it; a road dragged at its middle
+  bends at a new junction; a junction without roads disappears. Every junction shows the angles between
+  its roads below 180° (an arc and the degrees in a paper label; 120° to the degree is solid and bold,
+  not only green). A network that connects all places and is at most 1 % longer than the stored optimum
+  counts, but only when the pointer is let go (a junction in motion never wins). The tolerance is
+  generous: on the triangle a junction 0.56 units off its spot is only 1.8 % too long, and within 1 % the
+  angles can be 10–15° off. So on the win the junctions slide the last bit to their best spots (Weiszfeld
+  steps on the player's own roads, half a second), and the angles read 120°: the rule shows itself where
+  it is reached. Hints compare with the stored optimum, its junctions matched to the player's (nearest
+  pairs within 0.8): a junction without a match with one road (a dead end) or two (a bend), a missing
+  junction as a dashed ghost with a road to it, a junction or road too many, a road missing, finally the
+  junction furthest from 120° ("Schieb die Kreuzung im grünen Kreis…"); following them leads to the
+  optimum from no roads, from the MST and from a wrong network on every map (tested). Theory: the 120°
+  rule, the comparison with the network without junctions (both can be shown on the map), the
+  Gilbert–Pollak conjecture (without junctions at most about 15 % longer, 15.5 % for the equilateral
+  triangle; proven only for a few places), NP-hardness; the result screen animates the junctions moving
+  from the middle of their places to their spots. Alternatives: a fixed number of junctions to place
+  (gives away the topology); a tolerance on the angles (the length is what the king pays); snapping
+  junctions to their best spot while dragging (no discovery left).
+- **2026-10-17 "Zwei Sorten": optima computed offline with CP-SAT.** `scripts/roads/bichromatic.py`
+  (OR-Tools 9.15, `pip install ortools`; only offline, not part of the app): a spanning tree on the
+  castle–village roads by a single-commodity flow, a clause against every pair of crossing roads, and the
+  total length (scaled to integers) minimised; CP-SAT must prove optimality. Maps with up to 8 places are
+  also checked by brute force (in the script and in `plane.test.ts`). Maps: seeded random places (2–5
+  castles, 4–7 villages, at least 0.95 apart, no three on a line), kept when the crossing rule matters
+  (the tree without it has at least 2 crossings and is at least 2 % shorter than the optimum), the greedy
+  strategy (always the shortest allowed road that crosses no chosen road) is at least 3 % longer than the
+  optimum, and no road of the optimum or of the tree without the rule (the networks the game draws)
+  passes within 0.4 of another place (it would seem to run through it; 0.3 on the largest map, 12
+  places, where an hour of search found none at 0.4); the 10-place map took 2.4 million seeds. The greedy strategy never got stuck on random maps of these sizes (none in 14,000 tries:
+  a crossing-free forest rarely blocks every castle–village road between two of its groups), so "longer"
+  is the criterion. Each map has its own seed range. No random maps in this set.
+- **2026-10-17 (proposed) "Zwei Sorten": what the game refuses and what it marks.** A road between two
+  villages or two castles is refused: its preview turns red while dragging, and letting go explains the
+  rule in the footer. Roads that cross may be built: both turn red, the crossing is circled in red (a
+  ring, so that the cross keeps marking the road a hint means), the state says "2 Schnittpunkte", and the network does not count until no roads cross. The texts
+  say "schneiden" and "Schnittpunkt", so that "Kreuzung" keeps meaning a junction, as in the set before.
+  Hints: a crossing road (the longer of the two), then a road the optimum does not use, then a missing
+  one. Theory: the tree without the rule with its crossings next to the player's network (two sketches),
+  the greedy length, NP-hardness (Borgelt et al. 2009) and the open question of the factor: at most
+  O(log n) times longer (Akitaya, Biniaz, Demaine, Kleist, Stock, Tóth, ISAAC 2024), whether a constant
+  suffices is open; the result screen animates Kruskal without the rule, then the optimum. Alternatives:
+  refusing crossing roads (players could not try the easy tree and see why it fails, and would be pushed
+  to the greedy strategy); only marking same-kind roads (a rule that is always broken by mistake is
+  better enforced).
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,

@@ -136,19 +136,10 @@ export type Hint =
  */
 export function hint(points: readonly Vec2[], roads: readonly Road[], mstLength: number): Hint {
   if (isOptimal(points, roads, mstLength)) return null
-  // (1) Rings: add the roads one by one; a road between connected villages closes a ring.
+  const ring = ringRoad(points, roads)
+  if (ring) return { kind: 'ring', road: ring }
   const sets = new DisjointSets(points.length)
-  const adjacency = new Map<number, Road[]>()
-  for (const road of roads) {
-    if (!sets.union(road[0], road[1])) {
-      const ring = [road, ...pathBetween(adjacency, road[0], road[1])]
-      return {
-        kind: 'ring',
-        road: ring.reduce((a, b) => (roadLength(points, b) > roadLength(points, a) ? b : a)),
-      }
-    }
-    for (const v of road) adjacency.set(v, [...(adjacency.get(v) ?? []), road])
-  }
+  for (const [a, b] of roads) sets.union(a, b)
   // (2) Cycle property: a road is in no minimum spanning tree if a path of strictly shorter roads joins
   // its villages. Kruskal over all roads shorter than it decides that.
   const sorted = roadsByLength(points)
@@ -168,6 +159,23 @@ export function hint(points: readonly Vec2[], roads: readonly Road[], mstLength:
   // (3) Kruskal's next step on the groups of the player's network.
   for (const { road } of sorted) {
     if (sets.find(road[0]) !== sets.find(road[1])) return { kind: 'build', road }
+  }
+  return null
+}
+
+/**
+ * The longest road of the first ring in a network (it can go, everything stays connected), or null if the
+ * network has no ring. The roads are added one by one; a road between connected nodes closes a ring.
+ */
+export function ringRoad(points: readonly Vec2[], roads: readonly Road[]): Road | null {
+  const sets = new DisjointSets(points.length)
+  const adjacency = new Map<number, Road[]>()
+  for (const road of roads) {
+    if (!sets.union(road[0], road[1])) {
+      const ring = [road, ...pathBetween(adjacency, road[0], road[1])]
+      return ring.reduce((a, b) => (roadLength(points, b) > roadLength(points, a) ? b : a))
+    }
+    for (const v of road) adjacency.set(v, [...(adjacency.get(v) ?? []), road])
   }
   return null
 }

@@ -17,12 +17,14 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Phases 0–6 merged into `main` (2026-10-17): the shell, all five games, the Phase 6 items that need no
   booth laptop (credits screen, accessibility pass, simulated 2-hour attract run, "Rundreise" with the
   online tsp-boards), the chair's solver solutions for "Rasenmähen" and the bonus set "Im Wald" for
-  "Gassi gehen"; Kevin agreed to all "proposed" decisions so far (2026-10-17). Open are the items that
-  need the booth laptops (playtest, the 200 ms "Schwer" move, the key test). In parallel (2026-10-17):
-  harder tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks, in the park and in the woods;
-  branch `claude/epic-ramanujan-ifv6wh`), and another session on "Straßenbau" and "Rasenmähen".
-  **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and the shared
-  code fit together and how a game plugs in: `docs/architecture.md`.
+  "Gassi gehen"; Kevin agreed to all "proposed" decisions so far (2026-10-17). After Kevin's first
+  playtest: two harder sets of "Straßenbau" ("Kreuzungen", "Zwei Sorten") with exact optima computed
+  offline (`scripts/roads/`) and a step back per mower in "Rasenmähen" (merged 2026-10-17), and harder
+  tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
+  `scripts/gassi/`; branch `claude/epic-ramanujan-ifv6wh`). Open are the items that need the booth
+  laptops (playtest, the 200 ms "Schwer" move, the key test). **`docs/roadmap.md` is the source of truth
+  for open work**, in its order. How the shell and the shared code fit together and how a game plugs in:
+  `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
 - `legacy/` holds the Unity level files and in-game texts (copied from `kbuchin/ruler` at commit
@@ -133,7 +135,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   not edge sets, because of ties). Kruskal is the teaching animation.
 - Steiner trees: Steiner points have degree 3 and 120° angles; for an equilateral triangle the Steiner
   tree is 13.4 % shorter than the MST. No exact solver in the browser: curated levels carry precomputed
-  optima in their JSON.
+  optima in their JSON ("Kreuzungen": every full topology with Smith's iteration, `scripts/roads/steiner.ts`).
+- Plane bichromatic spanning tree ("Zwei Sorten"): every road joins a castle and a village, no two roads
+  cross. Without the crossing rule Kruskal on the castle–village roads; with it NP-hard (Borgelt et al.
+  2009), the optimum at most O(log n) times longer (Akitaya et al., ISAAC 2024; a constant is open).
+  Optima by CP-SAT offline (`scripts/roads/bichromatic.py`, `pip install ortools`).
 - t-spanner: dilation = max over pairs of graph distance / Euclidean distance. Greedy spanner: take
   edges by increasing length, add one when the current graph distance exceeds t times its length.
 - Ham sandwich: two finite point sets can always be bisected by one line; three sets in general cannot

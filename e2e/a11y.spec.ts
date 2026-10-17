@@ -1,9 +1,11 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { lowContrastTexts, tooSmall } from './contrast'
 import { de } from '../src/ui/games/frechet/i18n.de'
 import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
 import { freshDevice } from './helpers'
+import { drag, type Pt } from './roads-helpers'
 
 freshDevice()
 
@@ -159,4 +161,50 @@ test('game frechet, harder tiers: picker, a hard walk in the park and in the woo
   if (await howTo.count()) await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('trunks')).toBeVisible()
   await expectAccessible(page, 'frechet: a hard walk in the woods')
+})
+
+test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory', async ({
+  page,
+  isMobile,
+}) => {
+  const read = (path: string) =>
+    JSON.parse(readFileSync(new URL(`../public/levels/${path}.json`, import.meta.url), 'utf8')) as {
+      villages: Pt[]
+      castles: Pt[]
+      optimum: { junctions?: Pt[] }
+      free?: { roads: [number, number][] }
+    }
+  await page.goto('./#/play/roads')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await page.getByRole('button', { name: 'Karten' }).click()
+  await expectAccessible(page, 'roads: picker with the three sets')
+  await page.getByRole('button', { name: 'Kreuzungen: Karte 2' }).click()
+  await expectAccessible(page, 'roads, Kreuzungen: how-to')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  // A junction off its best spot, with the angle labels, and a hint marking it.
+  const steiner = read('roads/steiner/2-viereck')
+  const places = [...steiner.villages, ...steiner.castles]
+  const [j] = steiner.optimum.junctions!
+  const at: Pt = [j![0] + 0.3, j![1] + 0.3]
+  await drag(page, places[0]!, at, isMobile)
+  await drag(page, places[3]!, at, isMobile)
+  await drag(page, places[1]!, at, isMobile)
+  await expect(page.getByTestId('junction-angles')).toContainText('°')
+  await page.getByRole('button', { name: 'Tipp' }).click()
+  await expectAccessible(page, 'roads, Kreuzungen: board with a junction and a hint')
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  await page.getByRole('button', { name: 'Kürzestes Netz' }).click()
+  await expectAccessible(page, 'roads, Kreuzungen: theory')
+
+  await page.getByRole('button', { name: 'Karten' }).click()
+  await page.getByRole('button', { name: 'Zwei Sorten: Karte 2' }).click()
+  await expectAccessible(page, 'roads, Zwei Sorten: how-to')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  const plane = read('roads/bichromatic/2-weiler')
+  const points = [...plane.villages, ...plane.castles]
+  for (const [a, b] of plane.free!.roads) await drag(page, points[a]!, points[b]!, isMobile)
+  await expect(page.getByTestId('roads-state')).toContainText('Schnittpunkte')
+  await expectAccessible(page, 'roads, Zwei Sorten: board with crossings')
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  await expectAccessible(page, 'roads, Zwei Sorten: theory')
 })

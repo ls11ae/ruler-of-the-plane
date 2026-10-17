@@ -15,7 +15,7 @@ import { ProgressBar } from '../../components/ProgressBar'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
 import { useLevel } from '../../levels'
-import { toLawn, useCutterControls, type PadHold, type ScreenDirection } from './controls'
+import { toLawn, UNDO_KEYS, useCutterControls, type PadHold, type ScreenDirection } from './controls'
 import { CutterTokens, Tours, type CutterView } from './Cutters'
 import { DPad } from './DPad'
 import { boardBounds } from './geometry'
@@ -43,6 +43,7 @@ function howToKeys(t: LawnTexts, cutters: number, phone: boolean): KeyHint[] | u
       ? [{ codes: ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'], label: t.howToKeys.two }]
       : []),
     { codes: ['Space'], label: t.howToKeys.home },
+    { codes: UNDO_KEYS.slice(0, cutters).map((keys) => keys[0]!), label: t.howToKeys.undo },
   ]
 }
 
@@ -106,6 +107,14 @@ function Round({
     }
   }
 
+  // A step back (undo key or the pad's middle button): only while driving, not on the way home or after
+  // the round. After a "Feierabend" that left grass, it takes the way home back step by step too.
+  const undo = (i: number) => {
+    if (phase !== 'play' || round.undo(i) === null) return
+    if (!round.mowing.done) announced.current = false
+    redraw()
+  }
+
   const goHome = () => {
     if (phase !== 'play') return
     pad.current = null
@@ -155,6 +164,7 @@ function Round({
     pad,
     onStep: step,
     onHome: goHome,
+    onUndo: undo,
   })
   const onPad = (direction: ScreenDirection, down: boolean) => {
     if (down) {
@@ -246,7 +256,7 @@ function Round({
       </main>
       {phone ? (
         <footer className={`${styles.panels} ${styles.phone}`}>
-          <DPad onHold={onPad} t={t} />
+          <DPad onHold={onPad} onUndo={() => undo(0)} t={t} />
           <div className={styles.phoneSide}>
             <PhoneStats stats={{ steps: round.steps(0), home: round.stepsHome(0) }} target={target} t={t} />
             <HomeCard
