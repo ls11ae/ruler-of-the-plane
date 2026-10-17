@@ -120,15 +120,28 @@ export function WoodsHowToAnimation({ label, t }: { label: string; t: FrechetTex
         strokeLinejoin="round"
       />
       {turns !== 0 && (
-        <text
-          x={POST[0] + 1.6}
-          y={POST[1] - 1.5}
-          fontSize={0.9}
-          fontFamily="var(--font-text)"
-          fill="var(--warn)"
-        >
-          {Math.abs(turns)}×
-        </text>
+        <g>
+          <rect
+            x={POST[0] + 1.4}
+            y={POST[1] - 2.4}
+            width={1.7}
+            height={1.1}
+            rx={0.25}
+            fill="var(--paper)"
+            stroke="var(--warn)"
+            strokeWidth={0.1}
+          />
+          <text
+            x={POST[0] + 2.25}
+            y={POST[1] - 1.55}
+            textAnchor="middle"
+            fontSize={0.8}
+            fontFamily="var(--font-text)"
+            fill="var(--ink)"
+          >
+            {Math.abs(turns)}×
+          </text>
+        </g>
       )}
       <image href={art.person} x={person[0] - 0.6} y={person[1] - 0.6} width={1.2} height={1.2} />
       <image
