@@ -1,0 +1,67 @@
+{
+  "id": "roads/bichromatic/5-herzogtum",
+  "collection": "roads/bichromatic",
+  "name": "5-herzogtum",
+  "number": 5,
+  "source": "levels/roads/bichromatic/5-herzogtum.json",
+  "bounds": { "minX": -2.374, "minY": -1.443, "maxX": 2.31, "maxY": 1.382 },
+  "villages": [
+    [2.31, -0.321],
+    [-1.544, 1.382],
+    [1.247, 0.186],
+    [-0.055, 1.352],
+    [2.036, -1.31],
+    [1.565, 1.304]
+  ],
+  "castles": [
+    [0.424, -1.342],
+    [-2.374, 0.675],
+    [-1.793, -0.821],
+    [-0.857, -1.443]
+  ],
+  "optimum": {
+    "roads": [
+      [0, 6],
+      [1, 7],
+      [1, 8],
+      [2, 6],
+      [3, 6],
+      [3, 8],
+      [4, 6],
+      [4, 9],
+      [5, 6]
+    ],
+    "length": 20.096199
+  },
+  "free": {
+    "roads": [
+      [0, 6],
+      [1, 7],
+      [1, 8],
+      [2, 6],
+      [2, 9],
+      [3, 6],
+      [3, 7],
+      [4, 6],
+      [5, 6]
+    ],
+    "length": 19.494308,
+    "crossings": 3
+  },
+  "greedy": {
+    "roads": [
+      [0, 6],
+      [1, 7],
+      [1, 8],
+      [2, 6],
+      [2, 9],
+      [3, 8],
+      [3, 9],
+      [4, 6],
+      [5, 9]
+    ],
+    "length": 20.813317,
+    "stuck": false
+  },
+  "method": "exact: CP-SAT (OR-Tools), flow model with pairwise crossing constraints (scripts/roads/bichromatic.py)"
+}

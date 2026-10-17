@@ -1,0 +1,42 @@
+{
+  "id": "roads/steiner/6-wabe",
+  "collection": "roads/steiner",
+  "name": "6-wabe",
+  "number": 6,
+  "source": "levels/roads/steiner/6-wabe.json",
+  "bounds": { "minX": -1.889891, "minY": -1.715036, "maxX": 1.939161, "maxY": 1.617306 },
+  "villages": [
+    [0.006179, -0.119438],
+    [1.939161, -0.071481],
+    [-1.889891, -0.103017],
+    [0.831089, -1.544426],
+    [-0.837067, -1.715036],
+    [-0.845841, 1.617306]
+  ],
+  "castles": [
+    [0.835364, 1.537818]
+  ],
+  "optimum": {
+    "junctions": [
+      [0.832334, -0.708313],
+      [-0.835576, -0.713821],
+      [0.006015, -0.229597],
+      [0.028227, 1.091213]
+    ],
+    "roads": [
+      [1, 7],
+      [2, 8],
+      [7, 9],
+      [3, 7],
+      [8, 9],
+      [4, 8],
+      [0, 9],
+      [5, 10],
+      [0, 10],
+      [6, 10]
+    ],
+    "length": 9.522327
+  },
+  "mstLength": 10.598933,
+  "method": "exact: every full Steiner topology, each solved by Smith’s iteration (scripts/roads/steiner.ts, steiner-maps.ts)"
+}

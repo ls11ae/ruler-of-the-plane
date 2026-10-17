@@ -1,0 +1,38 @@
+{
+  "id": "roads/steiner/5-kette",
+  "collection": "roads/steiner",
+  "name": "5-kette",
+  "number": 5,
+  "source": "levels/roads/steiner/5-kette.json",
+  "bounds": { "minX": -2.754454, "minY": -0.910385, "maxX": 2.017167, "maxY": 0.865458 },
+  "villages": [
+    [-2.754454, 0.865458],
+    [-0.967257, 0.829563],
+    [0.900433, 0.82212],
+    [-1.797175, -0.855503],
+    [0.147349, -0.910385]
+  ],
+  "castles": [
+    [2.017167, -0.787701]
+  ],
+  "optimum": {
+    "junctions": [
+      [-1.809084, 0.332214],
+      [0.475433, 0.41314],
+      [0.676863, -0.400831]
+    ],
+    "roads": [
+      [0, 6],
+      [2, 7],
+      [1, 6],
+      [3, 6],
+      [1, 7],
+      [4, 8],
+      [7, 8],
+      [5, 8]
+    ],
+    "length": 8.310756
+  },
+  "mstLength": 9.296557,
+  "method": "exact: every full Steiner topology, each solved by Smith’s iteration (scripts/roads/steiner.ts, steiner-maps.ts)"
+}

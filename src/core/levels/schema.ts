@@ -20,6 +20,8 @@ export type Collection =
   | 'convex-hull'
   | 'voronoi'
   | 'lawn-mowing'
+  | 'roads/steiner'
+  | 'roads/bichromatic'
 
 export const COLLECTIONS: readonly Collection[] = [
   'art-gallery',
@@ -30,6 +32,8 @@ export const COLLECTIONS: readonly Collection[] = [
   'convex-hull',
   'voronoi',
   'lawn-mowing',
+  'roads/steiner',
+  'roads/bichromatic',
 ]
 
 /** Larger side of the bounding box of an imported IPE level, per collection (as in Unity). */
@@ -42,6 +46,8 @@ export const LEVEL_SIZE: Record<Collection, number> = {
   'convex-hull': 6,
   voronoi: 16,
   'lawn-mowing': 1,
+  'roads/steiner': 6,
+  'roads/bichromatic': 6,
 }
 
 interface LevelBase {
@@ -144,8 +150,57 @@ export interface LawnMowingLevel extends LevelBase {
   competition?: boolean
 }
 
+/**
+ * A road network of a "Straßenbau" level: roads between nodes, which are the places (villages, then
+ * castles) and, for junctions, the nodes after them.
+ */
+export interface RoadsNetwork {
+  roads: [number, number][]
+  length: number
+}
+
+/**
+ * "Kreuzungen" ("Straßenbau" with junctions: the Euclidean Steiner tree), from `levels/roads/steiner/`, made
+ * for this edition. Same units as the Kings Taxes levels (about 6 × 4); castles only look different.
+ */
+export interface RoadsSteinerLevel extends LevelBase {
+  collection: 'roads/steiner'
+  villages: Vec2[]
+  castles: Vec2[]
+  /** The Steiner minimal tree, computed offline (exact): its junctions are the nodes after the places. */
+  optimum: RoadsNetwork & { junctions: Vec2[] }
+  /** The shortest network without junctions (a minimum spanning tree). */
+  mstLength: number
+  /** How the optimum was computed. */
+  method: string
+}
+
+/**
+ * "Zwei Sorten" (the minimum plane bichromatic spanning tree: every road joins a castle and a village, no
+ * two roads cross), from `levels/roads/bichromatic/`, made for this edition.
+ */
+export interface RoadsBichromaticLevel extends LevelBase {
+  collection: 'roads/bichromatic'
+  villages: Vec2[]
+  castles: Vec2[]
+  /** The shortest crossing-free castle–village network, computed offline (exact). */
+  optimum: RoadsNetwork
+  /** The shortest castle–village network without the crossing rule (Kruskal) and its crossings. */
+  free: RoadsNetwork & { crossings: number }
+  /** The greedy strategy's network (shortest allowed road that crosses none, again and again). */
+  greedy: RoadsNetwork & { stuck: boolean }
+  method: string
+}
+
 export type Level =
-  ArtGalleryLevel | KingsTaxesLevel | DivideLevel | ConvexHullLevel | VoronoiLevel | LawnMowingLevel
+  | ArtGalleryLevel
+  | KingsTaxesLevel
+  | DivideLevel
+  | ConvexHullLevel
+  | VoronoiLevel
+  | LawnMowingLevel
+  | RoadsSteinerLevel
+  | RoadsBichromaticLevel
 
 /** `public/levels/index.json`: level ids per collection, in the Unity scene order. */
 export interface LevelIndex {
