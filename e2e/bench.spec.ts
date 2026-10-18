@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { isOnFloor } from '../src/core/games/art-gallery/dungeon'
 import { woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
@@ -432,3 +432,55 @@ for (const rate of RATES) {
     console.log(row)
   })
 }
+
+test('first visit on a phone: the start map on slow 3G', async ({ page }) => {
+  test.setTimeout(5 * 60_000)
+  // Chromium's "Slow 3G" profile: 2 s latency, 50 kB/s each way.
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send('Network.enable')
+  await cdp.send('Network.emulateNetworkConditions', {
+    offline: false,
+    latency: 2000,
+    downloadThroughput: 50_000,
+    uploadThroughput: 50_000,
+  })
+  await page.goto('./', { waitUntil: 'commit', timeout: 120_000 })
+  await expect(page.getByRole('heading', { name: 'Ruler of the Plane' })).toBeVisible({ timeout: 120_000 })
+  // The map is complete when its fonts, the parchment and every picture on it have arrived.
+  await page.waitForFunction(
+    () =>
+      document.fonts.status === 'loaded' &&
+      [...document.images].every((i) => i.complete) &&
+      performance.getEntriesByType('resource').some((r) => r.name.includes('parchment')),
+    undefined,
+    { timeout: 120_000, polling: 100 },
+  )
+  const map = await page.evaluate(() => {
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+    const kb = (list: PerformanceResourceTiming[]) =>
+      Math.round(list.reduce((sum, r) => sum + r.encodedBodySize, nav.encodedBodySize) / 1000)
+    return {
+      ready: Math.max(...resources.map((r) => r.responseEnd), performance.now() - 100),
+      domContentLoaded: nav.domContentLoadedEventEnd,
+      kb: kb(resources),
+      largest: resources
+        .sort((a, b) => b.encodedBodySize - a.encodedBodySize)
+        .slice(0, 4)
+        .map((r) => `${r.name.split('/').pop()} ${Math.round(r.encodedBodySize / 1000)} kB`),
+    }
+  })
+  // Then the service worker precaches the rest for offline use (its requests are not throttled, so
+  // only their size is reported).
+  const dist = process.env.BENCH_DIST ?? 'dist'
+  const precached = [...readFileSync(`${dist}/sw.js`, 'utf8').matchAll(/url:"([^"]+)"/g)].map((m) => m[1]!)
+  const precacheKb = Math.round(
+    [...new Set(precached)].reduce((sum, url) => sum + statSync(`${dist}/${url}`).size, 0) / 1000,
+  )
+  const row =
+    `${'First visit, slow 3G'.padEnd(40)}  start map ${(map.ready / 1000).toFixed(1)} s (${map.kb} kB; ` +
+    `HTML parsed ${(map.domContentLoaded / 1000).toFixed(1)} s)  precache ${precacheKb} kB` +
+    `  largest: ${map.largest.join(', ')}`
+  rows.push(row)
+  console.log(row)
+})
