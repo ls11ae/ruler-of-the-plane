@@ -34,11 +34,11 @@ async function watch(context: BrowserContext, page: Page): Promise<Watch> {
 async function openEveryGame(page: Page) {
   for (const id of GAMES) {
     await page.getByRole('link', { name: new RegExp(de.places[id].name) }).click()
-    const howTo = page.getByRole('dialog', { name: de.game.howTo })
-    await expect(howTo).toBeVisible({ timeout: 15_000 })
-    await howTo.getByRole('button', { name: de.game.letsGo }).click()
-    const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
-    if (await setup.count()) await setup.getByRole('button', { name: de.game.letsGo }).click()
+    // Every game opens on its tier screen; "Leicht" starts it.
+    const tiers = page.getByTestId('tier-screen')
+    await expect(tiers).toBeVisible({ timeout: 15_000 })
+    await tiers.getByRole('button', { name: new RegExp(`^${de.tiers.names.easy}`) }).click()
+    await expect(tiers).toHaveCount(0)
     await expect(page.locator('header h1')).toBeVisible()
     await page.getByRole('link', { name: de.game.backLabel }).click()
     await expect(page.getByRole('heading', { name: de.start.title })).toBeVisible()

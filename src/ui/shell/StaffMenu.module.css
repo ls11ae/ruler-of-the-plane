@@ -69,3 +69,30 @@
   color: var(--ink-soft);
   font-size: 0.9rem;
 }
+
+/* A game and its three tiers; the buttons go below the name where the column is narrow. */
+.tierRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+
+.tierRow + .tierRow {
+  margin-top: 6px;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.tierRows {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 8px 28px;
+}
+
+.tierRows .tierRow + .tierRow {
+  margin-top: 0;
+}

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { minDistance, type Castle, type Player } from '../../../core/games/voronoi/rules'
 import type { VoronoiLevel } from '../../../core/levels/schema'
+import type { AttractProps } from '../registry'
 import { useLevel } from '../../levels'
 import { askAi } from './aiClient'
 import { MapBoard } from './MapBoard'
 import { usePrepared } from './prepared'
 import { MAPS } from './store'
 
-/** Castles per player in the demo, and the pace: a castle every so often, a pause after each game. */
+/** Castles per player in the demo, and the pace: a castle every so often, a pause after the game. */
 const PER_PLAYER = 8
 const STEP_MS = 900
 const PAUSE_MS = 4000
@@ -57,13 +58,16 @@ function Demo({ level, onDone }: { level: VoronoiLevel; onDone: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turn])
 
-  return <MapBoard prep={prep} castles={castles} minDist={minDist} label="" />
+  return (
+    <div data-step={turn} style={{ width: '100%', height: '100%' }}>
+      <MapBoard prep={prep} castles={castles} minDist={minDist} label="" />
+    </div>
+  )
 }
 
-/** Attract mode of "Erobere das Land": the computer plays against itself, map after map. */
-export default function VoronoiAttract() {
-  const [round, setRound] = useState(0)
+/** Attract demo of "Erobere das Land": the computer plays against itself, one map per turn. */
+export default function VoronoiAttract({ round, onDone }: AttractProps) {
   const level = useLevel<VoronoiLevel>(MAPS[round % MAPS.length]!)
   if (level.status !== 'ready') return null
-  return <Demo key={round} level={level.value} onDone={() => setRound((r) => r + 1)} />
+  return <Demo level={level.value} onDone={onDone} />
 }

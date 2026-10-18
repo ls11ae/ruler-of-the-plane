@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TIERS } from '../../core/tiers'
 import { Button } from '../components/Button'
 import { Overlay } from '../components/Overlay'
 import { GAME_IDS, isImplemented } from '../games/registry'
@@ -6,7 +7,7 @@ import { useT } from '../i18n'
 import { useBooth } from './booth'
 import { KeyTest } from './KeyTest'
 import { navigate } from './router'
-import { useSettings, type Difficulty } from './settings'
+import { useSettings } from './settings'
 import styles from './StaffMenu.module.css'
 import { useUi } from './ui'
 
@@ -76,11 +77,9 @@ function ConfirmButton({ label, onConfirm }: { label: string; onConfirm: () => v
   )
 }
 
-const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard']
-
 /**
- * Hidden staff menu (long press on the compass, or Ctrl+Shift+S): games on/off, difficulty, kiosk mode,
- * clearing the booth data, the key test.
+ * Hidden staff menu (long press on the compass, or Ctrl+Shift+S): games on/off, the tier suggested at
+ * the start of each game, kiosk mode, clearing the booth data, the key test.
  */
 export function StaffMenu() {
   const t = useT()
@@ -155,20 +154,6 @@ export function StaffMenu() {
           })}
         </section>
         <section className={styles.section}>
-          <h3>{t.staff.difficulty}</h3>
-          <div className={styles.group}>
-            {DIFFICULTIES.map((d) => (
-              <Button
-                key={d}
-                small
-                selected={settings.difficulty === d}
-                aria-pressed={settings.difficulty === d}
-                onClick={() => settings.setDifficulty(d)}
-              >
-                {t.staff.difficulties[d]}
-              </Button>
-            ))}
-          </div>
           <h3>{t.staff.kiosk}</h3>
           <div className={styles.row}>
             <span className={styles.muted}>{t.staff.kioskHint}</span>
@@ -203,6 +188,38 @@ export function StaffMenu() {
             >
               {t.staff.attractNow}
             </Button>
+          </div>
+        </section>
+        <section className={`${styles.section} ${styles.wide}`}>
+          <h3>{t.staff.difficulty}</h3>
+          <p className={styles.muted}>{t.staff.difficultyHint}</p>
+          <div className={styles.tierRows}>
+            {GAME_IDS.filter(isImplemented).map((id) => (
+              <div
+                key={id}
+                className={styles.tierRow}
+                role="group"
+                aria-label={`${t.staff.difficulty}: ${t.places[id].name}`}
+              >
+                <span>{t.places[id].name}</span>
+                <div className={styles.group}>
+                  {TIERS.map((tier) => {
+                    const on = settings.tierDefaults[id] === tier
+                    return (
+                      <Button
+                        key={tier}
+                        small
+                        selected={on}
+                        aria-pressed={on}
+                        onClick={() => settings.setTierDefault(id, on ? null : tier)}
+                      >
+                        {t.tiers.names[tier]}
+                      </Button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>

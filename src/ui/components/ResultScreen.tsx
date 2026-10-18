@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react'
+import { useContext, type ReactNode } from 'react'
 import type { BoardSpec } from '../../core/leaderboard'
 import { useT } from '../i18n'
 import { Button } from './Button'
 import { LeaderboardPanel } from './Leaderboard'
+import { NextLabel } from './nextLabel'
 import { Overlay } from './Overlay'
 import styles from './Result.module.css'
 import { Stars } from './Stars'
@@ -43,6 +44,7 @@ interface ResultScreenProps {
  */
 export function ResultScreen(props: ResultScreenProps) {
   const t = useT()
+  const nextLabel = useContext(NextLabel)
   const { outcome, stars, record, stats, explanation, animation, leaderboard } = props
   return (
     <Overlay
@@ -57,7 +59,7 @@ export function ResultScreen(props: ResultScreenProps) {
           </Button>
           {props.onNext && (
             <Button variant="accent" onClick={props.onNext} data-autofocus>
-              {t.game.next}
+              {nextLabel ?? t.game.next}
             </Button>
           )}
         </>

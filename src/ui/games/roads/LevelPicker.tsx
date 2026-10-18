@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { LEVEL_IDS, mapOf, SETS, type RoadsMap } from '../../../core/games/roads/levels'
+import { LEVEL_IDS, mapOf, SETS, TIER_OF_SET, type RoadsMap } from '../../../core/games/roads/levels'
 import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { Overlay } from '../../components/Overlay'
 import { Stars } from '../../components/Stars'
+import { useT } from '../../i18n'
 import { loadLevel } from '../../levels'
 import styles from './Roads.module.css'
 import type { RoadsTexts } from './i18n.de'
@@ -34,7 +35,7 @@ function Preview({ map }: { map: RoadsMap }) {
   )
 }
 
-/** The fixed maps with their stars, set by set, and the random villages. */
+/** The fixed maps with their stars, set by set (one tier each), and the random villages (with "Leicht"). */
 export function LevelPicker({
   t,
   onPick,
@@ -44,6 +45,7 @@ export function LevelPicker({
   onPick: (level: number) => void
   onClose: () => void
 }) {
+  const shell = useT()
   const { level, stars } = useProgress()
   const [maps, setMaps] = useState<RoadsMap[] | null>(null)
   useEffect(() => {
@@ -60,7 +62,9 @@ export function LevelPicker({
       <div className={styles.picker}>
         {SETS.map(({ set, ids }) => (
           <section key={set} aria-label={t.sets[set]}>
-            <h3 className={styles.setTitle}>{t.sets[set]}</h3>
+            <h3 className={styles.setTitle}>
+              {shell.tiers.names[TIER_OF_SET[set]]} · {t.sets[set]}
+            </h3>
             <div className={styles.cards}>
               {ids.map((id, i) => {
                 const index = LEVEL_IDS.indexOf(id)
@@ -80,11 +84,13 @@ export function LevelPicker({
                 )
               })}
             </div>
+            {set === 'mst' && (
+              <Button variant="dashed" className={styles.random} onClick={() => onPick(LEVEL_IDS.length)}>
+                {t.picker.random}
+              </Button>
+            )}
           </section>
         ))}
-        <Button variant="dashed" onClick={() => onPick(LEVEL_IDS.length)}>
-          {t.picker.random}
-        </Button>
       </div>
     </Overlay>
   )

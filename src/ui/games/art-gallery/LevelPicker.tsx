@@ -1,7 +1,9 @@
 import type { ArtGalleryLevel } from '../../../core/levels/schema'
-import { EXPERT_LEVELS, MAIN_LEVELS, levelId, type LevelName } from '../../../core/games/art-gallery/rules'
+import { levelId, TIER_LEVELS, type LevelName } from '../../../core/games/art-gallery/rules'
+import { TIERS } from '../../../core/tiers'
 import { Overlay } from '../../components/Overlay'
 import { Stars } from '../../components/Stars'
+import { useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import styles from './ArtGallery.module.css'
 import { floorPath } from './paths'
@@ -51,7 +53,7 @@ function Card({
   )
 }
 
-/** All dungeons with their best result on this device; the expert set separately. */
+/** All dungeons with their best result on this device, in the three tiers ("Leicht", "Mittel", "Schwer"). */
 export function LevelPicker({
   t,
   onPick,
@@ -61,21 +63,23 @@ export function LevelPicker({
   onPick: (n: LevelName) => void
   onClose: () => void
 }) {
+  const shell = useT()
   return (
     <Overlay title={t.picker.title} onClose={onClose}>
       <div className={styles.picker}>
-        <h3>{t.picker.main}</h3>
-        <div className={styles.cards}>
-          {MAIN_LEVELS.map((name, i) => (
-            <Card key={name} name={name} index={i} t={t} onPick={() => onPick(name)} />
-          ))}
-        </div>
-        <h3>{t.picker.expert}</h3>
-        <div className={styles.cards}>
-          {EXPERT_LEVELS.map((name, i) => (
-            <Card key={name} name={name} index={i} t={t} onPick={() => onPick(name)} />
-          ))}
-        </div>
+        {TIERS.map((tier) => (
+          <section key={tier} aria-label={shell.tiers.names[tier]}>
+            <h3>
+              {shell.tiers.names[tier]}
+              {tier === 'hard' && ` · ${t.picker.expert}`}
+            </h3>
+            <div className={styles.cards}>
+              {TIER_LEVELS[tier].map((name, i) => (
+                <Card key={name} name={name} index={i} t={t} onPick={() => onPick(name)} />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
     </Overlay>
   )

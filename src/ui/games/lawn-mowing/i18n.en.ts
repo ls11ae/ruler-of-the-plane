@@ -33,6 +33,12 @@ export const en: LawnTexts = {
   hintPad: 'Hold an arrow: the mower drives. Mow everything and drive back to the start.',
   board: (lawn: string) => `Lawn ${lawn}`,
   pad: { up: 'up', down: 'down', left: 'left', right: 'right', undo: 'Step back' },
+  tierTeasers: {
+    easy: 'The front garden: small, with a pond and a tree – for practice.',
+    medium: 'Flower beds and fruit trees: larger lawns, more to plan.',
+    hard: "Here simple strategies are clearly worse than the solver's tours.",
+  },
+  resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'alone' : 'two players'}`,
   setup: {
     title: 'New game',
     lawn: 'Lawn',

@@ -810,6 +810,94 @@ their ends.
   have their own "So geht's" (shown once per device) with an animation of the leash winding round a
   trunk and coming free.
 
+### Phase 6: tiers at the start of each game, attract demos (2026-10-17)
+
+Kevin's playtest: he did not find the harder sets of "Straßenbau", which were only in the "Karten"
+overlay, and the same held for the harder levels of the other games. This session (one of four in
+parallel) changed how each game is entered and the attract screen; inside the games only the entry
+screens and pickers changed (in "Gassi gehen" nothing else, since another session works on its walk
+screens tonight).
+
+- **2026-10-17 (proposed) Every game opens on a tier screen.** The first screen of a game shows its
+  rules (the two or three sentences of "So geht's", its animation and keys) and three big cards
+  "Leicht", "Mittel", "Schwer", each with the set's name where it has one, a one-line teaser, the stars
+  collected on this device (with one to three bars, so not only the word tells the difficulty), and
+  "Weiterspielen" when there is progress. A card starts its tier at the first level without stars
+  (else the first). Since the screen shows the rules, the first level no longer opens with the "So
+  geht's" dialog: from the start map one click to playing. Only a set with new rules ("Kreuzungen",
+  "Zwei Sorten", the woods) still shows its own "So geht's" the first time. The screen appears every time
+  a game is opened from the map; "‹ Karte" leads back. On phones the text comes first, then the cards,
+  then the animation at full width (its labels stay at least 14 px). Shared code:
+  `components/TierScreen.tsx`, `core/tiers.ts`. Alternatives: a dialog over the first level (one click
+  more); tiers only in the picker (the problem Kevin had); skipping the screen when there is progress (at
+  the booth every visitor starts after the kiosk reset anyway, at home the screen offers "Weiterspielen").
+- **2026-10-17 (proposed) Which levels form the tiers.**
+  - "Straßenbau": "Leicht" = "Von Ort zu Ort" (minimum spanning tree, the eight maps and the random
+    villages), "Mittel" = "Kreuzungen" (Steiner tree), "Schwer" = "Zwei Sorten" (plane bichromatic
+    spanning tree; teaser: even researchers do not know yet how close a computer can always get to the
+    best network).
+  - "Gassi gehen": its tiers as they are (each first in the park, then in the woods).
+  - "Licht ins Verlies": the nine main dungeons by their order, the four for two or three torches as
+    "Leicht", the five for four to eight torches (mostly with pillars) as "Mittel"; "Für Profis" as
+    "Schwer". The header reads "Mittel 2 von 5 · Ziel: 4 Fackeln".
+  - "Rasenmähen": the tiers are lawns; the number of mowers stays the visitors' choice ("Allein" or "Zu
+    zweit" above the cards on a laptop, alone on phones), and stars count per lawn and number of mowers.
+    "Leicht" = Vorgarten (304 cells), "Mittel" = Gemüsegarten and Obstwiese (345 and 426 cells),
+    "Schwer" = Schlossgarten and Stadtpark, the two lawns where the best simple strategy is clearly worse
+    than the best tour both alone and with two mowers (18.1 and 13.5 %, 17.4 and 21.7 % above it; see
+    `levels/lawn-mowing/README.md`). The others come within about 6 % for one of the two counts
+    (Gemüsegarten with two mowers, Obstwiese alone) or are the smallest lawn. Alternatives: the ten
+    instances (lawn and number of mowers) as levels (a tier would decide whether one or two play, and
+    phones mow alone); "Schwer" by the README's 15 % mark (Gemüsegarten, Schlossgarten and Stadtpark alone,
+    only Stadtpark with two: the tiers would change with the choice of mowers).
+  - "Erobere das Land": the computer's strength ("Mittel" is the AI level `normal`), on the three maps in
+    order; a star for each map won against that strength. "Zu zweit spielen" beside "Weiterspielen"
+    starts a game of two; "Neu" opens the full setup as before, its strengths named like the tiers and
+    maps won at the chosen strength marked "gewonnen". The header names the strength.
+- **2026-10-17 Last tier per device, kiosk reset, staff suggestion.** The tier last played per game is
+  stored on the device (`rotp-tiers`) and marked "zuletzt gespielt" on the tier screen (the card also
+  gets the focus); the kiosk timeout clears it with the games' progress. The staff menu's single
+  difficulty (meant for computer opponents, used only by "Erobere das Land") became "Schwierigkeit beim
+  Start": a suggested tier per game, marked "empfohlen" while the device has no last tier (so after every
+  kiosk reset); a second click removes it. Stored settings of version 1 keep a changed difficulty as the
+  suggestion for "Erobere das Land". Alternatives: the staff's tier skipping the tier screen (visitors
+  should see that there is more); a global tier for all games (the games' tiers are not comparable).
+- **2026-10-17 After a tier's last level, the next tier.** "Nächstes Level" on the result screen of a
+  tier's last level reads "Weiter mit „Mittel“" and starts the next tier's first level ("Zwei Sorten"
+  leads on to the random villages, as before). The label comes from the game's entry through a React
+  context (`components/nextLabel.ts`), so the play screens need not know the tiers. "Erobere das Land"
+  offers the next map after a won game, after the third map the next strength; "Rasenmähen" the next lawn
+  in the order of the tiers.
+- **2026-10-17 The pickers show the tiers as sections.** "Straßenbau": "Leicht · Von Ort zu Ort" (with
+  the random villages), "Mittel · Kreuzungen", "Schwer · Zwei Sorten"; "Licht ins Verlies": "Leicht",
+  "Mittel", "Schwer · Für Profis"; "Rasenmähen" ("Neu"): the lawns in three columns with their stars;
+  "Erobere das Land" ("Neu"): the strengths; "Gassi gehen": its tier buttons as before.
+- **2026-10-17 Attract demos for all five games, in turn.** The attract screen shows one game's demo at a
+  time, full screen above a band with the game's name and tagline, "Komm spielen!", the prompt and the
+  "Mensch gegen Maschine" tally, and moves on when the demo is done (about 20–30 s; cut off after 40 s, a
+  failing demo is skipped). A demo gets `round` (to vary the level) and `onDone` (`AttractProps` in
+  `games/registry.ts`). Only precomputed solutions, nothing heavy while it plays:
+  - "Licht ins Verlies": torches placed one by one, the light spreading from each, the last dark spot
+    pulsing before the last torch lights it; four dungeons (3, 4, 5 and 8 torches, each the level's
+    number), the torches found offline by `scripts/art-gallery/demo-torches.ts` (a greedy cover on a
+    raster with restarts and a two-for-one swap, then the exact check; a unit test checks them). The
+    light of each prefix is computed once when the demo starts.
+  - "Erobere das Land": the computer against itself as before, now one map per turn.
+  - "Gassi gehen": the computer's walk (its optimal walk, computed once per walk as in the game) in the
+    park, with the free-space diagram beside it drawing the walk up to the current position.
+  - "Rasenmähen": the solver's tours mowing a lawn, all mowers at once.
+  - "Straßenbau": on a map of "Kreuzungen", Kruskal builds the shortest network from place to place,
+    road by road, the cheapest first (a road closing a ring flashes red); then junctions appear and
+    slide to their Steiner points (the Weiszfeld rounds of the result animation), where the 120° arcs
+    show.
+    The soak test now reads which demo plays (`data-demo`, `data-slot`) and how far it is (`data-step` of
+    each demo) and checks that all five had their turn. Alternatives: the old card in front of a demo (it
+    hid the diagrams); a fixed time per demo (stories of different lengths).
+- **2026-10-17 "Gassi gehen": tier texts and the current woods walk in files of their own.** Since another
+  session works on the walk screens and their texts tonight, the tier screen's texts are in
+  `i18n.tiers.de.ts` / `i18n.tiers.en.ts`, and the walk in the woods being played (so that
+  "Weiterspielen" returns there) in `stop.ts`. Fold the texts into `i18n.de.ts` once both are merged.
+
 ### Harder tiers ("Gassi gehen", 2026-10-17)
 
 Kevin played "Gassi gehen" and found the walks too easy. The numbers of every walk are in

@@ -3,7 +3,7 @@ import { WOODS, woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
 import type { WoodsId } from '../src/core/games/frechet/woods/shapes'
 import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { expectHeaderLaidOut, freshDevice, shot, startGame } from './helpers'
 
 freshDevice()
 
@@ -59,8 +59,7 @@ async function walkThroughTheWoods(
 }
 
 async function openWoods(page: Page, name: string, testInfo?: TestInfo) {
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
   await woods.scrollIntoViewIfNeeded()
@@ -140,8 +139,7 @@ test('the free start leash: wind the leash round the gate post, then see the sho
 }, testInfo) => {
   const walk = WOODS.find((w) => w.freeStart)!
   const best = walk.bestStart!
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet', 'Schwer')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
   await picker.getByRole('button', { name: 'Schwer', exact: true }).click()

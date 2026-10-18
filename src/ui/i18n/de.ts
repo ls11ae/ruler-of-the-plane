@@ -121,6 +121,16 @@ export const de = {
     mower1: 'Mäher 1',
     mower2: 'Mäher 2',
   },
+  tiers: {
+    names: { easy: 'Leicht', medium: 'Mittel', hard: 'Schwer' },
+    choose: 'Wie schwer?',
+    rules: "So geht's",
+    resume: 'Weiterspielen',
+    stars: (got: number, max: number) => `${got} von ${max} Sternen`,
+    last: 'zuletzt gespielt',
+    staff: 'empfohlen',
+    next: (tier: string) => `Weiter mit „${tier}“`,
+  },
   result: {
     won: 'Geschafft!',
     lost: 'Diesmal nicht',
@@ -151,7 +161,7 @@ export const de = {
   },
   attract: {
     prompt: 'Klick, tipp oder drück eine Taste!',
-    invite: 'Komm, spiel mit!',
+    come: 'Komm spielen!',
   },
   staff: {
     title: 'Personalmenü',
@@ -163,8 +173,8 @@ export const de = {
     notBuilt: 'noch nicht gebaut',
     on: 'an',
     off: 'aus',
-    difficulty: 'Schwierigkeit',
-    difficulties: { easy: 'Leicht', normal: 'Mittel', hard: 'Schwer' },
+    difficulty: 'Schwierigkeit beim Start',
+    difficultyHint: 'Vorschlag je Spiel, bis Besucher selbst wählen; nochmal klicken: kein Vorschlag.',
     kiosk: 'Kiosk-Modus',
     kioskHint: 'Nach 90 s ohne Eingabe zurück zum Startbild; Sprache wieder Deutsch.',
     data: 'Daten',

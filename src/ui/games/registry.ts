@@ -29,16 +29,27 @@ export function gameLoader(id: GameId): (() => Promise<GameModule>) | undefined 
   return loaders.get(id)
 }
 
-/**
- * Optionally, `src/ui/games/<id>/attract.tsx` default-exports a demo the attract screen of the kiosk mode
- * plays behind its text (e.g. the computer playing against itself). Discovered like the games.
- */
-const attractModules = import.meta.glob<GameModule>('./*/attract.tsx')
+/** What the attract screen gives a game's demo. */
+export interface AttractProps {
+  /** How often this game's demo has been shown since the attract screen opened (to vary the level). */
+  round: number
+  /** The demo has told its story (after about 20–30 s): the attract screen moves on to the next game. */
+  onDone: () => void
+}
 
-const attractLoaders = new Map<string, () => Promise<GameModule>>(
+export type AttractModule = { default: ComponentType<AttractProps> }
+
+/**
+ * Optionally, `src/ui/games/<id>/attract.tsx` default-exports a demo that the attract screen of the kiosk
+ * mode shows in turn with the other games' demos (e.g. the computer solving a level). Discovered like
+ * the games.
+ */
+const attractModules = import.meta.glob<AttractModule>('./*/attract.tsx')
+
+const attractLoaders = new Map<string, () => Promise<AttractModule>>(
   Object.entries(attractModules).map(([path, load]) => [path.split('/')[1]!, load]),
 )
 
-export function attractLoader(id: GameId): (() => Promise<GameModule>) | undefined {
+export function attractLoader(id: GameId): (() => Promise<AttractModule>) | undefined {
   return attractLoaders.get(id)
 }

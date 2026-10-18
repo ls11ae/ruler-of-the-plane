@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { freshDevice, shot } from './helpers'
+import { chooseTier, freshDevice, shot } from './helpers'
 import { serveTspBoards, tspBoardsAddress } from './tsp-boards'
 
 freshDevice()
@@ -19,7 +19,7 @@ freshDevice()
 const MINUTES = Number(process.env.SOAK_MINUTES ?? 15)
 /** A visitor comes every so many simulated minutes. */
 const VISITOR_EVERY = 7
-/** The demo must show a new castle (or a new map) at least this often, in simulated seconds. */
+/** The demo must move on (a step of its story, or the next game) at least this often, in simulated seconds. */
 const STUCK_AFTER_S = 60
 
 test.skip(({ isMobile }) => isMobile, 'the booth runs on laptops')
@@ -50,12 +50,12 @@ async function visit(page: Page, n: number) {
   const place = places[n % places.length]!
   await page.getByRole('link', { name: new RegExp(place) }).click()
   await expect(page.locator('header h1')).toBeVisible({ timeout: 15_000 })
-  // Through "So geht's" and a setup dialog, if the game shows them.
-  for (let i = 0; i < 2; i++) {
-    const go = page.getByRole('button', { name: "Los geht's!" })
-    if (!(await go.count())) break
-    await go.first().click()
-  }
+  // A game opens on its tier screen: one tier after the other, visitor by visitor.
+  const tiers = page.getByTestId('tier-screen')
+  if (await tiers.count()) await chooseTier(page, ['Leicht', 'Mittel', 'Schwer'][Math.floor(n / 6) % 3])
+  // Through a "So geht's" of a harder set, if the game shows one.
+  const go = page.getByRole('button', { name: "Los geht's!" })
+  if (await go.count()) await go.first().click()
   // One click into the middle of the screen and a key, as a curious visitor would.
   const size = page.viewportSize()!
   await page.mouse.click(size.width / 2, size.height / 2 + 40)
@@ -94,16 +94,21 @@ test(`the attract mode runs unattended for ${MINUTES} simulated minutes`, async 
   const attract = page.getByRole('dialog', { name: 'Ruler of the Plane' })
   await expect(attract).toBeVisible()
 
-  // What the demo shows: castles on the map behind the attract card (they restart with every map).
+  // What the demo shows: which game's demo (a new one every 20–30 s) and how far it is (`data-step`).
   const demoState = () =>
     page.evaluate(() => {
-      const images = document.querySelectorAll('[role="dialog"] image[href*="castle"]')
-      return images.length
+      const stage = document.querySelector('[role="dialog"] [data-demo]')
+      const step = stage?.querySelector('[data-step]')?.getAttribute('data-step') ?? ''
+      return {
+        game: stage?.getAttribute('data-demo') ?? '',
+        state: `${stage?.getAttribute('data-slot')}:${step}`,
+      }
     })
 
   const samples: Sample[] = []
   const visits: string[] = []
-  let lastState = -1
+  let lastState = ''
+  const demos = new Set<string>()
   let lastChange = 0
   let changes = 0
   let idleSince = 0
@@ -114,7 +119,8 @@ test(`the attract mode runs unattended for ${MINUTES} simulated minutes`, async 
     await page.waitForTimeout(15)
 
     if (await attract.count()) {
-      const state = await demoState()
+      const { game, state } = await demoState()
+      demos.add(game)
       if (state !== lastState) {
         lastState = state
         lastChange = s
@@ -139,15 +145,17 @@ test(`the attract mode runs unattended for ${MINUTES} simulated minutes`, async 
   samples.push(await measure(page, MINUTES))
   await shot(page, testInfo, 'soak-end')
 
-  const summary = { minutes: MINUTES, demoChanges: changes, visits, samples }
+  const summary = { minutes: MINUTES, demoChanges: changes, demos: [...demos], visits, samples }
   console.log(JSON.stringify(summary))
   await testInfo.attach('soak.json', {
     body: JSON.stringify(summary, null, 2),
     contentType: 'application/json',
   })
 
+  // Every game's demo had its turn.
+  expect([...demos].sort()).toEqual(['art-gallery', 'frechet', 'lawn-mowing', 'roads', 'voronoi'])
   // Nothing piles up: compare the end with the first sample after warming up (one round of visits).
-  // At least a new castle every 30 s on average (about one a second on a laptop).
+  // At least a change of the demo every 30 s on average (several a second while one plays).
   expect(changes).toBeGreaterThan(MINUTES * 2)
   const warm = samples.find((x) => x.minute >= Math.min(MINUTES / 2, VISITOR_EVERY * 6)) ?? samples[0]!
   const end = samples.at(-1)!
