@@ -90,6 +90,19 @@ export const en: ShellTexts = {
     hideFull: 'Hide licence texts',
     fullFailed: 'The licence texts could not be loaded.',
   },
+  legal: {
+    open: 'Imprint · Privacy',
+    title: 'Imprint and privacy',
+    intro:
+      'These games come from the Algorithm Engineering group (Chair 11) of Computer Science at TU Dortmund. They run entirely in your browser and send nothing: leaderboards and settings stay on this device.',
+    pages: {
+      imprint: 'Imprint',
+      privacy: 'Privacy notice',
+      accessibility: 'Accessibility statement',
+    },
+    scan: 'Scan the code with your phone to open the page.',
+    qr: (address: string) => `QR code for ${address}`,
+  },
   demo: {
     title: 'Workshop',
     subtitle: 'The building blocks shared by the games',

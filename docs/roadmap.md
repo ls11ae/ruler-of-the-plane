@@ -270,16 +270,37 @@ and the browser itself are not simulated).
 
 ## Phase 7: freeze and booth preparation (4–6 Nov)
 
+Prepared without the booth laptops on 2026-10-17 (see the decision log, Phase 7); what is left needs the
+laptops, Kevin or the tag.
+
 - Feature freeze and the tag `phase-7`; offline package for the booth laptops; a spare laptop. The package
   serves tsp-boards' build at `/tsp-boards/` next to the app on the same local server, and the app is
   built with `VITE_TSP_BOARDS_URL=/tsp-boards/`, so "Rundreise" works offline in its kiosk frame (see the
-  decision log, Phase 6).
+  decision log, Phase 6). — package done 2026-10-17: the workflow "Booth package" (`booth.yml`, by hand,
+  for `phase-*` tags and for changes of the package) builds it with tsp-boards downloaded from its site
+  and a PowerShell server, tests it on Windows (PowerShell 5.1, Chrome, Firefox) and Ubuntu (played
+  offline in Chromium and Firefox), and attaches `Stand-<tag>.zip` to the release of the tag
+  (`booth/README.md`). Open: the freeze, the tag, the spare laptop.
 - Start script for the Windows booth laptops that opens Chrome in kiosk mode on the local build;
-  touchpad gestures, sleep and system updates switched off.
+  touchpad gestures, sleep and system updates switched off. — done 2026-10-17: `Start-Stand.cmd` (Chrome
+  kiosk with its own profile, Firefox and Edge as fallbacks, a watchdog that reopens a closed browser,
+  screen kept awake, display/sleep/hibernate timeouts and the screen saver off and restored by
+  `Stop-Stand.cmd`, without admin rights); touchpad gestures, notifications and pausing Windows Update need
+  the Settings app and are in the checklist.
 - QR-code poster with the GitHub Pages URL; the Impressum and privacy notice of the Algorithm Engineering
-  Group (`https://ae.cs.tu-dortmund.de/`, Kevin) reachable from the landing page.
+  Group (`https://ae.cs.tu-dortmund.de/`, Kevin) reachable from the landing page. — done 2026-10-17:
+  poster A2 and card A6 as SVG and PDF (`npm run booth:print`, `docs/booth/`); "Impressum · Datenschutz"
+  on the start map with the Impressum, the privacy notice and the accessibility statement, as addresses
+  with QR codes in kiosk mode (proposed). Open: Kevin's OK, printing.
 - Cheat sheet for the booth staff: start, kiosk mode, staff menu, key test, fallback to the old version
-  at `kbuchin.github.io/ruler/`.
+  at `kbuchin.github.io/ruler/`. — done 2026-10-17: `docs/booth/spickzettel.md`, one A4 page as
+  `Spickzettel.pdf` in `docs/booth/` and in the package.
+- Texts for Kevin to proofread: every German text with its key and example values, and screenshots of
+  every screen at 1280 × 800. — done 2026-10-17: `docs/texts-de.md` (`npm run texts`, kept fresh by a
+  test) and the artifact `texte-screenshots` of the workflow "Texts". Open: Kevin's corrections.
+- Checklist for the first test on the booth laptops (the acceptance below, the real 2-hour run, key test,
+  mouse, sleep and updates). — done 2026-10-17: `docs/booth/checkliste-laptoptest.md` (also as PDF in the
+  package). Open: running it on every booth laptop and the spare one.
 
 Acceptance: the release runs offline on every booth laptop and the spare one from a cold start.
 

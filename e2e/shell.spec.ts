@@ -44,6 +44,23 @@ test('credits: from the start map, with the licence texts', async ({ page }, tes
   await expect(page.getByRole('heading', { name: 'Ruler of the Plane' })).toBeVisible()
 })
 
+test('Impressum and privacy: links, in kiosk mode addresses with QR codes', async ({ page }, testInfo) => {
+  await page.goto('./')
+  await page.getByRole('button', { name: 'Impressum · Datenschutz' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Impressum und Datenschutz' })
+  await expect(dialog.getByRole('link', { name: /Impressum/ })).toHaveAttribute(
+    'href',
+    'https://ae.cs.tu-dortmund.de/imprint/',
+  )
+  await shot(page, testInfo, 'legal')
+  await page.goto('./?kiosk')
+  await page.getByRole('dialog', { name: 'Ruler of the Plane' }).click()
+  await page.getByRole('button', { name: 'Impressum · Datenschutz' }).click()
+  await expect(dialog.getByRole('img', { name: /QR-Code/ })).toHaveCount(3)
+  await expect(dialog.getByRole('link')).toHaveCount(0)
+  await shot(page, testInfo, 'legal-kiosk')
+})
+
 test('demo page: board, tokens, how-to, result and leaderboard', async ({ page }, testInfo) => {
   await page.goto('./#/demo')
   const board = page.getByRole('img', { name: 'Werkstatt' })
