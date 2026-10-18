@@ -111,6 +111,7 @@ test('behind the beech: the leash catches on the trunk when the dog runs ahead',
   phone,
 }, testInfo) => {
   test.skip(phone, 'one project is enough for this check')
+  test.setTimeout(90_000)
   await openWoods(page, 'Hinterm Baum')
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('leash')).toContainText('von 6,1 m Leine')

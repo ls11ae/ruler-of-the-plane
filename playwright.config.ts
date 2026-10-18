@@ -72,11 +72,17 @@ if (installed(firefox)) {
 }
 if (installed(webkit)) {
   projects.push(
-    { name: 'laptop-webkit', testIgnore: chromiumOnly, use: { ...devices['Desktop Safari'], ...laptop } },
+    // Scale factor 1 as on the booth's Windows laptops (the preset is a Retina Mac: four times the
+    // pixels, which CI rasterises without a GPU, too slow for the walks); the phone as the others.
+    {
+      name: 'laptop-webkit',
+      testIgnore: chromiumOnly,
+      use: { ...devices['Desktop Safari'], ...laptop, deviceScaleFactor: 1 },
+    },
     {
       name: 'phone-webkit',
       testIgnore: chromiumOnly,
-      use: { ...devices['iPhone 13'], ...phone, deviceScaleFactor: 3, isMobile: true },
+      use: { ...devices['iPhone 13'], ...phone, isMobile: true },
     },
   )
 }
