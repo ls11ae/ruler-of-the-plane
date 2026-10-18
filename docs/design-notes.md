@@ -398,6 +398,85 @@ their ends.
   visitors).
 - **2026-10-17 No TU Dortmund floor plan as an art-gallery level** (Kevin).
 
+### Browsers and performance (Phase 6, 2026-10-18)
+
+Entries of the session that checked the browsers, the speed on weak laptops and the first visit on a
+phone; numbers in `docs/performance.md`.
+
+- **2026-10-18 Firefox and WebKit run the smoke tests in CI.** Four more Playwright projects,
+  `laptop-firefox`, `phone-firefox`, `laptop-webkit` and `phone-webkit` (1280 × 800 and 390 × 844, scale
+  factor 1 for laptops and 2 for phones, as in Chromium; Playwright's Retina preset made WebKit in CI draw
+  four times the pixels and time out). Firefox has no `isMobile`, so the specs branch on a new option
+  fixture `phone` (`e2e/fixtures.ts`); Firefox's phone has touch, a coarse pointer without hover (user
+  prefs, so `(pointer: coarse)` shows the on-screen controls) and an Android user agent; WebKit's phone is
+  an iPhone 13. The accessibility checks, the soak run and the benchmarks stay in Chromium (pixel contrast
+  is measured there; the rest needs the Chrome DevTools Protocol). CI runs each browser in its own job next
+  to the Chromium job, whose name stays; sessions cannot download the browsers and leave their projects
+  out. Every smoke test passes in all three engines; the fixes it took were the safe area, the drawing
+  speed and test time limits below. Alternatives: all browsers in one job (twice as long); Firefox's phone
+  without touch (it would test the laptop layout at phone width).
+- **2026-10-18 Phones keep the app inside the safe area.** The viewport no longer asks for
+  `viewport-fit=cover`, which let the page run under the notch, the home indicator and Safari's toolbars
+  although no style used `env(safe-area-inset-*)`: "‹ Karte" and the hold buttons could sit under the
+  notch in landscape, the bottom controls under the home bar in the home-screen app. Safari now keeps the
+  page in the safe area and fills the edges with its background. Alternatives: padding with
+  `env(safe-area-inset-*)` on every screen (each screen's height is `100dvh`; many files, for edges that
+  show only parchment).
+- **2026-10-18 Frame times are measured under CPU throttling, opt-in** (`e2e/bench.spec.ts`, `BENCH=1`).
+  Drags send one pointer move per animation frame, keyboard scenes hold keys as players do; the table
+  reports frames per second and the main thread's work per frame from a light trace, since sessions and CI
+  rasterise without a GPU (a worst case that throttling does not scale). Workers are not throttled by
+  Chromium (measured), so the computer's move is timed unthrottled on a fixed game in the app's worker and
+  multiplied by the rate. Not in CI: timings depend on the runner, and a benchmark that fails at random
+  would be ignored. Alternatives: Lighthouse (page loads only, needs the network); a fixed time limit in a
+  unit test (exists for the AI as a gross check, 1 s).
+- **2026-10-18 Static art in layers of its own** (shared: `Board` takes `under`, `over` and `front`). The
+  ink filter (an SVG displacement filter) is slow to rasterise, and a board was one picture, so a moving
+  torch or walker made the browser draw the filtered walls or park again in every frame. Static art now
+  goes to SVG layers of their own (same view, no pointer input, `will-change: transform`) that the browser
+  rasterises once; `front` holds tokens that must stay above static art, while pointer input goes through
+  to the board. Used by "Licht ins Verlies" (floor under, walls over, torches, hint and theory marks in
+  front; `Torches` split from `TorchControls`) and "Gassi gehen" (scenery and the footpath's outline
+  under; `PathLines` and `WalkedPaths` split from `Paths`, which still draws both). Dragging a torch among
+  17 on the largest dungeon: 47 instead of 36 frames per second at 6× without a GPU; the picture is the
+  same. Not used where measuring showed no need (lawn, roads, the Voronoi map). Alternatives: drawing the
+  outlines wobbly in geometry instead of a filter (a change of the look); a cached bitmap of the walls
+  (blurry when the window changes size).
+- **2026-10-18 The game header measures only when a part changes size** (shared: `GameHeader`). Its
+  layout effect depended on its ReactNode props, which are new in every render, so it forced a layout and
+  rebuilt its ResizeObserver in every frame of a drag or walk (the largest script cost in a profile of the
+  torch drag). Now one ResizeObserver and a MutationObserver for parts that appear or go.
+- **2026-10-18 "Schwer" computes its move about 2.5 times faster.** (1) The look-ahead stops checking the
+  opponent's answers to a tried move as soon as one beats it, strongest answers first: exact, the same 135
+  moves on fixed games, 35 % less time. (2) It estimates the opponent's answers on a raster with twice the
+  spacing (a quarter of the samples) and rates its own candidates on that raster first, only the best 24
+  on the fine one: "Schwer" won 41 of 60 seeded games against "Mittel" (42 before; +6.2 points on average,
+  +6.8 before) and 58 of 60 against "Leicht" (55 before). (3) The worker prepares the map and warms up while
+  the player places the first castle. First move on the river valley with 10 castles each in the browser's
+  worker: 29–34 ms (101 ms before, cold), about 135 ms at the 4× stand-in, under the Phase 2 target of
+  200 ms. Alternatives: a lower `LOOKAHEAD` or a coarser `RASTER_STEP` for everything (weaker play, less
+  exact scores for "Mittel" and the heat map); an exact update of each answer from the samples the tried
+  move takes (tried: no faster, early castles take half the map).
+- **2026-10-18 The parchment is a WebP** (35 instead of 723 kB, quality 85, made once with Pillow from
+  Kenney's CC0 PNG; listed in CREDITS.md with the change). It was more than all other bytes of the start
+  map together. On Slow 3G the start map is complete after 15.4 instead of 27.5 s, and the precache
+  shrinks from 2.0 to 1.36 MB. Alternatives: JPEG (89 kB at the same quality); a smaller texture (blurry
+  on large screens).
+- **2026-10-18 No preloads, no lazy shell screens** (measured). Preloading the fonts and the parchment made
+  the start map complete 1 s sooner but its first picture 4 s later (the fonts took bandwidth from the
+  script); loading credits, staff menu, key test and demo page on demand would save about 5 kB gzipped,
+  0.1 s on Slow 3G. The games already load when opened.
+- **2026-10-18 (proposed) The fonts as WOFF2.** They are now two thirds of the start map's bytes (293 kB
+  as TTF). WOFF2 holds the same font data, compressed: 98 kB, the start map complete after about 11.5
+  instead of 15.4 s on Slow 3G. The OFL FAQ allows a WOFF2 version without renaming as long as the font
+  data is unchanged, but `CLAUDE.md` says to use the font files unmodified, so this waits for Kevin.
+  Alternatives: keep TTF (GitHub Pages may compress them in transit; not measurable from a session);
+  `font-display: swap` (text at once in a fallback font, then a jump).
+- **2026-10-18 Test time limits for slow browsers.** A walk counts at most 50 ms per frame, so in a
+  browser that draws under 20 frames per second it runs in slow motion (fair to the player); WebKit in CI
+  did, before the park's layer and the scale factor above. "Behind the beech" now waits up to 40 s for
+  the dog (90 s test time). The game itself is unchanged.
+
 ### Track A ("Erobere das Land", "Rasenmähen")
 
 - **2026-10-16 Booth lawns for "Rasenmähen"**: five lawns of 304–462 cells (Vorgarten, Gemüsegarten,
