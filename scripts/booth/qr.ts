@@ -1,7 +1,6 @@
 /**
- * QR codes, encoded locally with qrcode-generator (MIT; a dev dependency, nothing is bundled): for the
- * posters (`print.ts`) and for the legal pages in kiosk mode, which the app shows from the generated
- * module `src/ui/shell/legalQr.ts`.
+ * QR codes, encoded locally with qrcode-generator (MIT; a dev dependency, nothing is bundled), for the
+ * legal pages in kiosk mode, which the app shows from the generated module `src/ui/shell/legalQr.ts`.
  *
  *   npm run qr        rewrites src/ui/shell/legalQr.ts from LEGAL_PAGES in src/ui/shell/legal.ts
  */

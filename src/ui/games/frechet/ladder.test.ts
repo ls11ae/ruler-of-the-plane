@@ -12,6 +12,7 @@ describe('"Nächstes Level"', () => {
     expect(nextStop({ kind: 'park', id: 'm4' })).toEqual({ kind: 'woods', id: 'wm1' })
     expect(nextStop({ kind: 'woods', id: 'wm3' })).toEqual({ kind: 'park', id: 's1' })
     expect(nextStop({ kind: 'park', id: 's4' })).toEqual({ kind: 'woods', id: 'ws1' })
-    expect(nextStop({ kind: 'woods', id: 'ws3' })).toBeUndefined()
+    expect(nextStop({ kind: 'woods', id: 'ws3' })).toEqual({ kind: 'woods', id: 'ws4' })
+    expect(nextStop({ kind: 'woods', id: 'ws4' })).toBeUndefined()
   })
 })

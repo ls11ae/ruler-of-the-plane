@@ -4,8 +4,10 @@ Source of truth for open work (see `CLAUDE.md`, "Working mode"). Work through th
 decisions in the decision log of `docs/design-notes.md`, and mark items done here ("— done <date>").
 
 Deadline: the booth at the TU Dortmund open house on **Saturday 7 November 2026**, run on laptops with
-mouse and keyboard. Phases 0–7 are the booth edition; Phase 8 is the backlog for afterwards. Every phase
-ends with a tag `phase-<n>` on `main`, so the booth can always fall back to the last working state.
+mouse and keyboard. Phases 0–7 are the booth edition; Phase 8 is the backlog for afterwards. Tags mark only
+booth releases (`phase-6` the laptop test, `phase-7` the feature freeze, `phase-7.1`, `phase-7.2` … later
+fixes; Kevin or Maike create them, see `docs/cloud-sessions.md`), so the booth can always fall back to
+the last release.
 
 After Phase 1, two tracks run in parallel, each in its own cloud session and branch:
 
@@ -161,7 +163,7 @@ target is measured on a booth laptop in the playtest (Phase 6).
   and the complexity of the free space), in the park and in the woods, where the trees must also make
   the shortest leash clearly longer and catch the computer's best walk without trees. A table of every
   walk's numbers for Kevin in `docs/gassi-walks.md`. — done 2026-10-17 (tiers, the measure of hard and
-  the generator proposed)
+  the generator agreed by Kevin 2026-10-18)
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
@@ -265,7 +267,7 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   far each, "Weiterspielen" when there is progress), one click from the start map to playing; the last
   tier per game remembered on the device (cleared by the kiosk reset), a suggested tier per game in the
   staff menu, "Weiter mit „Mittel“" after a tier's last level, the pickers in the same three sections.
-  — done 2026-10-17 (the tier mapping proposed, see the decision log, Phase 6)
+  — done 2026-10-17 (the tier mapping agreed by Kevin 2026-10-18, see the decision log, Phase 6)
 - Attract demos for all five games, shown in turn (about 20–30 s each, with the game's name and "Komm
   spielen!"), only precomputed solutions; the soak test checks all five. — done 2026-10-17
 - "Gassi gehen" (Kevin, after playing the harder tiers: the leash must really wind round trees, and
@@ -275,8 +277,15 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   map; a leash drawn with its real length that trembles when taut and snaps visibly; the free start
   leash as an expert puzzle on two "Schwer" woods walks (choose how the leash lies round the gate post;
   bar chart of the shortest leash per start); "Mittel" and "Schwer" woods walks regenerated with 3–8
-  trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all proposed, see the
-  decision log, "Winding in the woods")
+  trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all agreed by Kevin
+  2026-10-18, see the decision log, "Winding in the woods")
+- "Gassi gehen" (Kevin, 2026-10-18): one more "Schwer" woods walk where the free start is a real
+  trade-off: several start windings work, with clearly different shortest leashes; the best is not the
+  straight one, the straight one needs at least 15 % more, a third at most 1.5 times the best. — done
+  2026-10-18: "Schlossrunde", a round from the castle about a post beside the castle gate (a walk from
+  the gate to the castle cannot have two good starts; the round is proposed): best 3.45 m with the
+  leash wound twice, straight 4.72 m (+37 %), wound once 3.92 m (+14 %), three times 4.22 m (+22 %)
+  (`scripts/gassi/tradeoff.ts`; see the decision log, "Kevin's review").
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
@@ -310,11 +319,12 @@ laptops, Kevin or the tag.
   screen kept awake, display/sleep/hibernate timeouts and the screen saver off and restored by
   `Stop-Stand.cmd`, without admin rights); touchpad gestures, notifications and pausing Windows Update need
   the Settings app and are in the checklist.
-- QR-code poster with the GitHub Pages URL; the Impressum and privacy notice of the Algorithm Engineering
-  Group (`https://ae.cs.tu-dortmund.de/`, Kevin) reachable from the landing page. — done 2026-10-17:
-  poster A2 and card A6 as SVG and PDF (`npm run booth:print`, `docs/booth/`); "Impressum · Datenschutz"
-  on the start map with the Impressum, the privacy notice and the accessibility statement, as addresses
-  with QR codes in kiosk mode (proposed). Open: Kevin's OK, printing.
+- The Impressum and privacy notice of the Algorithm Engineering Group (`https://ae.cs.tu-dortmund.de/`,
+  Kevin) reachable from the landing page. — done 2026-10-17: "Impressum · Datenschutz" on the start map
+  with the Impressum, the privacy notice and the accessibility statement, as addresses with QR codes in
+  kiosk mode (agreed by Kevin 2026-10-18). No QR poster or card of our own: the print material of
+  tsp-boards covers Ruler of the Plane (Kevin, 2026-10-18; the poster A2, the card A6 and the A4 sheet of
+  cards made on 2026-10-17 were removed).
 - Cheat sheet for the booth staff: start, kiosk mode, staff menu, key test, fallback to the old version
   at `kbuchin.github.io/ruler/`. — done 2026-10-17: `docs/booth/spickzettel.md`, one A4 page as
   `Spickzettel.pdf` in `docs/booth/` and in the package.

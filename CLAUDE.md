@@ -23,19 +23,22 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
   `scripts/gassi/`; merged 2026-10-17). Phase 7 prepared without the laptops (2026-10-17): the offline
   booth package (`booth/`, workflow `booth.yml`, release asset for `phase-*` tags), Start-Stand.cmd and
-  Stop-Stand.cmd, QR poster and card, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
-  notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then
-  (2026-10-17, branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht",
-  "Mittel", "Schwer" with the rules, the stars so far and "Weiterspielen"; the tier mapping is
-  "proposed"), a suggested tier per game in the staff menu, and attract demos of all five games in turn.
-  Winding in the woods of "Gassi gehen" (thin posts the leash coils round, a camera following the
-  walkers, a livelier leash, the free start leash on two "Schwer" walks, regenerated woods tiers,
-  "Kürzere Leine"; all proposed, 2026-10-18). Browsers and performance (2026-10-18): the smoke tests run
-  in Chromium, Firefox and WebKit (Firefox and WebKit in CI), a benchmark measures frame times under CPU
-  throttling and the first visit on Slow 3G (`docs/performance.md`), static board art is drawn in layers
-  of its own, "Schwer" is about 2.5 times faster, the parchment is a WebP and the fonts are WOFF2. Open
-  are the items that need the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the
-  checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
+  Stop-Stand.cmd, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy notice and
+  accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then (2026-10-17,
+  branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht", "Mittel", "Schwer"
+  with the rules, the stars so far and "Weiterspielen"), a suggested tier per game in the staff menu, and
+  attract demos of all five games in turn. Winding in the woods of "Gassi gehen" (thin posts the leash
+  coils round, a camera following the walkers, a livelier leash, the free start leash on "Schwer" walks,
+  regenerated woods tiers, "Kürzere Leine"; 2026-10-18). Browsers and performance (2026-10-18): the smoke
+  tests run in Chromium, Firefox and WebKit (Firefox and WebKit in CI), a benchmark measures frame times
+  under CPU throttling and the first visit on Slow 3G (`docs/performance.md`), static board art is drawn
+  in layers of its own, "Schwer" is about 2.5 times faster, the parchment is a WebP and the fonts are
+  WOFF2. Kevin's review (2026-10-18, branch `claude/elegant-volta-r4km2d`): 18 of the 19 "proposed"
+  entries agreed, the QR poster and card rejected and removed (tsp-boards' print material covers this
+  game), tags only mark booth releases (`phase-6` = the laptop test), and a fourth "Schwer" woods walk
+  "Schlossrunde" whose free start is a real trade-off (a round from the castle, since no walk from the
+  gate to the castle can have two good starts; the round is "proposed"). Open are the items that need
+  the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
   the shared code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
@@ -50,8 +53,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   finished roadmap item. When the phase is done, or the session has to stop, end with a short report: a
   pull request title, a description listing what was done, any "proposed" decisions and any change to
   shared code, and what is left. The person running the session creates the pull request and merges it
-  when CI is green, checks the deployed site, and tags `main` as `phase-<n>` after the last merge of a
-  phase. A later session continues from `main`.
+  when CI is green and checks the deployed site. A later session continues from `main`.
+- **Tags only mark booth releases**: `phase-6` = the laptop test (created 2026-10-18 on `8a15816`),
+  `phase-7` = the feature freeze, `phase-7.1`, `phase-7.2` … = later fixes. Kevin or Maike create them on
+  the Releases page; a tag created there starts the workflow "Booth package", which attaches
+  `Stand-<tag>.zip` to the release. Sessions never create or ask for tags.
 - Cloud environment: Ubuntu, **Node 22** on the PATH (hence `.nvmrc` = 22; the stack needs ≥ 22.13),
   npm, git, Python with pip. Network access "Trusted": the npm registry, PyPI and GitHub work, most other
   sites (kenney.nl, CDNs, `*.github.io`) do not. That is why all art and fonts are already in `assets/`;
@@ -186,7 +192,7 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   `scripts/booth/` builds and tests the booth package and the print files, `scripts/texts/` writes
   `docs/texts-de.md` (run `npm run texts` after changing a German text; a test checks it).
 - `booth/` the Windows side of the offline booth package (server, start and stop scripts, `LIESMICH.txt`);
-  `docs/booth/` the booth papers (cheat sheet, laptop checklist, posters), German.
+  `docs/booth/` the booth papers (cheat sheet, laptop checklist), German.
 - `public/levels/` generated level JSON, committed.
 - `assets/` source art and fonts with their licence files; import what you use from code, Vite then
   bundles only the imported files. `assets/kenney/<pack>/` holds the subsets listed in `CREDITS.md`.

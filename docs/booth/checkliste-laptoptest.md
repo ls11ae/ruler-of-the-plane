@@ -17,8 +17,9 @@ Laptop: ____________________ Windows-Version: ____________ Chrome: ________ Fire
 - [ ] Maus angeschlossen; Touchpad: „Touchpad eingeschaltet lassen, wenn eine Maus angeschlossen ist“
       aus, oder Gesten mit drei und vier Fingern aus (Einstellungen → Bluetooth und Geräte → Touchpad).
 - [ ] Zuklappen des Deckels bei Netzbetrieb: „Nichts unternehmen“ (oder den Deckel offen lassen).
-- [ ] Stand-Paket aus dem Release `phase-7` geladen; ZIP: Rechtsklick → Eigenschaften → „Zulassen“, dann
-      „Alle extrahieren“; Ordner `Stand` auf den Desktop. `VERSION.txt` notiert: ____________________
+- [ ] Stand-Paket aus dem Release `phase-6` geladen (am Stand dann das neueste `phase-7…`); ZIP:
+      Rechtsklick → Eigenschaften → „Zulassen“, dann „Alle extrahieren“; Ordner `Stand` auf den Desktop.
+      `VERSION.txt` notiert: ____________________
 
 ## 2. Kaltstart ohne Internet (die Abnahme)
 

@@ -10,9 +10,12 @@ and the checklist for the first test on the laptops,
 ## Where it comes from
 
 The workflow [`booth.yml`](../.github/workflows/booth.yml) (Actions → "Booth package" → "Run workflow")
-builds the package and uploads it as the artifact `Stand-<version>`; for a tag `phase-*` it also
+builds the package and uploads it as the artifact `Stand-<version>`, and the cheat sheet and the
+checklist as PDFs as the artifact `Druckvorlagen` (no posters or cards: the print material of tsp-boards
+covers Ruler of the Plane, Kevin 2026-10-18); for a tag `phase-*` it also
 attaches `Stand-<tag>.zip` to the release of that tag (GitHub → Releases), which is where the booth gets
-it. It also runs for pushes that change this folder, `scripts/booth/` or the workflow. Cloud sessions
+it. Tags mark only booth releases (`phase-6` the laptop test, `phase-7` the feature freeze, `phase-7.1`,
+`phase-7.2` … later fixes); Kevin or Maike create them on the Releases page, which starts the workflow. It also runs for pushes that change this folder, `scripts/booth/` or the workflow. Cloud sessions
 cannot reach `*.github.io`, so everything that needs the deployed tsp-boards happens there.
 
 ```
@@ -89,7 +92,7 @@ cold start without network) is in the checklist.
 ```bash
 VITE_TSP_BOARDS_URL=/tsp-boards/ VITE_STAFF_PIN=<pin> npm run build
 npx tsx scripts/booth/fetch-tsp-boards.ts --out build/tsp-boards     # needs access to *.github.io
-npm run booth:print -- --out build/print
+npm run booth:print -- --out build/print                              # Spickzettel.pdf, Checkliste-Laptoptest.pdf
 npx tsx scripts/booth/assemble.ts --app dist --tsp build/tsp-boards --out build/Stand \
   --pdf build/print/Spickzettel.pdf --pdf build/print/Checkliste-Laptoptest.pdf
 PWSH=pwsh npx playwright test -c scripts/booth/playwright.config.ts

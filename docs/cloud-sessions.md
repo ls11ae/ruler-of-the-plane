@@ -46,11 +46,13 @@ Session runner (`mbuchin`):
   `.github/workflows/<name>.yml`).
 - Rule questions that change how a game plays go to Kevin; Claude marks them "proposed" in the decision
   log (`docs/design-notes.md`) and in the report.
-- After the last pull request of a phase, tag `main` as `phase-<n>` (GitHub → Releases → Draft a new
-  release). That tag is the booth's fallback. For a `phase-*` tag the workflow "Booth package" attaches
-  the offline package `Stand-phase-<n>.zip` to that release (after testing it on Windows); it also runs
-  by hand (Actions → Booth package → Run workflow) and uploads the package and the print files as
-  artifacts (`booth/README.md`).
+- Tags only mark booth releases: `phase-6` = the laptop test (created 2026-10-18 on `8a15816`),
+  `phase-7` = the feature freeze, `phase-7.1`, `phase-7.2` … = later fixes. Kevin or Maike create them on
+  the Releases page (GitHub → Releases → Draft a new release, a new tag on `main`); a tag created there
+  starts the workflow "Booth package", which tests the offline package on Windows and attaches
+  `Stand-<tag>.zip` to the release. The last release is the booth's fallback. Sessions never create or
+  ask for tags. The workflow also runs by hand (Actions → Booth package → Run workflow) and uploads the package and the print files (cheat sheet and laptop
+  checklist) as artifacts (`booth/README.md`).
 - Texts for proofreading: `docs/texts-de.md`, and the artifact `texte-screenshots` of the workflow
   "Texts" (every screen at 1280 × 800).
 

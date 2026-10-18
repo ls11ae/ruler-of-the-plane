@@ -296,7 +296,12 @@ function subpathPoints(path: Path, to: number): Vec2[] {
  * leash sweeps over and back during that walk, outside the area the two whole paths enclose, clear of
  * both paths, the gate, the castle and the posts. Sorted by how long the leash is caught there.
  */
-export function trunkSpots(rng: Rng, d: Design, walk: [number, number][], clearance: number): Vec2[] {
+export function trunkSpots(
+  rng: Rng,
+  d: Pick<Design, 'person' | 'dog' | 'trunks'>,
+  walk: [number, number][],
+  clearance: number,
+): Vec2[] {
   const P = makePath(d.person)
   const Q = makePath(d.dog)
   const ring = [...d.person, ...[...d.dog].reverse()]

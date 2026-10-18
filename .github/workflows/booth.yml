@@ -8,7 +8,7 @@ name: Booth package
 #   then Start-Stand.cmd and Stop-Stand.cmd with Chrome and with Firefox.
 # - Ubuntu: builds the package, tests the server under pwsh, plays it in Chromium and Firefox with
 #   every request to another host blocked, and uploads it as the artifact "Stand-<version>" (the
-#   artifact's ZIP is the package) together with the print files (posters, cheat sheet). For a tag
+#   artifact's ZIP is the package) together with the print files (cheat sheet, checklist). For a tag
 #   phase-* it also attaches Stand-<tag>.zip to the release of the tag.
 #
 # Runs by hand (Actions → Booth package → Run workflow), for tags phase-*, and for pushes that change
@@ -99,7 +99,7 @@ jobs:
       - name: Download tsp-boards
         run: npx tsx scripts/booth/fetch-tsp-boards.ts --url "$TSP_BOARDS_URL" --out build/tsp-boards
       - run: npx playwright install --with-deps chromium firefox
-      - name: Print files (posters, card, cheat sheet, checklist)
+      - name: Print files (cheat sheet, checklist)
         run: npm run booth:print -- --out build/print
       - name: Assemble
         run: >-
@@ -119,7 +119,7 @@ jobs:
           name: ${{ steps.name.outputs.name }}
           path: build/Stand/
           retention-days: 90
-      - name: Upload the print files
+      - name: Upload the print files (cheat sheet, checklist)
         uses: actions/upload-artifact@v7
         with:
           name: Druckvorlagen

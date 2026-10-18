@@ -51,7 +51,6 @@
     "jsdom": "^29.1.1",
     "jsqr": "^1.4.0",
     "marked": "^18.1.1",
-    "opentype.js": "^2.0.0",
     "prettier": "^3.9.10",
     "qrcode-generator": "^2.0.4",
     "tsx": "^4.23.15",

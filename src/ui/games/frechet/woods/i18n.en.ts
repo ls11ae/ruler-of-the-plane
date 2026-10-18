@@ -21,8 +21,10 @@ export const woodsEn: WoodsTexts = {
     ws1: 'Tied at the gate',
     ws2: 'The gate post',
     ws3: 'Fox den',
+    ws4: 'Castle round',
   },
   board: (leash: number) => `Woods: two paths to the castle between trees, leash ${metres(leash)}`,
+  round: 'Start and goal',
   caught: 'The leash is caught on a tree.',
   caughtPost: 'The leash is caught on a post.',
   coiledTitle: (n: number) => `Leash wound up ${n}×!`,
@@ -61,6 +63,8 @@ export const woodsEn: WoodsTexts = {
     length: (m: number) => `Leash at the start: ${metres(m)}`,
     howTo:
       'Here you choose before the first step how the leash lies round the post at the gate. Look at the dog’s path!',
+    howToRound:
+      'Here you choose before the first step how the leash lies round the post at the castle. Look at where the dog runs its laps!',
     explanation: (k: number) =>
       `You could choose how the leash lies at the start. The homotopic Fréchet distance is the shortest leash over all the ways it can lie – here with the leash ${k === 0 ? 'straight' : `wound ${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'} round the post`} at the start.`,
   },

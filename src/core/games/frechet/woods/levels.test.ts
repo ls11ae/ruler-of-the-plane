@@ -231,4 +231,24 @@ describe('walks in the woods', () => {
       expect(straight.computer).toEqual(walk.starts![0]!.computer)
     }
   })
+
+  it('the castle round: a real trade-off between the starts, none of them straight the best', () => {
+    const walk = WOODS.find((w) => w.id === 'ws4')!
+    expect(walk.round).toBe(true)
+    // Both start close to the post at the castle and end near it.
+    const post = walk.trunks[walk.freeStart!.post]!.at
+    const near = (p: Vec2) => Math.hypot(p[0] - post[0], p[1] - post[1])
+    for (const p of [walk.person[0]!, walk.dog[0]!, walk.person.at(-1)!, walk.dog.at(-1)!])
+      expect(near(p)).toBeLessThan(3.5)
+    const best = walk.bestStart!
+    const ratio = (k: number) => walk.starts![k]!.target / walk.target
+    expect(best).not.toBe(0)
+    // The straight start works, but needs at least 15 % more leash; at least one more start needs at
+    // most 1.5 times the best: three starts work, with clearly different leashes.
+    expect(ratio(0)).toBeGreaterThanOrEqual(1.15)
+    expect(ratio(0)).toBeLessThanOrEqual(1.5)
+    const others = START_WINDINGS.filter((k) => k !== 0 && k !== best).map(ratio)
+    expect(Math.min(...others)).toBeLessThanOrEqual(1.5)
+    expect(Math.min(...others)).toBeGreaterThan(1.05)
+  })
 })

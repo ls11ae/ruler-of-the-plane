@@ -45,11 +45,12 @@ erkennt, an diesem Laptop nur allein spielen lassen.
 
 - **Alte Version** (Unity, braucht Internet): `kbuchin.github.io/ruler` in einem normalen Browserfenster.
 - **Online-Version** für die Handys der Besucher: `ls11ae.github.io/ruler-of-the-plane` (QR-Code auf dem
-  Plakat und den Karten).
+  Druckmaterial von tsp-boards).
 
 ## Wo liegt was
 
-- **Stand-Paket:** GitHub → `ls11ae/ruler-of-the-plane` → Releases → `phase-7` → `Stand-phase-7.zip`
-  (am besten auch auf einem USB-Stick). Rechtsklick → „Alle extrahieren“, Ordner auf den Desktop.
+- **Stand-Paket:** GitHub → `ls11ae/ruler-of-the-plane` → Releases → das neueste `phase-7…` (`phase-7`,
+  `phase-7.1`, …) → `Stand-<Tag>.zip` (am besten auch auf einem USB-Stick). Rechtsklick → „Alle
+  extrahieren“, Ordner auf den Desktop.
 - **Bestenlisten und Einstellungen** liegen pro Laptop und Browser in `%LOCALAPPDATA%\RulerOfThePlane`;
   sie überstehen einen Neustart und zählen nur für heute.
