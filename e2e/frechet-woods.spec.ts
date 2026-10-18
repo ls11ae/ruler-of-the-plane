@@ -118,7 +118,8 @@ test('behind the beech: the leash catches on the trunk when the dog runs ahead',
   const set = controls(page, false)
   await set('person', true)
   await set('dog', true)
-  await expect.poll(async () => (await position(page))[1], { timeout: 15_000 }).toBeGreaterThan(16)
+  // A slow browser walks in slow motion (a frame counts at most 50 ms): give it time (WebKit in CI).
+  await expect.poll(async () => (await position(page))[1], { timeout: 40_000 }).toBeGreaterThan(16)
   await set('person', false)
   await expect(page.getByTestId('park')).toHaveAttribute('data-caught', 'true', { timeout: 10_000 })
   await expect(page.locator('[data-touched]')).toHaveCount(1)

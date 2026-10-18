@@ -403,15 +403,19 @@ for (const rate of RATES) {
     await throttle(page, rate)
     const ms = await page.evaluate(
       async ([url, requests]) => {
-        const w = new Worker(url, { type: 'module' })
+        let w = new Worker(url, { type: 'module' })
         const ask = (request: unknown) =>
           new Promise<number>((resolve, reject) => {
             w.onmessage = (e: MessageEvent<{ ms: number }>) => resolve(e.data.ms)
             w.onerror = (e) => reject(new Error(e.message))
             w.postMessage(request)
           })
-        // As in the game: the worker prepares the map while the player places the first castle.
-        await ask({ kind: 'warm', id: 0, level: requests[0]!.level })
+        // As in the game: the worker prepares the map while the player places the first castle. Builds
+        // from before 2026-10-18 have no warm-up: their first move starts cold, as it did in the game.
+        await ask({ kind: 'warm', id: 0, level: requests[0]!.level }).catch(() => {
+          w.terminate()
+          w = new Worker(url, { type: 'module' })
+        })
         const out: number[] = []
         for (const [i, request] of requests.entries())
           out.push(await ask({ kind: 'move', id: i + 1, ...request }))
