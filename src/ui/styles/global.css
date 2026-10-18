@@ -63,7 +63,7 @@ body,
 }
 
 body {
-  background: var(--parchment) url('../../../assets/kenney/cartography-pack/textures/parchmentFolded.png')
+  background: var(--parchment) url('../../../assets/kenney/cartography-pack/textures/parchmentFolded.webp')
     center / cover fixed;
   overflow: hidden;
   overscroll-behavior: none;
