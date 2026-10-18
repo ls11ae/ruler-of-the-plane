@@ -15,7 +15,9 @@ import { expect, test, type Page } from './fixtures'
  * Frame times of the heaviest scenes under Chromium's CPU throttling (a stand-in for weak booth laptops),
  * printed as a table. Opt-in, since the numbers depend on the machine:
  * `npm run build && BENCH=1 npx playwright test bench --project=laptop --workers=1`
- * (`BENCH_RATES=1,4,6` sets the throttling rates, `BENCH_TRACE_DIR=<dir>` keeps the traces).
+ * (`BENCH_RATES=1,4,6` sets the throttling rates, `BENCH_TRACE_DIR=<dir>` keeps the traces,
+ * `BENCH_PROFILE=<file>` saves a CPU profile of the torch drag, and `BENCH_DIST=<dir>` names the build that
+ * an already running `vite preview` serves, e.g. an older version to compare with).
  *
  * Two numbers per scene. "fps" is what this machine shows; in a cloud session or CI there is no GPU, so
  * Chromium rasterises in software, which CPU throttling does not slow down, and which a laptop's GPU does
@@ -275,8 +277,15 @@ for (const rate of RATES) {
       return { x: from.x + f * (to.x - from.x), y: from.y + f * (to.y - from.y) }
     })
     await throttle(page, rate)
+    const cdp = process.env.BENCH_PROFILE ? await page.context().newCDPSession(page) : null
+    if (cdp) {
+      await cdp.send('Profiler.enable')
+      await cdp.send('Profiler.start')
+    }
     await startMeasure(page)
     await dragPerFrame(page, 'svg[role=img] rect[fill="transparent"]', path)
+    if (cdp)
+      writeFileSync(process.env.BENCH_PROFILE!, JSON.stringify((await cdp.send('Profiler.stop')).profile))
     report('Licht ins Verlies: drag, 17 torches', rate, await stopMeasure(page, `art-gallery-${rate}x`))
   })
 
@@ -387,7 +396,9 @@ for (const rate of RATES) {
     // run and every version times the same moves.
     const level = json<VoronoiLevel>('voronoi/map2-river-valley')
     const requests = schwerGame(level)
-    const worker = readdirSync('dist/assets').find((f) => /^voronoi-ai-.*\.js$/.test(f))!
+    const worker = readdirSync(`${process.env.BENCH_DIST ?? 'dist'}/assets`).find((f) =>
+      /^voronoi-ai-.*\.js$/.test(f),
+    )!
     await page.goto('./')
     await throttle(page, rate)
     const ms = await page.evaluate(
