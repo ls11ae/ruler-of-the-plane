@@ -3,13 +3,14 @@ import { mulberry32 } from '../../random'
 import { candidatePositions, chooseMove, swingGrid, type AiContext, type AiLevel } from './ai'
 import { prepareMap } from './map'
 import { VORONOI_MAPS } from './maps.fixture'
-import { makeRaster, Territory } from './raster'
+import { coarseRaster, makeRaster, Territory } from './raster'
 import { minDistance, placementProblem, type Castle } from './rules'
 import { playComputerGame } from './simulate'
 
+// As the worker prepares them (service.ts), with the coarse raster for the look-ahead of "Schwer".
 const contexts: AiContext[] = VORONOI_MAPS.map((level) => {
   const map = prepareMap(level)
-  return { map, raster: makeRaster(map) }
+  return { map, raster: makeRaster(map), coarse: coarseRaster(map) }
 })
 
 describe('computer moves', () => {

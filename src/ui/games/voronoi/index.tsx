@@ -118,6 +118,11 @@ function Match({
   const humanTurn = !over && !computerTurn
   const exact = useMemo(() => exactScores(map, castles), [map, castles])
 
+  // The computer's worker prepares the map while the player places the first castle.
+  useEffect(() => {
+    if (vsComputer) void askAi({ kind: 'warm', level })
+  }, [vsComputer, level])
+
   const flash = (text: string) => {
     setNotice(text)
     window.clearTimeout(noticeTimer.current)

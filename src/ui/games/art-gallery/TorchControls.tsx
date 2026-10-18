@@ -26,7 +26,6 @@ export const TOUCH_LIFT_PX = 64
 interface TorchControlsProps {
   level: ArtGalleryLevel
   torches: readonly PlacedTorch[]
-  drag: DragState | null
   hovered: number | null
   /** Radius of a drawn torch in pixels (at least 22: 44 px targets). */
   radiusPx: number
@@ -41,12 +40,11 @@ interface TorchControlsProps {
 /**
  * Pointer input on the dungeon: tap or click on the floor places a torch, dragging a torch moves it,
  * dropping it off the floor or on the bucket removes it. With touch the dragged torch floats above the
- * finger. Also draws the torches.
+ * finger. {@link Torches} draws them.
  */
 export function TorchControls(props: TorchControlsProps) {
-  const { level, torches, drag, hovered, radiusPx } = props
+  const { level, torches, hovered, radiusPx } = props
   const board = useBoard()
-  const radius = board.pxToBoard(radiusPx)
   const hitRadius = board.pxToBoard(Math.max(radiusPx + 4, 26))
   const [grab, setGrab] = useState<{ id: number; offset: Vec2; touch: boolean } | null>(null)
 
@@ -99,6 +97,33 @@ export function TorchControls(props: TorchControlsProps) {
 
   const b = level.bounds
   return (
+    <rect
+      x={b.minX - 20}
+      y={b.minY - 20}
+      width={b.maxX - b.minX + 40}
+      height={b.maxY - b.minY + 40}
+      fill="transparent"
+      style={{ cursor: grab ? 'grabbing' : hovered !== null ? 'grab' : 'crosshair' }}
+      {...gesture}
+      onPointerMove={(e) => {
+        gesture.onPointerMove(e)
+        if (!grab && e.pointerType === 'mouse')
+          props.onHover(torchAt(board.toBoard(e.clientX, e.clientY))?.id ?? null)
+      }}
+      onPointerLeave={() => props.onHover(null)}
+    />
+  )
+}
+
+/** The torches, the dragged one where it is now (drawn above the walls, see {@link TorchControls}). */
+export function Torches({
+  torches,
+  drag,
+  hovered,
+  radiusPx,
+}: Pick<TorchControlsProps, 'torches' | 'hovered' | 'radiusPx'> & { drag: DragState | null }) {
+  const radius = useBoard().pxToBoard(radiusPx)
+  return (
     <>
       {torches.map((t) => {
         const dragged = drag?.id === t.id
@@ -113,21 +138,6 @@ export function TorchControls(props: TorchControlsProps) {
             : 'idle'
         return <Torch key={t.id} at={dragged ? drag.at : t.at} radius={radius} state={state} />
       })}
-      <rect
-        x={b.minX - 20}
-        y={b.minY - 20}
-        width={b.maxX - b.minX + 40}
-        height={b.maxY - b.minY + 40}
-        fill="transparent"
-        style={{ cursor: grab ? 'grabbing' : hovered !== null ? 'grab' : 'crosshair' }}
-        {...gesture}
-        onPointerMove={(e) => {
-          gesture.onPointerMove(e)
-          if (!grab && e.pointerType === 'mouse')
-            props.onHover(torchAt(board.toBoard(e.clientX, e.clientY))?.id ?? null)
-        }}
-        onPointerLeave={() => props.onHover(null)}
-      />
     </>
   )
 }

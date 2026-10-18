@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { readFileSync } from 'node:fs'
 import { mapOf } from '../src/core/games/roads/levels'
 import { kruskal } from '../src/core/games/roads/mst'
@@ -53,7 +53,7 @@ async function reopen(page: Page, game: keyof typeof shell.places) {
 }
 
 for (const [game, starts] of Object.entries(STARTS)) {
-  test(`${game}: the tier screen starts each tier`, async ({ page, isMobile }, testInfo) => {
+  test(`${game}: the tier screen starts each tier`, async ({ page, phone }, testInfo) => {
     await page.goto(`./#/play/${game}`)
     const tiers = page.getByTestId('tier-screen')
     for (const tier of TIERS)
@@ -61,7 +61,7 @@ for (const [game, starts] of Object.entries(STARTS)) {
     // A fresh device: nothing to continue, no tier marked.
     await expect(tiers.getByRole('button', { name: /^Weiterspielen/ })).toHaveCount(0)
     await expect(tiers.getByText('zuletzt gespielt')).toHaveCount(0)
-    if (!isMobile) await expectHeaderLaidOut(page)
+    if (!phone) await expectHeaderLaidOut(page)
     await shot(page, testInfo, `tiers-${game}`)
     for (const tier of TIERS) {
       // Through the start map: the same address again would not open the game anew.
@@ -88,9 +88,9 @@ for (const [game, starts] of Object.entries(STARTS)) {
 
 test('"Weiterspielen", the tier played last, the kiosk reset and the staff suggestion', async ({
   page,
-  isMobile,
+  phone,
 }, testInfo) => {
-  test.skip(isMobile, 'one project is enough for the stored state')
+  test.skip(phone, 'one project is enough for the stored state')
   await page.clock.install()
   await page.goto('./#/play/roads')
   await chooseTier(page, 'Mittel')
@@ -141,7 +141,7 @@ test('"Weiterspielen", the tier played last, the kiosk reset and the staff sugge
   await expect(tiers.getByRole('button', { name: /^Schwer/ })).toContainText('empfohlen')
 })
 
-test('after the last map of "Leicht", the result offers "Mittel"', async ({ page, isMobile }, testInfo) => {
+test('after the last map of "Leicht", the result offers "Mittel"', async ({ page, phone }, testInfo) => {
   test.setTimeout(120_000)
   const level = JSON.parse(
     readFileSync(new URL('../public/levels/kings-taxes/tsp/ktLevel3.json', import.meta.url), 'utf8'),
@@ -159,7 +159,7 @@ test('after the last map of "Leicht", the result offers "Mittel"', async ({ page
   ])
   await picker.getByRole('button', { name: 'Von Ort zu Ort: Karte 8' }).click()
   await expect(page.locator('header')).toContainText('Karte 8 von 8')
-  for (const [a, b] of kruskal(map.points).roads) await drag(page, map.points[a]!, map.points[b]!, isMobile)
+  for (const [a, b] of kruskal(map.points).roads) await drag(page, map.points[a]!, map.points[b]!, phone)
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible()
   const next = result.getByRole('button', { name: 'Weiter mit „Mittel“' })

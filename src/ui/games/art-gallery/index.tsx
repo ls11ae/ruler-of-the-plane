@@ -36,7 +36,7 @@ import { makeLighting } from './lighting'
 import { useProgress } from './store'
 import { ArtGalleryTiers } from './Tiers'
 import { TheoryLayer, TheoryPanel, type TheoryLayers } from './Theory'
-import { TorchControls, type DragState, type PlacedTorch } from './TorchControls'
+import { TorchControls, Torches, type DragState, type PlacedTorch } from './TorchControls'
 import { TrashIcon } from './TrashIcon'
 import { useMedia } from './useMedia'
 
@@ -99,6 +99,7 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
   const resultTimer = useRef<number | undefined>(undefined)
   const touch = useMedia('(pointer: coarse)')
   const narrow = useMedia('(max-width: 720px)')
+  const radiusPx = touch ? 22 : 18
   const k = level.torches
   const { tier, index, count } = tierPosition(TIER_LEVELS, name)!
 
@@ -194,23 +195,34 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
       />
       <main className={styles.main}>
         <div className={styles.boardArea}>
-          <Board bounds={level.bounds} padding={0.35} autoRotate label={t.board(k)}>
-            <DungeonFloor level={level} />
+          <Board
+            bounds={level.bounds}
+            padding={0.35}
+            autoRotate
+            label={t.board(k)}
+            // Floor and walls are drawn once, in layers of their own (the ink filter is slow to draw);
+            // the light changes between them, torches and marks stay above the walls.
+            under={<DungeonFloor level={level} />}
+            over={<DungeonWalls level={level} />}
+            front={
+              <>
+                {theory && <TheoryLayer level={level} layers={layers} visibility={light.visibility} />}
+                {hint && <DarkHint at={hint.at} />}
+                <Torches torches={torches} drag={drag} hovered={hovered} radiusPx={radiusPx} />
+              </>
+            }
+          >
             <LightLayer
               torches={shown}
               visibility={light.visibility}
               dark={light.coverage.fullyLit ? [] : light.coverage.dark}
               outline={outline}
             />
-            <DungeonWalls level={level} />
-            {theory && <TheoryLayer level={level} layers={layers} visibility={light.visibility} />}
-            {hint && <DarkHint at={hint.at} />}
             <TorchControls
               level={level}
               torches={torches}
-              drag={drag}
               hovered={hovered}
-              radiusPx={touch ? 22 : 18}
+              radiusPx={radiusPx}
               canAdd={torches.length < MAX_TORCHES}
               isOverTrash={(x, y) => {
                 const r = trash.current?.getBoundingClientRect()

@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { expect, test, type Page, type TestInfo } from './fixtures'
 
 /**
  * Saves a screenshot to `screenshots/<project>/<name>.png` (uploaded by CI). Animations and transitions

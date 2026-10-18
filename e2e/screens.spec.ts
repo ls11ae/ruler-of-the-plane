@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 import { freshDevice, shot, startGame } from './helpers'
 
 /**
@@ -8,7 +8,7 @@ import { freshDevice, shot, startGame } from './helpers'
  */
 freshDevice()
 
-test.skip(({ isMobile }) => isMobile, 'the texts are proofread at 1280 × 800')
+test.skip(({ phone }) => phone, 'the texts are proofread at 1280 × 800')
 
 test('credits, lower part', async ({ page }, testInfo) => {
   await page.goto('./#/credits')

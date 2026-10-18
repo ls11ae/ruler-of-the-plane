@@ -13,6 +13,19 @@ interface BoardProps {
    */
   autoRotate?: boolean
   children: ReactNode
+  /**
+   * Static art drawn below `children`, in a layer of its own: the browser keeps its pixels while the
+   * board changes (dragging, walking), instead of drawing it again every frame. Use it for art under an
+   * ink filter (floor, park, land), which is slow to draw.
+   */
+  under?: ReactNode
+  /** Static art drawn above `children` in a layer of its own (e.g. walls with the ink filter). */
+  over?: ReactNode
+  /**
+   * Drawn above `over` (tokens that must stay on top of the static art); pointer input goes through it
+   * to the board below.
+   */
+  front?: ReactNode
   className?: string
   /** Accessible description of the board. */
   label?: string
@@ -33,6 +46,9 @@ export function Board({
   padding = 0,
   autoRotate = false,
   children,
+  under,
+  over,
+  front,
   className,
   label,
   ...handlers
@@ -85,14 +101,21 @@ export function Board({
   // rotate(90) maps (x, y) to (−y, x): the turned board spans x′ ∈ [−(y + h), −y], y′ ∈ [x, x + w].
   const viewBox = rotated ? `${-(y + h)} ${x} ${h} ${w}` : `${x} ${y} ${w} ${h}`
 
-  return (
+  const rotate = rotated ? 'rotate(90)' : undefined
+  const board = (
     <svg
       ref={svg}
       viewBox={viewBox}
       data-rotated={rotated || undefined}
       preserveAspectRatio="xMidYMid meet"
       className={className}
-      style={{ display: 'block', width: '100%', height: '100%', touchAction: 'none' }}
+      style={{
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        touchAction: 'none',
+        position: under || over || front ? 'relative' : undefined,
+      }}
       role="img"
       aria-label={label}
       {...handlers}
@@ -116,9 +139,40 @@ export function Board({
           />
         </filter>
       </defs>
-      <g ref={content} transform={rotated ? 'rotate(90)' : undefined}>
+      <g ref={content} transform={rotate}>
         <BoardContext.Provider value={api}>{children}</BoardContext.Provider>
       </g>
     </svg>
+  )
+  if (!under && !over && !front) return board
+
+  // The layers: same view, no pointer input, each on its own compositing layer (will-change).
+  const layer = (art: ReactNode) => (
+    <svg
+      viewBox={viewBox}
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+      focusable="false"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        willChange: 'transform',
+      }}
+    >
+      <g transform={rotate}>
+        <BoardContext.Provider value={api}>{art}</BoardContext.Provider>
+      </g>
+    </svg>
+  )
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {under && layer(under)}
+      {board}
+      {over && layer(over)}
+      {front && layer(front)}
+    </div>
   )
 }

@@ -53,12 +53,23 @@ export function GameHeader({ title, subtitle, status, actions }: GameHeaderProps
     if (!el) return
     const measure = () => setWrapped(oneLineWidth(el) > el.clientWidth + 0.5)
     measure()
-    // Re-measure when the window or a part's content changes size (e.g. a counter gets a digit).
+    // Re-measure when the window or a part's content changes size (e.g. a counter gets a digit), and
+    // watch parts that appear or go (a button, a subtitle). Not on every render: measuring forces a
+    // layout, and a game re-renders its header in every frame of a drag.
     const observer = new ResizeObserver(measure)
-    observer.observe(el)
-    for (const part of el.querySelectorAll(':scope > [data-part] > *')) observer.observe(part)
-    return () => observer.disconnect()
-  }, [status, actions, title, subtitle])
+    const observe = () => {
+      observer.disconnect()
+      observer.observe(el)
+      for (const part of el.querySelectorAll(':scope > [data-part] > *')) observer.observe(part)
+    }
+    observe()
+    const mutations = new MutationObserver(observe)
+    mutations.observe(el, { childList: true, subtree: true })
+    return () => {
+      observer.disconnect()
+      mutations.disconnect()
+    }
+  }, [])
 
   return (
     <header ref={header} className={styles.header} data-wrapped={wrapped || undefined}>

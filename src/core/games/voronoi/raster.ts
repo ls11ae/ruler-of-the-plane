@@ -24,6 +24,9 @@ export interface LandRaster {
 /** Default spacing of the samples in map units: about 10,000 samples on a 16 × 10 sheet full of land. */
 export const RASTER_STEP = 0.125
 
+/** The raster for the computer's look-ahead: twice the spacing, a quarter of the samples. */
+export const coarseRaster = (map: GameMap) => makeRaster(map, 2 * RASTER_STEP)
+
 /**
  * Samples the land on a grid with the given spacing by scan lines: per row, the crossings of all ring
  * edges with the row's line, counted with their direction (non-zero rule, rings may have any number of

@@ -221,11 +221,25 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   confusing texts and controls.
 - Browsers: the booth laptops run Windows with Chrome or Firefox, visitors' phones Safari (WebKit),
   Chrome or Firefox, and so far every test runs in Chromium. Add Firefox and WebKit projects to the
-  Playwright smoke tests in CI (laptop and phone each; CI installs the browsers) and fix what fails.
+  Playwright smoke tests in CI (laptop and phone each; CI installs the browsers) and fix what fails. —
+  done 2026-10-18 (every smoke test passes in Chromium, Firefox and WebKit, laptop and phone; fixes: the
+  safe area on iPhones, the drawing speed, test time limits; see the decision log, "Browsers and
+  performance")
+- Performance on weak laptops: frame times of the heaviest scenes under Chromium's CPU throttling (4× and
+  6×) and the time of a "Schwer" move, fix what is under 30 frames per second or over 200 ms. — done
+  2026-10-18 (`e2e/bench.spec.ts`, numbers in `docs/performance.md`: every scene at least 36 frames per
+  second at 6× without a GPU, the woods walk with six posts, the others at least 47; static art in layers
+  of its own, the header's forced layout gone, "Schwer" about 2.5 times faster)
+- First visit on a phone via the QR code: time to the start map on Slow 3G, lazy loading, a reasonable
+  precache. — done 2026-10-18 (start map complete after 11.3 instead of 27.5 s, precache 1.25 instead of
+  2.0 MB, by a WebP parchment and WOFF2 fonts)
 - Measure on each booth laptop: a "Schwer" move of "Erobere das Land" takes under 200 ms (Phase 2
   acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
   computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
-  lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`.
+  lower `LOOKAHEAD` in `src/core/games/voronoi/ai.ts` or raise `RASTER_STEP` in `raster.ts`. Stand-in
+  measured 2026-10-18: the first move takes about 135 ms on a laptop four times slower than the cloud
+  session (34 ms there), the others under 70 ms (`docs/performance.md`); the booth laptops are still to
+  check.
 - Final art in place, `CREDITS.md` complete, credits screen in the app. — credits screen and the `CREDITS.md`
   check done 2026-10-17 (`#/credits`, "Mitwirkende" on the start map, with every licence text); the TU
   Dortmund / LS 11 logos are still placeholders.

@@ -11,13 +11,20 @@ export type AiLevel = 'easy' | 'normal' | 'hard'
 export interface AiContext {
   map: GameMap
   raster: LandRaster
+  /**
+   * A raster with twice the spacing (a quarter of the samples) for the look-ahead of "Schwer": the
+   * opponent's best answer is only an estimate there, and it is most of the work (see `coarseRaster`).
+   */
+  coarse?: LandRaster
 }
 
 /** About this many jittered grid positions are tried per move, plus positions next to every castle. */
 export const GRID_CANDIDATES = 320
 /** Positions tried around each castle, just outside the minimum distance. */
 const RING_DIRECTIONS = 12
-/** "Schwer" looks one move ahead for this many of its best moves... */
+/** "Schwer" rates this many of its moves on the fine raster (the best on the coarse one)... */
+const PRESCREEN = 24
+/** ...and looks one move ahead for this many of its best moves... */
 const LOOKAHEAD = 8
 /** ...checking the opponent's this many best positions and all candidates within NEAR × the distance. */
 const OPPONENT_BEST = 30
@@ -70,6 +77,11 @@ function rate(territory: Territory, positions: readonly Vec2[], player: Player):
   return positions.map((at) => ({ at, swing: territory.gain(at, player).swing }))
 }
 
+/** The n positions with the largest swings. */
+function top(rated: readonly Rated[], n: number): Rated[] {
+  return [...rated].sort((a, b) => b.swing - a.swing).slice(0, n)
+}
+
 /** The best swing among the positions; ties broken at random. */
 function best(rated: readonly Rated[], rng: Rng): Rated | null {
   let top: Rated[] = []
@@ -100,8 +112,17 @@ export interface MoveRequest {
 export function chooseMove(ctx: AiContext, request: MoveRequest, rng: Rng): Vec2 | null {
   const { castles, player, minDist, level } = request
   const territory = new Territory(ctx.raster, castles)
+  const ahead = ctx.coarse ? new Territory(ctx.coarse, castles) : territory
   const positions = candidatePositions(ctx, castles, minDist, rng)
-  const rated = rate(territory, positions, player)
+  // "Schwer" looking ahead rates its moves on the coarse raster first and only the best on the fine one.
+  const rated =
+    level === 'hard' && request.opponentMovesLeft && ahead !== territory
+      ? rate(
+          territory,
+          top(rate(ahead, positions, player), PRESCREEN).map((r) => r.at),
+          player,
+        )
+      : rate(territory, positions, player)
   if (!rated.length) return null
   if (level === 'easy') {
     const top = Math.max(...rated.map((r) => r.swing))
@@ -110,32 +131,36 @@ export function chooseMove(ctx: AiContext, request: MoveRequest, rng: Rng): Vec2
   }
   if (level === 'normal' || !request.opponentMovesLeft) return best(rated, rng)!.at
 
-  const shortlist = [...rated].sort((a, b) => b.swing - a.swing).slice(0, LOOKAHEAD)
+  const shortlist = top(rated, LOOKAHEAD)
   const opponent = other(player)
   // The opponent's answers worth checking: its best positions now, and everything near the tried move
   // (only there does the move change what a castle would win, and only there can it be undercut).
-  const theirBest = rate(territory, positions, opponent)
-    .sort((a, b) => b.swing - a.swing)
-    .slice(0, OPPONENT_BEST)
-    .map((r) => r.at)
+  const theirBest = top(rate(ahead, positions, opponent), OPPONENT_BEST).map((r) => r.at)
   const d2 = minDist * minDist
   const near2 = (NEAR * minDist) ** 2
   let choice: Rated | null = null
   let choiceValue = -Infinity
   for (const move of shortlist) {
     const castle: Castle = { at: move.at, owner: player }
-    const after = territory.clone()
+    const after = ahead.clone()
     after.add(castle)
     const next = [...castles, castle]
     const dist2 = (p: Vec2) => (p[0] - move.at[0]) ** 2 + (p[1] - move.at[1]) ** 2
-    // The candidates are valid already; only the distance to the new castle can rule one out.
+    // The candidates are valid already; only the distance to the new castle can rule one out. The
+    // opponent's strongest positions come first: a move is out as soon as one answer beats it.
     const replies = [
-      ...new Set([...positions.filter((p) => dist2(p) <= near2), ...theirBest].filter((p) => dist2(p) >= d2)),
+      ...new Set([...theirBest, ...positions.filter((p) => dist2(p) <= near2)].filter((p) => dist2(p) >= d2)),
       ...ring(move.at, minDist * 1.0001, RING_DIRECTIONS, 0.3).filter(
         (p) => placementProblem(ctx.map, next, p, minDist) === null,
       ),
     ]
-    const answer = replies.length ? Math.max(...rate(after, replies, opponent).map((r) => r.swing)) : 0
+    // The move wins if its swing minus the opponent's best answer beats the best value so far.
+    const beaten = move.swing - choiceValue - 1e-9
+    let answer = replies.length ? -Infinity : 0
+    for (const p of replies) {
+      answer = Math.max(answer, after.gain(p, opponent).swing)
+      if (answer >= beaten) break
+    }
     const value = move.swing - answer
     if (value > choiceValue + 1e-9) {
       choice = move

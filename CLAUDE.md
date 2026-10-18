@@ -30,10 +30,13 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   "proposed"), a suggested tier per game in the staff menu, and attract demos of all five games in turn.
   Winding in the woods of "Gassi gehen" (thin posts the leash coils round, a camera following the
   walkers, a livelier leash, the free start leash on two "Schwer" walks, regenerated woods tiers,
-  "Kürzere Leine"; all proposed, 2026-10-18). Open are the items that need the booth laptops (playtest,
-  the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth
-  for open work**, in its order. How the shell and the shared code fit together and how a game plugs in:
-  `docs/architecture.md`.
+  "Kürzere Leine"; all proposed, 2026-10-18). Browsers and performance (2026-10-18): the smoke tests run
+  in Chromium, Firefox and WebKit (Firefox and WebKit in CI), a benchmark measures frame times under CPU
+  throttling and the first visit on Slow 3G (`docs/performance.md`), static board art is drawn in layers
+  of its own, "Schwer" is about 2.5 times faster, the parchment is a WebP and the fonts are WOFF2. Open
+  are the items that need the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the
+  checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
+  the shared code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.
 - `legacy/` holds the Unity level files and in-game texts (copied from `kbuchin/ruler` at commit
@@ -200,8 +203,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Seeded RNG for level generation and AIs, so bugs are reproducible.
 - Tests: geometry against brute force or sampling (visibility area vs. Monte Carlo, Voronoi areas sum to
   the board area, MST vs. brute force for n ≤ 8, Fréchet decision vs. discrete Fréchet on densely
-  sampled curves). One Playwright smoke test per game that plays a level in both projects (laptop and
-  phone) and saves screenshots.
+  sampled curves). One Playwright smoke test per game that plays a level on the laptop and the phone in
+  Chromium, Firefox and WebKit (Firefox and WebKit in CI only) and saves screenshots. Frame times and the
+  first visit on Slow 3G: `e2e/bench.spec.ts` (opt-in, numbers in `docs/performance.md`).
 - UI texts only in typed i18n dictionaries: shared texts in `src/ui/i18n/de.ts` and `en.ts`, game texts
   in `src/ui/games/<game>/i18n.de.ts` and `i18n.en.ts`, so parallel tracks do not edit the same file.
   Code, comments, commits and docs in English.
@@ -210,7 +214,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   (`#/credits`, with CREDITS.md and every licence text in the build's `credits.txt`). Update it in the
   same pull request that starts using a file or library; `scripts/credits.test.ts` fails otherwise.
 - Asset licences: only CC0, CC BY 3.0/4.0 and (for fonts) OFL; no NC or ND; CC BY-SA only after asking
-  Kevin. Use the font files unmodified (no subsetting; Eagle Lake has a Reserved Font Name).
+  Kevin. Use the font files unmodified (no subsetting; Eagle Lake has a Reserved Font Name). The app loads
+  WOFF2 conversions with the same font data (only compressed, approved 2026-10-18); the TTFs stay for the
+  print files.
 - Patrick Hand has no arrows (← ↑ → ↓) and no Greek letters: draw arrow keycaps and arrows as SVG, and
   write ε etc. in a fallback font.
 - Missing assets (e.g. TU Dortmund / LS 11 logos): use a text placeholder and carry on.

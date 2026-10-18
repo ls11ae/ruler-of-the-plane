@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { readFileSync } from 'node:fs'
 import { lowContrastTexts, tooSmall } from './contrast'
 import { de } from '../src/ui/games/frechet/i18n.de'
@@ -63,7 +63,7 @@ test('start map, credits and the demo dialogs', async ({ page }) => {
   await expectAccessible(page, 'result screen with the leaderboard')
 })
 
-test('attract screen and staff menu', async ({ page, isMobile }) => {
+test('attract screen and staff menu', async ({ page, phone }) => {
   await page.goto('./?kiosk')
   await expect(page.getByRole('dialog', { name: 'Ruler of the Plane' })).toBeVisible()
   await expectAccessible(page, 'attract screen')
@@ -72,7 +72,7 @@ test('attract screen and staff menu', async ({ page, isMobile }) => {
   await expect(page.getByRole('img', { name: /QR-Code/ }).first()).toBeVisible()
   await expectAccessible(page, 'legal pages in kiosk mode')
   await page.keyboard.press('Escape')
-  if (isMobile) return
+  if (phone) return
   await page.keyboard.press('Control+Shift+KeyS')
   await expect(page.getByRole('dialog', { name: 'Personalmenü' })).toBeVisible()
   await expectAccessible(page, 'staff menu')
@@ -182,10 +182,7 @@ test('game frechet, harder tiers: picker, a hard walk in the park and in the woo
   await expectAccessible(page, 'frechet: a hard walk in the woods')
 })
 
-test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory', async ({
-  page,
-  isMobile,
-}) => {
+test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory', async ({ page, phone }) => {
   const read = (path: string) =>
     JSON.parse(readFileSync(new URL(`../public/levels/${path}.json`, import.meta.url), 'utf8')) as {
       villages: Pt[]
@@ -204,9 +201,9 @@ test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory'
   const places = [...steiner.villages, ...steiner.castles]
   const [j] = steiner.optimum.junctions!
   const at: Pt = [j![0] + 0.3, j![1] + 0.3]
-  await drag(page, places[0]!, at, isMobile)
-  await drag(page, places[3]!, at, isMobile)
-  await drag(page, places[1]!, at, isMobile)
+  await drag(page, places[0]!, at, phone)
+  await drag(page, places[3]!, at, phone)
+  await drag(page, places[1]!, at, phone)
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await page.getByRole('button', { name: 'Tipp' }).click()
   await expectAccessible(page, 'roads, Kreuzungen: board with a junction and a hint')
@@ -220,7 +217,7 @@ test('game roads, "Kreuzungen" and "Zwei Sorten": picker, how-to, board, theory'
   await page.getByRole('button', { name: "Los geht's!" }).click()
   const plane = read('roads/bichromatic/2-weiler')
   const points = [...plane.villages, ...plane.castles]
-  for (const [a, b] of plane.free!.roads) await drag(page, points[a]!, points[b]!, isMobile)
+  for (const [a, b] of plane.free!.roads) await drag(page, points[a]!, points[b]!, phone)
   await expect(page.getByTestId('roads-state')).toContainText('Schnittpunkte')
   await expectAccessible(page, 'roads, Zwei Sorten: board with crossings')
   await page.locator('header').getByRole('button', { name: 'Theorie' }).click()

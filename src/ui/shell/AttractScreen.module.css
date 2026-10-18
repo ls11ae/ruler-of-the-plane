@@ -4,7 +4,7 @@
   z-index: 100;
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
-  background: var(--parchment) url('../../../assets/kenney/cartography-pack/textures/parchmentFolded.png')
+  background: var(--parchment) url('../../../assets/kenney/cartography-pack/textures/parchmentFolded.webp')
     center / cover;
   cursor: pointer;
 }

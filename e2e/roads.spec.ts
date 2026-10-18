@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { readFileSync } from 'node:fs'
 import { mapOf } from '../src/core/games/roads/levels'
 import { kruskal, roadsByLength, type Road } from '../src/core/games/roads/mst'
@@ -49,10 +49,7 @@ async function tapRoad(page: Page, [a, b]: Road, touch: boolean) {
   else await page.mouse.click(mid.x, mid.y)
 }
 
-test('connects the first map with the shortest network, with one hint', async ({
-  page,
-  isMobile,
-}, testInfo) => {
+test('connects the first map with the shortest network, with one hint', async ({ page, phone }, testInfo) => {
   await page.goto('./#/play/roads')
   await expect(page.getByTestId('tier-screen')).toContainText(
     'Der König will alle Orte mit Straßen verbinden',
@@ -60,22 +57,22 @@ test('connects the first map with the shortest network, with one hint', async ({
   await shot(page, testInfo, 'roads-tiers')
   await chooseTier(page, 'Leicht')
   await expect(page.getByTestId('roads-state')).toHaveText('Verbinde alle Orte')
-  if (!isMobile) await expectHeaderLaidOut(page)
+  if (!phone) await expectHeaderLaidOut(page)
 
   const { roads: mst } = kruskal(map.points)
   const longest = roadsByLength(map.points).at(-1)!.road
   // A long road first: the hint says it is too long; tapping it removes it.
-  await build(page, longest, isMobile)
+  await build(page, longest, phone)
   await expect(page.getByTestId('roads-state')).toHaveText(/Noch \d Teile verbinden/)
   await page.getByRole('button', { name: 'Tipp' }).click()
   await expect(page.getByTestId('roads-hint')).toContainText('zu lang')
   await shot(page, testInfo, 'roads-hint')
-  await tapRoad(page, longest, isMobile)
+  await tapRoad(page, longest, phone)
   await expect(page.getByTestId('roads-length')).toHaveText('Länge: 0,0 km')
 
-  for (const road of mst.slice(0, -1)) await build(page, road, isMobile)
+  for (const road of mst.slice(0, -1)) await build(page, road, phone)
   await shot(page, testInfo, 'roads-building')
-  await build(page, mst.at(-1)!, isMobile)
+  await build(page, mst.at(-1)!, phone)
   await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
 
   const result = page.getByRole('dialog', { name: 'Geschafft!' })

@@ -62,4 +62,9 @@ Session runner (`mbuchin`):
   environment's network access to "Custom" and list the domain (keep "include default list" ticked).
 - The cloud image has an older Chromium at `/opt/pw-browsers/chromium`, which `playwright.config.ts`
   uses outside CI; sessions can therefore run the Playwright tests and look at the screenshots. CI runs
-  them with the matching browser and uploads the screenshots.
+  them with the matching browser and uploads the screenshots. Firefox and WebKit cannot be downloaded in
+  a session (Playwright's CDN is not reachable), so their projects are left out there and run in CI only
+  (artifacts `screenshots-firefox`, `screenshots-webkit`); iterate on them through CI.
+- Stop stray Playwright workers before measuring anything (`ps aux --sort=-%cpu | head`): a test that
+  loops forever keeps its worker busy after the run is killed, and the numbers of every later
+  measurement are then wrong.

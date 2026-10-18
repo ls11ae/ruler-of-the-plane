@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './fixtures'
 import { chooseTier, freshDevice, shot } from './helpers'
 import { serveTspBoards, tspBoardsAddress } from './tsp-boards'
 
@@ -22,7 +22,7 @@ const VISITOR_EVERY = 7
 /** The demo must move on (a step of its story, or the next game) at least this often, in simulated seconds. */
 const STUCK_AFTER_S = 60
 
-test.skip(({ isMobile }) => isMobile, 'the booth runs on laptops')
+test.skip(({ phone }) => phone, 'the booth runs on laptops')
 test.setTimeout(Math.max(10, MINUTES * 0.5) * 60_000)
 
 interface Sample {

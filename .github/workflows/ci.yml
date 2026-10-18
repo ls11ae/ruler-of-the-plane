@@ -38,7 +38,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
-      - run: npx playwright test
+      - run: npx playwright test --project=laptop --project=phone
       - name: Upload screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
@@ -52,6 +52,43 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  # The smoke tests in Firefox and WebKit (Safari), laptop and phone each; Chromium runs in the job
+  # above. Each browser gets its own job, so they run in parallel and a failure in one keeps the others.
+  e2e-browsers:
+    name: Playwright smoke tests in ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: npm run build
+      - run: npx playwright test --project=laptop-${{ matrix.browser }} --project=phone-${{ matrix.browser }}
+      - name: Upload screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots-${{ matrix.browser }}
+          path: screenshots/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload Playwright report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/
