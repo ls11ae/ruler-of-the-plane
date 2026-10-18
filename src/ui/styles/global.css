@@ -1,12 +1,12 @@
 /* Fonts (OFL, bundled; no third-party requests). */
 @font-face {
   font-family: 'Eagle Lake';
-  src: url('../../../assets/fonts/EagleLake-Regular.ttf') format('truetype');
+  src: url('../../../assets/fonts/EagleLake-Regular.woff2') format('woff2');
   font-display: block;
 }
 @font-face {
   font-family: 'Patrick Hand';
-  src: url('../../../assets/fonts/PatrickHand-Regular.ttf') format('truetype');
+  src: url('../../../assets/fonts/PatrickHand-Regular.woff2') format('woff2');
   font-display: block;
 }
 

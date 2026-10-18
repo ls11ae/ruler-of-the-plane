@@ -85,12 +85,13 @@ First visit on Slow 3G (phone; the same for the laptop window):
 |        | Start map complete | Bytes until then | Largest files                                       | Precache |
 | ------ | ------------------ | ---------------- | --------------------------------------------------- | -------- |
 | Before | 27.5 s             | 1145 kB          | parchment 723 kB, Patrick Hand 215 kB, script 96 kB | 2.0 MB   |
-| After  | 15.4 s             | 456 kB           | Patrick Hand 215 kB, script 96 kB, Eagle Lake 78 kB | 1.36 MB  |
+| WebP   | 15.4 s             | 456 kB           | Patrick Hand 215 kB, script 96 kB, Eagle Lake 78 kB | 1.36 MB  |
+| WOFF2  | 11.3 s             | 256 kB           | script 97 kB, Patrick Hand 63 kB, Eagle Lake 36 kB  | 1.25 MB  |
 
 The script and styles arrive after about 6 s, when the map's ink and parchment appear; the text waits for
-the fonts (`font-display: block`, up to 3 s, then a fallback font until they arrive). The fonts are now
-two thirds of the bytes: as WOFF2 (the same font data, compressed) they would be 98 instead of 293 kB, the
-start map complete after about 11.5 s (proposed, see the decision log). The games load only when opened.
+the fonts (`font-display: block`, up to 3 s, then a fallback font until they arrive). "WebP" is the
+parchment as WebP, "WOFF2" in addition the fonts as WOFF2 (the same font data, compressed: 99 instead of
+293 kB). The games load only when opened.
 
 ## What was slow, and what changed
 
@@ -107,6 +108,7 @@ start map complete after about 11.5 s (proposed, see the decision log). The game
 - **"Schwer"** checks fewer answers (exact pruning), estimates the opponent's answers on a coarser raster,
   and warms up while the player places the first castle.
 - **The parchment** was a 723 kB PNG; it is a 35 kB WebP now.
+- **The fonts** were TTF files (293 kB); the app now loads WOFF2 versions with the same font data (99 kB).
 
 Not changed, after measuring: the lawn, the roads and aiming in "Erobere das Land" stay above 45 frames
 per second at 6× without a GPU. Loading the remaining shell screens (credits, staff menu, key test, demo

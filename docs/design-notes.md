@@ -565,16 +565,20 @@ phone; numbers in `docs/performance.md`.
   the start map complete 1 s sooner but its first picture 4 s later (the fonts took bandwidth from the
   script); loading credits, staff menu, key test and demo page on demand would save about 5 kB gzipped,
   0.1 s on Slow 3G. The games already load when opened.
-- **2026-10-18 (proposed) The fonts as WOFF2.** They are now two thirds of the start map's bytes (293 kB
-  as TTF). WOFF2 holds the same font data, compressed: 98 kB, the start map complete after about 11.5
-  instead of 15.4 s on Slow 3G. The OFL FAQ allows a WOFF2 version without renaming as long as the font
-  data is unchanged, but `CLAUDE.md` says to use the font files unmodified, so this waits for Kevin.
-  Alternatives: keep TTF (GitHub Pages may compress them in transit; not measurable from a session);
-  `font-display: swap` (text at once in a fallback font, then a jump).
+- **2026-10-18 The fonts as WOFF2** (approved by mbuchin, 2026-10-18). After the WebP parchment the
+  fonts were two thirds of the start map's bytes (293 kB as TTF). The app now loads WOFF2 versions with
+  the same font data, compressed: 99 kB, the start map complete after 11.3 instead of 15.4 s on Slow 3G
+  (256 instead of 456 kB). Converted with fontTools (`woff2.compress`, the default lossless glyph
+  transform); a TTX dump of each WOFF2 equals that of its TTF except the computed checksum, the `head`
+  flag the WOFF2 format sets after its transform, and Patrick Hand's empty `DSIG` placeholder (no
+  signature), which WOFF2 drops. The OFL FAQ treats such a conversion with unchanged font data as no
+  Modified Version, so the names stay. The TTFs stay in `assets/fonts/` for the print files
+  (`scripts/booth/print.ts`). Alternatives: keep TTF (GitHub Pages may compress them in transit; not
+  measurable from a session); `font-display: swap` (text at once in a fallback font, then a jump).
 - **2026-10-18 Test time limits for slow browsers.** A walk counts at most 50 ms per frame, so in a
   browser that draws under 20 frames per second it runs in slow motion (fair to the player); WebKit in CI
-  did, before the park's layer (now the camera's stage) and the scale factor above. "Behind the beech" now waits up to 40 s for
-  the dog (90 s test time). The game itself is unchanged.
+  did, before the park's layer (now the camera's stage) and the scale factor above. "Behind the beech" now
+  waits up to 40 s for the dog (90 s test time). The game itself is unchanged.
 
 ### Track A ("Erobere das Land", "Rasenmähen")
 

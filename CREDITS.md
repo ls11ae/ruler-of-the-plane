@@ -138,15 +138,18 @@ tours were computed offline by `scripts/lawns/` with [OR-Tools](https://github.c
 
 ## Fonts
 
-Both fonts are licensed under the SIL Open Font License 1.1 and used unmodified.
+Both fonts are licensed under the SIL Open Font License 1.1 and used unmodified: the app loads WOFF2
+versions with the same font data (converted with fontTools, only compressed), the booth's print files the
+TTF files.
 
 Both are used for the whole app (Eagle Lake for titles and place names, Patrick Hand for all other
 text).
 
 - Eagle Lake: Copyright (c) 2012, Brian J. Bonislawsky DBA Astigmatic (AOETI), Reserved Font Name
-  "Eagle Lake". File `assets/fonts/EagleLake-Regular.ttf`, licence `assets/fonts/EagleLake-OFL.txt`.
-- Patrick Hand: Copyright (c) 2010–2012 Patrick Wagesreiter. File `assets/fonts/PatrickHand-Regular.ttf`,
-  licence `assets/fonts/PatrickHand-OFL.txt`.
+  "Eagle Lake". Files `assets/fonts/EagleLake-Regular.ttf` and `assets/fonts/EagleLake-Regular.woff2`,
+  licence `assets/fonts/EagleLake-OFL.txt`.
+- Patrick Hand: Copyright (c) 2010–2012 Patrick Wagesreiter. Files `assets/fonts/PatrickHand-Regular.ttf`
+  and `assets/fonts/PatrickHand-Regular.woff2`, licence `assets/fonts/PatrickHand-OFL.txt`.
 
 ## Libraries
 

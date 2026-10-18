@@ -227,12 +227,12 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   performance")
 - Performance on weak laptops: frame times of the heaviest scenes under Chromium's CPU throttling (4× and
   6×) and the time of a "Schwer" move, fix what is under 30 frames per second or over 200 ms. — done
-  2026-10-18 (`e2e/bench.spec.ts`, numbers in `docs/performance.md`: every scene at least 47 frames per
-  second at 6× without a GPU; static art in layers of its own, the header's forced layout gone, "Schwer"
-  about 2.5 times faster)
+  2026-10-18 (`e2e/bench.spec.ts`, numbers in `docs/performance.md`: every scene at least 36 frames per
+  second at 6× without a GPU, the woods walk with six posts, the others at least 47; static art in layers
+  of its own, the header's forced layout gone, "Schwer" about 2.5 times faster)
 - First visit on a phone via the QR code: time to the start map on Slow 3G, lazy loading, a reasonable
-  precache. — done 2026-10-18 (start map complete after 15.4 instead of 27.5 s, precache 1.36 instead of
-  2.0 MB, mostly by a WebP parchment; the fonts as WOFF2 proposed, about 11.5 s)
+  precache. — done 2026-10-18 (start map complete after 11.3 instead of 27.5 s, precache 1.25 instead of
+  2.0 MB, by a WebP parchment and WOFF2 fonts)
 - Measure on each booth laptop: a "Schwer" move of "Erobere das Land" takes under 200 ms (Phase 2
   acceptance). Play against "Schwer" with 10 castles each and open the theory view: it shows the
   computing time of the computer's last move; the first moves are the slowest. If it is over 200 ms,
