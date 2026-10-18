@@ -127,8 +127,10 @@ test('staff menu: open with Ctrl+Shift+S, key test, switch a game off', async ({
   await expect(keyTest.getByText('Meiste gleichzeitig: 2')).toBeVisible()
   await keyTest.getByRole('button', { name: 'Personalmenü' }).click()
 
-  await menu.getByRole('button', { name: 'Schwer' }).click()
-  await expect(menu.getByRole('button', { name: 'Schwer' })).toHaveAttribute('aria-pressed', 'true')
+  // A suggested tier for "Straßenbau": marked on its tier screen ("empfohlen").
+  const roads = menu.getByRole('group', { name: 'Schwierigkeit beim Start: Straßenbau' })
+  await roads.getByRole('button', { name: 'Schwer' }).click()
+  await expect(roads.getByRole('button', { name: 'Schwer' })).toHaveAttribute('aria-pressed', 'true')
   await menu.getByRole('button', { name: 'Schließen', exact: true }).last().click()
   await expect(menu).toHaveCount(0)
 })

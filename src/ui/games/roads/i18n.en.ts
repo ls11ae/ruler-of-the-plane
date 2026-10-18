@@ -65,6 +65,13 @@ export const en: RoadsTexts = {
     random: 'Random villages',
     map: (i: number) => `Map ${i}`,
   },
+  /** The tier screen: one sentence per tier (the set's name stands above it). */
+  tierTeasers: {
+    easy: 'Connect every place with as little road as possible.',
+    medium: 'Roads may branch: where does a junction pay off?',
+    hard: 'Even researchers do not know yet how close a computer can always get to the best network.',
+  },
+  resume: (set: string, i: number) => `${set}, map ${i}`,
   sets: {
     mst: 'Place to place',
     steiner: 'Junctions',

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from './fixtures'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { chooseTier, expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -35,14 +35,16 @@ const SITES: [number, number][] = [
 
 test('plays a short game against the computer on the island', async ({ page, phone }, testInfo) => {
   await page.goto('./#/play/voronoi')
-  const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo).toBeVisible()
-  await shot(page, testInfo, 'voronoi-howto')
-  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByTestId('tier-screen')).toContainText('Baut abwechselnd Burgen')
+  await shot(page, testInfo, 'voronoi-tiers')
+  await chooseTier(page, 'Leicht')
+  await expect(page.locator('header')).toContainText('Du gegen den Computer (Leicht)')
 
+  // A shorter game: five castles each, set in "Neu".
+  await page.locator('header').getByRole('button', { name: 'Neu' }).click()
   const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
   await expect(setup).toBeVisible()
-  await setup.getByRole('button', { name: 'Leicht' }).click()
+  await expect(setup.getByRole('button', { name: 'Leicht' })).toHaveAttribute('aria-pressed', 'true')
   await setup.getByRole('button', { name: '5', exact: true }).click()
   await shot(page, testInfo, 'voronoi-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
@@ -120,10 +122,12 @@ test('plays a short game against the computer on the island', async ({ page, pho
 
 test('two players take turns on the river valley', async ({ page }, testInfo) => {
   await page.goto('./#/play/voronoi')
-  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  await page.getByTestId('tier-screen').getByRole('button', { name: 'Zu zweit spielen' }).click()
+  await expect(page.getByText('Blau ist dran')).toBeVisible()
+  await page.locator('header').getByRole('button', { name: 'Neu' }).click()
   const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
+  await expect(setup.getByRole('button', { name: 'Zu zweit' })).toHaveAttribute('aria-pressed', 'true')
   await setup.getByRole('button', { name: /Flusstal/ }).click()
-  await setup.getByRole('button', { name: 'Zu zweit' }).click()
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByText('Blau ist dran')).toBeVisible()
 
@@ -139,15 +143,4 @@ test('two players take turns on the river valley', async ({ page }, testInfo) =>
   const game = page.locator('[data-castles]')
   await expect(game).toHaveAttribute('data-castles', '2')
   await shot(page, testInfo, 'voronoi-two-players')
-})
-
-test('the attract screen shows the computer playing against itself', async ({ page }, testInfo) => {
-  await page.goto('./?kiosk#/')
-  const attract = page.getByRole('dialog', { name: 'Ruler of the Plane' })
-  await expect(attract).toBeVisible()
-  // Castles appear one after the other behind the attract card.
-  await expect
-    .poll(async () => attract.locator('image[href*="castle"]').count(), { timeout: 15_000 })
-    .toBeGreaterThanOrEqual(4)
-  await shot(page, testInfo, 'voronoi-attract')
 })

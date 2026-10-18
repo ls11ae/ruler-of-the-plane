@@ -1,5 +1,5 @@
-import { expect, test, type Page } from './fixtures'
-import { freshDevice, shot } from './helpers'
+import { expect, test } from './fixtures'
+import { freshDevice, shot, startGame } from './helpers'
 
 /**
  * Screens for proofreading the texts in context (docs/texts-de.md) that the smoke tests do not show:
@@ -9,14 +9,6 @@ import { freshDevice, shot } from './helpers'
 freshDevice()
 
 test.skip(({ phone }) => phone, 'the texts are proofread at 1280 × 800')
-
-async function startGame(page: Page, game: string) {
-  await page.goto(`./#/play/${game}`)
-  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
-  const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
-  if (await setup.count()) await setup.getByRole('button', { name: "Los geht's!" }).click()
-  await expect(page.locator('header h1')).toBeVisible()
-}
 
 test('credits, lower part', async ({ page }, testInfo) => {
   await page.goto('./#/credits')

@@ -2,8 +2,8 @@ import type { ArtGalleryTexts } from './i18n.de'
 
 export const en: ArtGalleryTexts = {
   title: 'Light the Dungeon',
-  subtitle: (i: number, n: number, k: number, expert: boolean) =>
-    `${expert ? 'Expert dungeon' : 'Dungeon'} ${i} of ${n} · goal: ${k} ${k === 1 ? 'torch' : 'torches'}`,
+  subtitle: (tier: string, i: number, n: number, k: number) =>
+    `${tier} ${i} of ${n} · goal: ${k} ${k === 1 ? 'torch' : 'torches'}`,
   torches: (n: number) => `Torches: ${n}`,
   lit: 'lit',
   litLabel: 'Lit share of the dungeon',
@@ -18,6 +18,17 @@ export const en: ArtGalleryTexts = {
     'Each torch lights everything it can see: walls and pillars cast shadows.',
     `Can you do it with ${k} ${k === 1 ? 'torch' : 'torches'}?`,
   ],
+  tierRules: [
+    'Put torches into the dungeon until everything is lit.',
+    'Each torch lights as far as it can see: walls and pillars cast shadows.',
+    'The fewer torches you need, the more stars.',
+  ],
+  tierTeasers: {
+    easy: 'Two or three torches are enough – where do they go?',
+    medium: 'Pillars and niches cast shadows: four to eight torches.',
+    hard: 'For experts: spiky rooms and huge dungeons with up to 17 torches.',
+  },
+  resume: (tier: string, i: number) => `${tier}, dungeon ${i}`,
   howToKeys: 'Drag: move it; drag it out of the dungeon or onto the bucket: remove it',
   stats: (torches: number, time: string) => `${torches} ${torches === 1 ? 'torch' : 'torches'} · ${time}`,
   score: (torches: number, time: string) => `${torches} torches, ${time}`,
@@ -45,7 +56,6 @@ export const en: ArtGalleryTexts = {
   theoryButton: 'Theory',
   picker: {
     title: 'Dungeons',
-    main: 'Dungeons',
     expert: 'For experts',
     card: (i: number) => `Dungeon ${i}`,
     torches: (k: number) => `${k} torches`,

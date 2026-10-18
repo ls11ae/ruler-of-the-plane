@@ -222,6 +222,10 @@
   font-size: 1.05rem;
 }
 
+.random {
+  margin-top: 14px;
+}
+
 .setTitle {
   margin: 0 0 8px;
   font-family: var(--font-title);

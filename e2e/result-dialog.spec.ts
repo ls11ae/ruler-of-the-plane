@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { freshDevice, shot } from './helpers'
+import { freshDevice, shot, startGame } from './helpers'
 
 freshDevice()
 
@@ -23,8 +23,7 @@ for (const viewport of [
       const booth = { state: { boards: { 'art-gallery/agLevel3_2': entries } }, version: 1 }
       localStorage.setItem('rotp-booth', JSON.stringify(booth))
     })
-    await page.goto('./#/play/art-gallery')
-    await page.getByRole('button', { name: "Los geht's!" }).click()
+    await startGame(page, 'art-gallery')
     for (const [x, y] of [
       [2.35, -2.79],
       [1.37, 1.83],

@@ -67,3 +67,17 @@ export async function expectHeaderLaidOut(page: Page) {
     }
   }
 }
+
+/** Starts a tier ("Leicht", "Mittel", "Schwer") on the tier screen a game opens with. */
+export async function chooseTier(page: Page, tier = 'Leicht') {
+  await page
+    .getByTestId('tier-screen')
+    .getByRole('button', { name: new RegExp(`^${tier}\\b`) })
+    .click()
+}
+
+/** Opens a game and starts a tier. */
+export async function startGame(page: Page, game: string, tier = 'Leicht') {
+  await page.goto(`./#/play/${game}`)
+  await chooseTier(page, tier)
+}

@@ -1,0 +1,287 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/*
+ * A laptop shows the rules' animation and text side by side on one paper card, the tiers below. A phone
+ * shows the text, then the tiers, then the animation (at full width, so its labels stay readable).
+ */
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  grid-template-areas:
+    'animation text'
+    'choose choose';
+  align-content: start;
+  align-items: center;
+  gap: 18px 24px;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 18px 20px 24px;
+}
+
+.noAnimation {
+  grid-template-areas:
+    'text text'
+    'choose choose';
+}
+
+.rulesCard {
+  grid-row: 1;
+  grid-column: 1 / -1;
+  align-self: stretch;
+  border: var(--border);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.animation {
+  grid-area: animation;
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: clamp(150px, 100dvh - 560px, 300px);
+  margin: 14px 0 14px 18px;
+  border: 2px dashed var(--ink-faint);
+  border-radius: var(--radius);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.animation > svg,
+.animation > div {
+  width: 100%;
+  height: 100%;
+}
+
+.text {
+  grid-area: text;
+  position: relative;
+  margin: 14px 18px 14px 0;
+  font-size: 1.2rem;
+}
+
+.noAnimation .text {
+  margin-left: 18px;
+}
+
+.text p {
+  margin: 0 0 0.45em;
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.keys li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.caps {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.choose {
+  grid-area: choose;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chooseHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.chooseHead h2 {
+  font-size: 1.7rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 150px;
+  padding: 14px 16px 12px;
+  border: var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    transform 80ms ease-out,
+    box-shadow 80ms ease-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.card:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+/* The tier played last (or suggested by the staff): a thicker frame and a label, not only a colour. */
+.card[aria-current] {
+  border-width: 4px;
+  background: var(--light-soft);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bars {
+  width: 34px;
+  height: 27px;
+  flex: none;
+}
+
+.tierName {
+  font-family: var(--font-title);
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+
+.setName {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+}
+
+.teaser {
+  flex: 1;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.1rem;
+}
+
+.badge {
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  padding: 1px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 0.95rem;
+  transform: rotate(2deg);
+}
+
+.more {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .main,
+  .noAnimation {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'text'
+      'choose'
+      'animation';
+    gap: 12px;
+    padding: 10px 14px 18px;
+  }
+  .rulesCard {
+    grid-area: text;
+  }
+  .animation {
+    height: clamp(190px, 28dvh, 240px);
+    margin: 0;
+  }
+  .text,
+  .noAnimation .text {
+    margin: 10px 12px;
+    font-size: 1rem;
+  }
+  .text p {
+    margin-bottom: 0.3em;
+  }
+  .chooseHead h2 {
+    font-size: 1.45rem;
+  }
+  .choose {
+    gap: 10px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'head stars'
+      'name name'
+      'teaser teaser';
+    align-items: center;
+    gap: 2px 12px;
+    min-height: 0;
+    padding: 8px 12px;
+  }
+  .cardHead {
+    grid-area: head;
+  }
+  .tierName {
+    font-size: 1.4rem;
+  }
+  .setName {
+    grid-area: name;
+    font-size: 1rem;
+  }
+  .teaser {
+    grid-area: teaser;
+    font-size: 0.95rem;
+  }
+  .stars {
+    grid-area: stars;
+    justify-self: end;
+    font-size: 1rem;
+  }
+  .more > * {
+    flex: 1 1 auto;
+  }
+}

@@ -1,8 +1,8 @@
 /** Texts of "Licht ins Verlies" (German; the source of the dictionary type). */
 export const de = {
   title: 'Licht ins Verlies',
-  subtitle: (i: number, n: number, k: number, expert: boolean) =>
-    `${expert ? 'Profi-Verlies' : 'Verlies'} ${i} von ${n} · Ziel: ${k} ${k === 1 ? 'Fackel' : 'Fackeln'}`,
+  subtitle: (tier: string, i: number, n: number, k: number) =>
+    `${tier} ${i} von ${n} · Ziel: ${k} ${k === 1 ? 'Fackel' : 'Fackeln'}`,
   torches: (n: number) => `Fackeln: ${n}`,
   lit: 'beleuchtet',
   litLabel: 'Beleuchteter Anteil des Verlieses',
@@ -17,6 +17,18 @@ export const de = {
     'Jede Fackel leuchtet so weit, wie sie sehen kann: Wände und Säulen werfen Schatten.',
     `Schaffst du es mit ${k} ${k === 1 ? 'Fackel' : 'Fackeln'}?`,
   ],
+  /** The rules on the tier screen (before a dungeon is chosen). */
+  tierRules: [
+    'Stell Fackeln ins Verlies, bis alles hell ist.',
+    'Jede Fackel leuchtet so weit, wie sie sehen kann: Wände und Säulen werfen Schatten.',
+    'Je weniger Fackeln du brauchst, desto mehr Sterne.',
+  ],
+  tierTeasers: {
+    easy: 'Zwei oder drei Fackeln reichen – wo stellst du sie hin?',
+    medium: 'Säulen und Nischen werfen Schatten: vier bis acht Fackeln.',
+    hard: 'Für Profis: Stachelräume und riesige Verliese mit bis zu 17 Fackeln.',
+  },
+  resume: (tier: string, i: number) => `${tier}, Verlies ${i}`,
   howToKeys: 'Ziehen: verschieben, aus dem Verlies oder auf den Eimer ziehen: wegnehmen',
   stats: (torches: number, time: string) => `${torches} ${torches === 1 ? 'Fackel' : 'Fackeln'} · ${time}`,
   score: (torches: number, time: string) => `${torches} Fackeln, ${time}`,
@@ -48,7 +60,6 @@ export const de = {
   theoryButton: 'Theorie',
   picker: {
     title: 'Verliese',
-    main: 'Verliese',
     expert: 'Für Profis',
     card: (i: number) => `Verlies ${i}`,
     torches: (k: number) => `${k} Fackeln`,

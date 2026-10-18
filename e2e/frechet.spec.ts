@@ -2,7 +2,7 @@ import { expect, test, type Page } from './fixtures'
 import { walkById, type WalkId } from '../src/core/games/frechet/levels'
 import { advice, makeCourse, startState } from '../src/core/games/frechet/rules'
 import { de } from '../src/ui/games/frechet/i18n.de'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { chooseTier, expectHeaderLaidOut, freshDevice, shot, startGame } from './helpers'
 
 freshDevice()
 
@@ -59,10 +59,9 @@ test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', a
 }, testInfo) => {
   test.setTimeout(120_000)
   await page.goto('./#/play/frechet')
-  const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo).toBeVisible()
-  await shot(page, testInfo, 'frechet-howto')
-  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByTestId('tier-screen')).toContainText('Bring Mensch und Hund zum Schloss')
+  await shot(page, testInfo, 'frechet-tiers')
+  await chooseTier(page, 'Leicht')
   await expect(page.getByTestId('leash')).toContainText('von 3,6 m Leine')
   if (!phone) await expectHeaderLaidOut(page)
   await shot(page, testInfo, 'frechet-start')
@@ -90,8 +89,7 @@ test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', a
 })
 
 test('Schätz die Leine: the computer tries a leash, then the answer', async ({ page }, testInfo) => {
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   await page
     .getByRole('dialog', { name: 'Spaziergänge' })
@@ -113,8 +111,7 @@ test('Schätz die Leine: the computer tries a leash, then the answer', async ({ 
 
 test('sandbox: draw two paths and see their diagram', async ({ page, phone }, testInfo) => {
   test.skip(phone, 'drawing with the mouse')
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Theorie' }).click()
   await page.getByRole('button', { name: 'Eigene Wege zeichnen' }).click()
   const layer = page.getByTestId('draw-layer')
@@ -151,8 +148,7 @@ test('a walk of "Mittel": picked by its tier, and a careful player gets to the c
   phone,
 }, testInfo) => {
   test.setTimeout(180_000)
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
   await picker.getByRole('button', { name: 'Mittel', exact: true }).click()

@@ -1,25 +1,31 @@
 import { useMemo, useState } from 'react'
 import { makeLawn } from '../../../core/games/lawn-mowing/mowing'
-import { LAWNS, type LawnId } from '../../../core/games/lawn-mowing/rules'
+import { LAWNS, TIER_LAWNS, type LawnId } from '../../../core/games/lawn-mowing/rules'
+import { TIERS } from '../../../core/tiers'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { Overlay } from '../../components/Overlay'
+import { Stars } from '../../components/Stars'
+import { useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import { boardBounds, ringsPath } from './geometry'
 import type { LawnTexts } from './i18n.de'
 import styles from './LawnMowing.module.css'
-import type { Setup } from './store'
+import { starsKey, usePrefs, type Setup } from './store'
 
 function LawnCard({
   id,
   index,
   selected,
+  stars,
   t,
   onPick,
 }: {
   id: LawnId
   index: number
   selected: boolean
+  /** Best stars on this lawn with the chosen number of mowers. */
+  stars: number
   t: LawnTexts
   onPick: () => void
 }) {
@@ -55,11 +61,12 @@ function LawnCard({
         {t.lawnCard(index + 1)}
         {cells ? ` · ${t.cells(cells)}` : ''}
       </span>
+      <Stars count={stars} size={16} />
     </button>
   )
 }
 
-/** "Neues Spiel": the lawn and one or two cutters (phones: one). */
+/** "Neues Spiel": the lawn, in the three tiers, and one or two cutters (phones: one). */
 export function SetupOverlay({
   initial,
   phone,
@@ -73,6 +80,8 @@ export function SetupOverlay({
   onStart: (setup: Setup) => void
   onClose?: () => void
 }) {
+  const shell = useT()
+  const best = usePrefs((s) => s.stars)
   const [setup, setSetup] = useState<Setup>(phone ? { ...initial, cutters: 1 } : initial)
   return (
     <Overlay
@@ -87,16 +96,24 @@ export function SetupOverlay({
       <div className={styles.setup}>
         <section>
           <h3>{t.setup.lawn}</h3>
-          <div className={styles.lawns}>
-            {LAWNS.map((id, i) => (
-              <LawnCard
-                key={id}
-                id={id}
-                index={i}
-                selected={setup.lawn === id}
-                t={t}
-                onPick={() => setSetup({ ...setup, lawn: id })}
-              />
+          <div className={styles.lawnTiers}>
+            {TIERS.map((tier) => (
+              <section key={tier} aria-label={shell.tiers.names[tier]}>
+                <h4>{shell.tiers.names[tier]}</h4>
+                <div className={styles.lawns}>
+                  {TIER_LAWNS[tier].map((id) => (
+                    <LawnCard
+                      key={id}
+                      id={id}
+                      index={LAWNS.indexOf(id)}
+                      selected={setup.lawn === id}
+                      stars={best[starsKey(id, setup.cutters)] ?? 0}
+                      t={t}
+                      onPick={() => setSetup({ ...setup, lawn: id })}
+                    />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </section>

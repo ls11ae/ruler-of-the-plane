@@ -130,6 +130,21 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `demo.mower1`: Mäher 1
 - `demo.mower2`: Mäher 2
 
+### tiers
+
+- `tiers.names.easy`: Leicht
+- `tiers.names.medium`: Mittel
+- `tiers.names.hard`: Schwer
+- `tiers.choose`: Wie schwer?
+- `tiers.rules`: So geht's
+- `tiers.resume`: Weiterspielen
+- `tiers.stars(got, max)`:
+  - got = 5, max = 18: 5 von 18 Sternen
+- `tiers.last`: zuletzt gespielt
+- `tiers.staff`: empfohlen
+- `tiers.next(tier)`:
+  - tier = „Mittel“: Weiter mit „Mittel“
+
 ### result
 
 - `result.won`: Geschafft!
@@ -169,7 +184,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 ### attract
 
 - `attract.prompt`: Klick, tipp oder drück eine Taste!
-- `attract.invite`: Komm, spiel mit!
+- `attract.come`: Komm spielen!
 
 ### staff
 
@@ -182,10 +197,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `staff.notBuilt`: noch nicht gebaut
 - `staff.on`: an
 - `staff.off`: aus
-- `staff.difficulty`: Schwierigkeit
-- `staff.difficulties.easy`: Leicht
-- `staff.difficulties.normal`: Mittel
-- `staff.difficulties.hard`: Schwer
+- `staff.difficulty`: Schwierigkeit beim Start
+- `staff.difficultyHint`: Vorschlag je Spiel, bis Besucher selbst wählen; nochmal klicken: kein Vorschlag.
 - `staff.kiosk`: Kiosk-Modus
 - `staff.kioskHint`: Nach 90 s ohne Eingabe zurück zum Startbild; Sprache wieder Deutsch.
 - `staff.data`: Daten
@@ -272,10 +285,9 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 ### Top level
 
 - `title`: Licht ins Verlies
-- `subtitle(i, n, k, expert)`:
-  - i = 2, n = 6, k = 3, expert = true: Profi-Verlies 2 von 6 · Ziel: 3 Fackeln
-  - i = 2, n = 6, k = 1, expert = true: Profi-Verlies 2 von 6 · Ziel: 1 Fackel
-  - i = 2, n = 6, k = 3, expert = false: Verlies 2 von 6 · Ziel: 3 Fackeln
+- `subtitle(tier, i, n, k)`:
+  - tier = „Mittel“, i = 2, n = 6, k = 3: Mittel 2 von 6 · Ziel: 3 Fackeln
+  - tier = „Mittel“, i = 2, n = 6, k = 1: Mittel 2 von 6 · Ziel: 1 Fackel
 - `torches(n)`:
   - n = 6: Fackeln: 6
 - `lit`: beleuchtet
@@ -297,6 +309,12 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
     - Stell Fackeln ins Verlies, bis alles hell ist.
     - Jede Fackel leuchtet so weit, wie sie sehen kann: Wände und Säulen werfen Schatten.
     - Schaffst du es mit 1 Fackel?
+- `tierRules`:
+  - Stell Fackeln ins Verlies, bis alles hell ist.
+  - Jede Fackel leuchtet so weit, wie sie sehen kann: Wände und Säulen werfen Schatten.
+  - Je weniger Fackeln du brauchst, desto mehr Sterne.
+- `resume(tier, i)`:
+  - tier = „Mittel“, i = 2: Mittel, Verlies 2
 - `howToKeys`: Ziehen: verschieben, aus dem Verlies oder auf den Eimer ziehen: wegnehmen
 - `stats(torches, time)`:
   - torches = 3, time = „1:23“: 3 Fackeln · 1:23
@@ -323,10 +341,15 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `sweepAnimation`: Ein Strahl kreist um die Fackel und zeigt ihren Sichtbereich
 - `theoryButton`: Theorie
 
+### tierTeasers
+
+- `tierTeasers.easy`: Zwei oder drei Fackeln reichen – wo stellst du sie hin?
+- `tierTeasers.medium`: Säulen und Nischen werfen Schatten: vier bis acht Fackeln.
+- `tierTeasers.hard`: Für Profis: Stachelräume und riesige Verliese mit bis zu 17 Fackeln.
+
 ### picker
 
 - `picker.title`: Verliese
-- `picker.main`: Verliese
 - `picker.expert`: Für Profis
 - `picker.card(i)`:
   - i = 2: Verlies 2
@@ -371,11 +394,11 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 - `title`: Erobere das Land
 - `subtitle(computer, castle, total)`:
-  - computer = true, castle = 4, total = 10: Du gegen den Computer · Burg 4 von 10
-  - computer = false, castle = 4, total = 10: Zwei Spieler · Burg 4 von 10
+  - computer = „Mittel“, castle = 4, total = 10: Du gegen den Computer (Mittel) · Burg 4 von 10
+  - computer = null, castle = 4, total = 10: Zwei Spieler · Burg 4 von 10
 - `subtitleOver(computer)`:
-  - computer = true: Du gegen den Computer · Spiel vorbei
-  - computer = false: Zwei Spieler · Spiel vorbei
+  - computer = „Mittel“: Du gegen den Computer (Mittel) · Spiel vorbei
+  - computer = null: Zwei Spieler · Spiel vorbei
 - `land(points)`:
   - points = 34: 34 Land
 - `bonus(bonus, cities, mines)`:
@@ -399,6 +422,13 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
   - Burgen stehen nur an Land und mit Abstand. Städte bringen 5 Punkte, die Goldmine 10.
   - Wer am Ende mehr Punkte hat, gewinnt!
 - `howToAnimation`: Zwei Burgen teilen das Land; eine neue Burg nimmt sich ein Stück
+- `tierRules`:
+  - Baut abwechselnd Burgen. Jede Burg bekommt das Land, das näher an ihr liegt als an jeder anderen Burg.
+  - Burgen stehen nur an Land und mit Abstand. Städte bringen 5 Punkte, die Goldmine 10.
+  - Wer am Ende mehr Punkte hat, gewinnt: Jede Karte, auf der du den Computer schlägst, bringt einen Stern.
+- `friends`: Zu zweit spielen
+- `resume(map, who)`:
+  - map = „Insel“, who = „Mittel“: Insel, Mittel
 - `explanation`:
   - Jede Burg bekommt alle Punkte, die näher an ihr liegen als an jeder anderen Burg: ihre Voronoi-Region. Die Grenzen liegen genau in der Mitte zwischen zwei Burgen.
   - Der Computer probiert Hunderte Bauplätze aus und zählt auf einem Raster aus Tausenden Punkten, wie viel Land und welche Städte jeder bringt. Auf „Schwer“ rechnet er auch die beste Antwort seines Gegners durch.
@@ -451,11 +481,15 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `setup.computer`: Computer
 - `setup.friends`: Zu zweit
 - `setup.strength`: Stärke
-- `setup.levels.easy`: Leicht
-- `setup.levels.normal`: Mittel
-- `setup.levels.hard`: Schwer
 - `setup.castles`: Burgen je Spieler
+- `setup.won`: gewonnen
 - `setup.start`: Los geht's!
+
+### tierTeasers
+
+- `tierTeasers.easy`: Der Computer baut gut, aber nicht immer am besten Platz.
+- `tierTeasers.medium`: Der Computer nimmt immer den Platz, der ihm am meisten bringt.
+- `tierTeasers.hard`: Der Computer denkt einen Zug voraus: Er rechnet auch deine beste Antwort durch.
 
 ### result
 
@@ -661,6 +695,32 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `modes.guess`: Schätz die Leine
 - `modes.sandbox`: Eigene Wege zeichnen
 
+## Gassi gehen – Startbild
+
+`src/ui/games/frechet/i18n.tiers.de.ts`
+
+### Top level
+
+- `rules(touch)`:
+  - touch = true:
+    - Bring Mensch und Hund zum Schloss: Halte „Mensch“ oder „Hund“ gedrückt, oder beide.
+    - Beide sind gleich schnell, aber die Leine ist kurz: Ist einer zu weit vorn, muss er warten.
+    - Zu zweit macht es mehr Spaß: Jeder hält einen Knopf.
+  - touch = false:
+    - Bring Mensch und Hund zum Schloss: Halte A, dann geht der Mensch; halte L, dann läuft der Hund.
+    - Beide sind gleich schnell, aber die Leine ist kurz: Ist einer zu weit vorn, muss er warten.
+    - Zu zweit: Einer drückt A, die andere L.
+- `resumePark(tier, name)`:
+  - tier = „Mittel“, name = „Die Allee“: Mittel, Die Allee
+- `resumeWoods(tier, name)`:
+  - tier = „Mittel“, name = „Die Allee“: Mittel, im Wald: Die Allee
+
+### teasers
+
+- `teasers.easy`: Gemütliche Spaziergänge, mit Tipps, wer warten muss.
+- `teasers.medium`: Knifflig: Einfach mitlaufen klappt hier nicht. Wer muss wann warten?
+- `teasers.hard`: Für Profis: viele Sackgassen und eine knappe Leine.
+
 ## Gassi gehen – Im Wald
 
 `src/ui/games/frechet/woods/i18n.de.ts`
@@ -766,6 +826,9 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `hintPad`: Halte einen Pfeil: Der Mäher fährt. Mähe alles und fahr zurück zum Start.
 - `board(lawn)`:
   - lawn = „Vorgarten“: Rasen Vorgarten
+- `resume(lawn, cutters)`:
+  - lawn = „Vorgarten“, cutters = 2: Vorgarten, zu zweit
+  - lawn = „Vorgarten“, cutters = 1: Vorgarten, allein
 - `undoKey`: Schritt zurück
 - `newGame`: Neu
 - `theoryButton`: Theorie
@@ -802,6 +865,12 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `pad.left`: links
 - `pad.right`: rechts
 - `pad.undo`: Schritt zurück
+
+### tierTeasers
+
+- `tierTeasers.easy`: Der Vorgarten: klein, mit Teich und Baum – zum Üben.
+- `tierTeasers.medium`: Beete und Obstbäume: größere Wiesen, mehr zu planen.
+- `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Lösers.
 
 ### setup
 
@@ -897,6 +966,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `replay`: Nochmal zeigen
 - `score(time)`:
   - time = „1:23“: 1:23
+- `resume(set, i)`:
+  - set = „Kreuzungen“, i = 2: Kreuzungen, Karte 2
 - `time(seconds)`:
   - seconds = 83: 1:23 min
 
@@ -932,6 +1003,12 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `picker.random`: Zufallsdörfer
 - `picker.map(i)`:
   - i = 2: Karte 2
+
+### tierTeasers
+
+- `tierTeasers.easy`: Verbinde alle Orte mit möglichst wenig Straße.
+- `tierTeasers.medium`: Straßen dürfen sich verzweigen: Wo lohnt sich eine Kreuzung?
+- `tierTeasers.hard`: Selbst die Forschung weiß noch nicht, wie nah ein Computer dem besten Netz immer kommt.
 
 ### sets
 

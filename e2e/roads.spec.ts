@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { mapOf } from '../src/core/games/roads/levels'
 import { kruskal, roadsByLength, type Road } from '../src/core/games/roads/mst'
 import type { KingsTaxesLevel } from '../src/core/levels/schema'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { chooseTier, expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -51,10 +51,11 @@ async function tapRoad(page: Page, [a, b]: Road, touch: boolean) {
 
 test('connects the first map with the shortest network, with one hint', async ({ page, phone }, testInfo) => {
   await page.goto('./#/play/roads')
-  const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo).toBeVisible()
-  await shot(page, testInfo, 'roads-howto')
-  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByTestId('tier-screen')).toContainText(
+    'Der König will alle Orte mit Straßen verbinden',
+  )
+  await shot(page, testInfo, 'roads-tiers')
+  await chooseTier(page, 'Leicht')
   await expect(page.getByTestId('roads-state')).toHaveText('Verbinde alle Orte')
   if (!phone) await expectHeaderLaidOut(page)
 

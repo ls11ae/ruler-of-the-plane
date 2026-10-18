@@ -24,9 +24,12 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   `scripts/gassi/`; merged 2026-10-17). Phase 7 prepared without the laptops (2026-10-17): the offline
   booth package (`booth/`, workflow `booth.yml`, release asset for `phase-*` tags), Start-Stand.cmd and
   Stop-Stand.cmd, QR poster and card, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
-  notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Browsers
-  and performance (2026-10-18): the smoke tests run in Chromium, Firefox and WebKit (Firefox and WebKit in
-  CI), a benchmark measures frame times under CPU throttling and the first visit on Slow 3G
+  notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then
+  (2026-10-17, branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht",
+  "Mittel", "Schwer" with the rules, the stars so far and "Weiterspielen"; the tier mapping is
+  "proposed"), a suggested tier per game in the staff menu, and attract demos of all five games in turn.
+  Browsers and performance (2026-10-18): the smoke tests run in Chromium, Firefox and WebKit (Firefox and
+  WebKit in CI), a benchmark measures frame times under CPU throttling and the first visit on Slow 3G
   (`docs/performance.md`), static board art is drawn in layers of its own, "Schwer" is about 2.5 times
   faster, the parchment is a WebP. Open are the items that need the booth laptops (playtest, the 200 ms
   "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth

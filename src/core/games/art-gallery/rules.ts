@@ -1,3 +1,5 @@
+import type { Tier } from '../../tiers'
+
 /**
  * Rules of "Licht ins Verlies": a torch on the floor lights its visibility polygon; the level is won as
  * soon as the whole floor is lit. Stars compare the torches used with the level's number k (the level
@@ -46,6 +48,16 @@ export const EXPERT_LEVELS = [
 export type LevelName = (typeof MAIN_LEVELS)[number] | (typeof EXPERT_LEVELS)[number]
 
 export const ALL_LEVELS: readonly LevelName[] = [...MAIN_LEVELS, ...EXPERT_LEVELS]
+
+/**
+ * The tiers: the main set split by its order, the dungeons for two or three torches as "Leicht", the
+ * others (four to eight torches, mostly with pillars) as "Mittel"; the expert set is "Schwer".
+ */
+export const TIER_LEVELS: Record<Tier, readonly LevelName[]> = {
+  easy: MAIN_LEVELS.slice(0, 4),
+  medium: MAIN_LEVELS.slice(4),
+  hard: EXPERT_LEVELS,
+}
 
 export const levelId = (name: LevelName) => `art-gallery/${name}`
 

@@ -1,6 +1,8 @@
 import { Delaunay } from 'd3-delaunay'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AiLevel } from '../../../core/games/voronoi/ai'
+import { AI_OF_TIER, tierOfAi } from '../../../core/games/voronoi/tiers'
+import { nextTier } from '../../../core/tiers'
 import { landAreaIn, LAND_POINTS, type GameMap } from '../../../core/games/voronoi/map'
 import { hasRoom, makeRaster } from '../../../core/games/voronoi/raster'
 import {
@@ -19,11 +21,12 @@ import type { VoronoiLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
 import { HowToOverlay } from '../../components/HowToOverlay'
+import { NextLabel } from '../../components/nextLabel'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import { useBooth } from '../../shell/booth'
-import { useSettings, type Difficulty } from '../../shell/settings'
+import { useSuggestedTier, useTierMemory } from '../../shell/tiers'
 import { askAi } from './aiClient'
 import { AimControls, Ghost, type Aim, type PreviewInfo } from './Aim'
 import { GrowingCircles } from './Explanation'
@@ -35,8 +38,9 @@ import { usePrepared } from './prepared'
 import { useMedia } from './useMedia'
 import { ScoreCards } from './ScoreCards'
 import { SetupOverlay } from './SetupOverlay'
-import { usePrefs, type Setup } from './store'
+import { MAPS, usePrefs, type MapId, type Setup } from './store'
 import { PreviewCell } from './Territories'
+import { VoronoiTiers } from './Tiers'
 import { HeatLayer, TheoryLayer, TheoryPanel, type TheoryLayers } from './Theory'
 import styles from './Voronoi.module.css'
 
@@ -46,9 +50,6 @@ const THINK_MS = 650
 const RESULT_DELAY_MS = 1300
 /** Spacing of the heat map in map units. */
 const HEAT_SPACING = 0.25
-
-/** The staff's difficulty names the computer's strength. */
-const aiLevelFor = (d: Difficulty): AiLevel => d
 
 interface Preview {
   at: Vec2
@@ -63,12 +64,15 @@ function Match({
   aiLevel,
   t,
   onNew,
+  onNext,
 }: {
   level: VoronoiLevel
   setup: Setup
   aiLevel: AiLevel
   t: VoronoiTexts
   onNew: () => void
+  /** After a win against the computer: the next map (or the next strength after the last map). */
+  onNext?: () => void
 }) {
   const shell = useT()
   const prefs = usePrefs()
@@ -179,6 +183,7 @@ function Match({
     if (!over) return
     const w = winner(exact.scores)
     if (vsComputer && w !== null) recordVersus(w === 0 ? 'human' : 'machine')
+    if (vsComputer && w === 0) prefs.recordWin(level.id as MapId, aiLevel)
     const timer = window.setTimeout(() => setOverlay('result'), RESULT_DELAY_MS)
     return () => window.clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -254,6 +259,7 @@ function Match({
           : t.result.lost
         : t.result.playerWins(names[result])
   const castleNumber = Math.min(perPlayer, Math.floor(turn / 2) + 1)
+  const strength = vsComputer ? shell.tiers.names[tierOfAi(aiLevel)] : null
   const status = computerTurn
     ? t.turn.computer
     : over
@@ -273,7 +279,7 @@ function Match({
     <div className={styles.game} data-castles={castles.length} data-turn={turn}>
       <GameHeader
         title={t.title}
-        subtitle={over ? t.subtitleOver(vsComputer) : t.subtitle(vsComputer, castleNumber, perPlayer)}
+        subtitle={over ? t.subtitleOver(strength) : t.subtitle(strength, castleNumber, perPlayer)}
         status={<ScoreCards scores={exact.scores} names={names} active={over ? null : mover} t={t} />}
         actions={
           <>
@@ -388,6 +394,7 @@ function Match({
               : undefined
           }
           onAgain={onNew}
+          onNext={vsComputer && result === 0 ? onNext : undefined}
           onClose={() => setOverlay(null)}
         />
       )}
@@ -416,84 +423,70 @@ function TheoryLayerFor({
   return <TheoryLayer delaunay={delaunay} voronoiPath={voronoiPath} layers={layers} />
 }
 
-/** The map of the setup behind the "Neues Spiel" overlay, without castles. */
-function Backdrop({ level, t }: { level: VoronoiLevel; t: VoronoiTexts }) {
-  const prep = usePrepared(level)
-  return <MapBoard prep={prep} castles={[]} minDist={1} label={t.board(t.maps[level.name] ?? level.name)} />
+/** What comes after a won map: the next map at the same strength, after the last map the next strength. */
+function nextGame(setup: Setup, level: AiLevel): { setup: Setup; newTier: boolean } | null {
+  const i = MAPS.indexOf(setup.map)
+  if (i + 1 < MAPS.length) return { setup: { ...setup, map: MAPS[i + 1]!, aiLevel: level }, newTier: false }
+  const tier = nextTier(tierOfAi(level))
+  return tier ? { setup: { ...setup, map: MAPS[0], aiLevel: AI_OF_TIER[tier] }, newTier: true } : null
 }
 
-/** "Erobere das Land": build castles in turn; each castle gets the land closest to it (Voronoi game). */
+/**
+ * "Erobere das Land": build castles in turn; each castle gets the land closest to it (Voronoi game).
+ * Opens on the tier screen, whose tiers are the computer's strength; "Neu" opens the full setup.
+ */
 export default function VoronoiGame() {
   const t = useLocalized({ de, en })
+  const shell = useT()
   const prefs = usePrefs()
-  const difficulty = useSettings((s) => s.difficulty)
+  const setLast = useTierMemory((s) => s.setLast)
+  const suggested = useSuggestedTier('voronoi')
   const [game, setGame] = useState<{ n: number; setup: Setup } | null>(null)
-  const [choosing, setChoosing] = useState<Setup>(() => ({
-    map: prefs.map,
-    opponent: prefs.opponent,
-    aiLevel: prefs.aiLevel,
-    castles: prefs.castles,
-  }))
-  const [overlay, setOverlay] = useState<'howto' | 'setup' | null>(prefs.seenHowTo ? 'setup' : 'howto')
-  const backdrop = useLevel<VoronoiLevel>(choosing.map)
-  const played = useLevel<VoronoiLevel>(game?.setup.map ?? choosing.map)
-  const defaultLevel = aiLevelFor(difficulty)
+  const [overlay, setOverlay] = useState<'setup' | null>(null)
+  const played = useLevel<VoronoiLevel>(game?.setup.map ?? prefs.map)
+  const defaultLevel = AI_OF_TIER[suggested.tier]
 
   const start = (setup: Setup) => {
+    const level = setup.aiLevel ?? defaultLevel
     prefs.setSetup(setup)
-    setChoosing(setup)
+    // The rules were on the tier screen.
+    prefs.setSeenHowTo()
+    if (setup.opponent === 'computer') setLast('voronoi', tierOfAi(level))
     setGame({ n: (game?.n ?? 0) + 1, setup })
     setOverlay(null)
   }
 
+  if (!game) return <VoronoiTiers t={t} defaultLevel={defaultLevel} onStart={start} />
+  const aiLevel = game.setup.aiLevel ?? defaultLevel
+  const next = game.setup.opponent === 'computer' ? nextGame(game.setup, aiLevel) : null
+  const nextLabel = next?.newTier ? shell.tiers.next(shell.tiers.names[tierOfAi(next.setup.aiLevel!)]) : null
   return (
-    <>
-      {game && played.status === 'ready' ? (
+    <NextLabel.Provider value={nextLabel}>
+      {played.status === 'ready' ? (
         <Match
           key={game.n}
           level={played.value}
           setup={game.setup}
-          aiLevel={game.setup.aiLevel ?? defaultLevel}
+          aiLevel={aiLevel}
           t={t}
           onNew={() => setOverlay('setup')}
+          onNext={next ? () => start(next.setup) : undefined}
         />
       ) : (
         <div className={styles.game}>
           <GameHeader title={t.title} />
-          <main className={styles.main}>
-            <div className={styles.boardArea}>
-              {backdrop.status === 'ready' ? (
-                <Backdrop level={backdrop.value} t={t} />
-              ) : (
-                <div className={styles.loading}>{backdrop.status === 'error' ? backdrop.error : '…'}</div>
-              )}
-            </div>
-          </main>
+          <div className={styles.loading}>{played.status === 'error' ? played.error : '…'}</div>
         </div>
-      )}
-      {overlay === 'howto' && (
-        <HowToOverlay
-          animation={<HowToAnimation label={t.howToAnimation} />}
-          onClose={() => {
-            prefs.setSeenHowTo()
-            setOverlay('setup')
-          }}
-        >
-          {t.howTo.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </HowToOverlay>
       )}
       {overlay === 'setup' && (
         <SetupOverlay
-          initial={choosing}
+          initial={game.setup}
           defaultLevel={defaultLevel}
           t={t}
-          onChange={setChoosing}
           onStart={start}
-          onClose={game ? () => setOverlay(null) : undefined}
+          onClose={() => setOverlay(null)}
         />
       )}
-    </>
+    </NextLabel.Provider>
   )
 }

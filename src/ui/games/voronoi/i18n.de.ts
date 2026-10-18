@@ -6,10 +6,11 @@ const bonusWords = (cities: number, mines: number) =>
 
 export const de = {
   title: 'Erobere das Land',
-  subtitle: (computer: boolean, castle: number, total: number) =>
-    `${computer ? 'Du gegen den Computer' : 'Zwei Spieler'} · Burg ${castle} von ${total}`,
-  subtitleOver: (computer: boolean) =>
-    `${computer ? 'Du gegen den Computer' : 'Zwei Spieler'} · Spiel vorbei`,
+  /** `computer`: the computer's strength, or null for two players. */
+  subtitle: (computer: string | null, castle: number, total: number) =>
+    `${computer ? `Du gegen den Computer (${computer})` : 'Zwei Spieler'} · Burg ${castle} von ${total}`,
+  subtitleOver: (computer: string | null) =>
+    `${computer ? `Du gegen den Computer (${computer})` : 'Zwei Spieler'} · Spiel vorbei`,
   maps: {
     'map1-island': 'Insel',
     'map2-river-valley': 'Flusstal',
@@ -52,8 +53,8 @@ export const de = {
     computer: 'Computer',
     friends: 'Zu zweit',
     strength: 'Stärke',
-    levels: { easy: 'Leicht', normal: 'Mittel', hard: 'Schwer' },
     castles: 'Burgen je Spieler',
+    won: 'gewonnen',
     start: "Los geht's!",
   },
   newGame: 'Neu',
@@ -64,6 +65,19 @@ export const de = {
     'Wer am Ende mehr Punkte hat, gewinnt!',
   ],
   howToAnimation: 'Zwei Burgen teilen das Land; eine neue Burg nimmt sich ein Stück',
+  /** The rules on the tier screen, where the tiers are the computer's strength. */
+  tierRules: [
+    'Baut abwechselnd Burgen. Jede Burg bekommt das Land, das näher an ihr liegt als an jeder anderen Burg.',
+    'Burgen stehen nur an Land und mit Abstand. Städte bringen 5 Punkte, die Goldmine 10.',
+    'Wer am Ende mehr Punkte hat, gewinnt: Jede Karte, auf der du den Computer schlägst, bringt einen Stern.',
+  ],
+  tierTeasers: {
+    easy: 'Der Computer baut gut, aber nicht immer am besten Platz.',
+    medium: 'Der Computer nimmt immer den Platz, der ihm am meisten bringt.',
+    hard: 'Der Computer denkt einen Zug voraus: Er rechnet auch deine beste Antwort durch.',
+  },
+  friends: 'Zu zweit spielen',
+  resume: (map: string, who: string) => `${map}, ${who}`,
   result: {
     won: 'Gewonnen!',
     lost: 'Der Computer gewinnt',

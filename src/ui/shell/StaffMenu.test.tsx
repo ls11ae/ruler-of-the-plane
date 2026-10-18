@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useSettings } from './settings'
 import { StaffMenu } from './StaffMenu'
 import { useUi } from './ui'
 
@@ -51,5 +52,19 @@ describe('StaffMenu', () => {
     render(<Harness />)
     act(() => useUi.getState().openStaff())
     expect(screen.getByRole('heading', { name: 'Spiele' })).toBeTruthy()
+  })
+
+  it('suggests a tier per game; a second click takes the suggestion back', () => {
+    vi.stubEnv('VITE_STAFF_PIN', '')
+    act(() => useSettings.setState({ tierDefaults: {} }))
+    render(<Harness />)
+    act(() => useUi.getState().openStaff())
+    const roads = screen.getByRole('group', { name: 'Schwierigkeit beim Start: Straßenbau' })
+    const medium = within(roads).getByRole('button', { name: 'Mittel' })
+    fireEvent.click(medium)
+    expect(useSettings.getState().tierDefaults).toEqual({ roads: 'medium' })
+    expect(medium.getAttribute('aria-pressed')).toBe('true')
+    fireEvent.click(medium)
+    expect(useSettings.getState().tierDefaults).toEqual({})
   })
 })

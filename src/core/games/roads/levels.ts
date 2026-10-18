@@ -1,6 +1,7 @@
 import type { Bounds, Vec2 } from '../../geometry/types'
 import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../../levels/schema'
 import { mulberry32 } from '../../random'
+import type { Tier } from '../../tiers'
 
 /**
  * Levels of "Straßenbau", in three sets and then random villages. "Ohne Kreuzungen" (minimum spanning
@@ -42,6 +43,15 @@ export const SETS: { set: RoadsSet; ids: readonly RoadsLevelId[] }[] = [
   { set: 'bichromatic', ids: BICHROMATIC_IDS },
 ]
 
+/** The tiers of the game: one set each ("Leicht", "Mittel", "Schwer"); random villages count as "Leicht". */
+export const SET_OF_TIER: Record<Tier, RoadsSet> = { easy: 'mst', medium: 'steiner', hard: 'bichromatic' }
+export const TIER_OF_SET: Record<RoadsSet, Tier> = { mst: 'easy', steiner: 'medium', bichromatic: 'hard' }
+export const TIER_LEVELS: Record<Tier, readonly RoadsLevelId[]> = {
+  easy: MST_IDS,
+  medium: STEINER_IDS,
+  hard: BICHROMATIC_IDS,
+}
+
 /** Every fixed map in playing order; the index after the last one means random villages. */
 export const LEVEL_IDS = [...MST_IDS, ...STEINER_IDS, ...BICHROMATIC_IDS] as const
 export type RoadsLevelId =
@@ -56,6 +66,10 @@ export function setOf(index: number): { set: RoadsSet; index: number; count: num
   }
   throw new Error(`no fixed map ${index}`)
 }
+
+/** The tier of a map index (random villages, after the fixed maps, count as "Leicht"). */
+export const tierOfIndex = (index: number): Tier =>
+  index >= LEVEL_IDS.length ? 'easy' : TIER_OF_SET[setOf(index).set]
 
 /** A map to connect: settlements (villages first, then castles; they differ only in look). */
 export interface RoadsMap {

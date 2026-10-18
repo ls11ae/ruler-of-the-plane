@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test, type Page, type TestInfo } from './fixtures'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { chooseTier, expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -62,15 +62,21 @@ async function screenDir(page: Page, d: Dir): Promise<Dir> {
   return ({ left: 'up', right: 'down', down: 'left', up: 'right' } as const)[d]
 }
 
+/** Starts "Leicht" alone or together, then opens "Neu" (the setup with every lawn) on the same lawn. */
 async function startGame(page: Page, players: 1 | 2, testInfo: TestInfo) {
   await page.goto('./#/play/lawn-mowing')
-  const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo).toBeVisible()
-  await shot(page, testInfo, 'lawn-mowing-howto')
-  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  const tiers = page.getByTestId('tier-screen')
+  await expect(tiers).toContainText('Mähe den ganzen Rasen!')
+  if (players === 2) await tiers.getByRole('button', { name: 'Zu zweit (2 Mäher)' }).click()
+  await shot(page, testInfo, 'lawn-mowing-tiers')
+  await chooseTier(page, 'Leicht')
+  await expect(page.locator('header')).toContainText('Rasen 1')
+  await page.locator('header').getByRole('button', { name: 'Neu' }).click()
   const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
   await expect(setup).toBeVisible()
-  if (players === 2) await setup.getByRole('button', { name: 'Zu zweit (2 Mäher)' }).click()
+  await expect(
+    setup.getByRole('region', { name: 'Leicht' }).getByRole('button', { name: /Vorgarten/ }),
+  ).toHaveAttribute('aria-pressed', 'true')
   return setup
 }
 

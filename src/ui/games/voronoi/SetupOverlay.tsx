@@ -4,10 +4,12 @@ import { CASTLE_COUNTS } from '../../../core/games/voronoi/rules'
 import type { VoronoiLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { Overlay } from '../../components/Overlay'
+import { tierOfAi } from '../../../core/games/voronoi/tiers'
+import { useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import { ringsPath } from './drawing'
 import type { VoronoiTexts } from './i18n.de'
-import { MAPS, type MapId, type Setup } from './store'
+import { MAPS, usePrefs, winKey, type MapId, type Setup } from './store'
 import styles from './Voronoi.module.css'
 
 const AI_LEVELS: AiLevel[] = ['easy', 'normal', 'hard']
@@ -15,11 +17,14 @@ const AI_LEVELS: AiLevel[] = ['easy', 'normal', 'hard']
 function MapCard({
   id,
   selected,
+  won,
   t,
   onPick,
 }: {
   id: MapId
   selected: boolean
+  /** Won against the computer at the chosen strength. */
+  won: boolean
   t: VoronoiTexts
   onPick: () => void
 }) {
@@ -49,11 +54,15 @@ function MapCard({
       </svg>
       <span className={styles.mapName}>{t.maps[name]}</span>
       <span className={styles.mapTagline}>{t.mapTaglines[name]}</span>
+      {won && <span className={styles.mapWon}>{t.setup.won}</span>}
     </button>
   )
 }
 
-/** "Neues Spiel": map, opponent (computer with a strength, or two players) and castles per player. */
+/**
+ * "Neues Spiel": map, opponent (computer with a strength, or two players) and castles per player. The
+ * strengths are the game's tiers ("Leicht", "Mittel", "Schwer"); maps won at the chosen one are marked.
+ */
 export function SetupOverlay({
   initial,
   defaultLevel,
@@ -63,7 +72,7 @@ export function SetupOverlay({
   onChange,
 }: {
   initial: Setup
-  /** The staff's difficulty, used while the setup has no strength of its own. */
+  /** The strength of the suggested tier, used while the setup has no strength of its own. */
   defaultLevel: AiLevel
   t: VoronoiTexts
   onStart: (setup: Setup) => void
@@ -71,6 +80,8 @@ export function SetupOverlay({
   /** Called on every change (e.g. to show the chosen map behind the overlay). */
   onChange?: (setup: Setup) => void
 }) {
+  const shell = useT()
+  const wins = usePrefs((s) => s.wins)
   const [setup, setSetup] = useState(initial)
   const update = (s: Setup) => {
     setSetup(s)
@@ -96,6 +107,7 @@ export function SetupOverlay({
                 key={id}
                 id={id}
                 selected={setup.map === id}
+                won={setup.opponent === 'computer' && wins[winKey(id, level)] === true}
                 t={t}
                 onPick={() => update({ ...setup, map: id })}
               />
@@ -130,7 +142,7 @@ export function SetupOverlay({
                   aria-pressed={level === l}
                   onClick={() => update({ ...setup, aiLevel: l })}
                 >
-                  {t.setup.levels[l]}
+                  {shell.tiers.names[tierOfAi(l)]}
                 </Button>
               ))}
             </div>
