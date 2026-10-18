@@ -4,6 +4,7 @@ import { Button, LinkButton } from '../components/Button'
 import { GAME_IDS } from '../games/registry'
 import { useT } from '../i18n'
 import { usePointerGesture } from '../input/hooks'
+import { LegalDialog } from './LegalDialog'
 import { MapArt } from './MapArt'
 import { OLD_VERSION_URL, tspBoardsUrl, useGameStates } from './places'
 import { MAP_LAYOUTS, type MapLayout, type PlaceId } from './mapLayout'
@@ -55,7 +56,16 @@ export function StartMap() {
   const language = useSettings((s) => s.language)
   const setLanguage = useSettings((s) => s.setLanguage)
   const kiosk = useSettings((s) => s.kiosk)
+  const attract = useUi((s) => s.attract)
+  const [legal, setLegal] = useState(false)
+  const [attractSeen, setAttractSeen] = useState(attract)
   const tspUrl = tspBoardsUrl()
+
+  // The kiosk timeout brings back the attract screen over the map; the next visitor starts without the dialog.
+  if (attract !== attractSeen) {
+    setAttractSeen(attract)
+    if (attract) setLegal(false)
+  }
 
   const hidden = new Set<PlaceId>(tspUrl ? [] : ['tsp'])
 
@@ -152,8 +162,12 @@ export function StartMap() {
         <div className={`${styles.anchored} ${styles.footer}`} style={at(layout, layout.logo)}>
           <span className={styles.logo}>{t.start.logo}</span>
           {!layout.creditsWithControls && credits}
+          <button type="button" className={styles.legal} onClick={() => setLegal(true)}>
+            {t.legal.open}
+          </button>
         </div>
       </div>
+      {legal && <LegalDialog onClose={() => setLegal(false)} />}
     </main>
   )
 }

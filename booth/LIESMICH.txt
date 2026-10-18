@@ -1,0 +1,25 @@
+Ruler of the Plane - der Stand zum Tag der offenen Tür (TU Dortmund, LS 11)
+==========================================================================
+
+Starten:   Start-Stand.cmd doppelklicken.
+           Ein lokaler Server startet, dann Chrome im Kiosk-Modus mit den Spielen.
+           Das schwarze Fenster "Ruler of the Plane - Stand" offen lassen.
+Beenden:   Stop-Stand.cmd doppelklicken (oder im Stand-Fenster Strg+C).
+           Zum Desktop kommt man mit der Windows-Taste oder Alt+Tab.
+Firefox:   Start-Stand-Firefox.cmd, falls Chrome Probleme macht.
+
+Alles läuft ohne Internet und ohne Administratorrechte. Adresse im Browser:
+  http://localhost:8137/ruler-of-the-plane/?kiosk
+
+Was der Start tut:
+  - prüft, ob das Paket vollständig ist (sonst: ZIP neu entpacken),
+  - hält Bildschirm und Laptop wach und stellt Bildschirm-aus, Energiesparen und
+    Bildschirmschoner ab; Stop-Stand.cmd stellt alles wieder zurück,
+  - öffnet den Browser wieder, wenn ihn jemand schließt (Alt+F4).
+
+Bestenlisten, Personalmenü-Einstellungen und Browser-Profile liegen in
+  %LOCALAPPDATA%\RulerOfThePlane
+(dort auch die Protokolle start.log und server.log, falls etwas hängt).
+
+Mehr: Spickzettel.pdf in diesem Ordner, und im Repository
+  github.com/ls11ae/ruler-of-the-plane  (booth/README.md, docs/booth/)

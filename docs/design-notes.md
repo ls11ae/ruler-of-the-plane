@@ -48,8 +48,8 @@ deeper for curious visitors. Afterwards the same app is the public, playable-at-
 - Whether a floor plan of a TU Dortmund building can be used as a level: answered 2026-10-17, no.
 - Who is responsible for the Impressum and privacy notice of the public site: answered 2026-10-17, the
   Algorithm Engineering Group (LS 11), Computer Science, TU Dortmund (`https://ae.cs.tu-dortmund.de/`).
-  Open: the exact addresses of its Impressum and privacy notice (the site cannot be reached from the
-  cloud sessions).
+  Its pages (Kevin, 2026-10-17): `https://ae.cs.tu-dortmund.de/imprint/`, `/privacy/` and
+  `/accessibility-statement/`, linked from the start map since Phase 7.
 
 ## 5. Decision log
 
@@ -207,6 +207,105 @@ subsection below, so their branches do not conflict.
 - **2026-10-16 Board turns by 90° on portrait screens** (shared `Board` option `autoRotate`): when a
   turned board is at least 15 % larger; icons stay upright. Alternative: a separate portrait layout per
   level. Reason: one rule for every board game, no level data to maintain.
+
+### Phase 7 (booth preparation)
+
+Entries of the session that prepared Phase 7 without the booth laptops (2026-10-17). The subsection
+sits before Phase 6, so that the sessions extending Phase 6 and the tracks at their ends do not
+conflict with it.
+
+- **2026-10-17 The offline package serves the normal build at the paths of GitHub Pages.** One folder
+  (`booth/README.md`): the app at `http://localhost:8137/ruler-of-the-plane/` (the Pages build with
+  `VITE_TSP_BOARDS_URL=/tsp-boards/` and the PIN), tsp-boards at `/tsp-boards/` on the same origin (its
+  kiosk frame needs that), Windows scripts beside them. The port is fixed, because the browser keeps the
+  leaderboards, the staff settings and the app's offline copy per origin; `-Port` exists for a clash.
+  Alternatives: the app at `/` (a second build with another `base`); `file://` (no service worker, no
+  module workers); a random free port (empty leaderboards after every start).
+- **2026-10-17 The local server is a PowerShell script on `System.Net.HttpListener`.** Windows PowerShell
+  5.1 is on every Windows laptop and `http://localhost:<port>/` needs no admin rights, so nothing is
+  installed or unblocked by an administrator. It serves GET and HEAD with the MIME types the browsers
+  insist on (module workers, WebAssembly, manifest, fonts), never lists a folder, refuses `..`, hidden
+  files, streams and backslashes, accepts only the host name `localhost`, and answers
+  `If-Modified-Since`. A browser's requests are handled one after another, which is fast enough for one
+  visitor (the app's service worker serves it from its copy after the first load). Alternatives: a
+  portable Node or Python (about 30 MB more, and a binary SmartScreen may block); an own `.exe`
+  (unsigned); `TcpListener` (works without http.sys, but a browser's idle pre-connections would stall a
+  single-threaded loop). If a laptop refuses `localhost` all the same, the server prints the one
+  `netsh http add urlacl` an administrator would run.
+- **2026-10-17 tsp-boards is downloaded from its site by a crawler that fails loudly** (the task said the
+  repository is private; the session's repository list now shows it as public). tsp-boards has no
+  service worker, hence no precache list: `scripts/booth/fetch-tsp-boards.ts` follows `index.html`,
+  module imports, `new URL(…, import.meta.url)` (workers, HiGHS' WebAssembly), data files named in the
+  code and the `file` entries of its JSON indexes (countries, puzzles). Missing referenced files, a site
+  without worker or WebAssembly, an empty file or a script from another host fail the workflow; the
+  version it finds (`0.9.0+…`) goes into `VERSION.txt`. Checked against a local tsp-boards build (48
+  files, byte for byte; the live site in CI: 51 files). The package is then played in Chromium and
+  Firefox with every request to another host blocked, which would catch anything the crawler missed.
+  Alternatives: building tsp-boards from its repository (possible now that it is public, but the site is
+  what visitors get); its CI artifact (kept 30 days, needs a token for another repository).
+- **2026-10-17 Start-Stand.cmd: Chrome in kiosk mode with its own profile, a watchdog, and power
+  settings that are restored.** The start window checks the package against a size list (a half-unpacked
+  ZIP, a virus scanner), removes the downloaded-file mark, starts the server hidden, and opens Chrome
+  with `--kiosk` on `?kiosk` with its own `--user-data-dir` in `%LOCALAPPDATA%\RulerOfThePlane`, no
+  first-run or default-browser pages, translation, pinch zoom, swipe navigation, crash bubble (also by
+  marking the profile as closed cleanly), permission prompts or background traffic. Firefox follows with
+  `--kiosk`, its own profile and a `user.js` with the same intent (also Ctrl+wheel scrolls instead of
+  zooming), then Edge. The window stays open as a watchdog: a browser closed by a visitor (Alt+F4) opens
+  again (at most 5 times in 2 minutes), a dead server restarts. It keeps display and system awake while
+  it runs (`SetThreadExecutionState`, gone with the process), sets the active power plan's timeouts for
+  display, sleep and hibernation to "never" with `powercfg` (allowed without admin on most laptops) and
+  switches the screen saver off for the session only; Stop-Stand.cmd restores the saved values. It warns
+  about a pending update restart and an inactivity-lock policy. Not done by script, because it needs
+  admin rights or the Settings app: pausing Windows Update, touchpad gestures, notifications; they are in
+  the checklist. Alternatives: Windows assigned access (admin rights and a separate account); a browser
+  extension or policy (admin rights).
+- **2026-10-17 The booth workflow tests on Windows itself.** `booth.yml` runs for `phase-*` tags, by hand,
+  and for pushes that change the package's files: on `windows-latest` it builds a copy and tests the
+  server under Windows PowerShell 5.1 and Start-Stand/Stop-Stand with Chrome and with Firefox (the server
+  log must show the app's service worker and its precached levels; a browser ended by force must come
+  back; Stop must restore the power plan); then on Ubuntu it builds the package, tests the server under
+  pwsh, plays it, and uploads it (artifact `Stand-<version>`; for a tag also `Stand-<tag>.zip` on the
+  tag's release, where the booth gets it). The jobs do not pass artifacts to each other, so the workflow
+  needs no `download-artifact` (whose current major version a cloud session cannot look up). The first
+  Windows run found that .NET Framework expands 8.3 names (`RUNNER~1`) in `GetFullPath`; the server now
+  normalises its root the same way.
+- **2026-10-17 (proposed) Impressum, privacy notice and accessibility statement behind one link.** The
+  logo line of the start map ends with "Impressum · Datenschutz" (both layouts); it opens a dialog with
+  the three pages of the Algorithm Engineering Group (`ae.cs.tu-dortmund.de/imprint`, `/privacy`,
+  `/accessibility-statement`) and one sentence that the games send nothing. Outside kiosk mode they are
+  links to a new tab; in kiosk mode each shows its address and a QR code for the visitor's phone, and the
+  dialog closes when the attract screen returns. The Impressum is two clicks away, which German law
+  accepts ("leicht erkennbar, unmittelbar erreichbar"). The QR codes are generated into
+  `src/ui/shell/legalQr.ts` (`npm run qr`, qrcode-generator as a dev dependency; a test decodes them with
+  jsQR), so the bundle has no new library. Alternatives: three links in the logo line (do not fit beside
+  the logo on a phone); only on the credits screen (hard to find); a QR library at run time (a new
+  runtime dependency for three fixed addresses).
+- **2026-10-17 (proposed) QR poster A2 and card A6.** `npm run booth:print`: parchment background with a
+  double ink frame, the title in Eagle Lake, the five places with their taglines from the start map and
+  the mathematics behind each (Kunstgalerie-Problem, Voronoi-Diagramm, Fréchet-Abstand,
+  Rasenmäh-Problem, Spannbäume) and their map icons, "Spiel mit – hier am Stand oder zu Hause auf dem
+  Handy:", a QR code for `https://ls11ae.github.io/ruler-of-the-plane/` (14 cm on the poster, 4 cm on the
+  card; error correction M) with the address as text, and "Lehrstuhl 11 · Algorithm Engineering · TU
+  Dortmund". SVG with every text as outlines (opentype.js; opentype.js 2.0's `toPathData` writes NaN at
+  some sizes, so the path data is written from its commands), PDF printed by Chromium, also four cards on
+  an A4 sheet with cutting lines. A test reads the QR code back; the session also read it from the
+  rendered PDFs. Alternatives: text with embedded fonts in the SVG (print shops' tools often ignore
+  them); a QR web service (privacy, no network in the sessions).
+- **2026-10-17 Booth papers in German.** The cheat sheet (`docs/booth/spickzettel.md`, one A4 page, the
+  print script fails if it grows), the checklist for the first laptop test
+  (`docs/booth/checkliste-laptoptest.md`) and the package's `LIESMICH.txt` are read by the booth staff, so
+  they are German like the app; the PIN is not printed ("PIN von Kevin"). The repository's own docs stay
+  English (`booth/README.md`).
+- **2026-10-17 `docs/texts-de.md` for proofreading, kept fresh by a test.** `npm run texts` lists every
+  German text by dictionary and group with its key; texts that are functions are called with example
+  values chosen by parameter name (a few per text where the general ones would read wrongly), once per
+  case they distinguish: every boolean both ways, `null` where the type allows it, and every number the
+  text compares a parameter with (singular and plural). Lists, not tables (Prettier would pad table
+  columns to the longest text). A test fails when the file is stale, so a session that changes a text
+  runs `npm run texts`. The Texts workflow uploads the file with every laptop screenshot of the smoke
+  tests and of `e2e/screens.spec.ts` (pickers, a snapped leash, the end of the credits) as the artifact
+  `texte-screenshots`. Alternatives: a CI artifact only (Kevin could not comment on lines in a pull
+  request); screenshots in the CI job of every pull request (the browser track changes that job).
 
 ### Phase 6 (playtest and polish)
 
