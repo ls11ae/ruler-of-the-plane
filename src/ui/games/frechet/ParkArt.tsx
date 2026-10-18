@@ -120,6 +120,19 @@ export const ParkScenery = memo(function ParkScenery({
 
 /** The person's footpath (walked part darker) and the dog's dotted trail (walked part solid). */
 export function Paths({ person, dog, s, t }: { person: Path; dog: Path; s: number; t: number }) {
+  return (
+    <>
+      <PathLines person={person} dog={dog} />
+      <WalkedPaths person={person} dog={dog} s={s} t={t} />
+    </>
+  )
+}
+
+/**
+ * The static part of {@link Paths}: the footpath with its ink outline and the dog's dotted trail (for a
+ * board's `under` layer, with {@link WalkedPaths} on the board).
+ */
+export const PathLines = memo(function PathLines({ person, dog }: { person: Path; dog: Path }) {
   const board = useBoard()
   const px = board.pxToBoard(1)
   const width = Math.max(0.9, 16 * px)
@@ -128,13 +141,24 @@ export function Paths({ person, dog, s, t }: { person: Path; dog: Path; s: numbe
     <g pointerEvents="none" strokeLinecap="round" strokeLinejoin="round" fill="none">
       <polyline points={all} stroke="var(--ink)" strokeWidth={width + 4 * px} filter={board.ink} />
       <polyline points={all} stroke="#f3e7c4" strokeWidth={width} />
-      {s > 0 && <polyline points={polyline(walkedPart(person, s))} stroke="#d9bf86" strokeWidth={width} />}
       <polyline
         points={polyline(dog.points)}
         stroke="var(--ink-soft)"
         strokeWidth={3 * px}
         strokeDasharray={`${0.1 * px} ${9 * px}`}
       />
+    </g>
+  )
+})
+
+/** The walked parts of both paths, drawn over {@link PathLines}. */
+export function WalkedPaths({ person, dog, s, t }: { person: Path; dog: Path; s: number; t: number }) {
+  const board = useBoard()
+  const px = board.pxToBoard(1)
+  const width = Math.max(0.9, 16 * px)
+  return (
+    <g pointerEvents="none" strokeLinecap="round" strokeLinejoin="round" fill="none">
+      {s > 0 && <polyline points={polyline(walkedPart(person, s))} stroke="#d9bf86" strokeWidth={width} />}
       {t > 0 && (
         <polyline points={polyline(walkedPart(dog, t))} stroke="var(--ink-soft)" strokeWidth={2.5 * px} />
       )}

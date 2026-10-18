@@ -29,7 +29,7 @@ import styles from '../Frechet.module.css'
 import { KEYS, type Walker } from '../helpers'
 import { HoldControls } from '../HoldControls'
 import type { FrechetTexts } from '../i18n.de'
-import { Paths, Walkers } from '../ParkArt'
+import { PathLines, WalkedPaths, Walkers } from '../ParkArt'
 import { useMedia } from '../useMedia'
 import type { WoodsTexts } from './i18n.de'
 import { useWoodsProgress } from './store'
@@ -185,9 +185,20 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           data-walk={`${state.s.toFixed(3)},${state.t.toFixed(3)}`}
           data-caught={caught || undefined}
         >
-          <Board bounds={PARK} padding={0.6} autoRotate label={w.board(course.leash)}>
-            <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
-            <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
+          <Board
+            bounds={PARK}
+            padding={0.6}
+            autoRotate
+            label={w.board(course.leash)}
+            // The park is drawn once, in a layer of its own (the ink filter is slow to draw).
+            under={
+              <>
+                <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
+                <PathLines person={course.person} dog={course.dog} />
+              </>
+            }
+          >
+            <WalkedPaths person={course.person} dog={course.dog} s={state.s} t={state.t} />
             <Trunks trees={course.trees} touched={touched} />
             {ghost && (
               <>

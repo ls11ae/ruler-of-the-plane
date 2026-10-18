@@ -29,7 +29,7 @@ import { KEYS, type Walker } from './helpers'
 import { HoldControls } from './HoldControls'
 import { HowToAnimation } from './HowToAnimation'
 import type { FrechetTexts } from './i18n.de'
-import { Leash, Paths, ParkScenery, Walkers } from './ParkArt'
+import { Leash, ParkScenery, PathLines, WalkedPaths, Walkers } from './ParkArt'
 import { useProgress } from './store'
 import { TheoryPanel } from './Theory'
 import { useMedia } from './useMedia'
@@ -192,9 +192,20 @@ export function WalkScreen({
           data-testid="park"
           data-walk={`${state.s.toFixed(3)},${state.t.toFixed(3)}`}
         >
-          <Board bounds={PARK} padding={0.6} autoRotate label={t.board(course.leash)}>
-            <ParkScenery level={course.level} labels={{ start: t.start, goal: t.goal }} />
-            <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
+          <Board
+            bounds={PARK}
+            padding={0.6}
+            autoRotate
+            label={t.board(course.leash)}
+            // The park is drawn once, in a layer of its own (the ink filter is slow to draw).
+            under={
+              <>
+                <ParkScenery level={course.level} labels={{ start: t.start, goal: t.goal }} />
+                <PathLines person={course.person} dog={course.dog} />
+              </>
+            }
+          >
+            <WalkedPaths person={course.person} dog={course.dog} s={state.s} t={state.t} />
             {ghost && (
               <>
                 <Leash

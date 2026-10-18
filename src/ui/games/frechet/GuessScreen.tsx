@@ -13,7 +13,7 @@ import { ExplanationDiagram } from './Explanation'
 import styles from './Frechet.module.css'
 import type { FrechetTexts } from './i18n.de'
 import { LeashSlider } from './LeashSlider'
-import { Leash, Paths, ParkScenery, Walkers } from './ParkArt'
+import { Leash, ParkScenery, PathLines, WalkedPaths, Walkers } from './ParkArt'
 import { sliderMax } from './helpers'
 import { useMedia } from './useMedia'
 
@@ -133,9 +133,20 @@ export function GuessScreen({
       />
       <main className={styles.main}>
         <div className={styles.boardArea}>
-          <Board bounds={PARK} padding={0.6} autoRotate label={t.guess.title}>
-            <ParkScenery level={level} labels={{ start: t.start, goal: t.goal }} />
-            <Paths person={course.person} dog={course.dog} s={at[0]} t={at[1]} />
+          <Board
+            bounds={PARK}
+            padding={0.6}
+            autoRotate
+            label={t.guess.title}
+            // The park is drawn once, in a layer of its own (the ink filter is slow to draw).
+            under={
+              <>
+                <ParkScenery level={level} labels={{ start: t.start, goal: t.goal }} />
+                <PathLines person={course.person} dog={course.dog} />
+              </>
+            }
+          >
+            <WalkedPaths person={course.person} dog={course.dog} s={at[0]} t={at[1]} />
             <Leash
               from={person}
               to={dog}
