@@ -179,6 +179,34 @@ async function dragPerFrame(page: Page, selector: string, path: Pt[]) {
   )
 }
 
+/** A mouse moving over `selector` without a button, one pointer move per animation frame. */
+async function hoverPerFrame(page: Page, selector: string, path: Pt[]) {
+  await page.evaluate(
+    ([selector, path]) =>
+      new Promise<void>((resolve) => {
+        const el = document.querySelector(selector)!
+        let i = 0
+        requestAnimationFrame(function step() {
+          if (i < path.length) {
+            const p = path[i++]!
+            el.dispatchEvent(
+              new PointerEvent('pointermove', {
+                pointerId: 1,
+                pointerType: 'mouse',
+                isPrimary: true,
+                clientX: p.x,
+                clientY: p.y,
+                bubbles: true,
+              }),
+            )
+            requestAnimationFrame(step)
+          } else resolve()
+        })
+      }),
+    [selector, path] as const,
+  )
+}
+
 /** Screen position of a point in level coordinates (through the board's transformation). */
 async function toScreen(page: Page, x: number, y: number): Promise<Pt> {
   return page
@@ -388,6 +416,55 @@ for (const rate of RATES) {
     // Every road of the shortest network but the last: one drag each, one move per frame.
     for (const path of paths.slice(0, -1)) await dragPerFrame(page, '[data-testid="roads-input"]', path)
     report('Straßenbau: build roads, 19 villages', rate, await stopMeasure(page, `roads-${rate}x`))
+  })
+
+  test(`Erobere das Land: aiming with the mouse in a game of two, ${rate}×`, async ({ page }) => {
+    await seed(page, {
+      'rotp-voronoi': {
+        state: {
+          map: 'voronoi/map2-river-valley',
+          opponent: 'friends',
+          aiLevel: null,
+          castles: 10,
+          seenHowTo: true,
+        },
+        version: 1,
+      },
+    })
+    await page.goto('./#/play/voronoi')
+    await page.getByRole('dialog').getByRole('button', { name: "Los geht's!" }).click()
+    const game = page.locator('[data-castles]')
+    await expect(game).toHaveAttribute('data-turn', '0')
+    // Twelve castles at seeded random spots (the game refuses water and spots too close), then the
+    // ghost castle follows the mouse across the map: its cell and its points change in every frame.
+    const { minX, minY, maxX, maxY } = json<{ bounds: Record<'minX' | 'minY' | 'maxX' | 'maxY', number> }>(
+      'voronoi/map2-river-valley',
+    ).bounds
+    const rnd = random(9)
+    for (let tries = 0; Number(await game.getAttribute('data-castles')) < 12; tries++) {
+      expect(tries).toBeLessThan(500)
+      const p = await toScreen(page, minX + rnd() * (maxX - minX), minY + rnd() * (maxY - minY))
+      await page.mouse.click(p.x, p.y)
+    }
+    const corners = await Promise.all(
+      [
+        [minX + 1, minY + 1],
+        [maxX - 1, maxY - 1],
+        [maxX - 1, minY + 1],
+        [minX + 1, maxY - 1],
+      ].map(([x, y]) => toScreen(page, x!, y!)),
+    )
+    const path = Array.from({ length: 180 }, (_, i) => {
+      const leg = Math.floor(i / 60)
+      const f = (i % 60) / 59
+      const a = corners[leg]!
+      const b = corners[leg + 1]!
+      return { x: a.x + f * (b.x - a.x), y: a.y + f * (b.y - a.y) }
+    })
+    await throttle(page, rate)
+    await startMeasure(page)
+    await hoverPerFrame(page, 'svg[role=img] rect[fill="transparent"]', path)
+    report('Erobere das Land: aim, 12 castles', rate, await stopMeasure(page, `voronoi-aim-${rate}x`))
   })
 
   test(`Erobere das Land: "Schwer" moves with 10 castles each, ${rate}×`, async ({ page }) => {
