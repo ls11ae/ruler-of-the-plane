@@ -1,7 +1,8 @@
 import { expect, test, type Page, type TestInfo } from './fixtures'
-import { woodsById } from '../src/core/games/frechet/woods/levels'
+import { WOODS, woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
 import type { WoodsId } from '../src/core/games/frechet/woods/shapes'
+import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
 import { expectHeaderLaidOut, freshDevice, shot, startGame } from './helpers'
 
 freshDevice()
@@ -66,38 +67,38 @@ async function openWoods(page: Page, name: string, testInfo?: TestInfo) {
   await woods.getByRole('button', { name: new RegExp(name) }).click()
 }
 
-test('walks round the oak in the woods: keys on a laptop, hold buttons on a phone', async ({
+test('walks round the lamp post in the woods: keys on a laptop, hold buttons on a phone', async ({
   page,
   phone,
 }, testInfo) => {
   test.setTimeout(150_000)
-  await openWoods(page, 'Um die Eiche', testInfo)
+  await openWoods(page, 'Laternenpfahl', testInfo)
   const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo.getByText(/bleibt die Leine an den Baumstämmen hängen/)).toBeVisible()
+  await expect(howTo.getByText(/bleibt die Leine an Stämmen und Pfählen hängen/)).toBeVisible()
   await shot(page, testInfo, 'frechet-woods-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
-  await expect(page.getByTestId('leash')).toContainText('von 2,7 m Leine')
+  await expect(page.getByTestId('leash')).toContainText('von 3,4 m Leine')
   if (!phone) {
-    await expect(page.getByText('Im Wald · Um die Eiche · Spaziergang 1 von 4')).toBeVisible()
+    await expect(page.getByText('Im Wald · Laternenpfahl · Spaziergang 1 von 4')).toBeVisible()
     await expectHeaderLaidOut(page)
   }
   await shot(page, testInfo, 'frechet-woods-start')
 
-  // In the middle of the loop round the oak.
-  await walkThroughTheWoods(page, 'oak', phone, (s) => s > 26)
+  // In the middle of the loops round the lamp post.
+  await walkThroughTheWoods(page, 'lamp', phone, (s) => s > 26)
   await shot(page, testInfo, 'frechet-woods-walking')
-  await walkThroughTheWoods(page, 'oak', phone, () => false)
+  await walkThroughTheWoods(page, 'lamp', phone, () => false)
 
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible({ timeout: 10_000 })
-  await expect(result.getByText(/kürzeste möglich: 2,0 m \(ohne Bäume: 2,0 m\)/)).toBeVisible()
+  await expect(result.getByText(/kürzeste möglich: 1,3 m \(ohne Bäume: 1,3 m\)/)).toBeVisible()
   await expect(result.getByText(/homotoper Fréchet-Abstand/)).toBeVisible()
   await expect(result.getByTestId('diagram-player')).toBeVisible()
   await shot(page, testInfo, 'frechet-woods-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
 
   const theory = page.getByRole('complementary', { name: 'Theorie' })
-  await expect(theory.getByText('Kürzeste Leine im Wald: 2,0 m')).toBeVisible()
+  await expect(theory.getByText('Kürzeste Leine im Wald: 1,3 m')).toBeVisible()
   await expect(theory.getByTestId('theory-verdict')).toHaveText(/führt ein Weg/)
   const diagram = theory.getByRole('img', { name: 'Diagramm der Stellungen von Mensch und Hund' })
   const box = (await diagram.boundingBox())!
@@ -132,4 +133,51 @@ test('behind the beech: the leash catches on the trunk when the dog runs ahead',
   await theory.getByRole('button', { name: 'Ohne Bäume' }).click()
   await expect(theory.getByRole('button', { name: 'Ohne Bäume' })).toHaveAttribute('aria-pressed', 'true')
   await shot(page, testInfo, 'frechet-woods-without-trees')
+})
+
+test('the free start leash: wind the leash round the gate post, then see the shortest leash for each start', async ({
+  page,
+  phone,
+}, testInfo) => {
+  const walk = WOODS.find((w) => w.freeStart)!
+  const best = walk.bestStart!
+  await startGame(page, 'frechet', 'Schwer')
+  await page.getByRole('button', { name: 'Spaziergänge' }).click()
+  const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+  await picker.getByRole('button', { name: 'Schwer', exact: true }).click()
+  const woods = picker.getByRole('region', { name: 'Im Wald' })
+  await woods.scrollIntoViewIfNeeded()
+  await woods.getByRole('button', { name: new RegExp(woodsDe.walks[walk.id]) }).click()
+  const howTo = page.getByRole('dialog', { name: "So geht's" })
+  await expect(howTo.getByText(/wie die Leine um den Pfosten am Tor liegt/)).toBeVisible()
+  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  // The leash starts straight; one click per turn round the gate post, the way the best start lies.
+  const panel = page.getByTestId('start-winding')
+  await expect(panel.getByTestId('start-value')).toContainText('gerade')
+  const button = panel.getByRole('button', {
+    name: best > 0 ? woodsDe.start.clockwise : woodsDe.start.anticlockwise,
+  })
+  for (let k = 0; k < Math.abs(best); k++) await button.click()
+  await expect(panel.getByTestId('start-value')).toContainText(woodsDe.start.value(best))
+  await expect(page.locator('[data-testid=coil-badge]')).toHaveAttribute('data-turns', String(best))
+  await shot(page, testInfo, 'frechet-woods-free-start')
+  // The theory panel shows the shortest leash for each start, the best one marked.
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  const theory = page.getByRole('complementary', { name: 'Theorie' })
+  const chart = theory.getByTestId('winding-chart')
+  await chart.scrollIntoViewIfNeeded()
+  await expect(chart).toBeVisible()
+  await expect(chart.getByText('beste')).toBeVisible()
+  await expect(chart.getByText('deine')).toBeVisible()
+  if (!phone) await expectHeaderLaidOut(page)
+  await shot(page, testInfo, 'frechet-woods-start-chart')
+})
+
+test('a leash coiled twice round the post outside the bakery', async ({ page, phone }, testInfo) => {
+  await openWoods(page, 'Vor dem Bäcker')
+  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.locator('[data-testid=coil-badge]')).toHaveAttribute('data-turns', /^-?2$/)
+  await expect(page.getByTestId('taut-hint')).toContainText('erst abwickeln')
+  await expect(page.getByTestId('overview')).toBeVisible()
+  await shot(page, testInfo, phone ? 'frechet-woods-coiled-phone' : 'frechet-woods-coiled')
 })

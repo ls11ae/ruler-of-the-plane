@@ -58,6 +58,12 @@ is `main` at `d6dfe48` (the state before this session), "after" this branch.
 |                                                   | 4×   |                   | 54, 11 ms        |
 |                                                   | 6×   |                   | 49, 17 ms        |
 
+The woods walk "Dickicht" was replaced by "Winding in the woods" (posts the leash coils round, a camera
+following the walkers; merged after these measurements). The benchmark now walks "Stöckchen am Pfahl"
+("Mittel", six posts, the most of the walks without a free start): 59, 50 and 36 frames per second at 1×,
+4× and 6×, main 6, 18 and 26 ms per frame. That is above 30 frames per second; the time goes into scripts
+and layout, not into drawing (the scenery in a layer of its own made no difference).
+
 Single frames over 33 ms occur in every scene (garbage collection, a newly built road); the slowest in the
 final run took 100 ms (one earlier run had a single 367 ms frame in the woods, not seen again in three
 repeats). Rows within a few frames per second of each other differ by noise: the lawn is drawn by the
@@ -92,9 +98,10 @@ start map complete after about 11.5 s (proposed, see the decision log). The game
   one picture: a moving torch or walker made the browser draw the filtered walls or park again in every
   frame (in a trace of the torch drag, the main thread spent most of its time waiting for the rasteriser).
   `Board` now takes `under`, `over` and `front`: static art in layers of its own, which the browser
-  rasterises once. "Licht ins Verlies" (floor under, walls over, torches in front) and "Gassi gehen" (park
-  and footpath under) use them. This matters most where SVG filters are drawn on the CPU: Safari on
-  phones, Firefox, any browser without a GPU.
+  rasterises once. "Licht ins Verlies" uses them (floor under, walls over, torches in front); "Gassi
+  gehen" did (park and footpath under) until its camera, which moves a stage drawn once, replaced that.
+  This matters most where SVG filters are drawn on the CPU: Safari on phones, Firefox, any browser
+  without a GPU.
 - **The game header** measured its layout after every render, which forced a layout in every frame of a
   drag; it now measures when a part changes size.
 - **"Schwer"** checks fewer answers (exact pruning), estimates the opponent's answers on a coarser raster,

@@ -11,11 +11,14 @@ import { FreeSpaceDiagram } from '../FreeSpaceDiagram'
 import { sliderMax } from '../helpers'
 import type { FrechetTexts } from '../i18n.de'
 import { LeashSlider } from '../LeashSlider'
+import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
 import { woodsField } from './field'
+import { WindingChart } from './WindingChart'
 import type { WoodsTexts } from './i18n.de'
 import woods from './Woods.module.css'
 
 interface WoodsTheoryProps {
+  walk: WoodsWalk
   course: WoodsCourse
   /** The player's walk so far. */
   player: Walk
@@ -34,6 +37,7 @@ interface WoodsTheoryProps {
  * shows the same paths without trees for comparison.
  */
 export function WoodsTheory({
+  walk,
   course,
   player,
   eps,
@@ -118,6 +122,12 @@ export function WoodsTheory({
       <p>
         <strong>{w.theory.shortest(course.shortest)}</strong> {w.theory.plain(course.plain)}
       </p>
+      {walk.freeStart && (
+        <>
+          <WindingChart walk={walk} leash={course.leash} chosen={course.winding} t={t} w={w} />
+          <p>{w.chart.text}</p>
+        </>
+      )}
       <p>{w.theory.method}</p>
       <p className={styles.muted}>{t.theory.probe}</p>
     </aside>

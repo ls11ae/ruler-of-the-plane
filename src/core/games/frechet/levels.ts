@@ -17,6 +17,8 @@ export interface WalkLevel {
   dog: Vec2[]
   /** Leash length = Fréchet distance × this factor, rounded up to 0.1 m. */
   slack: number
+  /** A leash length chosen instead (the challenge "Kürzere Leine" after a finished walk). */
+  leash?: number
   /** A pond (outline, smooth when drawn), if the walk passes one. */
   pond?: Vec2[]
   /** Bushes or rocks the dog visits (drawn at these points). */

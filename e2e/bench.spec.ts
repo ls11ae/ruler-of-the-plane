@@ -323,12 +323,15 @@ for (const rate of RATES) {
   })
 
   test(`Gassi gehen: a walk in the woods, ${rate}×`, async ({ page }) => {
-    // "Dickicht": the longest of the woods walks, with four trees.
-    const id = 'thicket'
+    // "Stöckchen am Pfahl" ("Mittel"): six posts, the most of the walks without a free start.
+    const id = 'wm2'
     const course = makeWoodsCourse(woodsById(id))
     await startGame(page, 'frechet')
     await page.getByRole('button', { name: 'Spaziergänge' }).click()
-    const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
+    const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+    await picker.getByRole('button', { name: 'Mittel', exact: true }).click()
+    const woods = picker.getByRole('region', { name: 'Im Wald' })
+    await woods.scrollIntoViewIfNeeded()
     await woods.getByRole('button', { name: new RegExp(woodsDe.walks[id]) }).click()
     await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
     await expect(page.getByTestId('trunks')).toBeVisible()
@@ -357,7 +360,7 @@ for (const rate of RATES) {
     await set('person', false)
     await set('dog', false)
     report(
-      'Gassi gehen: walk in the woods (Dickicht)',
+      'Gassi gehen: walk in the woods (Stöckchen am Pfahl)',
       rate,
       await stopMeasure(page, `frechet-woods-${rate}x`),
     )

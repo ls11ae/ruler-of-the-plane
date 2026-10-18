@@ -39,7 +39,7 @@ export function forestFor(walk: WoodsShape, leash: number): ForestProp[] {
     distanceToPolyline(p, walk.person) > reach + size / 2 &&
     distanceToPolyline(p, walk.dog) > reach + size / 2 &&
     walk.trunks.every((t) => pointDistance(p, t.at) > 2 + size / 2) &&
-    pointDistance(p, GATE) > 3.5 &&
+    pointDistance(p, walk.bakery ?? GATE) > 3.5 &&
     pointDistance(p, CASTLE) > 4.5 &&
     pointDistance(p, START_LABEL) > 2.6 &&
     pointDistance(p, GOAL_LABEL) > 2.6 &&

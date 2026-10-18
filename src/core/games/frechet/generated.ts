@@ -1,4 +1,5 @@
 import type { Vec2 } from '../../geometry/types'
+import type { Trunk } from './woods/shapes'
 import data from './generated.json' with { type: 'json' }
 
 /**
@@ -16,7 +17,9 @@ export interface GeneratedPark {
 }
 
 export interface GeneratedWoods extends GeneratedPark {
-  trunks: { at: Vec2; radius: number }[]
+  trunks: Trunk[]
+  /** A free start leash round this trunk at the gate (see `WoodsShape.freeStart`). */
+  freeStart?: { post: number }
 }
 
 export interface GeneratedWalks {

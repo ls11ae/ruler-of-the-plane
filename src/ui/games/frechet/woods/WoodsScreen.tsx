@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PARK, type Tier } from '../../../../core/games/frechet/levels'
+import type { Tier } from '../../../../core/games/frechet/levels'
+import { coils, ropePoints } from '../../../../core/games/frechet/woods/rope'
+import { trunkKind } from '../../../../core/games/frechet/woods/shapes'
 import { starsFor, leaderboardScore, TAUT_SHARE } from '../../../../core/games/frechet/rules'
 import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
-import { ropePoints } from '../../../../core/games/frechet/woods/rope'
 import {
   leashOf,
   makeWoodsCourse,
@@ -15,7 +16,6 @@ import {
   woodsStart,
   type WoodsState,
 } from '../../../../core/games/frechet/woods/rules'
-import { Board } from '../../../components/Board'
 import { Button } from '../../../components/Button'
 import { GameHeader } from '../../../components/GameHeader'
 import { HowToOverlay } from '../../../components/HowToOverlay'
@@ -26,13 +26,17 @@ import { useT } from '../../../i18n'
 import { useAnimationFrame, useHeldKeys, useKeyCapture } from '../../../input/hooks'
 import { keyboard } from '../../../input/keyboard'
 import styles from '../Frechet.module.css'
+import { FollowCamera } from '../FollowCamera'
+import { strainOf, towards } from '../leashShape'
 import { KEYS, type Walker } from '../helpers'
 import { HoldControls } from '../HoldControls'
 import type { FrechetTexts } from '../i18n.de'
-import { PathLines, WalkedPaths, Walkers } from '../ParkArt'
+import { Paths, Walkers } from '../ParkArt'
 import { useMedia } from '../useMedia'
 import type { WoodsTexts } from './i18n.de'
 import { useWoodsProgress } from './store'
+import { ShorterLeash } from '../ShorterLeash'
+import { StartWinding } from './StartWinding'
 import { RopeLeash, Trunks, WoodsScenery } from './WoodsArt'
 import { WoodsExplanation } from './WoodsExplanation'
 import { WoodsHowToAnimation } from './WoodsHowTo'
@@ -62,7 +66,8 @@ interface WoodsScreenProps {
 export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker, onNext }: WoodsScreenProps) {
   const shell = useT()
   const progress = useWoodsProgress()
-  const course = useMemo(() => makeWoodsCourse(walk), [walk])
+  // On a walk with a free start leash, the course depends on how the leash is wound at the gate.
+  const [course, setCourse] = useState(() => makeWoodsCourse(walk))
   const [state, setState] = useState<WoodsState>(() => woodsStart(course))
   const stateRef = useRef(state)
   const [buttons, setButtons] = useState<Record<Walker, boolean>>({ person: false, dog: false })
@@ -116,19 +121,63 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
     setOverlay(null)
   }
 
+  // "Kürzere Leine": the same walk again with a shorter leash.
+  const [challenge, setChallenge] = useState<number | null>(null)
+  const withLeash = (leash: number | null) => (leash === null ? walk : { ...walk, leash })
+
+  const tryShorter = (leash: number) => {
+    setChallenge(leash)
+    const next = makeWoodsCourse(withLeash(leash), course.winding)
+    const fresh = woodsStart(next)
+    setCourse(next)
+    stateRef.current = fresh
+    setState(fresh)
+    setOverlay(null)
+  }
+
+  /** Free start: wind the leash round the gate post (only before the first step). */
+  const chooseStart = (winding: number) => {
+    const next = makeWoodsCourse(withLeash(challenge), winding)
+    const fresh = woodsStart(next)
+    setCourse(next)
+    stateRef.current = fresh
+    setState(fresh)
+  }
+
   const leash = leashOf(course, state.rope)
   const taut = leash >= TAUT_SHARE * course.leash
   const caught = state.rope.wraps.length > 0
+  const trunkCentres = useMemo(() => course.trees.map((tree) => tree.centre), [course])
   const touched = useMemo(() => new Set(state.rope.wraps.map((x) => x.tree)), [state.rope])
+  // Caught only on thin posts and birches (the texts say "Pfahl" instead of "Baum").
+  const onPosts = [...touched].every((k) => trunkKind(walk.trunks[k]!) !== 'tree')
+  // The most turns the leash makes round one post (0 while it only bends round trunks).
+  const coiled = useMemo(
+    () => coils(state.rope, course.trees).reduce((most, c) => Math.max(most, Math.abs(c.turns)), 0),
+    [state.rope, course.trees],
+  )
+  const atStart = state.s === 0 && state.t === 0
+  // The start panel of a free start leash, while both stand at the gate.
+  const choosing = !!walk.freeStart && atStart && state.status === 'walking' && overlay === null
   const possible = useMemo(
-    () => state.status !== 'walking' || stillPossibleInWoods(course, state),
-    [course, state],
+    // Not judged while the start is being chosen: the dead end would give the answer away.
+    () => choosing || state.status !== 'walking' || stillPossibleInWoods(course, state),
+    [course, state, choosing],
   )
   const hint = useMemo(
     () => (taut && possible ? woodsAdvice(course, state) : null),
     [course, state, taut, possible],
   )
   const { person, dog } = woodsPositions(course, state.s, state.t)
+  // Which way the leash pulls at each end: towards its first and last bend.
+  const pull = useMemo(() => {
+    const pts = ropePoints(state.rope, course.trees)
+    return {
+      person: towards(pts[0]!, pts[1]!),
+      dog: towards(pts[pts.length - 1]!, pts[pts.length - 2]!),
+      strain: strainOf(leashOf(course, state.rope) / course.leash),
+    }
+  }, [state.rope, course])
   const ghost = useMemo(() => {
     if (!probe) return null
     const rope = ropeAt(course, probe[0], probe[1])
@@ -185,27 +234,24 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           data-walk={`${state.s.toFixed(3)},${state.t.toFixed(3)}`}
           data-caught={caught || undefined}
         >
-          <Board
-            bounds={PARK}
-            padding={0.6}
-            autoRotate
+          <FollowCamera
+            enabled={!theory}
+            leash={course.leash}
+            person={course.person}
+            dog={course.dog}
+            at={[state.s, state.t]}
+            marks={trunkCentres}
             label={w.board(course.leash)}
-            // The park is drawn once, in a layer of its own (the ink filter is slow to draw).
-            under={
-              <>
-                <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
-                <PathLines person={course.person} dog={course.dog} />
-              </>
-            }
           >
-            <WalkedPaths person={course.person} dog={course.dog} s={state.s} t={state.t} />
-            <Trunks trees={course.trees} touched={touched} />
+            <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
+            <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
+            <Trunks trees={course.trees} trunks={walk.trunks} touched={touched} />
             {ghost && (
               <>
                 <RopeLeash
-                  points={ropePoints(ghost.rope, course.trees)}
+                  rope={ghost.rope}
+                  trees={course.trees}
                   length={eps}
-                  taut={ghost.leash > eps}
                   ghost
                   label={t.metres(ghost.leash)}
                 />
@@ -213,13 +259,14 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </>
             )}
             <RopeLeash
-              points={ropePoints(state.rope, course.trees)}
+              rope={state.rope}
+              trees={course.trees}
               length={course.leash}
-              taut={taut || state.status === 'snapped'}
+              snapped={state.status === 'snapped'}
               label={ghost ? undefined : t.metres(leash)}
             />
-            <Walkers person={person} dog={dog} />
-          </Board>
+            <Walkers person={person} dog={dog} pull={state.status === 'walking' ? pull : undefined} />
+          </FollowCamera>
           {!possible && state.status === 'walking' && overlay === null && (
             <div className={styles.deadEnd} role="status">
               <span>{t.deadEnd}</span>
@@ -228,18 +275,30 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </Button>
             </div>
           )}
-          {possible && taut && state.status === 'walking' && overlay === null && (
-            <div className={styles.bubble} role="status" data-testid="taut-hint">
-              <strong>{t.taut}</strong>
-              {caught && <span>{w.caught} </span>}
-              {tutorial &&
-                (hint === 'person' || hint === 'dog') &&
-                (touch ? t.adviceTouch[hint] : t.advice[hint])}
-            </div>
-          )}
+          {choosing && <StartWinding winding={course.winding} length={leash} onChange={chooseStart} w={w} />}
+          {!choosing &&
+            possible &&
+            (taut || coiled > 0) &&
+            state.status === 'walking' &&
+            overlay === null && (
+              <div className={styles.bubble} role="status" data-testid="taut-hint">
+                <strong>{taut ? t.taut : w.coiledTitle(coiled)}</strong>
+                {walk.before && atStart ? (
+                  <span>{w.tied} </span>
+                ) : coiled > 0 ? (
+                  <span>{w.coiled(coiled)} </span>
+                ) : (
+                  caught && <span>{onPosts ? w.caughtPost : w.caught} </span>
+                )}
+                {tutorial &&
+                  (hint === 'person' || hint === 'dog') &&
+                  (touch ? t.adviceTouch[hint] : t.advice[hint])}
+              </div>
+            )}
         </div>
         {theory && (
           <WoodsTheory
+            walk={walk}
             course={course}
             player={state.trace}
             eps={eps}
@@ -281,7 +340,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
             setOverlay(null)
           }}
         >
-          {w.howTo(course.leash, touch).map((line) => (
+          {[...w.howTo(course.leash, touch), ...(walk.freeStart ? [w.start.howTo] : [])].map((line) => (
             <p key={line}>{line}</p>
           ))}
         </HowToOverlay>
@@ -307,7 +366,15 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           }
         >
           <p className={styles.sandboxHint}>
-            {reason === 'tree' ? w.snappedTree : reason ? t.snapped[reason] : null}
+            {coiled > 0
+              ? w.snappedCoil(coiled)
+              : reason === 'tree'
+                ? onPosts
+                  ? w.snappedPost
+                  : w.snappedTree
+                : reason
+                  ? t.snapped[reason]
+                  : null}
           </p>
         </Overlay>
       )}
@@ -315,8 +382,16 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
         <ResultScreen
           outcome="won"
           stars={stars}
-          stats={w.stats(state.longest, course.shortest, course.plain)}
-          explanation={w.explanation(course.shortest, state.longest).join(' ')}
+          stats={
+            <>
+              {w.stats(state.longest, course.shortest, course.plain)}
+              <ShorterLeash leash={course.leash} shortest={course.shortest} onTry={tryShorter} t={t} />
+            </>
+          }
+          explanation={[
+            ...w.explanation(course.shortest, state.longest),
+            ...(walk.freeStart ? [w.start.explanation(walk.bestStart ?? 0)] : []),
+          ].join(' ')}
           animation={<WoodsExplanation course={course} player={state.trace} t={t} w={w} />}
           onTheory={() => {
             setOverlay(null)

@@ -15,6 +15,10 @@ export interface Playable<S> {
   step(state: S, input: Input, dt: number): S
   where(state: S): { s: number; t: number; status: 'walking' | 'snapped' | 'arrived' }
   leash(state: S): number
+  /** How far the leash wraps round a trunk (turns; in the woods), recorded while playing. */
+  wrap?(state: S): number
+  /** How often the leash is wound round a trunk (the most turns of any trunk; in the woods). */
+  coil?(state: S): number
 }
 
 export const STRATEGIES = ['both', 'behind', 'share', 'greedy'] as const
@@ -24,6 +28,10 @@ export interface Outcome {
   arrived: boolean
   /** Where the walk ended (positions in metres); the leash snapped there unless it arrived. */
   at: [number, number]
+  /** In the woods: the most the leash wrapped round a trunk on the way (turns of contact, 1 = 360°). */
+  wrap: number
+  /** In the woods: the most times the leash was wound round one trunk on the way (as the badge counts). */
+  coil: number
 }
 
 const BOTH: Input = { person: true, dog: true }
@@ -95,6 +103,8 @@ export function play<S>(game: Playable<S>, policy: (state: S) => Input | null, r
   let input: Input | null = null
   let held = Infinity
   const limit = (4 * (game.person.length + game.dog.length)) / game.speed / frame
+  let wrap = game.wrap?.(state) ?? 0
+  let coil = game.coil?.(state) ?? 0
   for (let k = 0; k < limit; k++) {
     const where = game.where(state)
     if (where.status !== 'walking') break
@@ -105,9 +115,11 @@ export function play<S>(game: Playable<S>, policy: (state: S) => Input | null, r
     if (!input) break
     state = game.step(state, feasible(game, state, input), frame)
     held += frame
+    if (game.wrap) wrap = Math.max(wrap, game.wrap(state))
+    if (game.coil) coil = Math.max(coil, game.coil(state))
   }
   const { s, t, status } = game.where(state)
-  return { arrived: status === 'arrived', at: [s, t] }
+  return { arrived: status === 'arrived', at: [s, t], wrap, coil }
 }
 
 /** Plays one of the simple strategies. */

@@ -535,12 +535,12 @@ phone; numbers in `docs/performance.md`.
   goes to SVG layers of their own (same view, no pointer input, `will-change: transform`) that the browser
   rasterises once; `front` holds tokens that must stay above static art, while pointer input goes through
   to the board. Used by "Licht ins Verlies" (floor under, walls over, torches, hint and theory marks in
-  front; `Torches` split from `TorchControls`) and "Gassi gehen" (scenery and the footpath's outline
-  under; `PathLines` and `WalkedPaths` split from `Paths`, which still draws both). Dragging a torch among
-  17 on the largest dungeon: 47 instead of 36 frames per second at 6× without a GPU; the picture is the
-  same. Not used where measuring showed no need (lawn, roads, the Voronoi map). Alternatives: drawing the
-  outlines wobbly in geometry instead of a filter (a change of the look); a cached bitmap of the walls
-  (blurry when the window changes size).
+  front; `Torches` split from `TorchControls`). "Gassi gehen" had its scenery in such a layer too, until
+  the camera of "Winding in the woods" (below), which moves a stage drawn once, made it unnecessary
+  (merged 2026-10-18, the layer dropped). Dragging a torch among 17 on the largest dungeon: 47 instead of
+  36 frames per second at 6× without a GPU; the picture is the same. Not used where measuring showed no
+  need (lawn, roads, the Voronoi map). Alternatives: drawing the outlines wobbly in geometry instead of a
+  filter (a change of the look); a cached bitmap of the walls (blurry when the window changes size).
 - **2026-10-18 The game header measures only when a part changes size** (shared: `GameHeader`). Its
   layout effect depended on its ReactNode props, which are new in every render, so it forced a layout and
   rebuilt its ResizeObserver in every frame of a drag or walk (the largest script cost in a profile of the
@@ -573,7 +573,7 @@ phone; numbers in `docs/performance.md`.
   `font-display: swap` (text at once in a fallback font, then a jump).
 - **2026-10-18 Test time limits for slow browsers.** A walk counts at most 50 ms per frame, so in a
   browser that draws under 20 frames per second it runs in slow motion (fair to the player); WebKit in CI
-  did, before the park's layer and the scale factor above. "Behind the beech" now waits up to 40 s for
+  did, before the park's layer (now the camera's stage) and the scale factor above. "Behind the beech" now waits up to 40 s for
   the dog (90 s test time). The game itself is unchanged.
 
 ### Track A ("Erobere das Land", "Rasenmähen")
@@ -1034,7 +1034,7 @@ Kevin played "Gassi gehen" and found the walks too easy. The numbers of every wa
   families per tier, "Schwer" first, then "Mittel" from the rest; 524 pairs are pleasant, 242 of their
   1048 (pair, tier) combinations are hard. Alternative tried: interleaved "snake" paths that cross each
   other (long, and still a single corridor in the diagram).
-- **2026-10-17 (proposed) Woods: the trees must matter.** Separate pairs (4000) whose dog's trail
+- **2026-10-17 (proposed; superseded 2026-10-18, see "Winding in the woods") Woods: the trees must matter.** Separate pairs (4000) whose dog's trail
   runs out in spikes across and beside the footpath. Places for trunks: points that the straight leash
   of the computer's best walk without trees sweeps over and back (the loop "person's path so far, leash,
   dog's path back, start leash" winds around them at some moment), outside the area the two whole
@@ -1051,3 +1051,112 @@ Kevin played "Gassi gehen" and found the walks too easy. The numbers of every wa
   "Schwer" first left it only weak walks. First attempt: the park's pairs with trunks on the
   computer's leash at its narrowest moment; no walk passed, since those places lie inside the enclosed
   area.
+
+### Winding in the woods ("Gassi gehen", 2026-10-18)
+
+Kevin, after playing the new tiers: better, but not stunning yet; above all, the leash never really
+winds round a tree, which is the point of the homotopic Fréchet distance. Measured on `main` (d6dfe48):
+the trunks (octagons of radius 0.45–0.6 m, 2.8–3.7 m round) were longer round than the leashes (2.2–2.7
+m), so the leash could bend round a trunk but never wind; along the computer's walks the leash turned at
+most 65° round a trunk; in three easy walks the trees did not change the best walk; at 1280 × 800 the
+park was drawn at about 27 px per metre (a 2.7 m leash was a 70 px line). Background: Chambers, Colin de
+Verdière, Erickson, Lazard, Lazarus and Thite, "Homotopic Fréchet distance between curves, or walking
+your dog in the woods in polynomial time", CGTA 43(3), 2010.
+
+- **2026-10-18 (proposed) Thin posts, coils and how they are counted.** Trunks come in three kinds
+  (`kind` in the walk data, only the look differs): old trees (radius 0.55–1 m; the leash can only bend
+  round them), lamp posts and young birches (0.1–0.18 m; a 0.15 m post is 0.9 m round, so a leash winds
+  round it several times). How often the leash is wound round a trunk is the winding number, round the
+  trunk's centre, of the loop "along the leash from the person to the dog, then straight back"; it
+  counts as a coil (badge, hint, snap message) only when the leash also wraps at least half way round
+  that trunk (otherwise a leash that merely bends round the far side of a thick trunk, or just passes a
+  post, would read "1×"). Drawing: each turn lies 5.5 px further out than the last (a small spiral, so
+  two or three turns can be counted), thin posts at least 5 px in radius, a badge "2×" with a round
+  arrow for the direction at the post, and the hint "Leine 2× aufgewickelt! Die Leine ist 2× um den
+  Pfahl gewickelt." Lamp posts get a side-view lamp (as the map's other icons), birches a small crown.
+  Alternatives: count contact angle only (a leash wound twice round a thin post touches it only 1.1
+  turns: the straight legs to person and dog cover the rest); count every winding (see above).
+- **2026-10-18 (proposed) New easy woods walks.** "Laternenpfahl" (dog and person loop two and a half
+  times round a lamp post, the dog close to it; leash 3.4 m: with the dog a whole loop ahead from 3.1 m,
+  wound twice from 3.7 m, so one coil fits and two do not), "Vor dem Bäcker" (the dog was tied to a post
+  outside the bakery and ran round it twice: the leash starts wound twice, 3.0 m of 3.6 m, and the dog's
+  trail first unwinds it; a house replaces the gate), "Hinterm Baum" (kept: catching on the thick beech
+  is expensive) and "Achterbahn" (a figure-eight round a lamp post and a birch, both the same way; one
+  coil round either fits). They replace "Um die Eiche", "Slalom" and "Dickicht" (new ids, so their
+  leaderboards start empty). The two coil walks have a leash chosen by hand (`leash` in the data); a
+  test checks with the offline search that one coil fits with 0.3 m to spare and two do not (the search
+  can require a coil: an extra bit in its state). The wound start is the dog's way just before the walk
+  (`before`), carried from a straight start with the game's own rope update, so the grid of positions,
+  the search (it takes the start rope) and the hints are unchanged. The woods' "So geht's" shows a leash
+  coiling round a lamp post and coming free. Alternatives: keep the oak walk with a thinner oak (an oak
+  is not thin), a fixed wound start stored as a word (the rope update could not draw it).
+- **2026-10-18 (proposed) A camera for the walks.** In the park and in the woods the board follows
+  person and dog: zoomed in so that the leash is about 220 px long while the view still spans 2.4
+  leashes plus 3 m (geometric mean of its sides, so a tall phone screen zooms in too; at least 1.3 times
+  the zoom of the whole park; none when that would hardly differ), looking a few metres ahead along both
+  paths, both walkers at least a fifth of the view from its edges, smoothed with a time constant of
+  0.4 s. A small overview map in the lower left shows the whole route, both positions, the castle and
+  the view. The theory view and the explanation keep the whole park (the board fits the screen and turns
+  on phones as before; while following, it is not turned). Technique: the park is drawn once at the
+  camera's zoom on a stage larger than the screen and moved with a CSS transform written every frame,
+  so following needs no re-render and no repaint of the scenery (60 frames per second in the cloud
+  session). Footpaths are at most 24 px wide when zoomed in. Alternatives: changing the board's viewBox
+  every frame (every frame repaints the whole park with its ink filters), zooming only near trunks.
+- **2026-10-18 (proposed) A livelier leash.** The leash is drawn with its real length: slack, it hangs
+  down on screen in a soft curve (a cubic Bézier whose sag is found by halving so that its length is the
+  leash's; in the woods the slack goes into the two free ends); from 85 % of its length it is
+  orange-red; from 95 % it trembles (up to 2.2 px, not with reduced motion). When it is taut the dog
+  leans into it (up to 16°) and the person leans back (12°). When it snaps it breaks in the middle, the
+  halves spring back to a quarter of their length and lines flash at the break (650 ms, before the
+  dialog). The same leash is used in the park, the woods, "Schätz die Leine" and the sandbox.
+- **2026-10-18 (proposed) The free start leash ("Schwer", woods).** On two hard woods walks the dog
+  first runs two or three times round a post at the gate. Before the first step, a panel at the top of
+  the park asks "Wie liegt die Leine am Start?": two round-arrow buttons wind the leash one more turn
+  round the gate post either way (−3 … 3), shown on the board and with the start length ("Leine am Start:
+  4,1 m"). Only the start that the dog's loops unwind leaves the leash free; with any other the leash
+  stays wound round the gate post for good. The target is the minimum over the seven starts (one offline
+  search each, all stored with their computer's walks); stars and leaderboard use it. While the start
+  is chosen there is no dead-end banner (it would give the answer away); the how-to says "Schau dir den
+  Weg des Hundes an!". The theory panel shows a bar chart "Kürzeste Leine je Startlage" (the best start
+  green, the leash as a dashed line, bars far above it cut with a zigzag; "beste" and "deine" under the
+  bars), and "Was steckt dahinter?" adds: "Der homotope Fréchet-Abstand ist die kürzeste Leine über alle
+  Arten, wie sie liegen kann." Alternatives: drag the dog round the post (harder on a touchpad, no fixed
+  steps), any start winding round any tree (too many choices for a visitor).
+- **2026-10-18 (proposed) "Mittel" and "Schwer" in the woods, regenerated so that winding matters**
+  (`scripts/gassi/woods.ts`, called by `generate.ts`; `GASSI_ONLY=woods` keeps the park's walks, which are
+  unchanged; seed 20261108; about 20 minutes for 1000 designs). A design has one or two sites round thin
+  posts: "shared" (both loop round the post the same way, the dog close to it, the person on a wider
+  loop: keep pace or the leash coils) or "fetch" (the post stands about 2 m beside the footpath; the dog
+  runs round it, fetches something behind it and runs back round it the other way, so the leash is
+  coiled round the post in between whatever the timing, and the post makes the shortest leash longer);
+  on "Schwer" designs with a free start the dog first runs two or three times round a post at the gate.
+  Between the sites the dog runs out to the sides, leaning forwards or backwards (so that "the one
+  behind walks" does not keep them in step). The runs are tuned per design: as far as the posts still
+  make the shortest leash 16 % longer than without trees (with a free start: as far as the rest of the
+  walk needs at most 3 % more leash than the wound start), so that coils and runs are both tight. Then
+  one to three thick trees (radius 0.6–0.95 m) and up to two more posts are added where the leash of the
+  computer's walk without trees sweeps over and back, or else beside the paths outside the area they
+  enclose (3–8 trunks in all). A walk is kept when: the shortest leash in the woods is at least 15 % above
+  the Fréchet distance without trees; winding matters (the computer's walk wraps the leash a full turn
+  round a post, or at least three of the four simple strategies coil it round a post before they snap);
+  every simple strategy snaps the leash and the careful player gets through (as in the park, at 1.5 m/s);
+  at least three dead ends; legible paths (inside the park 0.7 m from its edge, no segment under 0.3 m,
+  loops only round posts: away from the posts the footpath does not cross itself and the dog's trail at
+  most once, no trunk within 0.3 m of a path); with a free start, the straight start needs at least 30 %
+  more leash. Ranked as in the park plus the coils; "Schwer" first (two walks with a free start, one
+  without), then "Mittel". Result (table in `gassi-walks.md`): the computer's walk wraps the leash
+  394–400° round a post on the four fetch walks and 857–860° on the two free starts (the leash starts
+  wound three times round the gate post: 4.3 and 4.4 m, every other start 65–73 m), the shortest leash
+  is 18–35 % above the Fréchet distance, 3–6 dead ends, every strategy snaps (most after coiling the
+  leash), the careful player arrives. New names: "Laternengasse", "Stöckchen am Pfahl", "Waldrunde",
+  "Am Tor angebunden", "Torpfosten", "Fuchsbau" (the old walks' leaderboards are orphaned). The searches
+  for the other starts of a free start sample every 15 cm (with a wrong start the leash stays wound and
+  the search meets every state: 2.5 minutes each at 5 cm). Alternatives: the old generator with posts
+  added (posts beside a path only bend the leash), thick trees only where the leash sweeps (with these
+  paths the computer's walk without trees hardly sweeps outside the enclosed area).
+- **2026-10-18 (proposed) "Kürzere Leine".** After a finished walk (park and woods, not the sandbox),
+  the result offers the same walk with a shorter leash: "Geschafft mit 3,6 m – traust du dich mit 3,3
+  m?", 0.3 m shorter each time (rounded down to 0.1 m), down to 10 cm above the shortest leash; after
+  that step a badge "Leinen-Profi!". Stars and leaderboard work as before (the leaderboard ranks the
+  longest leash needed, which a shorter leash keeps short). Not done of the optional ideas: the leash
+  holding instead of snapping, the sandbox in the woods, colouring the diagram by turns round a post.
