@@ -58,18 +58,19 @@ export const woodsDe = {
         : `${Math.abs(k)}× ${k > 0 ? 'im Uhrzeigersinn' : 'gegen den Uhrzeigersinn'} um den Pfosten`,
     short: (k: number) =>
       k === 0 ? 'gerade' : `${Math.abs(k)}× ${k > 0 ? 'im' : 'gegen den'} Uhrzeigersinn`,
-    length: (m: string) => `Leine am Start: ${m}`,
+    length: (m: number) => `Leine am Start: ${metres(m)}`,
     howTo:
       'Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Tor liegt. Schau dir den Weg des Hundes an!',
-    explanation: (k: string) =>
-      `Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine ${k} am Start.`,
+    explanation: (k: number) =>
+      `Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine ${k === 0 ? 'gerade' : `${Math.abs(k)}× ${k > 0 ? 'im' : 'gegen den'} Uhrzeigersinn um den Pfosten`} am Start.`,
   },
   chart: {
     title: 'Kürzeste Leine je Startlage',
     best: 'beste',
     yours: 'deine',
-    leash: (m: string) => `die Leine des Spaziergangs: ${m}`,
-    summary: (list: string, best: string) => `Kürzeste Leine je Startlage: ${list}. Am besten: ${best}.`,
+    leash: (m: number) => `die Leine des Spaziergangs: ${metres(m)}`,
+    summary: (list: string, k: number) =>
+      `Kürzeste Leine je Startlage: ${list}. Am besten: ${k === 0 ? 'gerade' : `${Math.abs(k)}× ${k > 0 ? 'im' : 'gegen den'} Uhrzeigersinn`}.`,
     text: 'Für jede Startlage hat der Computer die kürzeste Leine gesucht. Der homotope Fréchet-Abstand ist die kürzeste von allen.',
   },
   theory: {

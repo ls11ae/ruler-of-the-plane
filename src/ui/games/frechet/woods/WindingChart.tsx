@@ -57,7 +57,7 @@ export function WindingChart({
   const bar = slot * 0.62
   const summary = w.chart.summary(
     START_WINDINGS.map((k, i) => `${w.start.short(k)}: ${t.metres(values[i]!)}`).join(', '),
-    w.start.short(walk.bestStart ?? 0),
+    walk.bestStart ?? 0,
   )
   return (
     <figure style={{ margin: 0 }}>
@@ -150,7 +150,7 @@ export function WindingChart({
         />
       </svg>
       <p className={woods.chartLegend}>
-        <span className={woods.dashSwatch} /> {w.chart.leash(t.metres(leash))}
+        <span className={woods.dashSwatch} /> {w.chart.leash(leash)}
       </p>
     </figure>
   )

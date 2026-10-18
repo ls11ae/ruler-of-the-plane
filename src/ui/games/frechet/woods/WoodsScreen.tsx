@@ -272,9 +272,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </Button>
             </div>
           )}
-          {choosing && (
-            <StartWinding winding={course.winding} length={leash} onChange={chooseStart} t={t} w={w} />
-          )}
+          {choosing && <StartWinding winding={course.winding} length={leash} onChange={chooseStart} w={w} />}
           {!choosing &&
             possible &&
             (taut || coiled > 0) &&
@@ -387,7 +385,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
           }
           explanation={[
             ...w.explanation(course.shortest, state.longest),
-            ...(walk.freeStart ? [w.start.explanation(w.start.short(walk.bestStart ?? 0))] : []),
+            ...(walk.freeStart ? [w.start.explanation(walk.bestStart ?? 0)] : []),
           ].join(' ')}
           animation={<WoodsExplanation course={course} player={state.trace} t={t} w={w} />}
           onTheory={() => {

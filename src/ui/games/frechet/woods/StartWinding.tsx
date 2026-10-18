@@ -1,6 +1,5 @@
 import { START_WINDINGS } from '../../../../core/games/frechet/woods/shapes'
 import { Button } from '../../../components/Button'
-import type { FrechetTexts } from '../i18n.de'
 import type { WoodsTexts } from './i18n.de'
 import woods from './Woods.module.css'
 
@@ -40,14 +39,12 @@ export function StartWinding({
   winding,
   length,
   onChange,
-  t,
   w,
 }: {
   winding: number
   /** The leash at the gate, around the post (metres). */
   length: number
   onChange: (winding: number) => void
-  t: FrechetTexts
   w: WoodsTexts
 }) {
   return (
@@ -65,7 +62,7 @@ export function StartWinding({
         </Button>
         <span className={woods.startValue} data-testid="start-value">
           {w.start.value(winding)}
-          <small>{w.start.length(t.metres(length))}</small>
+          <small>{w.start.length(length)}</small>
         </span>
         <Button
           small

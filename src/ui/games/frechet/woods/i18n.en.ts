@@ -55,18 +55,19 @@ export const woodsEn: WoodsTexts = {
     value: (k: number) =>
       k === 0 ? 'straight' : `${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'} round the post`,
     short: (k: number) => (k === 0 ? 'straight' : `${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'}`),
-    length: (m: string) => `Leash at the start: ${m}`,
+    length: (m: number) => `Leash at the start: ${metres(m)}`,
     howTo:
       'Here you choose before the first step how the leash lies round the post at the gate. Look at the dog’s path!',
-    explanation: (k: string) =>
-      `You could choose how the leash lies at the start. The homotopic Fréchet distance is the shortest leash over all the ways it can lie – here with the leash ${k} at the start.`,
+    explanation: (k: number) =>
+      `You could choose how the leash lies at the start. The homotopic Fréchet distance is the shortest leash over all the ways it can lie – here with the leash ${k === 0 ? 'straight' : `wound ${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'} round the post`} at the start.`,
   },
   chart: {
     title: 'Shortest leash for each start',
     best: 'best',
     yours: 'yours',
-    leash: (m: string) => `the walk’s leash: ${m}`,
-    summary: (list: string, best: string) => `Shortest leash for each start: ${list}. Best: ${best}.`,
+    leash: (m: number) => `the walk’s leash: ${metres(m)}`,
+    summary: (list: string, k: number) =>
+      `Shortest leash for each start: ${list}. Best: ${k === 0 ? 'straight' : `${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'}`}.`,
     text: 'For each way the leash can lie at the start, the computer searched for the shortest leash. The homotopic Fréchet distance is the shortest of them all.',
   },
   theory: {
