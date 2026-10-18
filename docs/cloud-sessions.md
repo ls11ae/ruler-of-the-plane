@@ -47,7 +47,12 @@ Session runner (`mbuchin`):
 - Rule questions that change how a game plays go to Kevin; Claude marks them "proposed" in the decision
   log (`docs/design-notes.md`) and in the report.
 - After the last pull request of a phase, tag `main` as `phase-<n>` (GitHub → Releases → Draft a new
-  release). That tag is the booth's fallback.
+  release). That tag is the booth's fallback. For a `phase-*` tag the workflow "Booth package" attaches
+  the offline package `Stand-phase-<n>.zip` to that release (after testing it on Windows); it also runs
+  by hand (Actions → Booth package → Run workflow) and uploads the package and the print files as
+  artifacts (`booth/README.md`).
+- Texts for proofreading: `docs/texts-de.md`, and the artifact `texte-screenshots` of the workflow
+  "Texts" (every screen at 1280 × 800).
 
 ## Limits of the cloud environment
 

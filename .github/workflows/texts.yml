@@ -1,0 +1,52 @@
+name: Texts
+
+# For proofreading the German texts in context: docs/texts-de.md (every text with its key, written by
+# npm run texts) and Playwright screenshots of every screen at 1280 × 800 (the laptop project of all
+# smoke tests, plus e2e/screens.spec.ts), as the artifact "texte-screenshots". Runs by hand (Actions →
+# Texts → Run workflow) and for pushes that change texts or smoke tests.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['**']
+    paths:
+      - 'src/ui/i18n/**'
+      - 'src/ui/games/**/i18n.*.ts'
+      - 'e2e/**'
+      - 'scripts/texts/**'
+      - 'docs/texts-de.md'
+      - '.github/workflows/texts.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: texts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: docs/texts-de.md and screenshots at 1280 × 800
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: docs/texts-de.md is up to date
+        run: npm run texts && git diff --exit-code docs/texts-de.md
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Every screen on the laptop (without the long unattended run)
+        run: npx playwright test --project=laptop --grep-invert "unattended"
+      - name: Collect
+        if: ${{ !cancelled() }}
+        run: mkdir -p texte && cp docs/texts-de.md texte/ && cp -r screenshots/laptop texte/screenshots-1280x800
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: texte-screenshots
+          path: texte/
+          retention-days: 30

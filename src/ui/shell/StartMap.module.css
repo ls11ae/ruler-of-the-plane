@@ -184,3 +184,28 @@ a.place:active {
   white-space: nowrap;
   letter-spacing: 0.04em;
 }
+
+/* Impressum and privacy: a text link of the logo line that takes the pointer over 44 px. */
+.legal {
+  position: relative;
+  padding: 0 0.15em;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: max(14px, var(--logo));
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.legal::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--hit);
+  transform: translateY(-50%);
+}

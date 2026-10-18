@@ -1,0 +1,146 @@
+name: Booth package
+
+# The offline package for the booth laptops (booth/README.md): the app built for the booth
+# (VITE_TSP_BOARDS_URL=/tsp-boards/, VITE_STAFF_PIN from the repository variable), tsp-boards
+# downloaded from its site, a PowerShell web server and the start scripts, in one folder.
+#
+# - Windows (windows-latest): builds its own copy and tests it with Windows PowerShell 5.1: the server,
+#   then Start-Stand.cmd and Stop-Stand.cmd with Chrome and with Firefox.
+# - Ubuntu: builds the package, tests the server under pwsh, plays it in Chromium and Firefox with
+#   every request to another host blocked, and uploads it as the artifact "Stand-<version>" (the
+#   artifact's ZIP is the package) together with the print files (posters, cheat sheet). For a tag
+#   phase-* it also attaches Stand-<tag>.zip to the release of the tag.
+#
+# Runs by hand (Actions → Booth package → Run workflow), for tags phase-*, and for pushes that change
+# the package's own files.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tsp_boards_url:
+        description: Site of tsp-boards to put into the package
+        default: https://ls11ae.github.io/tsp-boards/
+  push:
+    branches: ['**']
+    tags: ['phase-*']
+    paths:
+      - 'booth/**'
+      - 'scripts/booth/**'
+      - '.github/workflows/booth.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: booth-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TSP_BOARDS_URL: ${{ inputs.tsp_boards_url || 'https://ls11ae.github.io/tsp-boards/' }}
+
+jobs:
+  windows:
+    name: Windows (PowerShell 5.1, Start-Stand with Chrome and Firefox)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build the app for the booth
+        run: npm run build
+        env:
+          VITE_TSP_BOARDS_URL: /tsp-boards/
+          VITE_STAFF_PIN: ${{ vars.VITE_STAFF_PIN }}
+      - name: Download tsp-boards
+        run: npx tsx scripts/booth/fetch-tsp-boards.ts --url "$env:TSP_BOARDS_URL" --out build/tsp-boards --quiet
+      - name: Assemble
+        run: npx tsx scripts/booth/assemble.ts --app dist --tsp build/tsp-boards --out build/Stand
+      - name: Server under Windows PowerShell 5.1
+        run: npx tsx scripts/booth/check-package.ts --package build/Stand --shell powershell
+      - name: Start-Stand and Stop-Stand with Chrome
+        run: ./scripts/booth/test-windows.ps1 -Stand build/Stand -Browser chrome
+      - name: Start-Stand and Stop-Stand with Firefox
+        run: ./scripts/booth/test-windows.ps1 -Stand build/Stand -Browser firefox
+      - name: Logs of the start script and the server
+        if: ${{ !cancelled() }}
+        run: |
+          Get-ChildItem "$env:LOCALAPPDATA\RulerOfThePlane" -Filter *.log -ErrorAction SilentlyContinue |
+            ForEach-Object { "===== $($_.Name)"; Get-Content $_.FullName -Tail 120 }
+
+  package:
+    name: Package (Ubuntu, pwsh; Chromium and Firefox offline)
+    needs: windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Name of the package
+        id: name
+        run: echo "name=Stand-$(git describe --tags --always)" >> "$GITHUB_OUTPUT"
+      - name: Warn about a missing staff PIN
+        if: ${{ vars.VITE_STAFF_PIN == '' }}
+        run: echo "::warning::The repository variable VITE_STAFF_PIN is empty; the package's staff menu opens without a PIN."
+      - name: Build the app for the booth
+        run: npm run build
+        env:
+          VITE_TSP_BOARDS_URL: /tsp-boards/
+          VITE_STAFF_PIN: ${{ vars.VITE_STAFF_PIN }}
+      - name: Download tsp-boards
+        run: npx tsx scripts/booth/fetch-tsp-boards.ts --url "$TSP_BOARDS_URL" --out build/tsp-boards
+      - run: npx playwright install --with-deps chromium firefox
+      - name: Print files (posters, card, cheat sheet, checklist)
+        run: npm run booth:print -- --out build/print
+      - name: Assemble
+        run: >-
+          npx tsx scripts/booth/assemble.ts --app dist --tsp build/tsp-boards --out build/Stand
+          --pdf build/print/Spickzettel.pdf --pdf build/print/Checkliste-Laptoptest.pdf
+      - name: Server under pwsh
+        run: npx tsx scripts/booth/check-package.ts --package build/Stand --shell pwsh
+      - name: Play the package offline (Chromium, Firefox)
+        run: npx playwright test -c scripts/booth/playwright.config.ts
+        env:
+          BOOTH_BROWSERS: chromium,firefox
+      - name: Zip
+        run: cd build && zip -qr -X "${{ steps.name.outputs.name }}.zip" Stand
+      - name: Upload the package
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.name.outputs.name }}
+          path: build/Stand/
+          retention-days: 90
+      - name: Upload the print files
+        uses: actions/upload-artifact@v7
+        with:
+          name: Druckvorlagen
+          path: build/print/
+          retention-days: 90
+      - name: Attach the package to the release of the tag
+        if: ${{ startsWith(github.ref, 'refs/tags/phase-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          ZIP: build/${{ steps.name.outputs.name }}.zip
+        run: |
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" \
+              --notes "Stand-Paket: ZIP entpacken, dann Start-Stand.cmd (siehe LIESMICH.txt)."
+          fi
+          gh release upload "$TAG" "$ZIP" --repo "$GITHUB_REPOSITORY" --clobber
+      - name: Upload the test report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: booth-test-results
+          path: test-results/booth/
+          retention-days: 14

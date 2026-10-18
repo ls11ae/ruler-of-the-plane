@@ -23,10 +23,11 @@ const laptop = { viewport: { width: 1280, height: 800 } }
 const phone = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, phone: true }
 
 // Firefox and WebKit run the smoke tests of the games and the shell; the accessibility checks (pixel
-// contrast is measured in Chromium), the soak run and the benchmarks stay in Chromium. CI installs
+// contrast is measured in Chromium), the soak run, the benchmarks and the screens for proofreading the
+// texts stay in Chromium. CI installs
 // each browser in its own job (see .github/workflows/ci.yml); a session without them (the cloud image
 // has only Chromium) leaves their projects out.
-const chromiumOnly = ['a11y.spec.ts', 'soak.spec.ts', 'bench.spec.ts', 'first-visit.spec.ts']
+const chromiumOnly = ['a11y.spec.ts', 'soak.spec.ts', 'bench.spec.ts', 'screens.spec.ts']
 const installed = (browser: { executablePath(): string }) => {
   try {
     return !!process.env.CI || existsSync(browser.executablePath())
