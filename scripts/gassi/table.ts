@@ -16,15 +16,28 @@ import { de } from '../../src/ui/games/frechet/i18n.de'
 import { woodsDe } from '../../src/ui/games/frechet/woods/i18n.de'
 
 const out = new URL('../../docs/gassi-walks.md', import.meta.url)
+
+/** "2 trees, 3 posts" (posts and birches below 0.2 m count as posts). */
+function trunkCount(trunks: readonly { radius: number }[]): string {
+  const thick = trunks.filter((t) => t.radius >= 0.2).length
+  const thin = trunks.length - thick
+  const part = (n: number, one: string, many: string) => (n === 0 ? [] : [`${n} ${n === 1 ? one : many}`])
+  return [...part(thick, 'tree', 'trees'), ...part(thin, 'post', 'posts')].join(', ')
+}
 const m = (x: number) => x.toFixed(2)
 const pct = (x: number) => `${Math.round(x * 100)} %`
 
 function row(tier: string, name: string, segs: string, speed: number, a: Assessment): string {
   const ends = a.space.deadEnds
-  const strategies = STRATEGIES.map((id) => (a.strategies[id].arrived ? 'ok' : 'snaps'))
+  // In the woods, "coils" when the strategy wound the leash round a post before it snapped.
+  const strategies = STRATEGIES.map((id) =>
+    a.strategies[id].arrived ? 'ok' : a.strategies[id].coil >= 1 ? 'snaps, coils' : 'snaps',
+  )
   return `| ${tier} | ${name} | ${segs} | ${speed.toFixed(1)} | ${a.leash.toFixed(1)} | ${m(a.frechet)} | ${
     a.woods === undefined ? '–' : m(a.woods)
-  } | ${a.plainWalkInWoods === undefined ? '–' : m(a.plainWalkInWoods)} | ${ends.length} | ${
+  } | ${a.plainWalkInWoods === undefined ? '–' : m(a.plainWalkInWoods)} | ${
+    a.wrap === undefined ? '–' : `${Math.round(a.wrap * 360)}°`
+  } | ${a.straightStart === undefined ? '–' : m(a.straightStart)} | ${ends.length} | ${
     ends.length ? ends[0]!.toFixed(1) : '–'
   } | ${pct(a.space.deadShare)} | ${a.space.freeCells}/${a.space.allCells} | ${a.changes} | ${strategies.join(' | ')} | ${
     a.careful.arrived ? 'ok' : 'snaps'
@@ -33,8 +46,8 @@ function row(tier: string, name: string, segs: string, speed: number, a: Assessm
 
 const started = performance.now()
 const header =
-  '| Tier | Walk | Segments | Speed (m/s) | Leash (m) | Fréchet (m) | In the woods (m) | Open walk in the woods (m) | Dead ends | Largest (m²) | Dead share | Cells with free space | Changes | Both walk | Behind walks | Keep pace | Shortest leash | Careful player |\n' +
-  '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |'
+  '| Tier | Walk | Segments | Speed (m/s) | Leash (m) | Fréchet (m) | In the woods (m) | Open walk in the woods (m) | Wrap | Straight start (m) | Dead ends | Largest (m²) | Dead share | Cells with free space | Changes | Both walk | Behind walks | Keep pace | Shortest leash | Careful player |\n' +
+  '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |'
 const rows: string[] = []
 for (const walk of WALKS) {
   const tier = de.tiers[tierOfWalk(walk.id)]
@@ -54,7 +67,7 @@ for (const walk of WOODS) {
   rows.push(
     row(
       tier,
-      `Wald: ${woodsDe.walks[walk.id]} (${walk.trunks.length} ${walk.trunks.length === 1 ? 'tree' : 'trees'})`,
+      `Wald: ${woodsDe.walks[walk.id]} (${trunkCount(walk.trunks)}${walk.freeStart ? ', free start' : ''})`,
       `${walk.person.length - 1}/${walk.dog.length - 1}`,
       walk.speed ?? WALK_SPEED,
       assessWoods(walk),
@@ -71,8 +84,11 @@ six walks in the park and four in the woods; "Mittel" and "Schwer" are generated
 below snaps the leash while the careful player gets through; see the decision log in \`design-notes.md\`.
 
 - **Leash**: the walk's leash; **Fréchet**: the shortest leash without trees; **In the woods**: the shortest
-  leash with the trees (homotopic Fréchet distance); **Open walk in the woods**: the longest leash the
-  computer's best walk without trees needs when the trees are there (above the leash: that walk snaps).
+  leash with the trees (homotopic Fréchet distance; with a free start, over all start windings);
+  **Open walk in the woods**: the longest leash the computer's best walk without trees needs when the
+  trees are there (above the leash: that walk snaps); **Wrap**: the most the computer's walk wraps the
+  leash round one trunk or post (360° = a full coil); **Straight start**: with a free start, the shortest
+  leash when the leash starts straight instead of wound the best way.
 - **Dead ends**: on a raster of the free-space diagram (${ASSESS_STEP * 100} cm along both paths, the game's moves:
   person, dog or both one step), the positions reachable from the start from which the castle can no
   longer be reached, grouped into separate dead ends of at least 0.25 m² of the diagram; **Largest**: the
@@ -84,7 +100,8 @@ below snaps the leash while the careful player gets through; see the decision lo
   among the best walks).
 - **Strategies** (played at 60 frames per second with the game's rules; "snaps" = the leash snaps): both
   walk all the time; the one behind (along the line from the gate to the castle) walks, both when level;
-  keep pace by the share of the path walked; always the move after which the leash is shortest.
+  keep pace by the share of the path walked; always the move after which the leash is shortest
+  ("coils": the strategy wound the leash round a post before it snapped).
   **Careful player**: follows the game's hint (who should walk), but looks at it only every 0.25 s.
 
 ${header}

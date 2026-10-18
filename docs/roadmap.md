@@ -254,6 +254,15 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   — done 2026-10-17 (the tier mapping proposed, see the decision log, Phase 6)
 - Attract demos for all five games, shown in turn (about 20–30 s each, with the game's name and "Komm
   spielen!"), only precomputed solutions; the soak test checks all five. — done 2026-10-17
+- "Gassi gehen" (Kevin, after playing the harder tiers: the leash must really wind round trees, and
+  the park and the woods should feel alive): thin posts the leash coils round several times (drawn as
+  a spiral with a "2×" badge); new easy woods walks where winding is the point ("Laternenpfahl", "Vor
+  dem Bäcker" with a wound start, "Achterbahn"); a camera that follows person and dog with an overview
+  map; a leash drawn with its real length that trembles when taut and snaps visibly; the free start
+  leash as an expert puzzle on two "Schwer" woods walks (choose how the leash lies round the gate post;
+  bar chart of the shortest leash per start); "Mittel" and "Schwer" woods walks regenerated with 3–8
+  trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all proposed, see the
+  decision log, "Winding in the woods")
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

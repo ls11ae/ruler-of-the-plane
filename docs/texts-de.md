@@ -689,6 +689,15 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
     - Er muss nur besondere Längen probieren, bei denen sich im Diagramm ein Durchgang öffnet.
     - So findet er in wenigen Schritten den Fréchet-Abstand: 1,9 m.
 
+### challenge
+
+- `challenge.offer(now, next)`:
+  - now = 3, next = 3: Geschafft mit 3,0 m – traust du dich mit 3,0 m?
+- `challenge.button(m)`:
+  - m = 2.4: Mit 2,4 m Leine
+- `challenge.badge`: Leinen-Profi!
+- `challenge.done`: Kürzer geht es kaum: Du kamst mit fast der kürzesten Leine ans Ziel.
+
 ### modes
 
 - `modes.walk`: Spazieren
@@ -728,8 +737,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 ### Top level
 
 - `setTitle`: Im Wald
-- `setIntro`: Bonus: Hier bleibt die Leine an Bäumen hängen.
-- `setIntroHarder`: Noch kniffliger: Hier bleibt die Leine an Bäumen hängen.
+- `setIntro`: Bonus: Hier wickelt sich die Leine um Bäume und Laternenpfähle.
+- `setIntroHarder`: Noch kniffliger: Hier wickelt sich die Leine um Bäume und Pfähle.
 - `subtitle(i, n, name)`:
   - i = 2, n = 6, name = „Um die Eiche“: Im Wald · Um die Eiche · Spaziergang 2 von 6
 - `subtitleTier(tier, i, n, name)`:
@@ -737,17 +746,26 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `board(leash)`:
   - leash = 2.7: Wald: zwei Wege zum Schloss zwischen Bäumen, Leine 2,7 m
 - `caught`: Die Leine hängt am Baum.
+- `caughtPost`: Die Leine hängt am Pfahl.
+- `coiledTitle(n)`:
+  - n = 6: Leine 6× aufgewickelt!
+- `coiled(n)`:
+  - n = 6: Die Leine ist 6× um den Pfahl gewickelt.
+- `tied`: Der Hund hat die Leine 2× um den Pfahl gewickelt: erst abwickeln, dann los!
 - `howTo(leash, touch)`:
   - leash = 2.7, touch = true:
-    - Im Wald bleibt die Leine an den Baumstämmen hängen und wickelt sich darum – dann wird sie länger.
-    - Wer zuerst um einen Baum läuft, muss auf den anderen warten, bis die Leine wieder frei ist.
+    - Im Wald bleibt die Leine an Stämmen und Pfählen hängen. Läuft einer um einen dünnen Pfahl, wickelt sie sich auf – jede Runde kostet Leine.
+    - Wer vorne ist, wartet, bis der andere hinterherkommt und die Leine wieder abwickelt.
     - Halte „Mensch“ oder „Hund“ gedrückt; die Leine ist 2,7 m lang.
   - leash = 2.7, touch = false:
-    - Im Wald bleibt die Leine an den Baumstämmen hängen und wickelt sich darum – dann wird sie länger.
-    - Wer zuerst um einen Baum läuft, muss auf den anderen warten, bis die Leine wieder frei ist.
+    - Im Wald bleibt die Leine an Stämmen und Pfählen hängen. Läuft einer um einen dünnen Pfahl, wickelt sie sich auf – jede Runde kostet Leine.
+    - Wer vorne ist, wartet, bis der andere hinterherkommt und die Leine wieder abwickelt.
     - A: Mensch geht, L: Hund läuft; die Leine ist 2,7 m lang.
-- `howToAnimation`: Der Hund läuft um einen Baum, die Leine wickelt sich darum; der Mensch folgt, die Leine wird frei
+- `howToAnimation`: Der Hund läuft um einen Laternenpfahl, die Leine wickelt sich auf; der Mensch folgt, die Leine wird frei
 - `snappedTree`: Die Leine hing an einem Baum. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.
+- `snappedPost`: Die Leine hing an einem Pfahl. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.
+- `snappedCoil(n)`:
+  - n = 6: Die Leine war 6× um einen Pfahl gewickelt. Wer vorne war, hätte warten müssen, bis der andere hinterherkommt.
 - `stats(longest, shortest, plain)`:
   - longest = 2.6, shortest = 1.9, plain = 2.2: Deine längste Leine: 2,6 m · kürzeste möglich: 1,9 m (ohne Bäume: 2,2 m)
 - `explanation(shortest, longest)`:
@@ -759,16 +777,46 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 ### walks
 
-- `walks.oak`: Um die Eiche
-- `walks.slalom`: Slalom
+- `walks.lamp`: Laternenpfahl
+- `walks.bakery`: Vor dem Bäcker
 - `walks.fetch`: Hinterm Baum
-- `walks.thicket`: Dickicht
-- `walks.wm1`: Pilze suchen
-- `walks.wm2`: Eicheln
-- `walks.wm3`: Fuchsbau
-- `walks.ws1`: Die alte Linde
-- `walks.ws2`: Spechtbaum
-- `walks.ws3`: Hasenhaken
+- `walks.eight`: Achterbahn
+- `walks.wm1`: Laternengasse
+- `walks.wm2`: Stöckchen am Pfahl
+- `walks.wm3`: Waldrunde
+- `walks.ws1`: Am Tor angebunden
+- `walks.ws2`: Torpfosten
+- `walks.ws3`: Fuchsbau
+
+### start
+
+- `start.label`: Wie liegt die Leine am Start?
+- `start.clockwise`: Eine Runde mehr im Uhrzeigersinn um den Pfosten
+- `start.anticlockwise`: Eine Runde mehr gegen den Uhrzeigersinn um den Pfosten
+- `start.value(k)`:
+  - k = 3: 3× im Uhrzeigersinn um den Pfosten
+  - k = 0: gerade
+- `start.short(k)`:
+  - k = 3: 3× im Uhrzeigersinn
+  - k = 0: gerade
+- `start.length(m)`:
+  - m = 2.4: Leine am Start: 2,4 m
+- `start.howTo`: Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Tor liegt. Schau dir den Weg des Hundes an!
+- `start.explanation(k)`:
+  - k = 3: Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine 3× im Uhrzeigersinn um den Pfosten am Start.
+  - k = 0: Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine gerade am Start.
+
+### chart
+
+- `chart.title`: Kürzeste Leine je Startlage
+- `chart.best`: beste
+- `chart.yours`: deine
+- `chart.leash(m)`:
+  - m = 2.4: die Leine des Spaziergangs: 2,4 m
+- `chart.summary(list, k)`:
+  - list = „‹list›“, k = 3: Kürzeste Leine je Startlage: ‹list›. Am besten: 3× im Uhrzeigersinn.
+  - list = „‹list›“, k = 0: Kürzeste Leine je Startlage: ‹list›. Am besten: gerade.
+- `chart.text`: Für jede Startlage hat der Computer die kürzeste Leine gesucht. Der homotope Fréchet-Abstand ist die kürzeste von allen.
 
 ### theory
 

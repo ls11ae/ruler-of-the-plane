@@ -28,6 +28,36 @@ export interface Rope {
 /** A rope that touches no trunk (the start: the segment between person and dog must be clear). */
 export const straightRope = (a: Vec2, b: Vec2): Rope => ({ a, b, wraps: [] })
 
+/**
+ * The leash at the gate: straight from the person to the start of the dog's `before` (a short way
+ * the dog ran before the walk, e.g. round a post it was tied to), then carried along it to its end.
+ * Without `before` (or with a single point), straight from the person to `dog`.
+ */
+export function startRope(person: Vec2, dog: Vec2, trees: readonly Tree[], before?: readonly Vec2[]): Rope {
+  if (!before || before.length < 2) return straightRope(person, dog)
+  let rope = straightRope(person, before[0]!)
+  for (const p of before.slice(1)) rope = moveDog(rope, p, trees)
+  return rope
+}
+
+/**
+ * A way round a post: from `from` on a circle about `centre`, `turns` full turns (positive: the
+ * positive orientation of `orientation`, clockwise on screen) and back to `from`, with `perTurn`
+ * corners per turn.
+ */
+export function loopsAround(centre: Vec2, from: Vec2, turns: number, perTurn = 12): Vec2[] {
+  const r = Math.hypot(from[0] - centre[0], from[1] - centre[1])
+  const a0 = Math.atan2(from[1] - centre[1], from[0] - centre[0])
+  const n = Math.abs(turns) * perTurn
+  const out: Vec2[] = [from]
+  for (let k = 1; k < n; k++) {
+    const a = a0 + (Math.sign(turns) * 2 * Math.PI * k) / perTurn
+    out.push([centre[0] + r * Math.cos(a), centre[1] + r * Math.sin(a)])
+  }
+  if (n > 0) out.push(from)
+  return out
+}
+
 const corner = (trees: readonly Tree[], w: Wrap) => trees[w.tree]!.trunk[w.corner]!
 
 /** The rope as a polyline: the person, the corners, the dog. */
@@ -227,4 +257,69 @@ export function moveDogAlong(rope: Rope, path: Path, t0: number, t1: number, tre
   if (t1 === t0) return rope
   for (const p of subpath(path, t0, t1).slice(1)) rope = moveDog(rope, p, trees)
   return rope
+}
+
+/**
+ * The signed angle (radians) that a polyline sweeps around the point c: positive where it turns
+ * like the positive orientation of `orientation` (counter-clockwise with y up, clockwise on screen).
+ */
+export function sweepAround(points: readonly Vec2[], [cx, cy]: Vec2): number {
+  let sum = 0
+  for (let i = 0; i + 1 < points.length; i++) {
+    const ax = points[i]![0] - cx
+    const ay = points[i]![1] - cy
+    const bx = points[i + 1]![0] - cx
+    const by = points[i + 1]![1] - cy
+    sum += Math.atan2(ax * by - ay * bx, ax * bx + ay * by)
+  }
+  return sum
+}
+
+/**
+ * How often the leash is wound round tree k: the winding number, around the tree's centre, of the
+ * loop "along the leash from the person to the dog, then straight back" (an integer; its sign is the
+ * direction, as in {@link sweepAround}). A leash that only bends around a trunk has 0 turns; a dog
+ * that circles a post three times from a straight leash winds it three times.
+ */
+export function turnsAround(rope: Rope, trees: readonly Tree[], k: number): number {
+  const c = trees[k]!.centre
+  const along = sweepAround(ropePoints(rope, trees), c)
+  const back = sweepAround([rope.b, rope.a], c)
+  return Math.round((along + back) / (2 * Math.PI))
+}
+
+/**
+ * How far the leash wraps round each trunk it touches: the angle it turns through at that trunk's
+ * corners (radians; a leash that only bends round a trunk turns a little, one coiled once round a
+ * post about 360°, less what its straight legs to person and dog cover).
+ */
+export function wrapAngles(rope: Rope, trees: readonly Tree[]): Map<number, number> {
+  const per = new Map<number, number>()
+  if (rope.wraps.length === 0) return per
+  const pts = ropePoints(rope, trees)
+  rope.wraps.forEach((w, i) => {
+    const [ax, ay] = pts[i]!
+    const [bx, by] = pts[i + 1]!
+    const [cx, cy] = pts[i + 2]!
+    const ux = bx - ax
+    const uy = by - ay
+    const vx = cx - bx
+    const vy = cy - by
+    per.set(w.tree, (per.get(w.tree) ?? 0) + Math.abs(Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy)))
+  })
+  return per
+}
+
+/**
+ * The trunks the leash is coiled round, with the number of turns (signed, see {@link turnsAround}):
+ * those it is wound round at least once and wraps at least half way round. (A leash that only bends
+ * round the far side of a thick trunk, or just past a post, is wound once by the count but not coiled.)
+ */
+export function coils(rope: Rope, trees: readonly Tree[]): { tree: number; turns: number }[] {
+  const wrapped = wrapAngles(rope, trees)
+  return [...wrapped.keys()]
+    .sort((a, b) => a - b)
+    .filter((tree) => wrapped.get(tree)! >= Math.PI)
+    .map((tree) => ({ tree, turns: turnsAround(rope, trees, tree) }))
+    .filter((c) => c.turns !== 0)
 }

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { WoodsId } from '../../../core/games/frechet/woods/shapes'
+import { WOODS_IDS, type WoodsId } from '../../../core/games/frechet/woods/shapes'
 import { persistStorage } from '../../shell/storage'
 import { useUi } from '../../shell/ui'
 
@@ -24,6 +24,12 @@ export const useStop = create<StopState>()(
       version: 1,
       storage: persistStorage,
       partialize: ({ woods }) => ({ woods }),
+      // A walk in the woods an update removed ("Eiche", "Slalom", "Dickicht" became "Laternenpfahl",
+      // "Vor dem Bäcker", "Achterbahn"): back to the park instead of a missing walk.
+      merge: (persisted, current) => {
+        const woods = (persisted as Partial<StopState> | undefined)?.woods
+        return { ...current, woods: WOODS_IDS.find((id) => id === woods) ?? null }
+      },
     },
   ),
 )

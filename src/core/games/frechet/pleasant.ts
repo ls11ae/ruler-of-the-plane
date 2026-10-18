@@ -66,3 +66,53 @@ export function pleasant(person: readonly Vec2[], dog: readonly Vec2[]): boolean
     pathLength(dog) <= 85
   )
 }
+
+/** Inside the 36 × 22 m park with a margin of `margin` metres. */
+const insideBy = (pts: readonly Vec2[], margin: number) =>
+  pts.every(([x, y]) => x >= margin && x <= 36 - margin && y >= margin && y <= 22 - margin)
+
+/** Where two segments cross (proper crossings only), or null. */
+function crossingPoint(a: Vec2, b: Vec2, c: Vec2, d: Vec2): Vec2 | null {
+  if (!segmentsCross(a, b, c, d)) return null
+  const d1 = cross(c, d, a)
+  const d2 = cross(c, d, b)
+  const u = d1 / (d1 - d2)
+  return [a[0] + u * (b[0] - a[0]), a[1] + u * (b[1] - a[1])]
+}
+
+/** How often a polyline crosses itself farther than `radius` from all the given points. */
+export function crossingsAway(pts: readonly Vec2[], centres: readonly Vec2[], radius: number): number {
+  let count = 0
+  for (let i = 0; i + 1 < pts.length; i++)
+    for (let j = i + 2; j + 1 < pts.length; j++) {
+      const p = crossingPoint(pts[i]!, pts[i + 1]!, pts[j]!, pts[j + 1]!)
+      if (p && centres.every((c) => Math.hypot(p[0] - c[0], p[1] - c[1]) > radius)) count++
+    }
+  return count
+}
+
+/**
+ * Legible paths for the walks in the woods, which loop round posts by design: inside the park (0.7 m
+ * from its edge, so that the dog can run round a post at the gate), no segment shorter than 0.3 m,
+ * the footpath without turns sharper than 120°, loops only where designed (away from the posts the
+ * footpath does not cross itself and the dog's trail at most once), at most 80 segments each.
+ */
+export function legibleInWoods(
+  person: readonly Vec2[],
+  dog: readonly Vec2[],
+  posts: readonly Vec2[],
+): boolean {
+  return (
+    insideBy(person, 0.7) &&
+    insideBy(dog, 0.7) &&
+    person.length <= 81 &&
+    dog.length <= 81 &&
+    shortestSegment(person) >= 0.3 &&
+    shortestSegment(dog) >= 0.3 &&
+    sharpestTurn(person) <= 120 &&
+    crossingsAway(person, posts, 3) === 0 &&
+    crossingsAway(dog, posts, 3) <= 1 &&
+    pathLength(person) <= 110 &&
+    pathLength(dog) <= 140
+  )
+}

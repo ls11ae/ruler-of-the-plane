@@ -4,7 +4,8 @@ import { makePath, pointAt, type Path } from '../path'
 import { roundUp, TAUT_SHARE, WALK_SPEED, type Advice, type Input } from '../rules'
 import { leashGrid, type LeashGrid } from './field'
 import type { WoodsWalk } from './levels'
-import { moveDogAlong, movePersonAlong, ropeLength, straightRope, type Rope } from './rope'
+import { moveDogAlong, movePersonAlong, ropeLength, type Rope } from './rope'
+import { startOf } from './shapes'
 import type { Tree } from './trees'
 
 /**
@@ -20,10 +21,13 @@ export interface WoodsCourse {
   person: Path
   dog: Path
   trees: Tree[]
-  /** The leash at the gate: straight. */
+  /** The leash at the gate: straight, or wound as the walk says. */
   start: Rope
   /** The target: the shortest leash that allows the walk in the woods (from the offline search). */
   shortest: number
+  /** Free start: the winding chosen at the gate, and the shortest leash with that start. */
+  winding: number
+  shortestFromStart: number
   /** The Fréchet distance of the two paths without trees, for comparison. */
   plain: number
   /** The leash of this walk. */
@@ -44,11 +48,13 @@ interface Hints {
   loose: Uint8Array
 }
 
-export function makeWoodsCourse(walk: WoodsWalk): WoodsCourse {
+/** A walk in the woods ready to play; on a walk with a free start, with the leash wound `winding` times at the gate. */
+export function makeWoodsCourse(walk: WoodsWalk, winding = 0): WoodsCourse {
   const person = makePath(walk.person)
   const dog = makePath(walk.dog)
-  const start = straightRope(pointAt(person, 0), pointAt(dog, 0))
-  const leash = roundUp(Math.max(walk.target * walk.slack, walk.target + 0.2))
+  const start = startOf(walk, walk.trees, walk.freeStart ? winding : 0)
+  const fromStart = walk.starts?.[winding]
+  const leash = walk.leash ?? roundUp(Math.max(walk.target * walk.slack, walk.target + 0.2))
   const grid = leashGrid(
     person,
     dog,
@@ -65,9 +71,11 @@ export function makeWoodsCourse(walk: WoodsWalk): WoodsCourse {
     trees: walk.trees,
     start,
     shortest: walk.target,
+    winding: walk.freeStart ? winding : 0,
+    shortestFromStart: fromStart?.target ?? walk.target,
     plain: frechetDistance(walk.person, walk.dog),
     leash,
-    computer: walk.computer,
+    computer: fromStart?.computer ?? walk.computer,
     hints: { grid, safe: reachable(grid, leash - spacing), loose: reachable(grid, leash) },
     speed: walk.speed ?? WALK_SPEED,
   }

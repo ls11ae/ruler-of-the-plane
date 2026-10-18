@@ -134,6 +134,13 @@ export const de = {
       `So findet er in wenigen Schritten den Fréchet-Abstand: ${metres(shortest)}.`,
     ],
   },
+  challenge: {
+    offer: (now: number, next: number) =>
+      `Geschafft mit ${metres(now)} – traust du dich mit ${metres(next)}?`,
+    button: (m: number) => `Mit ${metres(m)} Leine`,
+    badge: 'Leinen-Profi!',
+    done: 'Kürzer geht es kaum: Du kamst mit fast der kürzesten Leine ans Ziel.',
+  },
   pickerTitle: 'Spaziergänge',
   modes: { walk: 'Spazieren', guess: 'Schätz die Leine', sandbox: 'Eigene Wege zeichnen' },
   best: (m: number) => `beste Leine ${metres(m)}`,

@@ -3,7 +3,7 @@ import type { Vec2 } from '../../../geometry/types'
 import { frechetDistance, optimalWalk } from '../frechet'
 import { makePath, pointAt, pointSegmentDistance } from '../path'
 import { WOODS } from './levels'
-import { moveDogAlong, movePersonAlong, ropeLength, ropePoints, straightRope } from './rope'
+import { loopsAround, moveDogAlong, movePersonAlong, ropeLength, ropePoints, turnsAround } from './rope'
 import {
   leashOf,
   makeWoodsCourse,
@@ -15,8 +15,8 @@ import {
   type WoodsState,
 } from './rules'
 import { searchWoods } from './search'
-import { EASY_WOODS_IDS, SEARCH_STEP, treesOf, WOODS_SHAPES } from './shapes'
-import { blocked, insideBy, polylineWord, raysClear } from './trees'
+import { SEARCH_STEP, START_WINDINGS, startOf, treesOf } from './shapes'
+import { blocked, insideBy, polylineWord, raysClear, segmentWord } from './trees'
 
 const FRAME = 1 / 60
 
@@ -65,9 +65,8 @@ function replay(course: WoodsCourse, walk: [number, number][]): WoodsState {
 }
 
 describe('walks in the woods', () => {
-  it('keep trunks off the paths and out of the area between them, rays clear, leash clear at the start', () => {
-    let lastSlack = Infinity
-    for (const shape of WOODS_SHAPES) {
+  it('keep trunks off the paths, rays clear, and leave the leash free at the end', () => {
+    for (const shape of WOODS) {
       const trees = treesOf(shape)
       expect(raysClear(trees, 0.3), shape.id).toBe(true)
       for (const tree of trees) {
@@ -79,22 +78,25 @@ describe('walks in the woods', () => {
             )
           }
         }
-        // Inside the area enclosed by the two paths a trunk would catch the leash for good.
-        const ring = [...shape.person, ...[...shape.dog].reverse()]
+        // The loop "start leash, dog's trail, straight back, person's path back" must not wind round a
+        // trunk: such a trunk would catch the leash for good, as both only walk forwards.
+        const before = shape.freeStart
+          ? loopsAround(shape.trunks[shape.freeStart.post]!.at, shape.dog[0]!, shape.bestStart!, 16)
+          : shape.before
+        const ring = [...(before ?? [shape.dog[0]!]), ...shape.dog, ...[...shape.person].reverse()]
         expect(winding(ring, tree.centre), `${shape.id}: tree ${tree.centre.join(', ')}`).toBe(0)
         expect(insideBy(tree, shape.person[0]!)).toBeLessThan(0)
       }
-      expect(blocked(trees, shape.person[0]!, shape.dog[0]!)).toBe(false)
-      if (!(EASY_WOODS_IDS as readonly string[]).includes(shape.id)) continue
-      expect(shape.slack).toBeLessThan(lastSlack)
-      lastSlack = shape.slack
+      const first = shape.before?.[0] ?? shape.dog[0]!
+      expect(blocked(trees, shape.person[0]!, first)).toBe(false)
     }
   })
 
   // One search per walk: several seconds for the longer generated walks.
   for (const walk of WOODS) {
     it(`${walk.id}: stores the target and walk of a fresh search, and the rope agrees with the search`, () => {
-      const found = searchWoods(walk.person, walk.dog, walk.trees, SEARCH_STEP)
+      const start = startOf(walk, walk.trees, walk.bestStart ?? 0)
+      const found = searchWoods(walk.person, walk.dog, walk.trees, SEARCH_STEP, { start })
       expect(walk.target, walk.id).toBeCloseTo(found.target, 4)
       expect(walk.computer.length, walk.id).toBe(found.walk.length)
       walk.computer.forEach(([s, t], k) => {
@@ -106,7 +108,7 @@ describe('walks in the woods', () => {
       // The game's rope, carried along the search's walk, has the search's leash and word everywhere.
       const P = makePath(walk.person)
       const Q = makePath(walk.dog)
-      let rope = straightRope(pointAt(P, 0), pointAt(Q, 0))
+      let rope = start
       let s = 0
       let t = 0
       let wrapped = 0
@@ -121,13 +123,16 @@ describe('walks in the woods', () => {
       }
       // Not trivially: on its walk, the computer lets the leash touch a trunk somewhere (except where
       // walking round together keeps it clear).
-      if (walk.id === 'fetch') expect(wrapped).toBeGreaterThan(0)
+      if (walk.id === 'fetch' || walk.id === 'bakery') expect(wrapped).toBeGreaterThan(0)
+      // At the castle the leash lies straight (as the straight segment between the two).
+      const end = found.samples[found.samples.length - 1]!
+      expect(end.word).toEqual(segmentWord(pointAt(P, P.length), pointAt(Q, Q.length), walk.trees))
     }, 30_000)
   }
 
   it('can be walked with the stored walk and by following the hint, but not by walking together', () => {
     for (const walk of WOODS) {
-      const course = makeWoodsCourse(walk)
+      const course = makeWoodsCourse(walk, walk.bestStart ?? 0)
       expect(course.leash).toBeGreaterThanOrEqual(course.shortest + 0.2 - 1e-9)
       const computer = replay(course, walk.computer)
       expect(computer.status, `${walk.id}: the computer's walk`).toBe('arrived')
@@ -172,5 +177,58 @@ describe('walks in the woods', () => {
     expect(longest).toBeGreaterThan(fetch.target + 0.2)
     // The rope carried there equals the rope computed for the end position directly.
     expect(ropeAt(course, s, t).wraps).toEqual(rope.wraps)
+  })
+
+  it('round the lamp post and in the figure-eight: one coil fits the leash, two do not', () => {
+    for (const id of ['lamp', 'eight'] as const) {
+      const walk = WOODS.find((w) => w.id === id)!
+      const course = makeWoodsCourse(walk)
+      const start = startOf(walk, walk.trees)
+      walk.trees.forEach((_, tree) => {
+        const coil = (turns: number) =>
+          searchWoods(walk.person, walk.dog, walk.trees, 0.1, { start, coil: { tree, turns } }).target
+        // A walk with the dog a loop ahead (the leash coiled once round the post) fits with room to
+        // spare; with two coils the leash would snap.
+        expect(coil(1), `${id}: one coil round tree ${tree}`).toBeLessThan(course.leash - 0.3)
+        let two = Infinity
+        try {
+          two = coil(2)
+        } catch {
+          // No walk coils it twice at all.
+        }
+        expect(two, `${id}: two coils round tree ${tree}`).toBeGreaterThan(course.leash + 0.25)
+      })
+    }
+  }, 30_000)
+
+  it('outside the bakery: the leash starts wound twice round the post, and the person must wait', () => {
+    const walk = WOODS.find((w) => w.id === 'bakery')!
+    const course = makeWoodsCourse(walk)
+    expect(Math.abs(turnsAround(course.start, walk.trees, 0))).toBe(2)
+    expect(leashOf(course, course.start)).toBeLessThan(course.leash)
+    // The person walking off first snaps the leash within a few steps.
+    let state = woodsStart(course)
+    for (let i = 0; i < 600 && state.status === 'walking'; i++)
+      state = stepWoods(course, state, { person: true, dog: false }, FRAME)
+    expect(state.status).toBe('snapped')
+    expect(state.s).toBeLessThan(4)
+  })
+
+  it('with a free start leash: the stored best start is the best of all, and the leash ends free', () => {
+    for (const walk of WOODS.filter((w) => w.freeStart)) {
+      const targets = START_WINDINGS.map((k) => walk.starts![k]!.target)
+      expect(walk.target).toBe(Math.min(...targets))
+      expect(walk.starts![walk.bestStart!]!.target).toBe(walk.target)
+      // The course with the best start has the stored computer's walk and the shortest leash.
+      const course = makeWoodsCourse(walk, walk.bestStart!)
+      expect(course.shortestFromStart).toBe(walk.target)
+      expect(Math.abs(turnsAround(course.start, walk.trees, walk.freeStart!.post))).toBe(
+        Math.abs(walk.bestStart!),
+      )
+      // Another start gives another course, with its own computer's walk.
+      const straight = makeWoodsCourse(walk, 0)
+      expect(straight.shortestFromStart).toBe(walk.starts![0]!.target)
+      expect(straight.computer).toEqual(walk.starts![0]!.computer)
+    }
   })
 })

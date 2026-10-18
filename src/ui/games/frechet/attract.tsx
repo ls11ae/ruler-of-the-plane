@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Walk } from '../../../core/games/frechet/frechet'
 import { PARK, walkById, type WalkId, type WalkLevel } from '../../../core/games/frechet/levels'
-import { leashAt, makeCourse, positions, TAUT_SHARE } from '../../../core/games/frechet/rules'
+import { leashAt, makeCourse, positions } from '../../../core/games/frechet/rules'
 import { Board } from '../../components/Board'
 import { useLocalized } from '../../i18n'
 import { useAnimationFrame } from '../../input/hooks'
@@ -10,7 +10,8 @@ import styles from './Attract.module.css'
 import { FreeSpaceDiagram } from './FreeSpaceDiagram'
 import { de, type FrechetTexts } from './i18n.de'
 import { en } from './i18n.en'
-import { Leash, ParkScenery, Paths, Walkers } from './ParkArt'
+import { LiveLeash } from './LiveLeash'
+import { ParkScenery, Paths, Walkers } from './ParkArt'
 
 /** Walks of the demo, one per round: each makes someone wait. */
 const DEMO_WALKS: readonly WalkId[] = ['pond', 'fetch', 'sniffing', 'braid']
@@ -52,14 +53,13 @@ function Demo({ level, t, onDone }: { level: WalkLevel; t: FrechetTexts; onDone:
   const walked = walkedPart(course.computer, course.person.length, course.dog.length, u)
   const [s, tt] = walked.at(-1)!
   const { person, dog } = positions(course, s, tt)
-  const taut = leashAt(course, s, tt) >= TAUT_SHARE * course.leash
   return (
     <div className={styles.demo} data-step={Math.round(u * 50)}>
       <div className={styles.park}>
         <Board bounds={PARK} padding={0.6} autoRotate>
           <ParkScenery level={course.level} labels={{ start: t.start, goal: t.goal }} />
           <Paths person={course.person} dog={course.dog} s={s} t={tt} />
-          <Leash from={person} to={dog} length={course.leash} taut={taut} />
+          <LiveLeash points={[person, dog]} length={course.leash} leash={leashAt(course, s, tt)} />
           <Walkers person={person} dog={dog} />
         </Board>
       </div>

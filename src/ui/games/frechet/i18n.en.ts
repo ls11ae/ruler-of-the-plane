@@ -131,6 +131,12 @@ export const en: FrechetTexts = {
       `So it finds the Fréchet distance in a few steps: ${metres(shortest)}.`,
     ],
   },
+  challenge: {
+    offer: (now: number, next: number) => `Done with ${metres(now)} – dare to try ${metres(next)}?`,
+    button: (m: number) => `With a ${metres(m)} leash`,
+    badge: 'Leash pro!',
+    done: 'It hardly gets any shorter: you made it with almost the shortest leash.',
+  },
   pickerTitle: 'Walks',
   modes: { walk: 'Walk', guess: 'Guess the Leash', sandbox: 'Draw your own paths' },
   best: (m: number) => `best leash ${metres(m)}`,

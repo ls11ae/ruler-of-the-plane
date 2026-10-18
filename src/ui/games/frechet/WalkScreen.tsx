@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PARK, type Tier, type WalkId, type WalkLevel } from '../../../core/games/frechet/levels'
+import type { Tier, WalkId, WalkLevel } from '../../../core/games/frechet/levels'
 import {
   advice,
   leaderboardScore,
@@ -13,7 +13,6 @@ import {
   TAUT_SHARE,
   type WalkState,
 } from '../../../core/games/frechet/rules'
-import { Board } from '../../components/Board'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
 import { HowToOverlay } from '../../components/HowToOverlay'
@@ -25,11 +24,15 @@ import { useAnimationFrame, useHeldKeys, useKeyCapture } from '../../input/hooks
 import { keyboard } from '../../input/keyboard'
 import { ExplanationDiagram } from './Explanation'
 import styles from './Frechet.module.css'
+import { FollowCamera } from './FollowCamera'
 import { KEYS, type Walker } from './helpers'
 import { HoldControls } from './HoldControls'
 import { HowToAnimation } from './HowToAnimation'
 import type { FrechetTexts } from './i18n.de'
-import { Leash, Paths, ParkScenery, Walkers } from './ParkArt'
+import { strainOf, towards } from './leashShape'
+import { LiveLeash } from './LiveLeash'
+import { Paths, ParkScenery, Walkers } from './ParkArt'
+import { ShorterLeash } from './ShorterLeash'
 import { useProgress } from './store'
 import { TheoryPanel } from './Theory'
 import { useMedia } from './useMedia'
@@ -76,7 +79,12 @@ export function WalkScreen({
 }: WalkScreenProps) {
   const shell = useT()
   const progress = useProgress()
-  const course = useMemo(() => makeCourse(level), [level])
+  // "Kürzere Leine": the same walk again with a shorter leash.
+  const [challenge, setChallenge] = useState<number | null>(null)
+  const course = useMemo(
+    () => makeCourse(challenge === null ? level : { ...level, leash: challenge }),
+    [level, challenge],
+  )
   const [state, setState] = useState<WalkState>(() => startState(course))
   const stateRef = useRef(state)
   const [buttons, setButtons] = useState<Record<Walker, boolean>>({ person: false, dog: false })
@@ -128,6 +136,11 @@ export function WalkScreen({
     stateRef.current = fresh
     setState(fresh)
     setOverlay(null)
+  }
+
+  const tryShorter = (leash: number) => {
+    setChallenge(leash)
+    restart()
   }
 
   const leash = leashAt(course, state.s, state.t)
@@ -192,31 +205,49 @@ export function WalkScreen({
           data-testid="park"
           data-walk={`${state.s.toFixed(3)},${state.t.toFixed(3)}`}
         >
-          <Board bounds={PARK} padding={0.6} autoRotate label={t.board(course.leash)}>
+          <FollowCamera
+            enabled={!theory}
+            leash={course.leash}
+            person={course.person}
+            dog={course.dog}
+            at={[state.s, state.t]}
+            label={t.board(course.leash)}
+          >
             <ParkScenery level={course.level} labels={{ start: t.start, goal: t.goal }} />
             <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
             {ghost && (
               <>
-                <Leash
-                  from={ghost.person}
-                  to={ghost.dog}
+                <LiveLeash
+                  points={[ghost.person, ghost.dog]}
                   length={eps}
-                  taut={ghostLeash > eps}
+                  leash={ghostLeash}
                   ghost
                   label={t.metres(ghostLeash)}
                 />
                 <Walkers person={ghost.person} dog={ghost.dog} ghost />
               </>
             )}
-            <Leash
-              from={person}
-              to={dog}
+            <LiveLeash
+              points={[person, dog]}
               length={course.leash}
-              taut={taut || state.status === 'snapped'}
+              leash={leash}
+              snapped={state.status === 'snapped'}
               label={ghost ? undefined : t.metres(leash)}
             />
-            <Walkers person={person} dog={dog} />
-          </Board>
+            <Walkers
+              person={person}
+              dog={dog}
+              pull={
+                state.status === 'walking'
+                  ? {
+                      person: towards(person, dog),
+                      dog: towards(dog, person),
+                      strain: strainOf(leash / course.leash),
+                    }
+                  : undefined
+              }
+            />
+          </FollowCamera>
           {!possible && state.status === 'walking' && overlay === null && (
             <div className={styles.deadEnd} role="status">
               <span>{t.deadEnd}</span>
@@ -309,7 +340,14 @@ export function WalkScreen({
         <ResultScreen
           outcome="won"
           stars={stars}
-          stats={t.stats(state.longest, course.shortest)}
+          stats={
+            <>
+              {t.stats(state.longest, course.shortest)}
+              {index !== null && (
+                <ShorterLeash leash={course.leash} shortest={course.shortest} onTry={tryShorter} t={t} />
+              )}
+            </>
+          }
           explanation={t.explanation(course.shortest, state.longest).join(' ')}
           animation={<ExplanationDiagram course={course} player={state.trace} t={t} />}
           onTheory={() => {

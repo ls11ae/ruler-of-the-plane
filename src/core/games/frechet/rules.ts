@@ -35,7 +35,7 @@ export function makeCourse(level: WalkLevel): Course {
     dog: makePath(level.dog),
     shortest,
     // At least 0.2 m above the minimum, so a walk stays possible with human reaction times.
-    leash: roundUp(Math.max(shortest * level.slack, shortest + 0.2)),
+    leash: level.leash ?? roundUp(Math.max(shortest * level.slack, shortest + 0.2)),
     computer: walk,
     speed: level.speed ?? WALK_SPEED,
   }

@@ -3,6 +3,7 @@ import type { Walk } from '../frechet'
 import { makePath, pointAt } from '../path'
 import { cornerGraph, geodesic, sightsFrom, type Sight } from './geodesic'
 import { MinHeap } from './heap'
+import { ropePoints, type Rope } from './rope'
 import { blocked, concat, inverse, polylineWord, segmentWord, subpath, type Tree, type Word } from './trees'
 
 /**
@@ -16,7 +17,8 @@ import { blocked, concat, inverse, polylineWord, segmentWord, subpath, type Tree
  * changes accordingly. Each state's leash is the shortest curve with its word, computed from scratch
  * (`geodesic.ts`, not the game's rope update). A bottleneck Dijkstra finds the walk whose longest
  * leash (at the samples) is smallest; that is the target. Its error against the exact value is at most
- * about two steps.
+ * about two steps. The leash starts straight at the gate, or as `start` (e.g. wound round a post the
+ * dog was tied to; its ends must be the paths' starts).
  */
 export interface WoodsSearch {
   step: number
@@ -44,11 +46,31 @@ function samplesOf(length: number, step: number): number[] {
   return Array.from({ length: n + 1 }, (_, i) => Math.min(i * step, length))
 }
 
+export interface SearchOptions {
+  /** How the leash lies at the gate (default: straight). */
+  start?: Rope
+  /**
+   * Only walks on which the leash is, at some moment, wound at least `turns` times round tree
+   * `tree` (the winding number of "along the leash, straight back"; the search then finds the
+   * shortest leash that allows a walk with such a coil, e.g. the dog a loop ahead round a post).
+   */
+  coil?: { tree: number; turns: number }
+}
+
+/** How often a leash with this word is wound round tree k (see `turnsAround` in `rope.ts`). */
+function windingOf(word: Word, straight: Word, k: number): number {
+  let w = 0
+  for (const l of word) if (Math.abs(l) === k + 1) w += Math.sign(l)
+  for (const l of straight) if (Math.abs(l) === k + 1) w -= Math.sign(l)
+  return w
+}
+
 export function searchWoods(
   person: readonly Vec2[],
   dog: readonly Vec2[],
   trees: readonly Tree[],
   step = 0.05,
+  { start, coil }: SearchOptions = {},
 ): WoodsSearch {
   const P = makePath(person)
   const Q = makePath(dog)
@@ -94,20 +116,26 @@ export function searchWoods(
   }
 
   // States: position (i, j) and word id; found by key (i·(m + 1) + j)·WORDS + word id.
-  const WORDS = 1024
+  const WORDS = 4096
   const index = new Map<number, number>()
   const stI: number[] = []
   const stJ: number[] = []
   const stW: number[] = []
+  /** Whether the walk to this state has coiled the leash as `coil` asks (always 0 without it). */
+  const stF: number[] = []
   const stLeash: number[] = []
   const stValue: number[] = []
   // Second pass: cost and predecessor per (state, last move), at index state · 4 + move.
   const cost: number[] = []
   const from: number[] = []
   const classes = new Map<number, number>()
-  const state = (i: number, j: number, w: number): number => {
+  const met = new Set<number>()
+  const coiled = (i: number, j: number, w: number): boolean =>
+    !!coil && Math.abs(windingOf(words[w]!, segmentWord(A[i]!, B[j]!, trees), coil.tree)) >= coil.turns
+  const state = (i: number, j: number, w: number, flag = 0): number => {
     if (w >= WORDS) throw new Error('too many leash classes')
-    const key = (i * (m + 1) + j) * WORDS + w
+    const f = flag || (coiled(i, j, w) ? 1 : 0)
+    const key = ((i * (m + 1) + j) * WORDS + w) * 2 + f
     let id = index.get(key)
     if (id === undefined) {
       id = stI.length
@@ -115,21 +143,32 @@ export function searchWoods(
       stI.push(i)
       stJ.push(j)
       stW.push(w)
+      stF.push(f)
       stLeash.push(leash(i, j, words[w]!))
       stValue.push(Infinity)
       cost.push(Infinity, Infinity, Infinity, Infinity)
       from.push(-1, -1, -1, -1)
       const pos = i * (m + 1) + j
-      classes.set(pos, (classes.get(pos) ?? 0) + 1)
+      if (!met.has(key >> 1)) {
+        met.add(key >> 1)
+        classes.set(pos, (classes.get(pos) ?? 0) + 1)
+      }
     }
     return id
   }
+  const done = (id: number) => stI[id] === n && stJ[id] === m && (!coil || stF[id] === 1)
 
   const a0 = A[0]!
   const b0 = B[0]!
-  if (blocked(trees, a0, b0)) throw new Error('the leash must start clear of the trees')
-  const start = state(0, 0, wordId(segmentWord(a0, b0, trees)))
-  stValue[start] = stLeash[start]!
+  let first: Word
+  if (start) {
+    first = polylineWord(ropePoints(start, trees), trees)
+  } else {
+    if (blocked(trees, a0, b0)) throw new Error('the leash must start clear of the trees')
+    first = segmentWord(a0, b0, trees)
+  }
+  const origin = state(0, 0, wordId(first))
+  stValue[origin] = stLeash[origin]!
   // The moves from a state: person, dog, both (as far as the paths go), with the new word.
   const moves = (id: number): [move: number, next: number][] => {
     const i = stI[id]!
@@ -138,21 +177,22 @@ export function searchWoods(
     const out: [number, number][] = []
     const personOn = i < n ? (stepP[i]!.length ? concat(inverse(stepP[i]!), w) : w) : null
     const id2 = (nw: Word) => (nw === w ? stW[id]! : wordId(nw))
-    if (personOn) out.push([PERSON, state(i + 1, j, id2(personOn))])
-    if (j < m) out.push([DOG, state(i, j + 1, id2(stepQ[j]!.length ? concat(w, stepQ[j]!) : w))])
+    const f = stF[id]!
+    if (personOn) out.push([PERSON, state(i + 1, j, id2(personOn), f)])
+    if (j < m) out.push([DOG, state(i, j + 1, id2(stepQ[j]!.length ? concat(w, stepQ[j]!) : w), f)])
     if (personOn && j < m)
-      out.push([BOTH, state(i + 1, j + 1, id2(stepQ[j]!.length ? concat(personOn, stepQ[j]!) : personOn))])
+      out.push([BOTH, state(i + 1, j + 1, id2(stepQ[j]!.length ? concat(personOn, stepQ[j]!) : personOn), f)])
     return out
   }
 
   // 1. Bottleneck Dijkstra: the smallest longest leash of any walk.
   const heap = new MinHeap()
-  heap.push(stValue[start]!, start)
+  heap.push(stValue[origin]!, origin)
   let goal = -1
   while (heap.size > 0) {
     const [value, id] = heap.pop()
     if (value > stValue[id]!) continue
-    if (stI[id] === n && stJ[id] === m) {
+    if (done(id)) {
       goal = id
       break
     }
@@ -171,15 +211,15 @@ export function searchWoods(
   // walk together as often as possible): a walk a player could follow.
   const second = new MinHeap()
   const key2 = (id: number, move: number) => id * 4 + move
-  cost[key2(start, NONE)] = 0
-  second.push(0, key2(start, NONE))
+  cost[key2(origin, NONE)] = 0
+  second.push(0, key2(origin, NONE))
   let end = -1
   while (second.size > 0) {
     const [c, k] = second.pop()
     if (c > cost[k]!) continue
     const id = k >> 2
     const last = k & 3
-    if (stI[id] === n && stJ[id] === m) {
+    if (done(id)) {
       end = k
       break
     }

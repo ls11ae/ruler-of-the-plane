@@ -13,7 +13,8 @@ import { ExplanationDiagram } from './Explanation'
 import styles from './Frechet.module.css'
 import type { FrechetTexts } from './i18n.de'
 import { LeashSlider } from './LeashSlider'
-import { Leash, Paths, ParkScenery, Walkers } from './ParkArt'
+import { LiveLeash } from './LiveLeash'
+import { Paths, ParkScenery, Walkers } from './ParkArt'
 import { sliderMax } from './helpers'
 import { useMedia } from './useMedia'
 
@@ -136,11 +137,11 @@ export function GuessScreen({
           <Board bounds={PARK} padding={0.6} autoRotate label={t.guess.title}>
             <ParkScenery level={level} labels={{ start: t.start, goal: t.goal }} />
             <Paths person={course.person} dog={course.dog} s={at[0]} t={at[1]} />
-            <Leash
-              from={person}
-              to={dog}
+            <LiveLeash
+              points={[person, dog]}
               length={run?.leash ?? guess}
-              taut={run !== null && (!run.ok && done ? true : leash >= 0.85 * run.leash)}
+              // Where the computer's walk got stuck, the leash is drawn taut.
+              leash={run !== null && !run.ok && done ? Math.max(leash, run.leash) : leash}
               label={t.metres(leash)}
             />
             <Walkers person={person} dog={dog} />
