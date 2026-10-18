@@ -10,6 +10,7 @@ import { kruskal } from '../src/core/games/roads/mst'
 import type { ArtGalleryLevel, KingsTaxesLevel, VoronoiLevel } from '../src/core/levels/schema'
 import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
 import { expect, test, type Page } from './fixtures'
+import { startGame } from './helpers'
 
 /**
  * Frame times of the heaviest scenes under Chromium's CPU throttling (a stand-in for weak booth laptops),
@@ -260,6 +261,9 @@ function schwerGame(level: VoronoiLevel) {
   return requests
 }
 
+/** Every game opens on its tier screen; "Weiterspielen" enters the level or setup stored on the device. */
+const resume = (page: Page) => page.getByRole('button', { name: /^Weiterspielen/ }).click()
+
 const json = <T>(path: string) => JSON.parse(readFileSync(`public/levels/${path}.json`, 'utf8')) as T
 
 for (const rate of RATES) {
@@ -269,6 +273,7 @@ for (const rate of RATES) {
       'rotp-art-gallery': { state: { level: 'agLevel14_17', best: {}, seenHowTo: true }, version: 1 },
     })
     await page.goto('./#/play/art-gallery')
+    await resume(page)
     await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
     // 17 torches at seeded random spots on the floor, at least 0.5 apart; the first one has a straight
     // corridor of 1.5 units to slide along (the floor is narrow: no circle of 0.3 units fits anywhere).
@@ -321,8 +326,7 @@ for (const rate of RATES) {
     // "Dickicht": the longest of the woods walks, with four trees.
     const id = 'thicket'
     const course = makeWoodsCourse(woodsById(id))
-    await page.goto('./#/play/frechet')
-    await page.getByRole('button', { name: "Los geht's!" }).click()
+    await startGame(page, 'frechet')
     await page.getByRole('button', { name: 'Spaziergänge' }).click()
     const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
     await woods.getByRole('button', { name: new RegExp(woodsDe.walks[id]) }).click()
@@ -361,11 +365,13 @@ for (const rate of RATES) {
 
   test(`Rasenmähen: two mowers on the largest lawn, ${rate}×`, async ({ page }) => {
     await seed(page, {
-      'rotp-lawn-mowing': { state: { lawn: 'lawn-mowing/lawn5', cutters: 2, seenHowTo: true }, version: 1 },
+      'rotp-lawn-mowing': {
+        state: { lawn: 'lawn-mowing/lawn5', cutters: 2, seenHowTo: true, played: true, stars: {} },
+        version: 1,
+      },
     })
     await page.goto('./#/play/lawn-mowing')
-    const setup = page.getByRole('dialog', { name: 'Neues Spiel' })
-    await setup.getByRole('button', { name: "Los geht's!" }).click()
+    await resume(page)
     await expect(page.getByTestId('steps-2')).toBeVisible()
     await throttle(page, rate)
     await startMeasure(page)
@@ -399,6 +405,7 @@ for (const rate of RATES) {
       'rotp-roads': { state: { level: 7, round: 0, stars: {}, seenHowTo: { mst: true } }, version: 2 },
     })
     await page.goto('./#/play/roads')
+    await resume(page)
     await expect(page.getByTestId('roads-input')).toBeVisible()
     const paths: Pt[][] = []
     for (const [a, b] of kruskal(map.points).roads) {
@@ -427,12 +434,14 @@ for (const rate of RATES) {
           aiLevel: null,
           castles: 10,
           seenHowTo: true,
+          played: true,
+          wins: {},
         },
         version: 1,
       },
     })
     await page.goto('./#/play/voronoi')
-    await page.getByRole('dialog').getByRole('button', { name: "Los geht's!" }).click()
+    await resume(page)
     const game = page.locator('[data-castles]')
     await expect(game).toHaveAttribute('data-turn', '0')
     // Twelve castles at seeded random spots (the game refuses water and spots too close), then the
