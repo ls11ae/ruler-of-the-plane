@@ -21,8 +21,10 @@ export const woodsDe = {
     ws1: 'Am Tor angebunden',
     ws2: 'Torpfosten',
     ws3: 'Fuchsbau',
+    ws4: 'Schlossrunde',
   } satisfies Record<WoodsId, string>,
   board: (leash: number) => `Wald: zwei Wege zum Schloss zwischen Bäumen, Leine ${metres(leash)}`,
+  round: 'Start und Ziel',
   caught: 'Die Leine hängt am Baum.',
   caughtPost: 'Die Leine hängt am Pfahl.',
   coiledTitle: (n: number) => `Leine ${n}× aufgewickelt!`,
@@ -64,6 +66,8 @@ export const woodsDe = {
     length: (m: number) => `Leine am Start: ${metres(m)}`,
     howTo:
       'Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Tor liegt. Schau dir den Weg des Hundes an!',
+    howToRound:
+      'Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Schloss liegt. Schau dir an, wo der Hund seine Runden dreht!',
     explanation: (k: number) =>
       `Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine ${k === 0 ? 'gerade' : `${Math.abs(k)}× ${k > 0 ? 'im' : 'gegen den'} Uhrzeigersinn um den Pfosten`} am Start.`,
   },

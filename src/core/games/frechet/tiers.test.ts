@@ -36,8 +36,9 @@ describe('harder tiers', () => {
       expect(walk.trunks.length, walk.id).toBeLessThanOrEqual(8)
       expect(walk.trunks.some((t) => t.radius < 0.2)).toBe(true)
     }
-    // Two of the hard walks in the woods start with a free start leash.
-    expect(GENERATED.woods.filter((w) => w.freeStart).map((w) => w.tier)).toEqual(['hard', 'hard'])
+    // Three of the hard walks in the woods start with a free start leash (one of them the castle round).
+    expect(GENERATED.woods.filter((w) => w.freeStart).map((w) => w.tier)).toEqual(['hard', 'hard', 'hard'])
+    expect(GENERATED.woods.filter((w) => w.round).map((w) => w.id)).toEqual(['ws4'])
   })
 
   for (const walk of WALKS.filter((w) => parkIds.includes(w.id))) {
@@ -77,7 +78,7 @@ describe('harder tiers', () => {
         freeSpaceReport(raster, course.leash, course.person, course.dog).deadEnds.length,
       ).toBeGreaterThanOrEqual(3)
       // With a free start, the straight start is clearly not the best.
-      if (walk.freeStart) expect(walk.starts![0]!.target).toBeGreaterThanOrEqual(1.3 * walk.target)
+      if (walk.freeStart) expect(walk.starts![0]!.target).toBeGreaterThanOrEqual(1.15 * walk.target)
     }, 60_000)
   }
 })

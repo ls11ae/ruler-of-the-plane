@@ -19,7 +19,7 @@ import { makeTree, type Tree } from './trees'
  */
 export const EASY_WOODS_IDS = ['lamp', 'bakery', 'fetch', 'eight'] as const
 export const MEDIUM_WOODS_IDS = ['wm1', 'wm2', 'wm3'] as const
-export const HARD_WOODS_IDS = ['ws1', 'ws2', 'ws3'] as const
+export const HARD_WOODS_IDS = ['ws1', 'ws2', 'ws3', 'ws4'] as const
 export const WOODS_IDS = [...EASY_WOODS_IDS, ...MEDIUM_WOODS_IDS, ...HARD_WOODS_IDS] as const
 export type WoodsId = (typeof WOODS_IDS)[number]
 
@@ -72,6 +72,11 @@ export interface WoodsShape {
   freeStart?: { post: number }
   /** Where the bakery stands (drawn instead of the gate). */
   bakery?: Vec2
+  /**
+   * A round from the castle back to the castle: both start beside the castle gate and end there (no
+   * gate is drawn; the castle is start and goal).
+   */
+  round?: boolean
   /** Walking speed of both in metres per second (default `WALK_SPEED`; slower on the hard walks). */
   speed?: number
 }
@@ -204,6 +209,7 @@ const GENERATED_SHAPES: WoodsShape[] = [...MEDIUM_WOODS_IDS, ...HARD_WOODS_IDS].
     slack: walk.slack,
     speed: GENERATED.speed,
     ...(walk.freeStart ? { freeStart: walk.freeStart } : {}),
+    ...(walk.round ? { round: true } : {}),
   }
 })
 

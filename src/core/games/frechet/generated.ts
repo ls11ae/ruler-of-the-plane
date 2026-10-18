@@ -20,6 +20,8 @@ export interface GeneratedWoods extends GeneratedPark {
   trunks: Trunk[]
   /** A free start leash round this trunk at the gate (see `WoodsShape.freeStart`). */
   freeStart?: { post: number }
+  /** A round from the castle back to the castle (see `WoodsShape.round`). */
+  round?: boolean
 }
 
 export interface GeneratedWalks {

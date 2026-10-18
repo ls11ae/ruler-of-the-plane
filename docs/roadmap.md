@@ -279,6 +279,13 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   bar chart of the shortest leash per start); "Mittel" and "Schwer" woods walks regenerated with 3–8
   trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all agreed by Kevin
   2026-10-18, see the decision log, "Winding in the woods")
+- "Gassi gehen" (Kevin, 2026-10-18): one more "Schwer" woods walk where the free start is a real
+  trade-off: several start windings work, with clearly different shortest leashes; the best is not the
+  straight one, the straight one needs at least 15 % more, a third at most 1.5 times the best. — done
+  2026-10-18: "Schlossrunde", a round from the castle about a post beside the castle gate (a walk from
+  the gate to the castle cannot have two good starts; the round is proposed): best 3.45 m with the
+  leash wound twice, straight 4.72 m (+37 %), wound once 3.92 m (+14 %), three times 4.22 m (+22 %)
+  (`scripts/gassi/tradeoff.ts`; see the decision log, "Kevin's review").
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

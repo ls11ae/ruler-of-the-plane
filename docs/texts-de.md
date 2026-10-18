@@ -745,6 +745,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
   - tier = „Mittel“, i = 2, n = 6, name = „Um die Eiche“: Im Wald · Mittel · Um die Eiche · 2 von 6
 - `board(leash)`:
   - leash = 2.7: Wald: zwei Wege zum Schloss zwischen Bäumen, Leine 2,7 m
+- `round`: Start und Ziel
 - `caught`: Die Leine hängt am Baum.
 - `caughtPost`: Die Leine hängt am Pfahl.
 - `coiledTitle(n)`:
@@ -787,6 +788,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `walks.ws1`: Am Tor angebunden
 - `walks.ws2`: Torpfosten
 - `walks.ws3`: Fuchsbau
+- `walks.ws4`: Schlossrunde
 
 ### start
 
@@ -802,6 +804,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `start.length(m)`:
   - m = 2.4: Leine am Start: 2,4 m
 - `start.howTo`: Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Tor liegt. Schau dir den Weg des Hundes an!
+- `start.howToRound`: Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Schloss liegt. Schau dir an, wo der Hund seine Runden dreht!
 - `start.explanation(k)`:
   - k = 3: Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine 3× im Uhrzeigersinn um den Pfosten am Start.
   - k = 0: Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine gerade am Start.

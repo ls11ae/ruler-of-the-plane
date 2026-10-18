@@ -23,20 +23,22 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
   `scripts/gassi/`; merged 2026-10-17). Phase 7 prepared without the laptops (2026-10-17): the offline
   booth package (`booth/`, workflow `booth.yml`, release asset for `phase-*` tags), Start-Stand.cmd and
-  Stop-Stand.cmd, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
-  notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then
-  (2026-10-17, branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht",
-  "Mittel", "Schwer" with the rules, the stars so far and "Weiterspielen"; the tier mapping was
-  agreed by Kevin 2026-10-18), a suggested tier per game in the staff menu, and attract demos of all five games in turn.
-  Winding in the woods of "Gassi gehen" (thin posts the leash coils round, a camera following the
-  walkers, a livelier leash, the free start leash on two "Schwer" walks, regenerated woods tiers,
-  "Kürzere Leine"; 2026-10-18). Kevin agreed to all 19 "proposed" entries of 2026-10-17/18 except the QR
-  poster and card (2026-10-18). Browsers and performance (2026-10-18): the smoke tests run
-  in Chromium, Firefox and WebKit (Firefox and WebKit in CI), a benchmark measures frame times under CPU
-  throttling and the first visit on Slow 3G (`docs/performance.md`), static board art is drawn in layers
-  of its own, "Schwer" is about 2.5 times faster, the parchment is a WebP and the fonts are WOFF2. Open
-  are the items that need the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the
-  checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
+  Stop-Stand.cmd, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy notice and
+  accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then (2026-10-17,
+  branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht", "Mittel", "Schwer"
+  with the rules, the stars so far and "Weiterspielen"), a suggested tier per game in the staff menu, and
+  attract demos of all five games in turn. Winding in the woods of "Gassi gehen" (thin posts the leash
+  coils round, a camera following the walkers, a livelier leash, the free start leash on "Schwer" walks,
+  regenerated woods tiers, "Kürzere Leine"; 2026-10-18). Browsers and performance (2026-10-18): the smoke
+  tests run in Chromium, Firefox and WebKit (Firefox and WebKit in CI), a benchmark measures frame times
+  under CPU throttling and the first visit on Slow 3G (`docs/performance.md`), static board art is drawn
+  in layers of its own, "Schwer" is about 2.5 times faster, the parchment is a WebP and the fonts are
+  WOFF2. Kevin's review (2026-10-18, branch `claude/elegant-volta-r4km2d`): 18 of the 19 "proposed"
+  entries agreed, the QR poster and card rejected and removed (tsp-boards' print material covers this
+  game), tags only mark booth releases (`phase-6` = the laptop test), and a fourth "Schwer" woods walk
+  "Schlossrunde" whose free start is a real trade-off (a round from the castle, since no walk from the
+  gate to the castle can have two good starts; the round is "proposed"). Open are the items that need
+  the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
   the shared code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
   repository root.

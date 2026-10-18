@@ -45,7 +45,8 @@ function Icon({ href, at, width }: { href: string; at: Vec2; width: number }) {
 
 /**
  * The woods around the paths: forest out of the leash's reach, the crowns of the trees whose trunks
- * the leash can catch on, the gate and the castle. Static per walk.
+ * the leash can catch on, the gate and the castle (a round walk starts and ends at the castle, so its
+ * label names both). Static per walk.
  */
 export const WoodsScenery = memo(function WoodsScenery({
   walk,
@@ -90,13 +91,13 @@ export const WoodsScenery = memo(function WoodsScenery({
           />
         )
       })}
-      {walk.bakery ? (
+      {walk.round ? null : walk.bakery ? (
         <Icon href={woodsArt.bakery} at={walk.bakery} width={2.6} />
       ) : (
         <Icon href={art.fence} at={GATE} width={2.2} />
       )}
       <Icon href={art.castle} at={CASTLE} width={3.4} />
-      <MapLabel at={START_LABEL} text={labels.start} />
+      {!walk.round && <MapLabel at={START_LABEL} text={labels.start} />}
       <MapLabel at={GOAL_LABEL} text={labels.goal} />
     </g>
   )

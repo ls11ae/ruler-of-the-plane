@@ -243,7 +243,11 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
             marks={trunkCentres}
             label={w.board(course.leash)}
           >
-            <WoodsScenery walk={walk} leash={course.leash} labels={{ start: t.start, goal: t.goal }} />
+            <WoodsScenery
+              walk={walk}
+              leash={course.leash}
+              labels={{ start: t.start, goal: walk.round ? w.round : t.goal }}
+            />
             <Paths person={course.person} dog={course.dog} s={state.s} t={state.t} />
             <Trunks trees={course.trees} trunks={walk.trunks} touched={touched} />
             {ghost && (
@@ -340,7 +344,10 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
             setOverlay(null)
           }}
         >
-          {[...w.howTo(course.leash, touch), ...(walk.freeStart ? [w.start.howTo] : [])].map((line) => (
+          {[
+            ...w.howTo(course.leash, touch),
+            ...(walk.freeStart ? [walk.round ? w.start.howToRound : w.start.howTo] : []),
+          ].map((line) => (
             <p key={line}>{line}</p>
           ))}
         </HowToOverlay>

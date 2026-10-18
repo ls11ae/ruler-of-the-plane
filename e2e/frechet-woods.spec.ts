@@ -173,6 +173,30 @@ test('the free start leash: wind the leash round the gate post, then see the sho
   await shot(page, testInfo, 'frechet-woods-start-chart')
 })
 
+test('the castle round: a round from the castle, where several ways for the leash to lie work', async ({
+  page,
+}, testInfo) => {
+  const walk = WOODS.find((w) => w.id === 'ws4')!
+  await startGame(page, 'frechet', 'Schwer')
+  await page.getByRole('button', { name: 'Spaziergänge' }).click()
+  const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+  await picker.getByRole('button', { name: 'Schwer', exact: true }).click()
+  const woods = picker.getByRole('region', { name: 'Im Wald' })
+  await woods.scrollIntoViewIfNeeded()
+  await woods.getByRole('button', { name: new RegExp(woodsDe.walks[walk.id]) }).click()
+  const howTo = page.getByRole('dialog', { name: "So geht's" })
+  await expect(howTo.getByText(/wie die Leine um den Pfosten am Schloss liegt/)).toBeVisible()
+  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.getByText(woodsDe.round)).toBeAttached()
+  await expect(page.getByTestId('start-winding').getByTestId('start-value')).toContainText('gerade')
+  await shot(page, testInfo, 'frechet-woods-castle-round')
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  const chart = page.getByRole('complementary', { name: 'Theorie' }).getByTestId('winding-chart')
+  await chart.scrollIntoViewIfNeeded()
+  await expect(chart.getByText('beste')).toBeVisible()
+  await shot(page, testInfo, 'frechet-woods-castle-round-chart')
+})
+
 test('a leash coiled twice round the post outside the bakery', async ({ page, phone }, testInfo) => {
   await openWoods(page, 'Vor dem Bäcker')
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
