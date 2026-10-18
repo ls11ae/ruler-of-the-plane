@@ -280,7 +280,11 @@ conflict with it.
   jsQR), so the bundle has no new library. Alternatives: three links in the logo line (do not fit beside
   the logo on a phone); only on the credits screen (hard to find); a QR library at run time (a new
   runtime dependency for three fixed addresses).
-- **2026-10-17 (proposed) QR poster A2 and card A6.** `npm run booth:print`: parchment background with a
+- **2026-10-17 (rejected by Kevin 2026-10-18) QR poster A2 and card A6.** Not needed: the print material
+  of the tsp-boards project already covers Ruler of the Plane. Removed on 2026-10-18: the poster, the
+  card, the A4 sheet of cards, their part of `scripts/booth/print.ts` (which now prints only the cheat
+  sheet and the checklist), their test and opentype.js. The QR codes of the legal pages in the app stay.
+  As it was: `npm run booth:print`: parchment background with a
   double ink frame, the title in Eagle Lake, the five places with their taglines from the start map and
   the mathematics behind each (Kunstgalerie-Problem, Voronoi-Diagramm, Fréchet-Abstand,
   Rasenmäh-Problem, Spannbäume) and their map icons, "Spiel mit – hier am Stand oder zu Hause auf dem

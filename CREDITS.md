@@ -167,7 +167,5 @@ Runtime libraries and their licences (add them when they are introduced):
 
 Tools for the booth papers and QR codes (`scripts/booth/`, dev dependencies, not bundled into the app):
 [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) (MIT; also writes the QR codes of
-`src/ui/shell/legalQr.ts`), [opentype.js](https://github.com/opentypejs/opentype.js) (MIT; poster texts as
-outlines), [marked](https://github.com/markedjs/marked) (MIT; cheat sheet and checklist), and
-[jsQR](https://github.com/cozmo/jsQR) (Apache-2.0; tests read the QR codes back). The poster and the card
-use the fonts above and the Cartography Pack and Animal Pack pictures of the start map and "Gassi gehen".
+`src/ui/shell/legalQr.ts`), [marked](https://github.com/markedjs/marked) (MIT; cheat sheet and checklist),
+and [jsQR](https://github.com/cozmo/jsQR) (Apache-2.0; tests read the QR codes back).

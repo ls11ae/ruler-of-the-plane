@@ -310,11 +310,12 @@ laptops, Kevin or the tag.
   screen kept awake, display/sleep/hibernate timeouts and the screen saver off and restored by
   `Stop-Stand.cmd`, without admin rights); touchpad gestures, notifications and pausing Windows Update need
   the Settings app and are in the checklist.
-- QR-code poster with the GitHub Pages URL; the Impressum and privacy notice of the Algorithm Engineering
-  Group (`https://ae.cs.tu-dortmund.de/`, Kevin) reachable from the landing page. — done 2026-10-17:
-  poster A2 and card A6 as SVG and PDF (`npm run booth:print`, `docs/booth/`); "Impressum · Datenschutz"
-  on the start map with the Impressum, the privacy notice and the accessibility statement, as addresses
-  with QR codes in kiosk mode (proposed). Open: Kevin's OK, printing.
+- The Impressum and privacy notice of the Algorithm Engineering Group (`https://ae.cs.tu-dortmund.de/`,
+  Kevin) reachable from the landing page. — done 2026-10-17: "Impressum · Datenschutz" on the start map
+  with the Impressum, the privacy notice and the accessibility statement, as addresses with QR codes in
+  kiosk mode (agreed by Kevin 2026-10-18). No QR poster or card of our own: the print material of
+  tsp-boards covers Ruler of the Plane (Kevin, 2026-10-18; the poster A2, the card A6 and the A4 sheet of
+  cards made on 2026-10-17 were removed).
 - Cheat sheet for the booth staff: start, kiosk mode, staff menu, key test, fallback to the old version
   at `kbuchin.github.io/ruler/`. — done 2026-10-17: `docs/booth/spickzettel.md`, one A4 page as
   `Spickzettel.pdf` in `docs/booth/` and in the package.

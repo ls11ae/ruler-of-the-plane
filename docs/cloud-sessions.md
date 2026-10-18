@@ -49,8 +49,8 @@ Session runner (`mbuchin`):
 - After the last pull request of a phase, tag `main` as `phase-<n>` (GitHub → Releases → Draft a new
   release). That tag is the booth's fallback. For a `phase-*` tag the workflow "Booth package" attaches
   the offline package `Stand-phase-<n>.zip` to that release (after testing it on Windows); it also runs
-  by hand (Actions → Booth package → Run workflow) and uploads the package and the print files as
-  artifacts (`booth/README.md`).
+  by hand (Actions → Booth package → Run workflow) and uploads the package and the print files (cheat sheet and laptop
+  checklist) as artifacts (`booth/README.md`).
 - Texts for proofreading: `docs/texts-de.md`, and the artifact `texte-screenshots` of the workflow
   "Texts" (every screen at 1280 × 800).
 

@@ -23,7 +23,7 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   tiers "Mittel" and "Schwer" for "Gassi gehen" (generated walks in the park and in the woods,
   `scripts/gassi/`; merged 2026-10-17). Phase 7 prepared without the laptops (2026-10-17): the offline
   booth package (`booth/`, workflow `booth.yml`, release asset for `phase-*` tags), Start-Stand.cmd and
-  Stop-Stand.cmd, QR poster and card, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
+  Stop-Stand.cmd, cheat sheet and laptop checklist (`docs/booth/`), Impressum, privacy
   notice and accessibility statement on the start map, and `docs/texts-de.md` for proofreading. Then
   (2026-10-17, branch `claude/festive-fermi-agy1ak`): every game opens on a tier screen ("Leicht",
   "Mittel", "Schwer" with the rules, the stars so far and "Weiterspielen"; the tier mapping was
@@ -187,7 +187,7 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   `scripts/booth/` builds and tests the booth package and the print files, `scripts/texts/` writes
   `docs/texts-de.md` (run `npm run texts` after changing a German text; a test checks it).
 - `booth/` the Windows side of the offline booth package (server, start and stop scripts, `LIESMICH.txt`);
-  `docs/booth/` the booth papers (cheat sheet, laptop checklist, posters), German.
+  `docs/booth/` the booth papers (cheat sheet, laptop checklist), German.
 - `public/levels/` generated level JSON, committed.
 - `assets/` source art and fonts with their licence files; import what you use from code, Vite then
   bundles only the imported files. `assets/kenney/<pack>/` holds the subsets listed in `CREDITS.md`.

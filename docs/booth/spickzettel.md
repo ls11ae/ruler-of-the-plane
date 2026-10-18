@@ -45,7 +45,7 @@ erkennt, an diesem Laptop nur allein spielen lassen.
 
 - **Alte Version** (Unity, braucht Internet): `kbuchin.github.io/ruler` in einem normalen Browserfenster.
 - **Online-Version** für die Handys der Besucher: `ls11ae.github.io/ruler-of-the-plane` (QR-Code auf dem
-  Plakat und den Karten).
+  Druckmaterial von tsp-boards).
 
 ## Wo liegt was
 

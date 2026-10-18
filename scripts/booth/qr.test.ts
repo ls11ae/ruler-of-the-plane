@@ -34,12 +34,6 @@ function fromPath(path: string, size: number): boolean[][] {
 }
 
 describe('QR codes', () => {
-  it('the poster address reads back', () => {
-    expect(decode(qrMatrix('https://ls11ae.github.io/ruler-of-the-plane/'))).toBe(
-      'https://ls11ae.github.io/ruler-of-the-plane/',
-    )
-  })
-
   it('the legal pages in the app read back to their addresses', () => {
     for (const { url } of LEGAL_PAGES) {
       const qr = LEGAL_QR[url]!
