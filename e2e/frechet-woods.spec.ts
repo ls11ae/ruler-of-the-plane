@@ -2,7 +2,7 @@ import { expect, test, type Page, type TestInfo } from '@playwright/test'
 import { woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
 import type { WoodsId } from '../src/core/games/frechet/woods/shapes'
-import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
+import { expectHeaderLaidOut, freshDevice, shot, startGame } from './helpers'
 
 freshDevice()
 
@@ -58,8 +58,7 @@ async function walkThroughTheWoods(
 }
 
 async function openWoods(page: Page, name: string, testInfo?: TestInfo) {
-  await page.goto('./#/play/frechet')
-  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'frechet')
   await page.getByRole('button', { name: 'Spaziergänge' }).click()
   const woods = page.getByRole('dialog', { name: 'Spaziergänge' }).getByRole('region', { name: 'Im Wald' })
   await woods.scrollIntoViewIfNeeded()

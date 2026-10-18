@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { freshDevice, shot } from './helpers'
+import { chooseTier, freshDevice, shot } from './helpers'
 
 freshDevice()
 
@@ -45,13 +45,13 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
   isMobile,
 }, testInfo) => {
   await page.goto('./#/play/art-gallery')
-  const howTo = page.getByRole('dialog', { name: "So geht's" })
-  await expect(howTo).toBeVisible()
-  await shot(page, testInfo, 'art-gallery-howto')
-  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  // The tier screen shows the rules; "Leicht" starts the first dungeon.
+  await expect(page.getByTestId('tier-screen')).toContainText('Stell Fackeln ins Verlies')
+  await shot(page, testInfo, 'art-gallery-tiers')
+  await chooseTier(page, 'Leicht')
   await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
-  // The subtitle names the goal (phones hide the subtitle).
-  if (!isMobile) await expect(page.getByText('Verlies 1 von 9 · Ziel: 2 Fackeln')).toBeVisible()
+  // The subtitle names the tier and the goal (phones hide the subtitle).
+  if (!isMobile) await expect(page.getByText('Leicht 1 von 4 · Ziel: 2 Fackeln')).toBeVisible()
 
   const place = async (x: number, y: number) => {
     const p = await toScreen(page, x, y)

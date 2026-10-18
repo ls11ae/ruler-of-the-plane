@@ -6,7 +6,7 @@
  *
  *   npm run texts
  *
- * Sources: src/ui/i18n/de.ts and every src/ui/games/**\/i18n.de.ts. A test checks that the file is
+ * Sources: src/ui/i18n/de.ts and every src/ui/games/**\/i18n.de.ts (and i18n.<part>.de.ts). A test checks that the file is
  * up to date, so a changed text shows up in the next pull request.
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -58,6 +58,9 @@ const SAMPLES: Record<string, Sample> = {
   'lawn:string': 'Vorgarten',
   cells: 412,
   steps: 9,
+  got: 5,
+  max: 18,
+  computer: 'Mittel',
   seed: 4711,
   hints: 1,
   roads: 6,
@@ -97,9 +100,10 @@ const OVERRIDES: Record<string, Record<string, Record<string, Sample>>> = {
     'theory.boundOrthogonal': { n: 18, quarter: 4, third: 6 },
     'theory.yours': { n: 4 },
   },
-  voronoi: { '*': { name: 'Blau' } },
+  voronoi: { '*': { name: 'Blau' }, resume: { who: 'Mittel' } },
   frechet: { '*': { name: 'Die Allee' } },
   'frechet/woods': { '*': { name: 'Um die Eiche' } },
+  'frechet/tiers': { '*': { name: 'Die Allee' } },
   'lawn-mowing': {
     '*': { n: 48, longest: 52, k: 2, bound: 40 },
     lawnCard: { n: 3 },
@@ -112,7 +116,7 @@ const OVERRIDES: Record<string, Record<string, Record<string, Sample>>> = {
 }
 
 /** Titles of dictionaries in sub-folders of a game. */
-const SUBTITLES: Record<string, string> = { 'frechet/woods': 'Im Wald' }
+const SUBTITLES: Record<string, string> = { 'frechet/woods': 'Im Wald', 'frechet/tiers': 'Startbild' }
 
 interface Param {
   name: string
@@ -259,10 +263,14 @@ function entries(
 
 function dictionaryFiles(): { source: string; file: string }[] {
   const games = join(root, 'src', 'ui', 'games')
+  // `i18n.de.ts`, and dictionaries of a part of a game kept apart (`i18n.<part>.de.ts`).
   const found = readdirSync(games, { recursive: true, withFileTypes: true })
-    .filter((e) => e.isFile() && e.name === 'i18n.de.ts')
+    .filter((e) => e.isFile() && /^i18n(\.[\w-]+)?\.de\.ts$/.test(e.name))
     .map((e) => join(e.parentPath, e.name))
-  const source = (file: string) => relative(games, join(file, '..')).split('\\').join('/')
+  const source = (file: string) => {
+    const part = /^i18n\.([\w-]+)\.de\.ts$/.exec(file.split(/[\\/]/).at(-1)!)?.[1]
+    return [relative(games, join(file, '..')).split('\\').join('/'), part].filter(Boolean).join('/')
+  }
   const rank = (s: string) => {
     const i = GAME_ORDER.indexOf(s.split('/')[0]!)
     return i < 0 ? GAME_ORDER.length : i

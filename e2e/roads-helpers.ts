@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import { startGame } from './helpers'
 
 /** Helpers of the "Straßenbau" tests: points on the board and drags. */
 
@@ -53,10 +54,9 @@ export async function drag(page: Page, from: Pt, to: Pt, touch: boolean) {
   await input.dispatchEvent('pointerup', ev(q.x, q.y, 0))
 }
 
-/** Opens a map of a set through the picker (after the first map's "So geht's"). */
+/** Opens a map of a set through the picker (after starting "Leicht" on the tier screen). */
 export async function openMap(page: Page, set: string, map: number) {
-  await page.goto('./#/play/roads')
-  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  await startGame(page, 'roads', 'Leicht')
   await page.getByRole('button', { name: 'Karten' }).click()
   const picker = page.getByRole('dialog', { name: 'Karten' })
   await picker

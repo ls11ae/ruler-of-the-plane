@@ -9,6 +9,8 @@ import { navigate, useRoute } from './shell/router'
 import { useSettings } from './shell/settings'
 import { StaffMenu } from './shell/StaffMenu'
 import { StartMap } from './shell/StartMap'
+// Loaded with the shell (not only with a game), so the kiosk start and timeout always forget the tiers.
+import './shell/tiers'
 import { TspFrame } from './shell/TspFrame'
 import { useUi } from './shell/ui'
 import { canReloadNow, useUpdate } from './shell/update'

@@ -1,3 +1,5 @@
+import type { Tier } from '../../tiers'
+
 /** The booth lawns in the order of the game (ids below `public/levels/`). */
 export const LAWNS = [
   'lawn-mowing/lawn1',
@@ -7,6 +9,18 @@ export const LAWNS = [
   'lawn-mowing/lawn5',
 ] as const
 export type LawnId = (typeof LAWNS)[number]
+
+/**
+ * The tiers, for one mower and for two (chosen beside them): "Leicht" and "Mittel" by the size of the
+ * lawn (304, then 345 and 426 cells), "Schwer" the two lawns where the best simple strategy is clearly
+ * worse than the best tour both alone and with two mowers (at least 13.5 % above it; see
+ * `levels/lawn-mowing/README.md`).
+ */
+export const TIER_LAWNS: Record<Tier, readonly LawnId[]> = {
+  easy: ['lawn-mowing/lawn1'],
+  medium: ['lawn-mowing/lawn2', 'lawn-mowing/lawn4'],
+  hard: ['lawn-mowing/lawn3', 'lawn-mowing/lawn5'],
+}
 
 /** The competition instance shown in the theory view. */
 export const COMPETITION = 'lawn-mowing/smr_882k_481_3s3'

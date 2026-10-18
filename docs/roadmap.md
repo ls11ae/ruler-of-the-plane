@@ -246,6 +246,14 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   decision log, Phase 6)
 - "Rasenmähen" (Kevin's playtest): a step back per mower (a key per mower on the laptop, the middle of
   the direction pad on phones). — done 2026-10-17
+- Difficulty at game start (Kevin's playtest: he did not find the harder sets of "Straßenbau"): every
+  game opens on a tier screen with the rules and "Leicht", "Mittel", "Schwer" (a teaser and the stars so
+  far each, "Weiterspielen" when there is progress), one click from the start map to playing; the last
+  tier per game remembered on the device (cleared by the kiosk reset), a suggested tier per game in the
+  staff menu, "Weiter mit „Mittel“" after a tier's last level, the pickers in the same three sections.
+  — done 2026-10-17 (the tier mapping proposed, see the decision log, Phase 6)
+- Attract demos for all five games, shown in turn (about 20–30 s each, with the game's name and "Komm
+  spielen!"), only precomputed solutions; the soak test checks all five. — done 2026-10-17
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.
@@ -254,8 +262,11 @@ faster than real time, the computer's moves in real time): 4,925 moves of the at
 who opened every place in turn (the five games, the credits, "Rundreise" with a real tsp-boards build) and
 walked away, the attract screen back 90 s later each time, no page error, and memory flat after the first
 round of visits (JavaScript heap 7.0–7.2 MB from minute 60 on, about 1,600 DOM nodes). CI runs the same
-test for 15 simulated minutes. Open: the playtest and the measurements on the booth laptops; a real
-2-hour run on a booth laptop in Phase 7 (sleep, updates and the browser itself are not simulated).
+test for 15 simulated minutes. Again with the tier screens and the five demos in turn (2026-10-17): 120
+simulated minutes, 4,307 changes of the demos, all five shown, 17 visitors (each picking a tier), no
+page error; JavaScript heap 7.3–7.9 MB from minute 30 on, 670–1,750 DOM nodes. Open: the playtest and
+the measurements on the booth laptops; a real 2-hour run on a booth laptop in Phase 7 (sleep, updates
+and the browser itself are not simulated).
 
 ## Phase 7: freeze and booth preparation (4–6 Nov)
 

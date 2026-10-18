@@ -18,45 +18,57 @@ export type Opponent = 'computer' | 'friends'
 export interface Setup {
   map: MapId
   opponent: Opponent
-  /** Strength of the computer; null: the staff's difficulty setting. */
+  /** Strength of the computer (the tier); null: the tier the tier screen suggests. */
   aiLevel: AiLevel | null
   castles: CastleCount
 }
 
 interface VoronoiPrefs extends Setup {
   seenHowTo: boolean
+  /** Whether a game was started here (the tier screen then offers "Weiterspielen"). */
+  played: boolean
+  /** Maps won against the computer, keyed `<map>/<strength>` (a star each on the tier screen). */
+  wins: Partial<Record<string, true>>
   setSetup(setup: Setup): void
   setSeenHowTo(): void
+  recordWin(map: MapId, level: AiLevel): void
   reset(): void
 }
 
-const initial: Setup & { seenHowTo: boolean } = {
+const initial: Setup & Pick<VoronoiPrefs, 'seenHowTo' | 'played' | 'wins'> = {
   map: MAPS[0],
   opponent: 'computer',
   aiLevel: null,
   castles: 10,
   seenHowTo: false,
+  played: false,
+  wins: {},
 }
 
-/** The last game's setup on this device and whether "So geht's" was shown. */
+export const winKey = (map: MapId, level: AiLevel) => `${map}/${level}`
+
+/** The last game's setup on this device, the maps won per strength, whether "So geht's" was shown. */
 export const usePrefs = create<VoronoiPrefs>()(
   persist(
     (set) => ({
       ...initial,
-      setSetup: (setup) => set(setup),
+      setSetup: (setup) => set({ ...setup, played: true }),
       setSeenHowTo: () => set({ seenHowTo: true }),
+      recordWin: (map, level) => set((s) => ({ wins: { ...s.wins, [winKey(map, level)]: true } })),
       reset: () => set(initial),
     }),
     {
       name: 'rotp-voronoi',
       version: 1,
       storage: persistStorage,
-      partialize: ({ map, opponent, aiLevel, castles, seenHowTo }) => ({
+      partialize: ({ map, opponent, aiLevel, castles, seenHowTo, played, wins }) => ({
         map,
         opponent,
         aiLevel,
         castles,
         seenHowTo,
+        played,
+        wins,
       }),
     },
   ),

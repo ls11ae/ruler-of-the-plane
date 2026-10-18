@@ -7,9 +7,10 @@ const bonusWords = (cities: number, mines: number) =>
 
 export const en: VoronoiTexts = {
   title: 'Conquer the Land',
-  subtitle: (computer: boolean, castle: number, total: number) =>
-    `${computer ? 'You against the computer' : 'Two players'} · castle ${castle} of ${total}`,
-  subtitleOver: (computer: boolean) => `${computer ? 'You against the computer' : 'Two players'} · game over`,
+  subtitle: (computer: string | null, castle: number, total: number) =>
+    `${computer ? `You against the computer (${computer})` : 'Two players'} · castle ${castle} of ${total}`,
+  subtitleOver: (computer: string | null) =>
+    `${computer ? `You against the computer (${computer})` : 'Two players'} · game over`,
   maps: {
     'map1-island': 'Island',
     'map2-river-valley': 'River Valley',
@@ -53,8 +54,8 @@ export const en: VoronoiTexts = {
     computer: 'Computer',
     friends: 'Two players',
     strength: 'Strength',
-    levels: { easy: 'Easy', normal: 'Medium', hard: 'Hard' },
     castles: 'Castles per player',
+    won: 'won',
     start: "Let's go!",
   },
   newGame: 'New',
@@ -65,6 +66,18 @@ export const en: VoronoiTexts = {
     'Whoever has more points at the end wins!',
   ],
   howToAnimation: 'Two castles share the land; a new castle takes a piece',
+  tierRules: [
+    'Take turns building castles. Each castle gets the land that is closer to it than to any other castle.',
+    'Castles stand only on land and apart from each other. Towns bring 5 points, the gold mine 10.',
+    'Whoever has more points at the end wins: every map on which you beat the computer brings a star.',
+  ],
+  tierTeasers: {
+    easy: 'The computer builds well, but not always in the best spot.',
+    medium: 'The computer always takes the spot that gains it the most.',
+    hard: 'The computer thinks one move ahead: it works out your best answer too.',
+  },
+  friends: 'Two players',
+  resume: (map: string, who: string) => `${map}, ${who}`,
   result: {
     won: 'You win!',
     lost: 'The computer wins',

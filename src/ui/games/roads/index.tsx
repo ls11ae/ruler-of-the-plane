@@ -22,6 +22,7 @@ import {
   randomMap,
   randomSize,
   setOf,
+  tierOfIndex,
   type RoadsLevelId,
   type RoadsMap,
   type RoadsSet,
@@ -56,10 +57,12 @@ import { Board } from '../../components/Board'
 import { Button } from '../../components/Button'
 import { GameHeader } from '../../components/GameHeader'
 import { HowToOverlay } from '../../components/HowToOverlay'
+import { NextLabel } from '../../components/nextLabel'
 import { ResultScreen } from '../../components/ResultScreen'
 import { useLocalized, useT } from '../../i18n'
 import { useAnimationFrame } from '../../input/hooks'
 import { useLevel } from '../../levels'
+import { useTierMemory } from '../../shell/tiers'
 import { HowToAnimation } from './HowToAnimation'
 import { de, type RoadsTexts } from './i18n.de'
 import { en } from './i18n.en'
@@ -71,6 +74,7 @@ import { Scenery } from './Scenery'
 import { SteinerAnimation, SteinerHowTo, SteinerTheory } from './Steiner'
 import styles from './Roads.module.css'
 import { useProgress } from './store'
+import { RoadsTiers } from './Tiers'
 import { useMedia } from './useMedia'
 
 /** Pause between the optimal network and the result screen, to see it. */
@@ -668,18 +672,37 @@ function RandomMap({ t, onPicker }: { t: RoadsTexts; onPicker: () => void }) {
   )
 }
 
+/** The label of "Nächstes Level" on a set's last map: the next set is the next tier. */
+function nextLabel(level: number, t: RoadsTexts, shell: ReturnType<typeof useT>): string | null {
+  if (level >= LEVEL_IDS.length) return null
+  const { index, count } = setOf(level)
+  if (index < count - 1) return null
+  return level + 1 < LEVEL_IDS.length
+    ? shell.tiers.next(shell.tiers.names[tierOfIndex(level + 1)])
+    : shell.tiers.next(t.picker.random)
+}
+
 /**
  * "Straßenbau": connect all places with the shortest road network: from place to place (minimum
- * spanning tree), with junctions (Steiner tree), and castles to villages without crossings.
+ * spanning tree), with junctions (Steiner tree), and castles to villages without crossings. Opens on
+ * the tier screen; the three sets are the tiers "Leicht", "Mittel", "Schwer".
  */
 export default function RoadsGame() {
   const t = useLocalized({ de, en })
+  const shell = useT()
   const level = useProgress((s) => s.level)
   const setLevel = useProgress((s) => s.setLevel)
+  const setLast = useTierMemory((s) => s.setLast)
+  const [entered, setEntered] = useState(false)
   const [picker, setPicker] = useState(false)
   const openPicker = () => setPicker(true)
+  // The tier being played is the one the tier screen marks next time.
+  useEffect(() => {
+    if (entered) setLast('roads', tierOfIndex(level))
+  }, [entered, level, setLast])
+  if (!entered) return <RoadsTiers t={t} onStart={() => setEntered(true)} />
   return (
-    <>
+    <NextLabel.Provider value={nextLabel(level, t, shell)}>
       {level < LEVEL_IDS.length ? (
         <FixedMap index={level} t={t} onPicker={openPicker} />
       ) : (
@@ -695,6 +718,6 @@ export default function RoadsGame() {
           }}
         />
       )}
-    </>
+    </NextLabel.Provider>
   )
 }
