@@ -92,6 +92,19 @@ export const de = {
     hideFull: 'Lizenztexte ausblenden',
     fullFailed: 'Die Lizenztexte konnten nicht geladen werden.',
   },
+  legal: {
+    open: 'Impressum · Datenschutz',
+    title: 'Impressum und Datenschutz',
+    intro:
+      'Diese Spiele kommen vom Lehrstuhl 11, Algorithm Engineering, der Informatik der TU Dortmund. Sie laufen ganz in deinem Browser und senden nichts: Bestenlisten und Einstellungen bleiben auf diesem Gerät.',
+    pages: {
+      imprint: 'Impressum',
+      privacy: 'Datenschutzerklärung',
+      accessibility: 'Erklärung zur Barrierefreiheit',
+    },
+    scan: 'Scanne den Code mit dem Handy, um die Seite zu öffnen.',
+    qr: (address: string) => `QR-Code für ${address}`,
+  },
   demo: {
     title: 'Werkstatt',
     subtitle: 'Die gemeinsamen Bausteine der Spiele',
