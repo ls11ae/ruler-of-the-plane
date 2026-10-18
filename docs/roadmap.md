@@ -4,8 +4,10 @@ Source of truth for open work (see `CLAUDE.md`, "Working mode"). Work through th
 decisions in the decision log of `docs/design-notes.md`, and mark items done here ("— done <date>").
 
 Deadline: the booth at the TU Dortmund open house on **Saturday 7 November 2026**, run on laptops with
-mouse and keyboard. Phases 0–7 are the booth edition; Phase 8 is the backlog for afterwards. Every phase
-ends with a tag `phase-<n>` on `main`, so the booth can always fall back to the last working state.
+mouse and keyboard. Phases 0–7 are the booth edition; Phase 8 is the backlog for afterwards. Tags mark only
+booth releases (`phase-6` the laptop test, `phase-7` the feature freeze, `phase-7.1`, `phase-7.2` … later
+fixes; Kevin or Maike create them, see `docs/cloud-sessions.md`), so the booth can always fall back to
+the last release.
 
 After Phase 1, two tracks run in parallel, each in its own cloud session and branch:
 

@@ -14,7 +14,8 @@ builds the package and uploads it as the artifact `Stand-<version>`, and the che
 checklist as PDFs as the artifact `Druckvorlagen` (no posters or cards: the print material of tsp-boards
 covers Ruler of the Plane, Kevin 2026-10-18); for a tag `phase-*` it also
 attaches `Stand-<tag>.zip` to the release of that tag (GitHub → Releases), which is where the booth gets
-it. It also runs for pushes that change this folder, `scripts/booth/` or the workflow. Cloud sessions
+it. Tags mark only booth releases (`phase-6` the laptop test, `phase-7` the feature freeze, `phase-7.1`,
+`phase-7.2` … later fixes); Kevin or Maike create them on the Releases page, which starts the workflow. It also runs for pushes that change this folder, `scripts/booth/` or the workflow. Cloud sessions
 cannot reach `*.github.io`, so everything that needs the deployed tsp-boards happens there.
 
 ```

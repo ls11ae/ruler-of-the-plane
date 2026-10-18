@@ -51,8 +51,11 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   finished roadmap item. When the phase is done, or the session has to stop, end with a short report: a
   pull request title, a description listing what was done, any "proposed" decisions and any change to
   shared code, and what is left. The person running the session creates the pull request and merges it
-  when CI is green, checks the deployed site, and tags `main` as `phase-<n>` after the last merge of a
-  phase. A later session continues from `main`.
+  when CI is green and checks the deployed site. A later session continues from `main`.
+- **Tags only mark booth releases**: `phase-6` = the laptop test (created 2026-10-18 on `8a15816`),
+  `phase-7` = the feature freeze, `phase-7.1`, `phase-7.2` … = later fixes. Kevin or Maike create them on
+  the Releases page; a tag created there starts the workflow "Booth package", which attaches
+  `Stand-<tag>.zip` to the release. Sessions never create or ask for tags.
 - Cloud environment: Ubuntu, **Node 22** on the PATH (hence `.nvmrc` = 22; the stack needs ≥ 22.13),
   npm, git, Python with pip. Network access "Trusted": the npm registry, PyPI and GitHub work, most other
   sites (kenney.nl, CDNs, `*.github.io`) do not. That is why all art and fonts are already in `assets/`;
