@@ -15,12 +15,12 @@ export const woodsEn: WoodsTexts = {
     bakery: 'Outside the bakery',
     fetch: 'Behind the tree',
     eight: 'Figure of eight',
-    wm1: 'Mushroom hunt',
-    wm2: 'Acorns',
-    wm3: 'Fox den',
-    ws1: 'The old lime tree',
-    ws2: 'Woodpecker tree',
-    ws3: 'Dodging hare',
+    wm1: 'Lamp lane',
+    wm2: 'Stick by the post',
+    wm3: 'Woodland loop',
+    ws1: 'Tied at the gate',
+    ws2: 'The gate post',
+    ws3: 'Fox den',
   },
   board: (leash: number) => `Woods: two paths to the castle between trees, leash ${metres(leash)}`,
   caught: 'The leash is caught on a tree.',
@@ -48,6 +48,27 @@ export const woodsEn: WoodsTexts = {
     `The shortest leash that works is called the homotopic Fréchet distance: here ${metres(shortest)}, you needed ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagram of the positions in the woods, with your walk and the computer’s walk',
+  start: {
+    label: 'How does the leash lie at the start?',
+    clockwise: 'One more turn clockwise round the post',
+    anticlockwise: 'One more turn anticlockwise round the post',
+    value: (k: number) =>
+      k === 0 ? 'straight' : `${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'} round the post`,
+    short: (k: number) => (k === 0 ? 'straight' : `${Math.abs(k)}× ${k > 0 ? 'clockwise' : 'anticlockwise'}`),
+    length: (m: string) => `Leash at the start: ${m}`,
+    howTo:
+      'Here you choose before the first step how the leash lies round the post at the gate. Look at the dog’s path!',
+    explanation: (k: string) =>
+      `You could choose how the leash lies at the start. The homotopic Fréchet distance is the shortest leash over all the ways it can lie – here with the leash ${k} at the start.`,
+  },
+  chart: {
+    title: 'Shortest leash for each start',
+    best: 'best',
+    yours: 'yours',
+    leash: (m: string) => `the walk’s leash: ${m}`,
+    summary: (list: string, best: string) => `Shortest leash for each start: ${list}. Best: ${best}.`,
+    text: 'For each way the leash can lie at the start, the computer searched for the shortest leash. The homotopic Fréchet distance is the shortest of them all.',
+  },
   theory: {
     intro:
       'Every point is a position: to the right the person walks, upwards the dog. It is light where the leash is long enough – measured as a rope around the trees.',

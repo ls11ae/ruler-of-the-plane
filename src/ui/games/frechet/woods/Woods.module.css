@@ -34,3 +34,70 @@
 .section p {
   margin: 0;
 }
+
+/* The free start leash: a panel at the top of the park while person and dog stand at the gate. */
+.startPanel {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 24px);
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 2.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  font-size: 1.05rem;
+}
+
+.startPanel strong {
+  font-weight: normal;
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+}
+
+.startRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.startValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 11em;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.startValue small {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+/* The chart "shortest leash for each start winding" in the theory panel. */
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2px 0 6px;
+}
+
+.chartLegend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.dashSwatch {
+  display: inline-block;
+  width: 26px;
+  border-top: 2px dashed var(--warn);
+}

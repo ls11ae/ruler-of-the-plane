@@ -1,7 +1,8 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
-import { woodsById } from '../src/core/games/frechet/woods/levels'
+import { WOODS, woodsById } from '../src/core/games/frechet/woods/levels'
 import { makeWoodsCourse, ropeAt, woodsAdvice, woodsStart } from '../src/core/games/frechet/woods/rules'
 import type { WoodsId } from '../src/core/games/frechet/woods/shapes'
+import { woodsDe } from '../src/ui/games/frechet/woods/i18n.de'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 
 freshDevice()
@@ -131,4 +132,52 @@ test('behind the beech: the leash catches on the trunk when the dog runs ahead',
   await theory.getByRole('button', { name: 'Ohne Bäume' }).click()
   await expect(theory.getByRole('button', { name: 'Ohne Bäume' })).toHaveAttribute('aria-pressed', 'true')
   await shot(page, testInfo, 'frechet-woods-without-trees')
+})
+
+test('the free start leash: wind the leash round the gate post, then see the shortest leash for each start', async ({
+  page,
+  isMobile,
+}, testInfo) => {
+  const walk = WOODS.find((w) => w.freeStart)!
+  const best = walk.bestStart!
+  await page.goto('./#/play/frechet')
+  await page.getByRole('button', { name: "Los geht's!" }).click()
+  await page.getByRole('button', { name: 'Spaziergänge' }).click()
+  const picker = page.getByRole('dialog', { name: 'Spaziergänge' })
+  await picker.getByRole('button', { name: 'Schwer', exact: true }).click()
+  const woods = picker.getByRole('region', { name: 'Im Wald' })
+  await woods.scrollIntoViewIfNeeded()
+  await woods.getByRole('button', { name: new RegExp(woodsDe.walks[walk.id]) }).click()
+  const howTo = page.getByRole('dialog', { name: "So geht's" })
+  await expect(howTo.getByText(/wie die Leine um den Pfosten am Tor liegt/)).toBeVisible()
+  await howTo.getByRole('button', { name: "Los geht's!" }).click()
+  // The leash starts straight; one click per turn round the gate post, the way the best start lies.
+  const panel = page.getByTestId('start-winding')
+  await expect(panel.getByTestId('start-value')).toContainText('gerade')
+  const button = panel.getByRole('button', {
+    name: best > 0 ? woodsDe.start.clockwise : woodsDe.start.anticlockwise,
+  })
+  for (let k = 0; k < Math.abs(best); k++) await button.click()
+  await expect(panel.getByTestId('start-value')).toContainText(woodsDe.start.value(best))
+  await expect(page.locator('[data-testid=coil-badge]')).toHaveAttribute('data-turns', String(best))
+  await shot(page, testInfo, 'frechet-woods-free-start')
+  // The theory panel shows the shortest leash for each start, the best one marked.
+  await page.locator('header').getByRole('button', { name: 'Theorie' }).click()
+  const theory = page.getByRole('complementary', { name: 'Theorie' })
+  const chart = theory.getByTestId('winding-chart')
+  await chart.scrollIntoViewIfNeeded()
+  await expect(chart).toBeVisible()
+  await expect(chart.getByText('beste')).toBeVisible()
+  await expect(chart.getByText('deine')).toBeVisible()
+  if (!isMobile) await expectHeaderLaidOut(page)
+  await shot(page, testInfo, 'frechet-woods-start-chart')
+})
+
+test('a leash coiled twice round the post outside the bakery', async ({ page, isMobile }, testInfo) => {
+  await openWoods(page, 'Vor dem Bäcker')
+  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  await expect(page.locator('[data-testid=coil-badge]')).toHaveAttribute('data-turns', /^-?2$/)
+  await expect(page.getByTestId('taut-hint')).toContainText('erst abwickeln')
+  await expect(page.getByTestId('overview')).toBeVisible()
+  await shot(page, testInfo, isMobile ? 'frechet-woods-coiled-phone' : 'frechet-woods-coiled')
 })

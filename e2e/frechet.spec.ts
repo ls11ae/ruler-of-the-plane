@@ -89,6 +89,20 @@ test('walks the dog to the castle: keys on a laptop, hold buttons on a phone', a
   await shot(page, testInfo, 'frechet-theory')
 })
 
+test('Kürzere Leine: after a walk, the same walk with a shorter leash', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'one project is enough for this check')
+  test.setTimeout(120_000)
+  await page.goto('./#/play/frechet')
+  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  await walkToTheCastle(page, false, () => false)
+  const result = page.getByRole('dialog', { name: 'Geschafft!' })
+  await expect(result.getByText('Geschafft mit 3,6 m – traust du dich mit 3,3 m?')).toBeVisible({
+    timeout: 10_000,
+  })
+  await result.getByTestId('shorter-leash').click()
+  await expect(page.getByTestId('leash')).toContainText('von 3,3 m Leine')
+})
+
 test('Schätz die Leine: the computer tries a leash, then the answer', async ({ page }, testInfo) => {
   await page.goto('./#/play/frechet')
   await page.getByRole('button', { name: "Los geht's!" }).click()

@@ -32,6 +32,7 @@ import type { FrechetTexts } from './i18n.de'
 import { strainOf, towards } from './leashShape'
 import { LiveLeash } from './LiveLeash'
 import { Paths, ParkScenery, Walkers } from './ParkArt'
+import { ShorterLeash } from './ShorterLeash'
 import { useProgress } from './store'
 import { TheoryPanel } from './Theory'
 import { useMedia } from './useMedia'
@@ -78,7 +79,12 @@ export function WalkScreen({
 }: WalkScreenProps) {
   const shell = useT()
   const progress = useProgress()
-  const course = useMemo(() => makeCourse(level), [level])
+  // "Kürzere Leine": the same walk again with a shorter leash.
+  const [challenge, setChallenge] = useState<number | null>(null)
+  const course = useMemo(
+    () => makeCourse(challenge === null ? level : { ...level, leash: challenge }),
+    [level, challenge],
+  )
   const [state, setState] = useState<WalkState>(() => startState(course))
   const stateRef = useRef(state)
   const [buttons, setButtons] = useState<Record<Walker, boolean>>({ person: false, dog: false })
@@ -130,6 +136,11 @@ export function WalkScreen({
     stateRef.current = fresh
     setState(fresh)
     setOverlay(null)
+  }
+
+  const tryShorter = (leash: number) => {
+    setChallenge(leash)
+    restart()
   }
 
   const leash = leashAt(course, state.s, state.t)
@@ -329,7 +340,14 @@ export function WalkScreen({
         <ResultScreen
           outcome="won"
           stars={stars}
-          stats={t.stats(state.longest, course.shortest)}
+          stats={
+            <>
+              {t.stats(state.longest, course.shortest)}
+              {index !== null && (
+                <ShorterLeash leash={course.leash} shortest={course.shortest} onTry={tryShorter} t={t} />
+              )}
+            </>
+          }
           explanation={t.explanation(course.shortest, state.longest).join(' ')}
           animation={<ExplanationDiagram course={course} player={state.trace} t={t} />}
           onTheory={() => {

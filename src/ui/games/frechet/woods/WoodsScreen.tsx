@@ -34,6 +34,8 @@ import { Paths, Walkers } from '../ParkArt'
 import { useMedia } from '../useMedia'
 import type { WoodsTexts } from './i18n.de'
 import { useWoodsProgress } from './store'
+import { ShorterLeash } from '../ShorterLeash'
+import { StartWinding } from './StartWinding'
 import { RopeLeash, Trunks, WoodsScenery } from './WoodsArt'
 import { WoodsExplanation } from './WoodsExplanation'
 import { WoodsHowToAnimation } from './WoodsHowTo'
@@ -63,7 +65,8 @@ interface WoodsScreenProps {
 export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker, onNext }: WoodsScreenProps) {
   const shell = useT()
   const progress = useWoodsProgress()
-  const course = useMemo(() => makeWoodsCourse(walk), [walk])
+  // On a walk with a free start leash, the course depends on how the leash is wound at the gate.
+  const [course, setCourse] = useState(() => makeWoodsCourse(walk))
   const [state, setState] = useState<WoodsState>(() => woodsStart(course))
   const stateRef = useRef(state)
   const [buttons, setButtons] = useState<Record<Walker, boolean>>({ person: false, dog: false })
@@ -117,6 +120,29 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
     setOverlay(null)
   }
 
+  // "Kürzere Leine": the same walk again with a shorter leash.
+  const [challenge, setChallenge] = useState<number | null>(null)
+  const withLeash = (leash: number | null) => (leash === null ? walk : { ...walk, leash })
+
+  const tryShorter = (leash: number) => {
+    setChallenge(leash)
+    const next = makeWoodsCourse(withLeash(leash), course.winding)
+    const fresh = woodsStart(next)
+    setCourse(next)
+    stateRef.current = fresh
+    setState(fresh)
+    setOverlay(null)
+  }
+
+  /** Free start: wind the leash round the gate post (only before the first step). */
+  const chooseStart = (winding: number) => {
+    const next = makeWoodsCourse(withLeash(challenge), winding)
+    const fresh = woodsStart(next)
+    setCourse(next)
+    stateRef.current = fresh
+    setState(fresh)
+  }
+
   const leash = leashOf(course, state.rope)
   const taut = leash >= TAUT_SHARE * course.leash
   const caught = state.rope.wraps.length > 0
@@ -128,9 +154,12 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
     [state.rope, course.trees],
   )
   const atStart = state.s === 0 && state.t === 0
+  // The start panel of a free start leash, while both stand at the gate.
+  const choosing = !!walk.freeStart && atStart && state.status === 'walking' && overlay === null
   const possible = useMemo(
-    () => state.status !== 'walking' || stillPossibleInWoods(course, state),
-    [course, state],
+    // Not judged while the start is being chosen: the dead end would give the answer away.
+    () => choosing || state.status !== 'walking' || stillPossibleInWoods(course, state),
+    [course, state, choosing],
   )
   const hint = useMemo(
     () => (taut && possible ? woodsAdvice(course, state) : null),
@@ -243,24 +272,32 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
               </Button>
             </div>
           )}
-          {possible && (taut || coiled > 0) && state.status === 'walking' && overlay === null && (
-            <div className={styles.bubble} role="status" data-testid="taut-hint">
-              <strong>{taut ? t.taut : w.coiledTitle(coiled)}</strong>
-              {walk.before && atStart ? (
-                <span>{w.tied} </span>
-              ) : coiled > 0 ? (
-                <span>{w.coiled(coiled)} </span>
-              ) : (
-                caught && <span>{w.caught} </span>
-              )}
-              {tutorial &&
-                (hint === 'person' || hint === 'dog') &&
-                (touch ? t.adviceTouch[hint] : t.advice[hint])}
-            </div>
+          {choosing && (
+            <StartWinding winding={course.winding} length={leash} onChange={chooseStart} t={t} w={w} />
           )}
+          {!choosing &&
+            possible &&
+            (taut || coiled > 0) &&
+            state.status === 'walking' &&
+            overlay === null && (
+              <div className={styles.bubble} role="status" data-testid="taut-hint">
+                <strong>{taut ? t.taut : w.coiledTitle(coiled)}</strong>
+                {walk.before && atStart ? (
+                  <span>{w.tied} </span>
+                ) : coiled > 0 ? (
+                  <span>{w.coiled(coiled)} </span>
+                ) : (
+                  caught && <span>{w.caught} </span>
+                )}
+                {tutorial &&
+                  (hint === 'person' || hint === 'dog') &&
+                  (touch ? t.adviceTouch[hint] : t.advice[hint])}
+              </div>
+            )}
         </div>
         {theory && (
           <WoodsTheory
+            walk={walk}
             course={course}
             player={state.trace}
             eps={eps}
@@ -302,7 +339,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
             setOverlay(null)
           }}
         >
-          {w.howTo(course.leash, touch).map((line) => (
+          {[...w.howTo(course.leash, touch), ...(walk.freeStart ? [w.start.howTo] : [])].map((line) => (
             <p key={line}>{line}</p>
           ))}
         </HowToOverlay>
@@ -342,8 +379,16 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
         <ResultScreen
           outcome="won"
           stars={stars}
-          stats={w.stats(state.longest, course.shortest, course.plain)}
-          explanation={w.explanation(course.shortest, state.longest).join(' ')}
+          stats={
+            <>
+              {w.stats(state.longest, course.shortest, course.plain)}
+              <ShorterLeash leash={course.leash} shortest={course.shortest} onTry={tryShorter} t={t} />
+            </>
+          }
+          explanation={[
+            ...w.explanation(course.shortest, state.longest),
+            ...(walk.freeStart ? [w.start.explanation(w.start.short(walk.bestStart ?? 0))] : []),
+          ].join(' ')}
           animation={<WoodsExplanation course={course} player={state.trace} t={t} w={w} />}
           onTheory={() => {
             setOverlay(null)

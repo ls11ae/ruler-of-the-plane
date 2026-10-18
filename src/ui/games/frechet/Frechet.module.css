@@ -453,3 +453,30 @@
     width: 120px;
   }
 }
+
+/* "Kürzere Leine" in the result dialog, and its badge. */
+.challenge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.challenge p,
+.badge {
+  margin: 0;
+}
+
+.badge {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--light-soft);
+}
+
+.badge strong {
+  font-family: var(--font-title);
+  font-weight: normal;
+}

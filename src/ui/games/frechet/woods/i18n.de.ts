@@ -15,12 +15,12 @@ export const woodsDe = {
     bakery: 'Vor dem Bäcker',
     fetch: 'Hinterm Baum',
     eight: 'Achterbahn',
-    wm1: 'Pilze suchen',
-    wm2: 'Eicheln',
-    wm3: 'Fuchsbau',
-    ws1: 'Die alte Linde',
-    ws2: 'Spechtbaum',
-    ws3: 'Hasenhaken',
+    wm1: 'Laternengasse',
+    wm2: 'Stöckchen am Pfahl',
+    wm3: 'Waldrunde',
+    ws1: 'Am Tor angebunden',
+    ws2: 'Torpfosten',
+    ws3: 'Fuchsbau',
   } satisfies Record<WoodsId, string>,
   board: (leash: number) => `Wald: zwei Wege zum Schloss zwischen Bäumen, Leine ${metres(leash)}`,
   caught: 'Die Leine hängt am Baum.',
@@ -48,6 +48,30 @@ export const woodsDe = {
     `Die kürzeste Leine, mit der es klappt, heißt homotoper Fréchet-Abstand: hier ${metres(shortest)}, du brauchtest ${metres(longest)}.`,
   ],
   explanationAnimation: 'Diagramm der Stellungen im Wald, mit deinem Weg und dem Weg des Computers',
+  start: {
+    label: 'Wie liegt die Leine am Start?',
+    clockwise: 'Eine Runde mehr im Uhrzeigersinn um den Pfosten',
+    anticlockwise: 'Eine Runde mehr gegen den Uhrzeigersinn um den Pfosten',
+    value: (k: number) =>
+      k === 0
+        ? 'gerade'
+        : `${Math.abs(k)}× ${k > 0 ? 'im Uhrzeigersinn' : 'gegen den Uhrzeigersinn'} um den Pfosten`,
+    short: (k: number) =>
+      k === 0 ? 'gerade' : `${Math.abs(k)}× ${k > 0 ? 'im' : 'gegen den'} Uhrzeigersinn`,
+    length: (m: string) => `Leine am Start: ${m}`,
+    howTo:
+      'Hier wählst du vor dem ersten Schritt, wie die Leine um den Pfosten am Tor liegt. Schau dir den Weg des Hundes an!',
+    explanation: (k: string) =>
+      `Wie die Leine am Start liegt, durftest du wählen. Der homotope Fréchet-Abstand ist die kürzeste Leine über alle Arten, wie sie liegen kann – hier mit der Leine ${k} am Start.`,
+  },
+  chart: {
+    title: 'Kürzeste Leine je Startlage',
+    best: 'beste',
+    yours: 'deine',
+    leash: (m: string) => `die Leine des Spaziergangs: ${m}`,
+    summary: (list: string, best: string) => `Kürzeste Leine je Startlage: ${list}. Am besten: ${best}.`,
+    text: 'Für jede Startlage hat der Computer die kürzeste Leine gesucht. Der homotope Fréchet-Abstand ist die kürzeste von allen.',
+  },
   theory: {
     intro:
       'Jeder Punkt ist eine Stellung: Nach rechts läuft der Mensch, nach oben der Hund. Hell ist, wo die Leine reicht – gemessen als Seil um die Bäume.',
