@@ -24,6 +24,7 @@ export const woodsDe = {
   } satisfies Record<WoodsId, string>,
   board: (leash: number) => `Wald: zwei Wege zum Schloss zwischen Bäumen, Leine ${metres(leash)}`,
   caught: 'Die Leine hängt am Baum.',
+  caughtPost: 'Die Leine hängt am Pfahl.',
   coiledTitle: (n: number) => `Leine ${n}× aufgewickelt!`,
   coiled: (n: number) => `Die Leine ist ${n}× um den Pfahl gewickelt.`,
   tied: 'Der Hund hat die Leine 2× um den Pfahl gewickelt: erst abwickeln, dann los!',
@@ -38,6 +39,8 @@ export const woodsDe = {
     'Der Hund läuft um einen Laternenpfahl, die Leine wickelt sich auf; der Mensch folgt, die Leine wird frei',
   snappedTree:
     'Die Leine hing an einem Baum. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.',
+  snappedPost:
+    'Die Leine hing an einem Pfahl. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.',
   snappedCoil: (n: number) =>
     `Die Leine war ${n}× um einen Pfahl gewickelt. Wer vorne war, hätte warten müssen, bis der andere hinterherkommt.`,
   stats: (longest: number, shortest: number, plain: number) =>

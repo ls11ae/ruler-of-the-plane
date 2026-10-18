@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Tier } from '../../../../core/games/frechet/levels'
 import { coils, ropePoints } from '../../../../core/games/frechet/woods/rope'
+import { trunkKind } from '../../../../core/games/frechet/woods/shapes'
 import { starsFor, leaderboardScore, TAUT_SHARE } from '../../../../core/games/frechet/rules'
 import type { WoodsWalk } from '../../../../core/games/frechet/woods/levels'
 import {
@@ -148,6 +149,8 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
   const caught = state.rope.wraps.length > 0
   const trunkCentres = useMemo(() => course.trees.map((tree) => tree.centre), [course])
   const touched = useMemo(() => new Set(state.rope.wraps.map((x) => x.tree)), [state.rope])
+  // Caught only on thin posts and birches (the texts say "Pfahl" instead of "Baum").
+  const onPosts = [...touched].every((k) => trunkKind(walk.trunks[k]!) !== 'tree')
   // The most turns the leash makes round one post (0 while it only bends round trunks).
   const coiled = useMemo(
     () => coils(state.rope, course.trees).reduce((most, c) => Math.max(most, Math.abs(c.turns)), 0),
@@ -285,7 +288,7 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
                 ) : coiled > 0 ? (
                   <span>{w.coiled(coiled)} </span>
                 ) : (
-                  caught && <span>{w.caught} </span>
+                  caught && <span>{onPosts ? w.caughtPost : w.caught} </span>
                 )}
                 {tutorial &&
                   (hint === 'person' || hint === 'dog') &&
@@ -366,7 +369,9 @@ export function WoodsScreen({ walk, index, count, tier = 'easy', t, w, onPicker,
             {coiled > 0
               ? w.snappedCoil(coiled)
               : reason === 'tree'
-                ? w.snappedTree
+                ? onPosts
+                  ? w.snappedPost
+                  : w.snappedTree
                 : reason
                   ? t.snapped[reason]
                   : null}

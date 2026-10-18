@@ -686,6 +686,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `board(leash)`:
   - leash = 2.7: Wald: zwei Wege zum Schloss zwischen Bäumen, Leine 2,7 m
 - `caught`: Die Leine hängt am Baum.
+- `caughtPost`: Die Leine hängt am Pfahl.
 - `coiledTitle(n)`:
   - n = 6: Leine 6× aufgewickelt!
 - `coiled(n)`:
@@ -702,6 +703,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
     - A: Mensch geht, L: Hund läuft; die Leine ist 2,7 m lang.
 - `howToAnimation`: Der Hund läuft um einen Laternenpfahl, die Leine wickelt sich auf; der Mensch folgt, die Leine wird frei
 - `snappedTree`: Die Leine hing an einem Baum. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.
+- `snappedPost`: Die Leine hing an einem Pfahl. Wer zurück war, hätte früher nachkommen müssen – oder der andere warten.
 - `snappedCoil(n)`:
   - n = 6: Die Leine war 6× um einen Pfahl gewickelt. Wer vorne war, hätte warten müssen, bis der andere hinterherkommt.
 - `stats(longest, shortest, plain)`:

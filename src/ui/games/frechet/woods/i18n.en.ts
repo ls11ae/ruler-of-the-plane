@@ -24,6 +24,7 @@ export const woodsEn: WoodsTexts = {
   },
   board: (leash: number) => `Woods: two paths to the castle between trees, leash ${metres(leash)}`,
   caught: 'The leash is caught on a tree.',
+  caughtPost: 'The leash is caught on a post.',
   coiledTitle: (n: number) => `Leash wound up ${n}×!`,
   coiled: (n: number) => `The leash is wound ${n}× round the post.`,
   tied: 'The dog has wound the leash twice round the post: unwind it first, then off you go!',
@@ -38,6 +39,8 @@ export const woodsEn: WoodsTexts = {
     'The dog runs round a lamp post and the leash winds up; the person follows and the leash comes free',
   snappedTree:
     'The leash was caught on a tree. The one behind should have caught up earlier – or the other should have waited.',
+  snappedPost:
+    'The leash was caught on a post. The one behind should have caught up earlier – or the other should have waited.',
   snappedCoil: (n: number) =>
     `The leash was wound ${n}× round a post. Whoever was ahead should have waited for the other to follow.`,
   stats: (longest: number, shortest: number, plain: number) =>
