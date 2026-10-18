@@ -3,7 +3,7 @@ import type { Vec2 } from '../../../geometry/types'
 import { frechetDistance, optimalWalk } from '../frechet'
 import { makePath, pointAt, pointSegmentDistance } from '../path'
 import { WOODS } from './levels'
-import { moveDogAlong, movePersonAlong, ropeLength, ropePoints, turnsAround } from './rope'
+import { loopsAround, moveDogAlong, movePersonAlong, ropeLength, ropePoints, turnsAround } from './rope'
 import {
   leashOf,
   makeWoodsCourse,
@@ -15,7 +15,7 @@ import {
   type WoodsState,
 } from './rules'
 import { searchWoods } from './search'
-import { SEARCH_STEP, startOf, treesOf, WOODS_SHAPES } from './shapes'
+import { SEARCH_STEP, START_WINDINGS, startOf, treesOf } from './shapes'
 import { blocked, insideBy, polylineWord, raysClear, segmentWord } from './trees'
 
 const FRAME = 1 / 60
@@ -66,7 +66,7 @@ function replay(course: WoodsCourse, walk: [number, number][]): WoodsState {
 
 describe('walks in the woods', () => {
   it('keep trunks off the paths, rays clear, and leave the leash free at the end', () => {
-    for (const shape of WOODS_SHAPES) {
+    for (const shape of WOODS) {
       const trees = treesOf(shape)
       expect(raysClear(trees, 0.3), shape.id).toBe(true)
       for (const tree of trees) {
@@ -80,7 +80,10 @@ describe('walks in the woods', () => {
         }
         // The loop "start leash, dog's trail, straight back, person's path back" must not wind round a
         // trunk: such a trunk would catch the leash for good, as both only walk forwards.
-        const ring = [...(shape.before ?? [shape.dog[0]!]), ...shape.dog, ...[...shape.person].reverse()]
+        const before = shape.freeStart
+          ? loopsAround(shape.trunks[shape.freeStart.post]!.at, shape.dog[0]!, shape.bestStart!, 16)
+          : shape.before
+        const ring = [...(before ?? [shape.dog[0]!]), ...shape.dog, ...[...shape.person].reverse()]
         expect(winding(ring, tree.centre), `${shape.id}: tree ${tree.centre.join(', ')}`).toBe(0)
         expect(insideBy(tree, shape.person[0]!)).toBeLessThan(0)
       }
@@ -92,7 +95,7 @@ describe('walks in the woods', () => {
   // One search per walk: several seconds for the longer generated walks.
   for (const walk of WOODS) {
     it(`${walk.id}: stores the target and walk of a fresh search, and the rope agrees with the search`, () => {
-      const start = startOf(walk, walk.trees)
+      const start = startOf(walk, walk.trees, walk.bestStart ?? 0)
       const found = searchWoods(walk.person, walk.dog, walk.trees, SEARCH_STEP, { start })
       expect(walk.target, walk.id).toBeCloseTo(found.target, 4)
       expect(walk.computer.length, walk.id).toBe(found.walk.length)
@@ -129,7 +132,7 @@ describe('walks in the woods', () => {
 
   it('can be walked with the stored walk and by following the hint, but not by walking together', () => {
     for (const walk of WOODS) {
-      const course = makeWoodsCourse(walk)
+      const course = makeWoodsCourse(walk, walk.bestStart ?? 0)
       expect(course.leash).toBeGreaterThanOrEqual(course.shortest + 0.2 - 1e-9)
       const computer = replay(course, walk.computer)
       expect(computer.status, `${walk.id}: the computer's walk`).toBe('arrived')
@@ -209,5 +212,23 @@ describe('walks in the woods', () => {
       state = stepWoods(course, state, { person: true, dog: false }, FRAME)
     expect(state.status).toBe('snapped')
     expect(state.s).toBeLessThan(4)
+  })
+
+  it('with a free start leash: the stored best start is the best of all, and the leash ends free', () => {
+    for (const walk of WOODS.filter((w) => w.freeStart)) {
+      const targets = START_WINDINGS.map((k) => walk.starts![k]!.target)
+      expect(walk.target).toBe(Math.min(...targets))
+      expect(walk.starts![walk.bestStart!]!.target).toBe(walk.target)
+      // The course with the best start has the stored computer's walk and the shortest leash.
+      const course = makeWoodsCourse(walk, walk.bestStart!)
+      expect(course.shortestFromStart).toBe(walk.target)
+      expect(Math.abs(turnsAround(course.start, walk.trees, walk.freeStart!.post))).toBe(
+        Math.abs(walk.bestStart!),
+      )
+      // Another start gives another course, with its own computer's walk.
+      const straight = makeWoodsCourse(walk, 0)
+      expect(straight.shortestFromStart).toBe(walk.starts![0]!.target)
+      expect(straight.computer).toEqual(walk.starts![0]!.computer)
+    }
   })
 })

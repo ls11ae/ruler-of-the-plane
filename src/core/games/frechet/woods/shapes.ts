@@ -1,7 +1,7 @@
 import type { Vec2 } from '../../../geometry/types'
 import { GENERATED } from '../generated'
 import type { Tier } from '../levels'
-import { startRope, type Rope } from './rope'
+import { loopsAround, startRope, type Rope } from './rope'
 import { makeTree, type Tree } from './trees'
 
 /**
@@ -64,6 +64,12 @@ export interface WoodsShape {
   slack: number
   /** A leash length chosen by hand instead (e.g. one coil round a post fits, two do not). */
   leash?: number
+  /**
+   * The free start leash (an expert puzzle, after the paper's homotopic Fréchet distance): before
+   * the walk the player chooses how the leash lies at the gate, wound 0 to 3 times round this trunk
+   * (an index into `trunks`) either way. The target is the shortest leash over all these starts.
+   */
+  freeStart?: { post: number }
   /** Where the bakery stands (drawn instead of the gate). */
   bakery?: Vec2
   /** Walking speed of both in metres per second (default `WALK_SPEED`; slower on the hard walks). */
@@ -197,6 +203,7 @@ const GENERATED_SHAPES: WoodsShape[] = [...MEDIUM_WOODS_IDS, ...HARD_WOODS_IDS].
     trunks: walk.trunks,
     slack: walk.slack,
     speed: GENERATED.speed,
+    ...(walk.freeStart ? { freeStart: walk.freeStart } : {}),
   }
 })
 
@@ -204,6 +211,18 @@ export const WOODS_SHAPES: readonly WoodsShape[] = [...EASY_SHAPES, ...GENERATED
 
 export const treesOf = (shape: WoodsShape): Tree[] => shape.trunks.map((t) => makeTree(t.at, t.radius))
 
-/** The leash at the gate: straight, or as the dog's way before the walk left it. */
-export const startOf = (shape: WoodsShape, trees: readonly Tree[] = treesOf(shape)): Rope =>
-  startRope(shape.person[0]!, shape.dog[0]!, trees, shape.before)
+/** The start windings a player can choose on a walk with a free start leash (positive: clockwise). */
+export const START_WINDINGS = [-3, -2, -1, 0, 1, 2, 3] as const
+
+/**
+ * The leash at the gate: straight, or as the dog's way before the walk left it, or (free start) wound
+ * `winding` times round the gate post: the dog ran that many times round it from a straight leash.
+ */
+export function startOf(shape: WoodsShape, trees: readonly Tree[] = treesOf(shape), winding = 0): Rope {
+  const dog = shape.dog[0]!
+  if (shape.freeStart && winding !== 0) {
+    const post = shape.trunks[shape.freeStart.post]!.at
+    return startRope(shape.person[0]!, dog, trees, loopsAround(post, dog, winding, 16))
+  }
+  return startRope(shape.person[0]!, dog, trees, shape.before)
+}

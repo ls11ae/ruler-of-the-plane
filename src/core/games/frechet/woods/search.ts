@@ -116,7 +116,7 @@ export function searchWoods(
   }
 
   // States: position (i, j) and word id; found by key (i·(m + 1) + j)·WORDS + word id.
-  const WORDS = 1024
+  const WORDS = 4096
   const index = new Map<number, number>()
   const stI: number[] = []
   const stJ: number[] = []

@@ -22,6 +22,8 @@ import {
   type WoodsCourse,
   type WoodsState,
 } from './woods/rules'
+import { wrapAlong, wrapTurns } from './woods/measures'
+import { coils } from './woods/rope'
 import { searchWoods } from './woods/search'
 
 /** The park's rules as something the strategies can play. */
@@ -47,6 +49,9 @@ export function woodsGame(course: WoodsCourse): Playable<WoodsState> {
     step: (state, input, dt) => stepWoods(course, state, input, dt),
     where: (state) => state,
     leash: (state) => leashOf(course, state.rope),
+    wrap: (state) => wrapTurns(state.rope, course.trees),
+    coil: (state) =>
+      coils(state.rope, course.trees).reduce((most, c) => Math.max(most, Math.abs(c.turns)), 0),
   }
 }
 
@@ -66,6 +71,10 @@ export interface Assessment {
   careful: Outcome
   /** Woods only: the longest leash the computer's walk without trees needs in the woods. */
   plainWalkInWoods?: number
+  /** Woods only: the most the computer's walk wraps the leash round a trunk (turns of contact). */
+  wrap?: number
+  /** Woods only, free start: the shortest leash with a straight start. */
+  straightStart?: number
 }
 
 /** Raster step for the free space and the computer's walk (metres along each path). */
@@ -95,7 +104,7 @@ export function assessPark(level: WalkLevel, rasterStep = ASSESS_STEP): Assessme
 }
 
 export function assessWoods(walk: WoodsWalk, rasterStep = ASSESS_STEP): Assessment {
-  const course = makeWoodsCourse(walk)
+  const course = makeWoodsCourse(walk, walk.bestStart ?? 0)
   const game = woodsGame(course)
   const strategies = Object.fromEntries(STRATEGIES.map((id) => [id, playStrategy(game, id)])) as Record<
     StrategyId,
@@ -111,9 +120,11 @@ export function assessWoods(walk: WoodsWalk, rasterStep = ASSESS_STEP): Assessme
     frechet: frechetDistance(walk.person, walk.dog),
     woods: course.shortest,
     space: freeSpaceReport(raster, course.leash, course.person, course.dog),
-    changes: walk.computer.length - 2,
+    changes: course.computer.length - 2,
     strategies,
     careful: playCareful(game, (state) => woodsAdvice(course, state)),
     plainWalkInWoods: tightestInWoods(course, plain.walk).leash,
+    wrap: wrapAlong(course, course.computer),
+    ...(walk.freeStart ? { straightStart: walk.starts?.[0]?.target } : {}),
   }
 }
