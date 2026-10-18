@@ -161,7 +161,7 @@ target is measured on a booth laptop in the playtest (Phase 6).
   and the complexity of the free space), in the park and in the woods, where the trees must also make
   the shortest leash clearly longer and catch the computer's best walk without trees. A table of every
   walk's numbers for Kevin in `docs/gassi-walks.md`. — done 2026-10-17 (tiers, the measure of hard and
-  the generator proposed)
+  the generator agreed by Kevin 2026-10-18)
 
 Acceptance: correct decisions on random curves; two people can play it on one laptop keyboard (checked
 with the key test on the booth laptops); a level can be finished on a phone with the hold buttons.
@@ -265,7 +265,7 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   far each, "Weiterspielen" when there is progress), one click from the start map to playing; the last
   tier per game remembered on the device (cleared by the kiosk reset), a suggested tier per game in the
   staff menu, "Weiter mit „Mittel“" after a tier's last level, the pickers in the same three sections.
-  — done 2026-10-17 (the tier mapping proposed, see the decision log, Phase 6)
+  — done 2026-10-17 (the tier mapping agreed by Kevin 2026-10-18, see the decision log, Phase 6)
 - Attract demos for all five games, shown in turn (about 20–30 s each, with the game's name and "Komm
   spielen!"), only precomputed solutions; the soak test checks all five. — done 2026-10-17
 - "Gassi gehen" (Kevin, after playing the harder tiers: the leash must really wind round trees, and
@@ -275,8 +275,8 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   map; a leash drawn with its real length that trembles when taut and snaps visibly; the free start
   leash as an expert puzzle on two "Schwer" woods walks (choose how the leash lies round the gate post;
   bar chart of the shortest leash per start); "Mittel" and "Schwer" woods walks regenerated with 3–8
-  trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all proposed, see the
-  decision log, "Winding in the woods")
+  trees and posts each; "Kürzere Leine" after a finished walk. — done 2026-10-18 (all agreed by Kevin
+  2026-10-18, see the decision log, "Winding in the woods")
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

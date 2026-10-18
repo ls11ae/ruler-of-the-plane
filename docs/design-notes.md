@@ -269,7 +269,7 @@ conflict with it.
   needs no `download-artifact` (whose current major version a cloud session cannot look up). The first
   Windows run found that .NET Framework expands 8.3 names (`RUNNER~1`) in `GetFullPath`; the server now
   normalises its root the same way.
-- **2026-10-17 (proposed) Impressum, privacy notice and accessibility statement behind one link.** The
+- **2026-10-17 (agreed by Kevin 2026-10-18) Impressum, privacy notice and accessibility statement behind one link.** The
   logo line of the start map ends with "Impressum · Datenschutz" (both layouts); it opens a dialog with
   the three pages of the Algorithm Engineering Group (`ae.cs.tu-dortmund.de/imprint`, `/privacy`,
   `/accessibility-statement`) and one sentence that the games send nothing. Outside kiosk mode they are
@@ -399,7 +399,7 @@ their ends.
   2-hour run in CI (too slow; it belongs on a booth laptop in Phase 7); no visitors (the kiosk cycle,
   where leaks would come from, would go untested).
 
-- **2026-10-17 (proposed) "Rasenmähen": a step back per mower** (Kevin's playtest). Q (beside WASD)
+- **2026-10-17 (agreed by Kevin 2026-10-18) "Rasenmähen": a step back per mower** (Kevin's playtest). Q (beside WASD)
   takes back mower 1's last step, Backspace (on the side of the arrow keys) mower 2's, B on a gamepad; with
   one mower both keys work, and on phones the dashed middle button of the direction pad does it. Each
   press takes back one step (holding does not repeat): the mower moves back, the cells only that step
@@ -411,7 +411,7 @@ their ends.
   and both players would reach for it); taking back the whole "Feierabend" at once (an exception to one
   press, one step); undo on the result screen ("Nochmal" starts again).
 
-- **2026-10-17 (proposed) "Straßenbau" gets two harder sets** (Kevin's playtest: too easy). The picker
+- **2026-10-17 (agreed by Kevin 2026-10-18) "Straßenbau" gets two harder sets** (Kevin's playtest: too easy). The picker
   shows three sections: the eight maps so far as "Von Ort zu Ort", then six maps "Kreuzungen" (Euclidean
   Steiner tree), then six maps "Zwei Sorten" (minimum plane bichromatic spanning tree), then the random
   villages (still without junctions); "Nächstes Level" walks through them in this order. Each set shows
@@ -433,7 +433,7 @@ their ends.
   too close to the 1 % rule to be worth the effort; the hexagon's jitter seed keeps its junctions 0.49
   away from the middle village (most seeds put one under its icon). The importer checks every stored
   optimum: a tree, its length, degree 3 and 120° (± 1°) at every junction, the MST length.
-- **2026-10-17 (proposed) "Kreuzungen": junctions by hand, within 1 %** (the 1 % is Kevin's). A road dragged
+- **2026-10-17 (agreed by Kevin 2026-10-18) "Kreuzungen": junctions by hand, within 1 %** (the 1 % is Kevin's). A road dragged
   onto open land ends at a new junction there (on phones: tap a place, then open land); a junction is
   dragged to move it and dropped onto a place or junction to merge into it; a road dragged at its middle
   bends at a new junction; a junction without roads disappears. Every junction shows the angles between
@@ -468,7 +468,7 @@ their ends.
   The greedy strategy never got stuck on random maps of these sizes (none in 14,000 tries: a
   crossing-free forest rarely blocks every castle–village road between two of its groups), so "longer"
   is the criterion. Each map has its own seed range. No random maps in this set.
-- **2026-10-17 (proposed) "Zwei Sorten": what the game refuses and what it marks.** A road between two
+- **2026-10-17 (agreed by Kevin 2026-10-18) "Zwei Sorten": what the game refuses and what it marks.** A road between two
   villages or two castles is refused: its preview turns red while dragging, and letting go explains the
   rule in the footer. Roads that cross may be built: both turn red, the crossing is circled in red (a
   ring, so that the cross keeps marking the road a hint means), the state says "2 Schnittpunkte", and
@@ -488,7 +488,7 @@ their ends.
   Alternatives: an own Impressum (a person would have to be named); the TU's central pages.
 - **2026-10-17 Booth laptops: Windows, Chrome or Firefox, standard mice** (Kevin). The Phase 7 start
   script is a Windows script.
-- **2026-10-17 (proposed) Chrome at the booth; Firefox and WebKit in CI.** Every test so far runs in
+- **2026-10-17 (agreed by Kevin 2026-10-18) Chrome at the booth; Firefox and WebKit in CI.** Every test so far runs in
   Chromium only, so the booth uses Chrome (its `--kiosk` mode and the offline install are the ones
   tested). Visitors' phones bring Safari (every browser on an iPhone is WebKit) and Firefox, so CI also
   runs the smoke tests in Firefox and WebKit (Playwright installs them in CI; cloud sessions have only
@@ -901,7 +901,7 @@ parallel) changed how each game is entered and the attract screen; inside the ga
 screens and pickers changed (in "Gassi gehen" nothing else, since another session works on its walk
 screens tonight).
 
-- **2026-10-17 (proposed) Every game opens on a tier screen.** The first screen of a game shows its
+- **2026-10-17 (agreed by Kevin 2026-10-18) Every game opens on a tier screen.** The first screen of a game shows its
   rules (the two or three sentences of "So geht's", its animation and keys) and three big cards
   "Leicht", "Mittel", "Schwer", each with the set's name where it has one, a one-line teaser, the stars
   collected on this device (with one to three bars, so not only the word tells the difficulty), and
@@ -914,7 +914,7 @@ screens tonight).
   `components/TierScreen.tsx`, `core/tiers.ts`. Alternatives: a dialog over the first level (one click
   more); tiers only in the picker (the problem Kevin had); skipping the screen when there is progress (at
   the booth every visitor starts after the kiosk reset anyway, at home the screen offers "Weiterspielen").
-- **2026-10-17 (proposed) Which levels form the tiers.**
+- **2026-10-17 (agreed by Kevin 2026-10-18) Which levels form the tiers.**
   - "Straßenbau": "Leicht" = "Von Ort zu Ort" (minimum spanning tree, the eight maps and the random
     villages), "Mittel" = "Kreuzungen" (Steiner tree), "Schwer" = "Zwei Sorten" (plane bichromatic
     spanning tree; teaser: even researchers do not know yet how close a computer can always get to the
@@ -986,7 +986,7 @@ screens tonight).
 Kevin played "Gassi gehen" and found the walks too easy. The numbers of every walk are in
 [`gassi-walks.md`](gassi-walks.md) (written by `scripts/gassi/table.ts`).
 
-- **2026-10-17 (proposed) Three tiers "Leicht", "Mittel", "Schwer".** The hand-made walks stay as
+- **2026-10-17 (agreed by Kevin 2026-10-18) Three tiers "Leicht", "Mittel", "Schwer".** The hand-made walks stay as
   "Leicht" (six in the park, four in the woods, unchanged; the tutorial hints only there). "Mittel" and
   "Schwer" have four walks in the park and three in the woods each, generated offline. The picker of
   walks gets three tier buttons (it opens on the tier of the current walk; the woods walks of a tier
@@ -997,7 +997,7 @@ Kevin played "Gassi gehen" and found the walks too easy. The numbers of every wa
   opponents, and visitors should choose; the easy start must stay for everyone); replacing the walks
   (Kevin: keep them as the easy start); more hand-made walks (nothing guarantees they are hard for each
   simple strategy).
-- **2026-10-17 (proposed) What "hard" means.** Four strategies a visitor might use are played with the
+- **2026-10-17 (agreed by Kevin 2026-10-18) What "hard" means.** Four strategies a visitor might use are played with the
   game's own step at 60 frames per second (`src/core/games/frechet/strategies.ts`): both walk all the
   time; the one behind walks (along the line from the gate to the castle; both when level within
   0.25 m); keep pace by the share of the path walked (both when within 0.25 m of the dog's due
@@ -1026,7 +1026,7 @@ Kevin played "Gassi gehen" and found the walks too easy. The numbers of every wa
   generated walks have free space in 26–54 % of their cells (43–103 of 91–247 cells), the easy walks in
   20–71 % of mostly far fewer (11–67 of 21–323). The maze shows as many dead ends along the way (4–12
   per generated walk, 0–6 on the easy walks) rather than as free space everywhere.
-- **2026-10-17 (proposed) The generator** (`scripts/gassi/generate.ts`, seed 20261107, the day of the
+- **2026-10-17 (agreed by Kevin 2026-10-18) The generator** (`scripts/gassi/generate.ts`, seed 20261107, the day of the
   open house; about 16 minutes; the walks go to `src/core/games/frechet/generated.json`, a test checks
   that they still pass). Footpaths and dog's trails between the gate and the castle from three families:
   zigzag, wander (random corners in a band) and meander (sweeps at a given turning angle), with a
@@ -1067,7 +1067,7 @@ park was drawn at about 27 px per metre (a 2.7 m leash was a 70 px line). Backgr
 Verdière, Erickson, Lazard, Lazarus and Thite, "Homotopic Fréchet distance between curves, or walking
 your dog in the woods in polynomial time", CGTA 43(3), 2010.
 
-- **2026-10-18 (proposed) Thin posts, coils and how they are counted.** Trunks come in three kinds
+- **2026-10-18 (agreed by Kevin 2026-10-18) Thin posts, coils and how they are counted.** Trunks come in three kinds
   (`kind` in the walk data, only the look differs): old trees (radius 0.55–1 m; the leash can only bend
   round them), lamp posts and young birches (0.1–0.18 m; a 0.15 m post is 0.9 m round, so a leash winds
   round it several times). How often the leash is wound round a trunk is the winding number, round the
@@ -1080,7 +1080,7 @@ your dog in the woods in polynomial time", CGTA 43(3), 2010.
   Pfahl gewickelt." Lamp posts get a side-view lamp (as the map's other icons), birches a small crown.
   Alternatives: count contact angle only (a leash wound twice round a thin post touches it only 1.1
   turns: the straight legs to person and dog cover the rest); count every winding (see above).
-- **2026-10-18 (proposed) New easy woods walks.** "Laternenpfahl" (dog and person loop two and a half
+- **2026-10-18 (agreed by Kevin 2026-10-18) New easy woods walks.** "Laternenpfahl" (dog and person loop two and a half
   times round a lamp post, the dog close to it; leash 3.4 m: with the dog a whole loop ahead from 3.1 m,
   wound twice from 3.7 m, so one coil fits and two do not), "Vor dem Bäcker" (the dog was tied to a post
   outside the bakery and ran round it twice: the leash starts wound twice, 3.0 m of 3.6 m, and the dog's
@@ -1094,7 +1094,7 @@ your dog in the woods in polynomial time", CGTA 43(3), 2010.
   the search (it takes the start rope) and the hints are unchanged. The woods' "So geht's" shows a leash
   coiling round a lamp post and coming free. Alternatives: keep the oak walk with a thinner oak (an oak
   is not thin), a fixed wound start stored as a word (the rope update could not draw it).
-- **2026-10-18 (proposed) A camera for the walks.** In the park and in the woods the board follows
+- **2026-10-18 (agreed by Kevin 2026-10-18) A camera for the walks.** In the park and in the woods the board follows
   person and dog: zoomed in so that the leash is about 220 px long while the view still spans 2.4
   leashes plus 3 m (geometric mean of its sides, so a tall phone screen zooms in too; at least 1.3 times
   the zoom of the whole park; none when that would hardly differ), looking a few metres ahead along both
@@ -1106,7 +1106,7 @@ your dog in the woods in polynomial time", CGTA 43(3), 2010.
   so following needs no re-render and no repaint of the scenery (60 frames per second in the cloud
   session). Footpaths are at most 24 px wide when zoomed in. Alternatives: changing the board's viewBox
   every frame (every frame repaints the whole park with its ink filters), zooming only near trunks.
-- **2026-10-18 (proposed) A livelier leash.** The leash is drawn with its real length: slack, it hangs
+- **2026-10-18 (agreed by Kevin 2026-10-18) A livelier leash.** The leash is drawn with its real length: slack, it hangs
   down on screen in a soft curve (a cubic Bézier whose sag is found by halving so that its length is the
   leash's; in the woods the slack goes into the two free ends); from 85 % of its length it is
   orange-red; from 95 % it trembles (up to 2.2 px, not with reduced motion). When it is taut the dog
@@ -1126,7 +1126,7 @@ your dog in the woods in polynomial time", CGTA 43(3), 2010.
   bars), and "Was steckt dahinter?" adds: "Der homotope Fréchet-Abstand ist die kürzeste Leine über alle
   Arten, wie sie liegen kann." Alternatives: drag the dog round the post (harder on a touchpad, no fixed
   steps), any start winding round any tree (too many choices for a visitor).
-- **2026-10-18 (proposed) "Mittel" and "Schwer" in the woods, regenerated so that winding matters**
+- **2026-10-18 (agreed by Kevin 2026-10-18) "Mittel" and "Schwer" in the woods, regenerated so that winding matters**
   (`scripts/gassi/woods.ts`, called by `generate.ts`; `GASSI_ONLY=woods` keeps the park's walks, which are
   unchanged; seed 20261108; about 20 minutes for 1000 designs). A design has one or two sites round thin
   posts: "shared" (both loop round the post the same way, the dog close to it, the person on a wider
@@ -1158,7 +1158,7 @@ your dog in the woods in polynomial time", CGTA 43(3), 2010.
   the search meets every state: 2.5 minutes each at 5 cm). Alternatives: the old generator with posts
   added (posts beside a path only bend the leash), thick trees only where the leash sweeps (with these
   paths the computer's walk without trees hardly sweeps outside the enclosed area).
-- **2026-10-18 (proposed) "Kürzere Leine".** After a finished walk (park and woods, not the sandbox),
+- **2026-10-18 (agreed by Kevin 2026-10-18) "Kürzere Leine".** After a finished walk (park and woods, not the sandbox),
   the result offers the same walk with a shorter leash: "Geschafft mit 3,6 m – traust du dich mit 3,3
   m?", 0.3 m shorter each time (rounded down to 0.1 m), down to 10 cm above the shortest leash; after
   that step a badge "Leinen-Profi!". Stars and leaderboard work as before (the leaderboard ranks the
