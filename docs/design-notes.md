@@ -1283,3 +1283,18 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   test. The four cards still fit side by side at 1280 px. Alternatives: a separate button column beside
   the keys (the cards would no longer fit side by side at 1280 px); the button below the card's steps
   (the card would grow taller than the "Feierabend" card).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": the explanation plays an example lawn.** "Was
+  steckt dahinter?" after a finished lawn played the solver's tours on that very lawn, so it showed the
+  solution of a level. It now plays the computer's tours on a small example lawn that is none of the booth
+  lawns (16 × 9 cells with a notch and a 3 × 3 patch inside, 125 cells to mow), with one mower or two, as
+  the visitor played, labelled above the picture: "Beispiel – ein kleiner Rasen: So mäht der Computer mit
+  einem Mäher, 46 Schritte." The text keeps this lawn's numbers: the lower bound, the visitor's longest
+  round and the computer's ("…mindestens 100 Schritte. Du hast 124 gebraucht, der Computer 110."). The
+  example's tours come from the same offline solver as the booth lawns (`scripts/lawns/solve.py
+example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` by `make_instances.py`):
+  one mower 46 steps, equal to its lower bound; two mowers 26, lower bound 24. `npm run levels` imports
+  it as `lawn-mowing/example` (flagged `example`, like the competition instance; not in any tier), and a
+  test checks that it is small, has tours for one and two mowers and differs from every booth lawn. The
+  theory view's "Runden ansehen" still plays this lawn's tours on demand. Alternatives: an animation of
+  the lower bound only (no tours; the tours are what the computer is good at); the strips on this lawn
+  (also a solution of the level, if a poor one).

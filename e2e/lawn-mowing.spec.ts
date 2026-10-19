@@ -140,6 +140,16 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, phone
   const result = page.getByRole('dialog', { name: 'Feierabend!' })
   await expect(result).toBeVisible({ timeout: 15_000 })
   await expect(result.getByText(/^Längste Runde: \d+ Schritte/)).toBeVisible()
+  // The explanation keeps this lawn's numbers and plays the computer's tours on an example lawn.
+  await expect(
+    result.getByText(/mindestens 48 Schritte\. Eure längere Runde hatte \d+, der Computer 56\./),
+  ).toBeVisible()
+  await expect(
+    result.getByText('Beispiel – ein kleiner Rasen: So mäht der Computer mit zwei Mähern, 26 Schritte.'),
+  ).toBeVisible()
+  await expect(
+    result.getByRole('img', { name: /^Beispiel: die Runden des Computers mit zwei Mähern/ }),
+  ).toBeVisible()
   await shot(page, testInfo, 'lawn-mowing-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
   await expect(page.getByRole('complementary', { name: 'Theorie' })).toBeVisible()
@@ -182,5 +192,11 @@ test('one player mows a lawn with the direction pad', async ({ page, phone }, te
   await page.getByRole('button', { name: /Feierabend/ }).click()
   const result = page.getByRole('dialog', { name: 'Feierabend!' })
   await expect(result).toBeVisible({ timeout: 15_000 })
+  await expect(
+    result.getByText(/mindestens 100 Schritte\. Du hast \d+ gebraucht, der Computer 110\./),
+  ).toBeVisible()
+  await expect(
+    result.getByText('Beispiel – ein kleiner Rasen: So mäht der Computer mit einem Mäher, 46 Schritte.'),
+  ).toBeVisible()
   await shot(page, testInfo, 'lawn-mowing-result')
 })

@@ -65,12 +65,16 @@ export const en: LawnTexts = {
     stats: (longest: number, target: string) => `Longest round: ${longest} steps · ${target}`,
     score: (n: number) => `${n} steps`,
   },
-  explanation: (bound: number) => [
+  explanation: (bound: number, mine: number, reference: number, solver: boolean, cutters: number) => [
     'We want rounds that together mow the whole lawn. The longest round counts, because all mowers start at the same time.',
-    `Each step cuts at most 3 new squares, so this lawn needs at least ${bound} steps. Finding the best round is still very hard.`,
-    "The chair's solver searches long and cleverly for short rounds; the animation shows its (or a simple) solution.",
+    `Each step cuts at most 3 new squares, so this lawn needs at least ${bound} steps. ${cutters === 1 ? `You needed ${mine}` : `Your longer round had ${mine}`}, ${solver ? 'the computer' : 'the strip strategy'} ${reference}.`,
+    'Finding the shortest rounds is very hard; the computer searches long and cleverly. The animation shows its rounds on a small example.',
   ],
   explanationAnimation: "The solver's rounds on this lawn",
+  exampleCaption: (cutters: number, steps: number) =>
+    `Example – a small lawn: this is how the computer mows ${cutters === 1 ? 'with one mower' : 'with two mowers'}, ${steps} steps.`,
+  exampleAnimation: (cutters: number) =>
+    `Example: the computer's rounds ${cutters === 1 ? 'with one mower' : 'with two mowers'} on a small lawn that is none of the lawns here`,
   replay: 'Show again',
   theory: {
     title: 'Theory',

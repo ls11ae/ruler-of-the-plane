@@ -32,7 +32,7 @@ import { SetupOverlay } from './SetupOverlay'
 import { usePrefs, type Setup } from './store'
 import { TheoryPanel } from './Theory'
 import { LawnTiers } from './Tiers'
-import { TourAnimation } from './TourAnimation'
+import { ExampleAnimation } from './TourAnimation'
 import { useMedia } from './useMedia'
 
 /** Pause between the last cutter arriving home and the result, to see the finished lawn. */
@@ -328,16 +328,16 @@ function Round({
           stars={result.stars}
           record={result.record}
           stats={t.result.stats(longest, target)}
-          explanation={t.explanation(lowerBound(lawn, k)).join(' ')}
-          animation={
-            <TourAnimation
-              level={level}
-              lawn={lawn}
-              tours={tours}
-              label={t.explanationAnimation}
-              replay={t.replay}
-            />
-          }
+          explanation={t
+            .explanation(
+              lowerBound(lawn, k),
+              longest,
+              solution?.maxTourLength ?? stripLength,
+              solution !== undefined,
+              k,
+            )
+            .join(' ')}
+          animation={<ExampleAnimation cutters={k} t={t} />}
           onTheory={() => {
             setOverlay(null)
             setTheory(true)

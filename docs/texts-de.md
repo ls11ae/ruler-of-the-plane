@@ -893,12 +893,26 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
     - Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.
     - Je weniger Schritte, desto besser.
 - `howToAnimation`: Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit
-- `explanation(bound)`:
-  - bound = 40:
+- `explanation(bound, mine, reference, solver, cutters)`:
+  - bound = 100, mine = 124, reference = 110, solver = true, cutters = 2:
     - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
-    - Jeder Schritt mäht höchstens 3 neue Felder; darum braucht dieser Rasen mindestens 40 Schritte. Die beste Runde zu finden ist trotzdem sehr schwer.
-    - Der Löser des Lehrstuhls sucht mit cleveren Verfahren lange nach kurzen Runden; die Animation zeigt seine (oder eine einfache) Lösung.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Eure längere Runde hatte 124, der Computer 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
+  - bound = 100, mine = 124, reference = 110, solver = false, cutters = 2:
+    - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Eure längere Runde hatte 124, die Streifen-Strategie 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
+  - bound = 100, mine = 124, reference = 110, solver = true, cutters = 1:
+    - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Du hast 124 gebraucht, der Computer 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
 - `explanationAnimation`: Die Runden des Lösers auf diesem Rasen
+- `exampleCaption(cutters, steps)`:
+  - cutters = 2, steps = 46: Beispiel – ein kleiner Rasen: So mäht der Computer mit zwei Mähern, 46 Schritte.
+  - cutters = 1, steps = 46: Beispiel – ein kleiner Rasen: So mäht der Computer mit einem Mäher, 46 Schritte.
+- `exampleAnimation(cutters)`:
+  - cutters = 2: Beispiel: die Runden des Computers mit zwei Mähern auf einem kleinen Rasen, der keiner der Rasen hier ist
+  - cutters = 1: Beispiel: die Runden des Computers mit einem Mäher auf einem kleinen Rasen, der keiner der Rasen hier ist
 - `replay`: Nochmal zeigen
 
 ### lawns

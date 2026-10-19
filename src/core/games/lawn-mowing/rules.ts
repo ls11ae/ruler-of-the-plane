@@ -25,6 +25,12 @@ export const TIER_LAWNS: Record<Tier, readonly LawnId[]> = {
 /** The competition instance shown in the theory view. */
 export const COMPETITION = 'lawn-mowing/smr_882k_481_3s3'
 
+/**
+ * The small lawn whose good tours the explanation after a finished lawn plays (for one or two mowers, as
+ * the visitor played): none of the booth lawns, so it does not show a level's solution (Kevin, 2026-10-19).
+ */
+export const EXAMPLE_LAWN = 'lawn-mowing/example'
+
 /** Holding a key: one step at once, the next after `delay`, then one every `interval` (ms). */
 export const STEP_REPEAT = { delay: 220, interval: 115, maxPerUpdate: 2 } as const
 /** Pace of the drive home after "Feierabend" (ms per step). */

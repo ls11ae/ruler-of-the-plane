@@ -1,0 +1,15 @@
+# The example lawn of the explanation after a finished lawn ("Was steckt dahinter?"): none of the booth
+# lawns, so the animation does not show a level's solution (Kevin, 2026-10-19). Same format as
+# ../lawns.txt; `python3 scripts/lawns/make_instances.py` writes its instances to instances/, and
+# `python3 scripts/lawns/solve.py example_1s3 example_2s3` its tours to solutions/.
+
+example Beispielrasen
+################
+################
+####PPP#########
+####PPP#########
+####PPP#########
+################
+################
+###########.....
+###########.....

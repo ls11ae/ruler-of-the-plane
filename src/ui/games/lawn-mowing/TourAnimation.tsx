@@ -1,12 +1,15 @@
 import { useMemo, useRef, useState } from 'react'
-import { Mowing, type Lawn } from '../../../core/games/lawn-mowing/mowing'
+import { makeLawn, Mowing, type Lawn } from '../../../core/games/lawn-mowing/mowing'
+import { EXAMPLE_LAWN } from '../../../core/games/lawn-mowing/rules'
 import { positionsOf } from '../../../core/games/lawn-mowing/tour'
 import type { Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { useAnimationFrame } from '../../input/hooks'
+import { useLevel } from '../../levels'
 import { CUTTER_COLOURS } from './art'
 import { boardBounds, cutterCentre, ringsPath, runs, simplify } from './geometry'
+import type { LawnTexts } from './i18n.de'
 import styles from './LawnMowing.module.css'
 
 const COLOURS = [...CUTTER_COLOURS, '#2f9e8f']
@@ -22,6 +25,7 @@ export function TourAnimation({
   label,
   replay,
   durationMs = 7000,
+  caption,
 }: {
   level: LawnMowingLevel
   lawn: Lawn
@@ -29,6 +33,8 @@ export function TourAnimation({
   label: string
   replay: string
   durationMs?: number
+  /** A visible label above the picture (e.g. that it is an example). */
+  caption?: string
 }) {
   const walks = useMemo(() => tours.map((t) => positionsOf(t)), [tours])
   const total = Math.max(1, ...walks.map((w) => w.length - 1))
@@ -48,6 +54,7 @@ export function TourAnimation({
   const at = (w: readonly Vec2[]) => w[Math.min(step, w.length - 1)]!
   return (
     <div>
+      {caption && <p className={styles.animationCaption}>{caption}</p>}
       <svg
         viewBox={`${b.minX} ${b.minY} ${b.maxX - b.minX} ${b.maxY - b.minY}`}
         className={styles.animationSvg}
@@ -100,5 +107,31 @@ export function TourAnimation({
         {replay}
       </Button>
     </div>
+  )
+}
+
+/**
+ * The explanation's animation: the computer's tours on the small example lawn (none of the booth lawns),
+ * for as many mowers as the visitor played with, labelled as an example.
+ */
+export function ExampleAnimation({ cutters, t }: { cutters: number; t: LawnTexts }) {
+  const level = useLevel<LawnMowingLevel>(EXAMPLE_LAWN)
+  const example = level.status === 'ready' ? level.value : null
+  const lawn = useMemo(
+    () => (example ? makeLawn(example.outer, example.holes, example.cutter, example.cutterCenter) : null),
+    [example],
+  )
+  const solution = example?.variants.find((v) => v.cutters === cutters)?.solution
+  if (!example || !lawn || !solution) return null
+  return (
+    <TourAnimation
+      level={example}
+      lawn={lawn}
+      tours={solution.tours}
+      label={t.exampleAnimation(cutters)}
+      caption={t.exampleCaption(cutters, solution.maxTourLength)}
+      replay={t.replay}
+      durationMs={6000}
+    />
   )
 }

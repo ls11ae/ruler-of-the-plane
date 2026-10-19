@@ -7,8 +7,9 @@ import type { LawnMowingLevel, LawnSolution } from '../../src/core/levels/schema
 /**
  * Lawns of "Rasenmähen" from `levels/lawn-mowing/`: the booth lawns `instances/lawn<n>_<k>s3.instance.json`
  * (k cutters) with their solutions `solutions/<uid>.solution.json` once the chair's solver has computed
- * them, and real competition instances in `competition/` (with an example solution). All in the pyutils27
- * JSON formats; coordinates are kept as they are (integers, y up).
+ * them, real competition instances in `competition/` (with an example solution), and the example lawn of
+ * the explanation in `example/` (with tours for one and two cutters). All in the pyutils27 JSON formats;
+ * coordinates are kept as they are (integers, y up).
  */
 interface PointSequence {
   x: number[]
@@ -68,7 +69,7 @@ function levelOf(
   name: string,
   number: number,
   instances: { instance: Instance; source: string; solution?: LawnSolution }[],
-  competition: boolean,
+  kind: 'booth' | 'competition' | 'example',
 ): LawnMowingLevel {
   const first = instances[0]!.instance
   const shape = (i: Instance) => JSON.stringify([i.region_to_cover, i.cutter, i.cutter_center])
@@ -97,8 +98,25 @@ function levelOf(
         ...(solution ? { solution } : {}),
       }))
       .sort((a, b) => a.cutters - b.cutters),
-    ...(competition ? { competition: true } : {}),
+    ...(kind === 'competition' ? { competition: true } : {}),
+    ...(kind === 'example' ? { example: true } : {}),
   }
+}
+
+/** The instances of a folder (`<uid>.instance.json` beside or below it) with their solutions. */
+function readFolder(dir: string, sub: string, solutions: string) {
+  return readdirSync(join(dir, sub))
+    .filter((f) => f.endsWith('.instance.json'))
+    .sort()
+    .map((file) => {
+      const instance = readJson<Instance>(join(dir, sub, file))
+      const solution = solutionFor(
+        join(dir, solutions),
+        `levels/lawn-mowing/${solutions}/${instance.instance_uid}.solution.json`,
+        instance,
+      )
+      return { instance, source: `levels/lawn-mowing/${sub}/${file}`, ...(solution ? { solution } : {}) }
+    })
 }
 
 /** Converts the lawns below `dir` (`levels/lawn-mowing`); booth lawns first by number, then competition instances. */
@@ -120,7 +138,7 @@ export function convertLawns(dir: string): LawnMowingLevel[] {
     list.push({ instance, source: rel('instances', file), ...(solution ? { solution } : {}) })
     byLawn.set(match[1]!, list)
   }
-  const lawns = [...byLawn].map(([name, list]) => levelOf(name, Number(name.slice(4)), list, false))
+  const lawns = [...byLawn].map(([name, list]) => levelOf(name, Number(name.slice(4)), list, 'booth'))
   lawns.sort((a, b) => a.number - b.number)
   const competition = readdirSync(join(dir, 'competition'))
     .filter((f) => f.endsWith('.instance.json'))
@@ -133,7 +151,14 @@ export function convertLawns(dir: string): LawnMowingLevel[] {
         instance,
       )
       const entry = { instance, source: rel('competition', file), ...(solution ? { solution } : {}) }
-      return levelOf(instance.instance_uid, lawns.length + i + 1, [entry], true)
+      return levelOf(instance.instance_uid, lawns.length + i + 1, [entry], 'competition')
     })
-  return [...lawns, ...competition]
+  // The example lawn of the explanation (none of the booth lawns), for one and for two cutters.
+  const example = readFolder(dir, 'example/instances', 'example/solutions')
+  if (example.some((e) => !e.solution)) throw new Error('levels/lawn-mowing/example: a solution is missing')
+  return [
+    ...lawns,
+    ...competition,
+    levelOf('example', lawns.length + competition.length + 1, example, 'example'),
+  ]
 }

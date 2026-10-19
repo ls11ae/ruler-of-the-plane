@@ -373,6 +373,14 @@
 }
 
 /* Animations ("So geht's", "Was steckt dahinter?", theory). */
+/* "Beispiel – …" above the explanation's animation: it is not this lawn. */
+.animationCaption {
+  margin: 0;
+  padding: 6px 10px 4px;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
 .animationSvg {
   display: block;
   width: 100%;

@@ -1,0 +1,1 @@
+{"content_type":"CGSHOP2027_Instance","instance_uid":"example_1s3","region_to_cover":{"outer_boundary":{"x":[0,11,11,16,16,0],"y":[0,0,2,2,9,9]},"inner_boundaries":[{"x":[4,4,7,7],"y":[4,7,7,4]}]},"cutter":{"x":[0,3,3,0],"y":[0,0,3,3]},"cutter_center":[1,1],"number_of_cutters":1}

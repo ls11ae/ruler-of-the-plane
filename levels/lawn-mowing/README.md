@@ -65,6 +65,12 @@ from the existing solution file as well and only replaces it by a better one.
   pyutils27 solution format. They are kept apart from the instances because pyutils27's instance database treats every JSON
   file in a folder as an instance. `npm run levels` puts instances and solutions into
   `public/levels/lawn-mowing/<lawn>.json` (one file per lawn with both numbers of cutters).
+- `example/`: the small example lawn of the explanation after a finished lawn ("Was steckt dahinter?"),
+  none of the booth lawns (Kevin, 2026-10-19: the animation showed the solution of the lawn just played).
+  `lawn.txt` is its source (same format as `lawns.txt`), `instances/` its instances for one and two
+  cutters (`make_instances.py`), `solutions/` the tours of `python3 scripts/lawns/solve.py example_1s3
+example_2s3` (one cutter: 46 steps, equal to the lower bound; two cutters: 26, lower bound 24).
+  `npm run levels` writes it to `public/levels/lawn-mowing/example.json`.
 - `competition/`: a real CG:SHOP 2027 instance with the example solution from pyutils27 (MIT), shown in
   the theory view.
 - `fixtures/`: tours on some of these instances checked by the pyutils27 verifier

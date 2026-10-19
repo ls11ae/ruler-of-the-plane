@@ -64,12 +64,20 @@ export const de = {
     stats: (longest: number, target: string) => `Längste Runde: ${longest} Schritte · ${target}`,
     score: (n: number) => `${n} Schritte`,
   },
-  explanation: (bound: number) => [
+  /**
+   * After a finished lawn: this lawn's lower bound, the visitor's longest round and the computer's (or the
+   * strip strategy's, `solver` false), for one or two mowers.
+   */
+  explanation: (bound: number, mine: number, reference: number, solver: boolean, cutters: number) => [
     'Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.',
-    `Jeder Schritt mäht höchstens 3 neue Felder; darum braucht dieser Rasen mindestens ${bound} Schritte. Die beste Runde zu finden ist trotzdem sehr schwer.`,
-    'Der Löser des Lehrstuhls sucht mit cleveren Verfahren lange nach kurzen Runden; die Animation zeigt seine (oder eine einfache) Lösung.',
+    `Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens ${bound} Schritte. ${cutters === 1 ? `Du hast ${mine} gebraucht` : `Eure längere Runde hatte ${mine}`}, ${solver ? 'der Computer' : 'die Streifen-Strategie'} ${reference}.`,
+    'Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.',
   ],
   explanationAnimation: 'Die Runden des Lösers auf diesem Rasen',
+  exampleCaption: (cutters: number, steps: number) =>
+    `Beispiel – ein kleiner Rasen: So mäht der Computer ${cutters === 1 ? 'mit einem Mäher' : 'mit zwei Mähern'}, ${steps} Schritte.`,
+  exampleAnimation: (cutters: number) =>
+    `Beispiel: die Runden des Computers ${cutters === 1 ? 'mit einem Mäher' : 'mit zwei Mähern'} auf einem kleinen Rasen, der keiner der Rasen hier ist`,
   replay: 'Nochmal zeigen',
   theory: {
     title: 'Theorie',
