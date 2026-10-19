@@ -2,13 +2,18 @@ import { useId, useMemo } from 'react'
 import type { Bounds, Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { useBoard } from '../../components/boardContext'
-import { art } from './art'
+import { art, LAWN } from './art'
 import { holeCells, ringsPath, runs } from './geometry'
 
-const GRASS = '#8fca6a'
-const GRASS_DARK = '#79b957'
-const MOWED = '#cfeab0'
-const MOWED_STRIPE = '#bfe09c'
+/** Two tufts of uncut grass per cell (short strokes fanning out from the ground). */
+const TUFTS = (
+  [
+    [0.3, 0.62],
+    [0.7, 0.3],
+  ] as const
+)
+  .map(([x, y]) => `M${x - 0.08},${y}l0.03,-0.13M${x},${y}l0,-0.16M${x + 0.08},${y}l-0.03,-0.13`)
+  .join('')
 
 /** Grid paper around the lawn (the Scribble floor tile spans 2 × 2 cells). */
 export function Paper({ bounds }: { bounds: Bounds }) {
@@ -103,9 +108,16 @@ export function LawnBase({ level }: { level: LawnMowingLevel }) {
     <g aria-hidden="true">
       <defs>
         <pattern id={`${id}-grass`} patternUnits="userSpaceOnUse" x={0} y={0} width={1} height={1}>
-          <rect width={1} height={1} fill={GRASS} />
-          <rect width={1} height={1} fill="none" stroke={GRASS_DARK} strokeWidth={0.04} />
-          <image href={art.grass} width={1} height={1} opacity={0.55} />
+          <rect width={1} height={1} fill={LAWN.grass} />
+          <rect width={1} height={1} fill="none" stroke={LAWN.grassLine} strokeWidth={0.04} />
+          <path
+            d={TUFTS}
+            fill="none"
+            stroke={LAWN.tuft}
+            strokeOpacity={0.6}
+            strokeWidth={0.04}
+            strokeLinecap="round"
+          />
         </pattern>
       </defs>
       <path d={lawn} fill={`url(#${id}-grass)`} fillRule="evenodd" />
@@ -114,15 +126,15 @@ export function LawnBase({ level }: { level: LawnMowingLevel }) {
   )
 }
 
-/** Mowed cells: light green with mowing stripes. */
+/** Mowed cells: much lighter green than the uncut grass, with mowing stripes. */
 export function Mowed({ cells }: { cells: readonly Vec2[] }) {
   const id = `mowed-${useId().replace(/[^\w-]/g, '')}`
   return (
     <g aria-hidden="true">
       <defs>
         <pattern id={id} patternUnits="userSpaceOnUse" x={0} y={0} width={1} height={1}>
-          <rect width={1} height={1} fill={MOWED} />
-          <rect width={0.5} height={1} fill={MOWED_STRIPE} />
+          <rect width={1} height={1} fill={LAWN.mowed} />
+          <rect width={0.5} height={1} fill={LAWN.mowedStripe} />
         </pattern>
       </defs>
       {runs(cells).map(([x, y, n]) => (

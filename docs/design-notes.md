@@ -1329,3 +1329,15 @@ example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` b
   the line would read "Streifen-Strategie: 74 Schritte". It fits on phones (390 px) and the four cards
   still fit side by side at 1280 px (both tested). Alternatives: "Deine Runde bisher" (longer, and with
   two mowers it is not one round).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": mowed and unmowed clearly different.** Above all
+  on phones it was hard to see where the lawn was already mowed: the uncut grass (green under the white
+  Scribble grass tile at 55 %) came out almost as pale as the mowed cells. Uncut grass is now a darker,
+  fuller green (`#5d9f3c`, grid lines `#4c8a2f`) with two tufts of dark green strokes per cell, drawn in
+  SVG instead of the Scribble tile (which only whitened the green; it left CREDITS.md); mowed cells are
+  clearly lighter (`#dbf0c4`, stripes `#c9e6aa`) and keep their stripes, so colour is not the only cue
+  (tufts on uncut grass, stripes on mowed). The same colours in the how-to, the theory and explanation
+  animations, the attract demo and the lawn cards (`LAWN` in `src/ui/games/lawn-mowing/art.ts`).
+  Checked at 390 × 844 (screenshots of the session); the contrast checks of `e2e/a11y.spec.ts` stay
+  green (no text lies on the lawn). Alternatives: the Scribble tile multiplied onto the green (a blend
+  mode inside an SVG pattern, untested in WebKit); only a darker mowed colour (the mowed area would read
+  as the important part).

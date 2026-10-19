@@ -1,4 +1,5 @@
 import { Slabs } from './LawnArt'
+import { LAWN } from './art'
 import styles from './LawnMowing.module.css'
 
 /** A small terrace of stone slabs in the first strip (columns 4–5, rows 1–2; `Slabs` counts y upwards). */
@@ -18,7 +19,7 @@ export function HowToAnimation({ label }: { label: string }) {
       role="img"
       aria-label={label}
     >
-      <rect x={0} y={0} width={cols} height={rows} fill="#8fca6a" />
+      <rect x={0} y={0} width={cols} height={rows} fill={LAWN.grass} />
       {Array.from({ length: cols * rows }, (_, i) => (
         <rect
           key={i}
@@ -27,12 +28,12 @@ export function HowToAnimation({ label }: { label: string }) {
           width={1}
           height={1}
           fill="none"
-          stroke="#79b957"
+          stroke={LAWN.grassLine}
           strokeWidth={0.04}
         />
       ))}
-      <rect className={styles.mowTop} x={0} y={0} width={cols} height={3} fill="#cfeab0" />
-      <rect className={styles.mowBottom} x={0} y={3} width={cols} height={3} fill="#cfeab0" />
+      <rect className={styles.mowTop} x={0} y={0} width={cols} height={3} fill={LAWN.mowed} />
+      <rect className={styles.mowBottom} x={0} y={3} width={cols} height={3} fill={LAWN.mowed} />
       <Slabs cells={TERRACE} />
       <rect x={4} y={1} width={2} height={2} fill="none" stroke="var(--ink)" strokeWidth={0.08} />
       <rect x={0} y={0} width={cols} height={rows} fill="none" stroke="var(--ink)" strokeWidth={0.14} />

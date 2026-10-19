@@ -11,6 +11,7 @@ import { useLevel } from '../../levels'
 import { boardBounds, ringsPath } from './geometry'
 import { MORTAR } from './LawnArt'
 import type { LawnTexts } from './i18n.de'
+import { LAWN } from './art'
 import styles from './LawnMowing.module.css'
 import { starsKey, usePrefs, type Setup } from './store'
 
@@ -53,7 +54,7 @@ function LawnCard({
             <path d={ringsPath(level.value.holes)} fill={MORTAR} />
             <path
               d={ringsPath([level.value.outer, ...level.value.holes])}
-              fill="#8fca6a"
+              fill={LAWN.grass}
               fillRule="evenodd"
               stroke="var(--ink)"
               strokeWidth={0.35}

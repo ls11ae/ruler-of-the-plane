@@ -7,7 +7,7 @@ import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { useAnimationFrame } from '../../input/hooks'
 import { useLevel } from '../../levels'
-import { CUTTER_COLOURS } from './art'
+import { CUTTER_COLOURS, LAWN } from './art'
 import { boardBounds, cutterCentre, holeCells, ringsPath, runs, simplify } from './geometry'
 import type { LawnTexts } from './i18n.de'
 import { Slabs } from './LawnArt'
@@ -63,10 +63,10 @@ export function TourAnimation({
         role="img"
         aria-label={label}
       >
-        <path d={ringsPath([level.outer, ...level.holes])} fill="#8fca6a" fillRule="evenodd" />
+        <path d={ringsPath([level.outer, ...level.holes])} fill={LAWN.grass} fillRule="evenodd" />
         <Slabs cells={slabs} />
         {runs(mowed).map(([x, y, n]) => (
-          <rect key={`${x},${y}`} x={x} y={-(y + 1)} width={n} height={1} fill="#cfeab0" />
+          <rect key={`${x},${y}`} x={x} y={-(y + 1)} width={n} height={1} fill={LAWN.mowed} />
         ))}
         <path
           d={ringsPath([level.outer])}
