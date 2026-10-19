@@ -7,6 +7,7 @@ import {
   extendTo,
   fullTopologyCount,
   isNearlyOptimal,
+  isSettleClose,
   junctionHint,
   lengthOf,
   mergeInto,
@@ -16,6 +17,7 @@ import {
   placeGroups,
   relax,
   removeRoad,
+  SETTLE_TOLERANCE,
   splitRoad,
   toDegrees,
   TOLERANCE,
@@ -25,6 +27,7 @@ import {
 import { BICHROMATIC_IDS, LEVEL_IDS, setOf, STEINER_HOW_TO, STEINER_IDS } from './levels'
 import { BICHROMATIC_LEVELS, STEINER_LEVELS } from './levels.fixture'
 import { kruskal, roadKey, type Road } from './mst'
+import { mulberry32 } from '../../random'
 
 const TRIANGLE: Vec2[] = [
   [0, 0],
@@ -172,6 +175,78 @@ describe('the shipped maps of "Kreuzungen"', () => {
     expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.2, y]), level.optimum.length)).toBe(true)
     expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.6, y]), level.optimum.length)).toBe(false)
     expect(isNearlyOptimal(places, removeRoad(n, net, net.roads[0]!), level.optimum.length)).toBe(false)
+  })
+})
+
+/**
+ * Networks with the optimum's roads whose junctions are moved off their best spots in random directions
+ * (all at once, as a player places them by hand), each just so far that the network is `excess` longer than
+ * the optimum: the worst angle at a junction (degrees from 120°) and the furthest junction from its spot.
+ */
+function offBy(level: (typeof STEINER_LEVELS)[number], excess: number, samples: number) {
+  const places = placesOf(level)
+  const { optimum } = level
+  const rng = mulberry32(level.number)
+  const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng())
+  return Array.from({ length: samples }, () => {
+    const dirs = optimum.junctions.map(() => [gauss(), gauss()] as const)
+    const at = (t: number): JunctionNetwork => ({
+      junctions: optimum.junctions.map(([x, y], k) => [x + t * dirs[k]![0], y + t * dirs[k]![1]]),
+      roads: [...optimum.roads],
+    })
+    let [lo, hi] = [0, 1]
+    for (let i = 0; i < 50; i++) {
+      const t = (lo + hi) / 2
+      if (lengthOf(places, at(t)) < optimum.length * (1 + excess)) lo = t
+      else hi = t
+    }
+    const net = at(lo)
+    const nodes = nodesOf(places, net)
+    const junctions = net.junctions.map((_, k) => places.length + k)
+    const angle = Math.max(
+      ...junctions.flatMap((v) =>
+        anglesAt(nodes, net.roads, v).map((a) => Math.abs(toDegrees(a.size) - 120)),
+      ),
+    )
+    const moved = Math.max(
+      ...net.junctions.map(([x, y], k) =>
+        Math.hypot(x - optimum.junctions[k]![0], y - optimum.junctions[k]![1]),
+      ),
+    )
+    return { net, angle, moved }
+  })
+}
+
+const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]!
+
+describe('settling on a win in "Kreuzungen"', () => {
+  it('settles only networks whose angles are within about 5° of 120°, and moves junctions only a little', () => {
+    for (const level of STEINER_LEVELS) {
+      const places = placesOf(level)
+      const close = offBy(level, SETTLE_TOLERANCE * 0.999, 200)
+      for (const { net } of close) expect(isSettleClose(places, net, level.optimum.length)).toBe(true)
+      expect(median(close.map((c) => c.angle)), level.id).toBeLessThanOrEqual(5.5)
+      expect(Math.max(...close.map((c) => c.angle)), level.id).toBeLessThanOrEqual(8.5)
+      expect(Math.max(...close.map((c) => c.moved)), level.id).toBeLessThan(0.12)
+      // At 0.2 % (Kevin's starting value) the angles can still be far off: that looked like snapping.
+      expect(median(offBy(level, 0.002, 200).map((c) => c.angle)), level.id).toBeGreaterThan(9)
+    }
+  })
+
+  it('counts a network between the two thresholds as optimal, without settling it', () => {
+    for (const level of STEINER_LEVELS) {
+      const places = placesOf(level)
+      for (const { net } of offBy(level, (SETTLE_TOLERANCE + TOLERANCE) / 2, 20)) {
+        expect(isNearlyOptimal(places, net, level.optimum.length)).toBe(true)
+        expect(isSettleClose(places, net, level.optimum.length)).toBe(false)
+      }
+    }
+    const level = STEINER_LEVELS[0]!
+    const places = placesOf(level)
+    const net: JunctionNetwork = { junctions: [...level.optimum.junctions], roads: [...level.optimum.roads] }
+    expect(isSettleClose(places, removeRoad(places.length, net, net.roads[0]!), level.optimum.length)).toBe(
+      false,
+    )
   })
 })
 

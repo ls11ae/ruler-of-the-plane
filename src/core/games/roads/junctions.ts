@@ -26,6 +26,15 @@ export interface SteinerOptimum {
 /** A network this much longer than the optimum still counts as optimal (junctions are placed by hand). */
 export const TOLERANCE = 0.01
 
+/**
+ * On a win, the junctions slide to their best spots only if the network is at most this much longer than
+ * the optimum, so that the slide moves them only a little (Kevin, 2026-10-19). Tuned on the six maps: at
+ * 0.03 % the worst angle at a junction is typically 4–5° from 120° (at most about 8°), and a junction moves
+ * at most about 0.1 units (a map is about 6 wide); at 0.2 % the angles are typically still 10–13° off (up to
+ * 20°), which looked like snapping to the solution. Between this and 1 % the network counts as optimal, but the junctions stay where they are.
+ */
+export const SETTLE_TOLERANCE = 0.0003
+
 export const nodesOf = (places: readonly Vec2[], net: JunctionNetwork): Vec2[] => [
   ...places,
   ...net.junctions,
@@ -44,6 +53,13 @@ export function placeGroups(places: number, net: JunctionNetwork): number {
 /** Every place connected, and the network at most 1 % longer than the optimum. */
 export function isNearlyOptimal(places: readonly Vec2[], net: JunctionNetwork, optimum: number): boolean {
   return placeGroups(places.length, net) === 1 && lengthOf(places, net) <= optimum * (1 + TOLERANCE) + 1e-9
+}
+
+/** Every place connected, and the network so close to the optimum that its junctions may settle. */
+export function isSettleClose(places: readonly Vec2[], net: JunctionNetwork, optimum: number): boolean {
+  return (
+    placeGroups(places.length, net) === 1 && lengthOf(places, net) <= optimum * (1 + SETTLE_TOLERANCE) + 1e-9
+  )
 }
 
 /** Roads per node. */

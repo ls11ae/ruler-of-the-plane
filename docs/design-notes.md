@@ -447,7 +447,7 @@ their ends.
   generous: on the triangle a junction 0.56 units off its spot is only 1.8 % too long, and within 1 % the
   angles can be 10–15° off. So on the win the junctions slide the last bit to their best spots (Weiszfeld
   steps on the player's own roads, half a second), and the angles read 120°: the rule shows itself where
-  it is reached. Hints compare with the stored optimum, its junctions matched to the player's (nearest
+  it is reached (since 2026-10-19 only within 0.03 % of the optimum, see "Kevin's playtest"). Hints compare with the stored optimum, its junctions matched to the player's (nearest
   pairs within 0.8): a junction without a match with one road (a dead end) or two (a bend), a missing
   junction as a dashed ghost with a road to it, a junction or road too many, a road missing, finally the
   junction furthest from 120° ("Schieb die Kreuzung im grünen Kreis…"); following them leads to the
@@ -1231,3 +1231,19 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   place to place. The old map's leaderboard (`roads/steiner/1-dreieck`) is orphaned. Alternatives: the
   triangle turned or mirrored (still three places round one junction, the same picture); a different
   how-to picture (Kevin wanted the animation kept).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Kreuzungen": the junctions settle only very close to the
+  optimum.** On a win the junctions slid to their best spots, and with the 1 % tolerance this happened as
+  soon as a network was roughly right, so it looked like snapping to the solution. 1 % stays the win; the
+  junctions now settle only when the network is at most 0.03 % longer than the optimum
+  (`SETTLE_TOLERANCE` in `src/core/games/roads/junctions.ts`); between that and 1 % the network counts as
+  optimal, but the junctions stay where the player put them, with their angles as they are. Tuned on the
+  six maps by moving the optimum's junctions in random directions until the network is a given share too
+  long: at Kevin's starting value of 0.2 % the worst angle at a junction is typically still 10–13° off
+  120° (up to 21° on "Wabe", whose junctions have short roads between them), and a junction moves up to
+  0.3 units when it settles; at 0.03 % the worst angle is typically 4–5° off (at most 4.4° on "Gabel", 7.6°
+  on "Wabe"), and a junction moves at most 0.1 units (a map is about 6 wide; 10–20 px on the laptop).
+  The angle labels lead there: each degree off is a few pixels. Tests: every map at the threshold
+  (median worst angle at most 5.5°, at most 8.5°, junctions within 0.12), a network between the two
+  thresholds counts but does not settle, and the smoke test plays both. Alternatives: a rule on the
+  angles instead (Kevin asked for one on the length, which is what the king pays); 0.05 % (angles
+  typically 5–6.5° off, up to 10°).
