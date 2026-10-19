@@ -860,13 +860,12 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `home(n)`:
   - n = 6: +6 zurück
   - n = 0: am Start
-- `longestTitle`: Es zählt die längere Runde:
-- `longestTitleOne`: Deine Runde:
+- `longestTitle`: Längerer Mäher:
+- `longestTitleOne`: Bisher:
 - `target(n)`:
-  - n = 48: Ziel vom Löser: 48
+  - n = 48: Computer: 48 Schritte
 - `targetStrips(n)`:
-  - n = 48: Ziel (Streifen-Strategie): 48
-- `targetPending`: Ziel vom Löser: kommt bald
+  - n = 48: Streifen-Strategie: 48 Schritte
 - `space`: Leertaste
 - `homeButton`: Feierabend
 - `homeHint`: alle zurück zum Start
@@ -937,7 +936,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 - `tierTeasers.easy`: Der Vorgarten: klein, mit Terrasse und Steinplatten – zum Üben.
 - `tierTeasers.medium`: Gartenwege und Trittsteine: größere Wiesen, mehr zu planen.
-- `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Lösers.
+- `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Computers.
 
 ### setup
 
@@ -960,7 +959,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 - `result.title`: Feierabend!
 - `result.stats(longest, target)`:
-  - longest = 52, target = „Ziel vom Löser: 48“: Längste Runde: 52 Schritte · Ziel vom Löser: 48
+  - longest = 52, target = „Computer: 48 Schritte“: Längste Runde: 52 Schritte · Computer: 48 Schritte
 - `result.score(n)`:
   - n = 48: 48 Schritte
 

@@ -17,11 +17,12 @@ export const de = {
   cutter: (i: number) => `Mäher ${i}`,
   steps: (n: number) => `${n} ${n === 1 ? 'Schritt' : 'Schritte'}`,
   home: (n: number) => (n > 0 ? `+${n} zurück` : 'am Start'),
-  longestTitle: 'Es zählt die längere Runde:',
-  longestTitleOne: 'Deine Runde:',
-  target: (n: number) => `Ziel vom Löser: ${n}`,
-  targetStrips: (n: number) => `Ziel (Streifen-Strategie): ${n}`,
-  targetPending: 'Ziel vom Löser: kommt bald',
+  /** The score card: the round so far with the way home (one mower), or the longer of the two rounds. */
+  longestTitle: 'Längerer Mäher:',
+  longestTitleOne: 'Bisher:',
+  /** The computer's longest round on this lawn (the solver's tours), or the strip strategy's. */
+  target: (n: number) => `Computer: ${n} Schritte`,
+  targetStrips: (n: number) => `Streifen-Strategie: ${n} Schritte`,
   space: 'Leertaste',
   homeButton: 'Feierabend',
   homeHint: 'alle zurück zum Start',
@@ -35,7 +36,7 @@ export const de = {
   tierTeasers: {
     easy: 'Der Vorgarten: klein, mit Terrasse und Steinplatten – zum Üben.',
     medium: 'Gartenwege und Trittsteine: größere Wiesen, mehr zu planen.',
-    hard: 'Hier sind einfache Strategien klar schlechter als die Runden des Lösers.',
+    hard: 'Hier sind einfache Strategien klar schlechter als die Runden des Computers.',
   },
   resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'allein' : 'zu zweit'}`,
   setup: {

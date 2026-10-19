@@ -76,7 +76,7 @@ const SAMPLES: Record<string, Sample> = {
   optimum: '12,4 km',
   percent: '4.2',
   tier: 'Mittel',
-  target: 'Ziel vom Löser: 48',
+  target: 'Computer: 48 Schritte',
   map: 'Insel',
   a: 'Du',
   b: 'Computer',

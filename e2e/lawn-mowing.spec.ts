@@ -87,6 +87,8 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, phone
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('steps-2')).toBeVisible()
   await expectHeaderLaidOut(page)
+  // The score card: the longer of the two rounds, and the computer's.
+  await expect(page.getByTestId('longest')).toHaveText(/^Längerer Mäher:\d+ SchritteComputer: 56 Schritte$/)
   // The holes of the lawn (a terrace and a small square) are stone slabs, 16 cells.
   await expect(page.getByTestId('slabs').locator('rect[rx]')).toHaveCount(16)
   await shot(page, testInfo, 'lawn-mowing-start')
@@ -166,6 +168,11 @@ test('one player mows a lawn with the direction pad', async ({ page, phone }, te
   await shot(page, testInfo, 'lawn-mowing-setup')
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('pad-up')).toBeVisible()
+  // The computer's steps beside the mower's, inside the screen.
+  const stats = page.getByTestId('steps-1')
+  await expect(stats).toContainText('Computer: 110 Schritte')
+  const box = (await stats.getByText('Computer: 110 Schritte').boundingBox())!
+  expect(box.x + box.width).toBeLessThanOrEqual(390)
   await shot(page, testInfo, 'lawn-mowing-start')
 
   const [start] = await cutterPositions(page)
@@ -201,4 +208,21 @@ test('one player mows a lawn with the direction pad', async ({ page, phone }, te
     result.getByText('Beispiel – ein kleiner Rasen: So mäht der Computer mit einem Mäher, 46 Schritte.'),
   ).toBeVisible()
   await shot(page, testInfo, 'lawn-mowing-result')
+})
+
+test('alone on the laptop: "Bisher" and the computer on the score card, every card on the screen', async ({
+  page,
+  phone,
+}) => {
+  test.skip(phone, 'phones show the steps beside the direction pad')
+  await page.goto('./#/play/lawn-mowing')
+  await chooseTier(page, 'Leicht')
+  await expect(page.getByTestId('longest')).toHaveText('Bisher:0 SchritteComputer: 110 Schritte')
+  await page.keyboard.press('KeyD')
+  await expect(page.getByTestId('longest')).toHaveText('Bisher:2 SchritteComputer: 110 Schritte')
+  for (const card of await page.locator('footer > *').all()) {
+    const box = (await card.boundingBox())!
+    expect(box.x).toBeGreaterThanOrEqual(0)
+    expect(box.x + box.width).toBeLessThanOrEqual(1280)
+  }
 })

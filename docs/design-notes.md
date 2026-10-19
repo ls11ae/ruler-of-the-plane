@@ -1320,3 +1320,12 @@ example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` b
   dran · Burg 3 von 10" (also "Computer überlegt … · Burg 3 von 10"); wider screens keep it in the
   subtitle only. Alternatives: keeping the subtitle on phones (the header would take a third line); the
   count in the score cards (it belongs to the round, not to a player).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": the score card says "Bisher" and "Computer".**
+  "Deine Runde" was confusing. The score card now reads "Bisher: 12 Schritte" with one mower and
+  "Längerer Mäher: 12 Schritte" with two (the steps so far with the way back, as before), and "Computer:
+  110 Schritte" instead of "Ziel vom Löser: 110", since the app calls the solver "der Computer" elsewhere
+  too (also on the phone beside the direction pad, on the result screen, and in the "Schwer" teaser of
+  the tier screen; the theory view still names "den Löser des Lehrstuhls"). Without the solver's tours
+  the line would read "Streifen-Strategie: 74 Schritte". It fits on phones (390 px) and the four cards
+  still fit side by side at 1280 px (both tested). Alternatives: "Deine Runde bisher" (longer, and with
+  two mowers it is not one round).
