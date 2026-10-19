@@ -5,7 +5,7 @@ import {
   type JunctionNetwork,
   type SteinerOptimum,
 } from '../../../core/games/roads/junctions'
-import type { RoadsMap } from '../../../core/games/roads/levels'
+import { STEINER_HOW_TO, type RoadsMap } from '../../../core/games/roads/levels'
 import type { Road } from '../../../core/games/roads/mst'
 import type { Vec2 } from '../../../core/geometry/types'
 import { Button } from '../../components/Button'
@@ -173,15 +173,7 @@ export function SteinerAnimation({
   )
 }
 
-const HOW_TO_MAP: RoadsMap = {
-  points: [
-    [-1.6, 0.9],
-    [1.6, 0.9],
-    [0, -1.5],
-  ],
-  villages: 2,
-  bounds: { minX: -1.6, minY: -1.5, maxX: 1.6, maxY: 0.9 },
-}
+const HOW_TO_MAP = STEINER_HOW_TO
 const HOW_TO_ROADS: Road[] = [
   [0, 3],
   [1, 3],

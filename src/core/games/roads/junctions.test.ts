@@ -22,7 +22,7 @@ import {
   type JunctionNetwork,
   type SteinerOptimum,
 } from './junctions'
-import { BICHROMATIC_IDS, LEVEL_IDS, setOf, STEINER_IDS } from './levels'
+import { BICHROMATIC_IDS, LEVEL_IDS, setOf, STEINER_HOW_TO, STEINER_IDS } from './levels'
 import { BICHROMATIC_LEVELS, STEINER_LEVELS } from './levels.fixture'
 import { kruskal, roadKey, type Road } from './mst'
 
@@ -151,14 +151,27 @@ describe('the shipped maps of "Kreuzungen"', () => {
     }
   })
 
+  it("starts with a map that is not the how-to's picture: a fork and a road straight on", () => {
+    const level = STEINER_LEVELS[0]!
+    const n = placesOf(level).length
+    expect(n).toBeGreaterThan(STEINER_HOW_TO.points.length)
+    expect(level.optimum.junctions).toHaveLength(1)
+    expect(level.optimum.roads.filter(([a, b]) => a < n && b < n)).toHaveLength(1)
+    // Easy: the junction far from every place (easy to grab), and worth building.
+    const [x, y] = level.optimum.junctions[0]!
+    for (const [px, py] of placesOf(level)) expect(Math.hypot(px - x, py - y)).toBeGreaterThan(1)
+    expect(level.mstLength / level.optimum.length).toBeGreaterThan(1.06)
+  })
+
   it('counts a network within 1 % as optimal, not one further off', () => {
     const level = STEINER_LEVELS[0]!
     const places = placesOf(level)
     const net: JunctionNetwork = { junctions: [...level.optimum.junctions], roads: [...level.optimum.roads] }
     const [x, y] = net.junctions[0]!
-    expect(isNearlyOptimal(places, moveJunction(3, net, 3, [x + 0.2, y]), level.optimum.length)).toBe(true)
-    expect(isNearlyOptimal(places, moveJunction(3, net, 3, [x + 0.6, y]), level.optimum.length)).toBe(false)
-    expect(isNearlyOptimal(places, removeRoad(3, net, net.roads[0]!), level.optimum.length)).toBe(false)
+    const n = places.length
+    expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.2, y]), level.optimum.length)).toBe(true)
+    expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.6, y]), level.optimum.length)).toBe(false)
+    expect(isNearlyOptimal(places, removeRoad(n, net, net.roads[0]!), level.optimum.length)).toBe(false)
   })
 })
 

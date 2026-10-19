@@ -1,0 +1,30 @@
+{
+  "id": "roads/steiner/1-gabel",
+  "collection": "roads/steiner",
+  "name": "1-gabel",
+  "number": 1,
+  "source": "levels/roads/steiner/1-gabel.json",
+  "bounds": { "minX": -2.574585, "minY": -1.399453, "maxX": 2.693676, "maxY": 1.39621 },
+  "villages": [
+    [-2.574585, -1.399453],
+    [-2.194511, 1.39621],
+    [2.693676, 0.856221]
+  ],
+  "castles": [
+    [0.122568, -0.155851]
+  ],
+  "optimum": {
+    "junctions": [
+      [-1.565634, 0.009736]
+    ],
+    "roads": [
+      [0, 4],
+      [1, 4],
+      [2, 3],
+      [3, 4]
+    ],
+    "length": 7.71501
+  },
+  "mstLength": 8.373372,
+  "method": "exact: every full Steiner topology, each solved by Smith’s iteration (scripts/roads/steiner.ts, steiner-maps.ts)"
+}

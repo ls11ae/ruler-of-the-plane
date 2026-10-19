@@ -1213,3 +1213,21 @@ the QR poster and card rejected and removed.
   the leash could go (as the paper's polygons; a new kind of obstacle for the rope and the search);
   replacing one of the two free-start walks (four woods walks in "Schwer" are not too many: eight walks in
   all, as in "Mittel" with seven).
+
+### Kevin's playtest (2026-10-19)
+
+Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
+
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Kreuzungen": a new first map, "Gabel".** The how-to's
+  animation (a castle above two villages, joined at one junction) was exactly map 1 ("Dreieck") with its
+  solution, so the how-to solved the first map. The animation stays; map 1 is now a fork with a road
+  straight on: two villages on the left joined at a junction, which leads on to the castle in the middle,
+  and from the castle a road without a junction to a village on the right (the angle at the castle is
+  wider than 120°, so no junction helps there). Four places, one junction 1.5 units from every place, the
+  network without junctions 8.5 % longer (the old triangle: 14.4 %); it also shows early that not every
+  place needs a junction. The optimum comes from `scripts/roads/steiner-maps.ts` as the other maps'
+  (every full topology, Smith's iteration); the how-to's picture moved to `STEINER_HOW_TO` in
+  `src/core/games/roads/levels.ts`, and a test checks that map 1 has more places than it and a road from
+  place to place. The old map's leaderboard (`roads/steiner/1-dreieck`) is orphaned. Alternatives: the
+  triangle turned or mirrored (still three places round one junction, the same picture); a different
+  how-to picture (Kevin wanted the animation kept).

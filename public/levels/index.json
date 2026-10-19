@@ -64,7 +64,7 @@
       "lawn-mowing/smr_882k_481_3s3"
     ],
     "roads/steiner": [
-      "roads/steiner/1-dreieck",
+      "roads/steiner/1-gabel",
       "roads/steiner/2-viereck",
       "roads/steiner/3-zickzack",
       "roads/steiner/4-leiter",

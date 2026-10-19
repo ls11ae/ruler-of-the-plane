@@ -10,7 +10,7 @@ freshDevice()
 
 const read = <T>(path: string) =>
   JSON.parse(readFileSync(new URL(`../public/levels/${path}.json`, import.meta.url), 'utf8')) as T
-const steiner = read<RoadsSteinerLevel>('roads/steiner/1-dreieck')
+const steiner = read<RoadsSteinerLevel>('roads/steiner/1-gabel')
 const plane = read<RoadsBichromaticLevel>('roads/bichromatic/1-burgen')
 
 test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ page, phone }, testInfo) => {
@@ -24,13 +24,20 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   if (!phone) await expectHeaderLaidOut(page)
 
   const places: Pt[] = [...steiner.villages, ...steiner.castles]
+  const n = places.length
   const best = steiner.optimum.junctions[0]!
+  // The first map: one junction, and a road from place to place.
+  const forked = steiner.optimum.roads.filter(([, b]) => b === n).map(([a]) => a)
+  const straight = steiner.optimum.roads.filter(([a, b]) => a < n && b < n)
+  expect([forked.length, straight.length]).toEqual([3, 1])
   // A junction well off its best spot: a road dragged onto open land there, then the others to it.
   const off: Pt = [best[0] + 0.5, best[1] + 0.25]
-  await drag(page, places[0]!, off, phone)
+  await drag(page, places[forked[0]!]!, off, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(1)
-  await drag(page, places[1]!, off, phone)
-  await drag(page, places[2]!, off, phone)
+  await drag(page, places[forked[1]!]!, off, phone)
+  await drag(page, places[forked[2]!]!, off, phone)
+  await expect(page.getByTestId('roads-state')).toHaveText('Noch 2 Teile verbinden')
+  await drag(page, places[straight[0]![0]]!, places[straight[0]![1]]!, phone)
   await expect(page.getByTestId('roads-state')).toHaveText(/über dem Optimum/)
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await page.getByRole('button', { name: 'Tipp' }).click()
@@ -45,13 +52,13 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await expect(result).toBeVisible()
   await expect(result.getByRole('img', { name: '2 Sterne von 3' })).toBeVisible()
   await expect(result.getByText(/Steinerpunkte/)).toBeVisible()
-  await expect(result.getByTestId('steiner-animation-length')).toHaveText('Länge: 5,9 km', {
+  await expect(result.getByTestId('steiner-animation-length')).toHaveText('Länge: 7,7 km', {
     timeout: 10_000,
   })
   await shot(page, testInfo, 'roads-steiner-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
   const theory = page.getByRole('complementary', { name: 'Theorie' })
-  await expect(theory.getByTestId('steiner-compare')).toContainText('14,4 % länger')
+  await expect(theory.getByTestId('steiner-compare')).toContainText('8,5 % länger')
   await theory.getByRole('button', { name: 'Ohne Kreuzungen' }).click()
   await shot(page, testInfo, 'roads-steiner-theory')
 })
@@ -70,7 +77,7 @@ test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ p
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await drag(page, bend, a, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(0)
-  await expect(page.getByTestId('roads-state')).toHaveText('Noch 2 Teile verbinden')
+  await expect(page.getByTestId('roads-state')).toHaveText('Noch 3 Teile verbinden')
 })
 
 test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({ page, phone }, testInfo) => {
