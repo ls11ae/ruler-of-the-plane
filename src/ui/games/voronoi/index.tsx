@@ -345,6 +345,7 @@ function Match({
           <span className={styles.turn} data-testid="turn">
             <span className={styles.playerDot} data-player={mover} aria-hidden="true" />
             {status}
+            <span className={styles.castleCount}>· {t.castleCount(castleNumber, perPlayer)}</span>
           </span>
         )}
         <span className={styles.hint}>

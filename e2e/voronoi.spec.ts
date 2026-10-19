@@ -89,6 +89,15 @@ test('plays a short game against the computer on the island', async ({ page, pho
   let site = 0
   for (let round = 0; round < 5; round++) {
     await expect(game).toHaveAttribute('data-turn', String(2 * round))
+    // The castle count: in the header's subtitle on the laptop, beside whose turn it is on the phone.
+    const count = `Burg ${round + 1} von 5`
+    if (phone) {
+      await expect(page.getByTestId('turn')).toHaveText(`Du bist dran· ${count}`)
+      await expect(page.getByTestId('turn').getByText(count)).toBeVisible()
+    } else {
+      await expect(page.locator('header')).toContainText(count)
+      await expect(page.getByTestId('turn').getByText(count)).toBeHidden()
+    }
     const before = await castles()
     while ((await castles()) === before) {
       expect(site).toBeLessThan(SITES.length)

@@ -47,6 +47,11 @@
   white-space: nowrap;
 }
 
+/* "· Burg 3 von 10": only where the header drops its subtitle (phones; Kevin, 2026-10-19). */
+.castleCount {
+  display: none;
+}
+
 .notice {
   position: absolute;
   left: 50%;
@@ -355,6 +360,9 @@
     flex-direction: column;
     gap: 2px;
     font-size: 0.95rem;
+  }
+  .castleCount {
+    display: inline;
   }
   .maps {
     grid-template-columns: 1fr 1fr 1fr;

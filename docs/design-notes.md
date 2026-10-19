@@ -1314,3 +1314,9 @@ example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` b
   drüberfahren darfst du." Alternatives: the Scribble floor tiles (white with pale grey joints, they look
   like the grid paper round the lawn); keeping trees and ponds with a hint that mowers drive over them
   (the picture says otherwise).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Erobere das Land": the castle count on phones.** The header
+  drops its subtitle on narrow screens (phones, windows up to 720 px), so "Burg 3 von 10" was missing,
+  which players want to know. There it now follows whose turn it is, in the line above the hint: "Du bist
+  dran · Burg 3 von 10" (also "Computer überlegt … · Burg 3 von 10"); wider screens keep it in the
+  subtitle only. Alternatives: keeping the subtitle on phones (the header would take a third line); the
+  count in the score cards (it belongs to the round, not to a player).

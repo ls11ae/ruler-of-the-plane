@@ -406,6 +406,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
   - bonus = 0, cities = 1, mines = 1: (leer)
 - `scoreLabel(name, total)`:
   - name = „Blau“, total = 10: Blau: 10 Punkte
+- `castleCount(castle, total)`:
+  - castle = 4, total = 10: Burg 4 von 10
 - `hintMouse`: Zeig auf die Karte: Die Vorschau zeigt dein neues Gebiet. Burgen nur an Land und mit Abstand.
 - `hintTouch`: Finger auf die Karte, zielen, loslassen: Burg gebaut. Nur an Land und mit Abstand.
 - `hintHold`: Halte den Finger auf der Karte, ziel und lass dann los.

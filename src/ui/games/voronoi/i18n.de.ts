@@ -26,6 +26,8 @@ export const de = {
   bonus: (bonus: number, cities: number, mines: number) =>
     bonus > 0 ? `+${bonus} ${bonusWords(cities, mines)}` : '',
   scoreLabel: (name: string, total: number) => `${name}: ${total} Punkte`,
+  /** The castle count beside whose turn it is, on phones (the header has no subtitle there). */
+  castleCount: (castle: number, total: number) => `Burg ${castle} von ${total}`,
   turn: {
     yours: 'Du bist dran',
     computer: 'Computer überlegt …',
