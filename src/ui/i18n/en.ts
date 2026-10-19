@@ -205,7 +205,7 @@ export const en: ShellTexts = {
     ControlRight: 'Ctrl',
     AltLeft: 'Alt',
     AltRight: 'Alt Gr',
-    Backspace: 'Back',
+    Backspace: 'Backspace',
     Tab: 'Tab',
     CapsLock: 'Caps',
     MetaLeft: 'Win',

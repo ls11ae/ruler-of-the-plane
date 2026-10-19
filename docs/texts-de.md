@@ -234,7 +234,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `keys.ControlRight`: Strg
 - `keys.AltLeft`: Alt
 - `keys.AltRight`: Alt Gr
-- `keys.Backspace`: Rück
+- `keys.Backspace`: Rücktaste
 - `keys.Tab`: Tab
 - `keys.CapsLock`: Feststell
 - `keys.MetaLeft`: Win
