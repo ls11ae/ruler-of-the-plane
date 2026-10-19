@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { thickestDarkSpot } from '../../../core/games/art-gallery/coverage'
+import { showsDarkHint, thickestDarkSpot } from '../../../core/games/art-gallery/coverage'
 import { cornerCount, guaranteedTorches, orthogonalTorches } from '../../../core/games/art-gallery/dungeon'
 import {
   ALL_LEVELS,
@@ -109,10 +109,11 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
     [torches, drag],
   )
   const light = useMemo(() => lighting.light(shown), [lighting, shown])
-  // The hint at the thickest dark spot: only between moves (a dozen offsets, too slow for every frame).
+  // The hint at the thickest dark spot: only from 95 % lit on (earlier it would give away where the next
+  // torch belongs), and only between moves (a dozen offsets, too slow for every frame).
   const hint = useMemo(
     () =>
-      drag || light.coverage.fullyLit || torches.length === 0
+      drag || !showsDarkHint(light.coverage) || torches.length === 0
         ? null
         : thickestDarkSpot(light.coverage.darkPaths),
     [drag, light, torches.length],

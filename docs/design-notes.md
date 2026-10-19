@@ -1247,3 +1247,11 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   thresholds counts but does not settle, and the smoke test plays both. Alternatives: a rule on the
   angles instead (Kevin asked for one on the length, which is what the king pays); 0.05 % (angles
   typically 5–6.5° off, up to 10°).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Licht ins Verlies": the dark-spot marker only from 95 % lit
+  on.** The pulsing marker on the thickest dark spot gave away where the next torch belongs. It now
+  appears only once at least 95 % of the floor is lit and the dungeon is still not fully lit by the
+  thickness rule (`DARK_HINT_FROM`, `showsDarkHint` in `src/core/games/art-gallery/coverage.ts`), so it
+  helps to find the last dark corners. 95 % is the lit share shown above the board (rounded down, so the
+  marker appears from "95 %" on). The attract demo keeps its marker before the last torch. Alternatives: a
+  marker on request (a hint button; the game has none so far); a share relative to the torches still to
+  place (harder to explain).

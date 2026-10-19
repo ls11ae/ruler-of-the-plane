@@ -131,8 +131,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Art gallery: a level is a polygon, 9 of the 14 Unity levels with holes ("pillars"); a torch sees its
   visibility polygon (exact, a point). "Fully lit" is judged by thickness (Kevin, 2026-10-16): the dark
   region (level minus the union of visibility polygons, Clipper2), shrunk by r = 0.03 level units, is
-  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and while
-  not lit a pulsing dot marks the thickest dark spot. An area tolerance would accept a half-dark niche
+  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and once at
+  least 95 % is lit (but not fully) a pulsing dot marks the thickest dark spot (earlier it gave away where
+  the next torch belongs; Kevin, 2026-10-19). An area tolerance would accept a half-dark niche
   (the smallest niches of agLevel8_4 are 0.29 % of the floor); the Unity version used an area ratio plus
   checkpoints, which was fragile. r is tuned in the playtest.
 - The 14 art gallery levels are the 2020 set of "Designing Art Galleries" (van Benthem, Buchin,

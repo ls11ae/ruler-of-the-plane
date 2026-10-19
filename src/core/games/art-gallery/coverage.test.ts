@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { pointInRing } from '../../geometry/polygon'
 import type { Vec2 } from '../../geometry/types'
 import { mulberry32, shuffled } from '../../random'
-import { coverage, floorPaths, LIT_RADIUS, thickestDarkSpot } from './coverage'
+import { coverage, DARK_HINT_FROM, floorPaths, LIT_RADIUS, showsDarkHint, thickestDarkSpot } from './coverage'
 import { dungeonBounds, isOnFloor, type Dungeon } from './dungeon'
 import { rasterCoverage, seesFloat, wallsOf } from './raster'
 import { ART_GALLERY_LEVELS } from './levels.fixture'
@@ -135,6 +135,33 @@ describe('thickness rule', () => {
     const spot = thickestDarkSpot(thick.darkPaths)!
     expect(spot.radius).toBeCloseTo(LIT_RADIUS * 1.3, 3)
     expect(spot.at[1]).toBeCloseTo(4 - LIT_RADIUS * 1.3, 2)
+  })
+
+  it('marks the thickest dark spot only from 95 % lit on', () => {
+    expect(DARK_HINT_FROM).toBe(0.95)
+    const level = ART_GALLERY_LEVELS.find((l) => l.name === 'agLevel3_2')!
+    const floor = floorPaths(level)
+    const lit = (torches: Vec2[]) =>
+      coverage(
+        floor,
+        torches.map((t) => visibilityPolygon(level, t)),
+      )
+    // One torch in a poor spot (67 %), then a good one beside it (97 %), then the second good one (100 %).
+    const poor = lit([[-2.5, 3.5]])
+    expect(poor.litShare).toBeLessThan(0.95)
+    expect(showsDarkHint(poor)).toBe(false)
+    const nearly = lit([
+      [2.35, -2.79],
+      [-2.5, 3.5],
+    ])
+    expect(nearly.litShare).toBeGreaterThan(0.95)
+    expect(showsDarkHint(nearly)).toBe(true)
+    const done = lit([
+      [2.35, -2.79],
+      [1.37, 1.83],
+    ])
+    expect(done.fullyLit).toBe(true)
+    expect(showsDarkHint(done)).toBe(false)
   })
 
   it("has slack on the first dungeon: Kevin's two torches stay lit when moved by up to 0.05", () => {

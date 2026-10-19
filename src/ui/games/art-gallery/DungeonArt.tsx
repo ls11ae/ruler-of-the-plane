@@ -54,8 +54,8 @@ export const DungeonWalls = memo(function DungeonWalls({ level }: { level: ArtGa
 })
 
 /**
- * Pulsing marker on the thickest dark spot while the dungeon is not fully lit (the 2020 version added
- * such a feedback point after its user study).
+ * Pulsing marker on the thickest dark spot while the dungeon is nearly but not fully lit (the 2020 version
+ * added such a feedback point after its user study).
  */
 export function DarkHint({ at }: { at: Vec2 }) {
   const board = useBoard()
