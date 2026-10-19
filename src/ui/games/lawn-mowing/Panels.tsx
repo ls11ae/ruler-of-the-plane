@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+import { Button } from '../../components/Button'
 import { Keycap } from '../../components/Keycap'
 import { useHeldKeys } from '../../input/hooks'
 import { CUTTER_COLOURS } from './art'
@@ -17,41 +19,76 @@ export interface CutterStats {
 }
 
 /**
- * Keycaps of a cutter, lit while held (as in the mockup: W over A S D, the arrows alike), and its key for
- * a step back to the left of the top row (Q beside W, as on the keyboard).
+ * The step back of a cutter: a button "↶ Zurück" with its key (Q, or Backspace for cutter 2), for the
+ * mouse as well as the key (Kevin, 2026-10-19: the key alone with a small arrow was not recognised). It
+ * does not take the focus, so the space bar stays "Feierabend".
  */
-function Keys({ cutter, undo }: { cutter: 0 | 1; undo: string }) {
+function UndoButton({
+  cutter,
+  disabled,
+  onUndo,
+  t,
+}: {
+  cutter: 0 | 1
+  disabled: boolean
+  onUndo: () => void
+  t: LawnTexts
+}) {
   const held = useHeldKeys()
-  const undoCode = UNDO_KEYS[cutter]![0]!
+  const code = UNDO_KEYS[cutter]![0]!
   return (
-    <span className={styles.keys} aria-hidden="true">
+    <Button
+      small
+      className={styles.undoButton}
+      disabled={disabled}
+      data-testid={`undo-${cutter + 1}`}
+      onPointerDown={(e) => e.preventDefault()}
+      onClick={onUndo}
+    >
+      <UndoIcon size={18} />
+      {t.undoButton}
+      <Keycap code={code} pressed={held.includes(code)} />
+    </Button>
+  )
+}
+
+/**
+ * Keycaps of a cutter, lit while held (as in the mockup: W over A S D, the arrows alike), and the button
+ * for a step back to the left of the top row (where Q sits beside W on the keyboard).
+ */
+function Keys({ cutter, undo }: { cutter: 0 | 1; undo: ReactNode }) {
+  const held = useHeldKeys()
+  return (
+    <span className={styles.keys}>
       {KEY_ROWS[cutter].map((row, r) => (
         <span key={r} className={styles.keyRow}>
-          {r === 0 && (
-            <span className={styles.undoKey} title={undo}>
-              <Keycap code={undoCode} pressed={held.includes(undoCode)} />
-              <UndoIcon size={18} />
-            </span>
-          )}
-          {row.map((code) => (
-            <Keycap key={code} code={code} pressed={held.includes(code)} />
-          ))}
+          {r === 0 && undo}
+          <span className={styles.keyRow} aria-hidden="true">
+            {row.map((code) => (
+              <Keycap key={code} code={code} pressed={held.includes(code)} />
+            ))}
+          </span>
         </span>
       ))}
     </span>
   )
 }
 
-/** A card per cutter: colour, steps so far and the way back, its keys (on a keyboard). */
+/** A card per cutter: colour, steps so far and the way back, its keys and the step back (on a keyboard). */
 export function CutterCard({
   index,
   stats,
   keys,
+  canUndo,
+  onUndo,
   t,
 }: {
   index: 0 | 1
   stats: CutterStats
   keys: boolean
+  canUndo: boolean
+  /** Takes back a step of cutter `index`. */
+  onUndo: (cutter: number) => void
   t: LawnTexts
 }) {
   return (
@@ -62,7 +99,12 @@ export function CutterCard({
         <strong className={styles.big}>{t.steps(stats.steps)}</strong>
         <small>{t.home(stats.home)}</small>
       </span>
-      {keys && <Keys cutter={index} undo={t.undoKey} />}
+      {keys && (
+        <Keys
+          cutter={index}
+          undo={<UndoButton cutter={index} disabled={!canUndo} onUndo={() => onUndo(index)} t={t} />}
+        />
+      )}
     </div>
   )
 }

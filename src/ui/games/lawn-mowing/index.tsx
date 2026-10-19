@@ -291,6 +291,8 @@ function Round({
                 index={i as 0 | 1}
                 stats={{ steps: round.steps(i), home: round.stepsHome(i) }}
                 keys
+                canUndo={phase === 'play' && round.steps(i) > 0}
+                onUndo={undo}
                 t={t}
               />
             ))}

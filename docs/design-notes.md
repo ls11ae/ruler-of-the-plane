@@ -1273,3 +1273,13 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   a darker even hatching (still read like fabric, see the screenshots of the session); moving
   agLevel2_3 (3 small pillars, "Leicht 4") to "Mittel" (Kevin asked to reorder "Mittel"); agLevel8_4
   first (no pillars at all).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": a button "↶ Zurück" on each mower's card.** The
+  step back was not recognisable (only the key Q with a small curved arrow on the card). Each card now
+  has a button with the curved arrow, "Zurück" and its key as a keycap ("Q", "Rücktaste" for mower 2),
+  in the top row of the keys, where Q sits beside W; it works with the mouse as well as the key, is
+  disabled while the mower has not moved, and does not take the focus (so the space bar stays
+  "Feierabend"). The keys stay, and phones keep the middle of the direction pad. The shared key label of
+  Backspace is now "Rücktaste" (English "Backspace") instead of "Rück", also in "So geht's" and the key
+  test. The four cards still fit side by side at 1280 px. Alternatives: a separate button column beside
+  the keys (the cards would no longer fit side by side at 1280 px); the button below the card's steps
+  (the card would grow taller than the "Feierabend" card).

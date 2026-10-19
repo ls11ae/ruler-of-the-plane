@@ -48,7 +48,7 @@ export const en: LawnTexts = {
     phoneOne: 'On a phone you mow with one mower.',
     start: "Let's go!",
   },
-  undoKey: 'Step back',
+  undoButton: 'Back',
   newGame: 'New',
   theoryButton: 'Theory',
   howTo: (cutters: number) => [

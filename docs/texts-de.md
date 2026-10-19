@@ -880,7 +880,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `resume(lawn, cutters)`:
   - lawn = „Vorgarten“, cutters = 2: Vorgarten, zu zweit
   - lawn = „Vorgarten“, cutters = 1: Vorgarten, allein
-- `undoKey`: Schritt zurück
+- `undoButton`: Zurück
 - `newGame`: Neu
 - `theoryButton`: Theorie
 - `howTo(cutters)`:

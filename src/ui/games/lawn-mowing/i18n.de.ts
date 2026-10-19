@@ -47,7 +47,7 @@ export const de = {
     phoneOne: 'Auf dem Handy mähst du mit einem Mäher.',
     start: "Los geht's!",
   },
-  undoKey: 'Schritt zurück',
+  undoButton: 'Zurück',
   newGame: 'Neu',
   theoryButton: 'Theorie',
   howTo: (cutters: number) => [

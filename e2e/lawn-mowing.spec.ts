@@ -101,6 +101,20 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, phone
     await expect(page.getByTestId(`steps-${i}`).locator('strong')).toHaveText('0 Schritte')
   }
   await expect(page.getByTestId('mowed-percent')).toHaveText(percent!)
+  // And with the mouse: each card's button "Zurück" with its key, disabled before the first step.
+  for (const [i, step, key] of [
+    [1, 'KeyD', 'Q'],
+    [2, 'ArrowLeft', 'Rücktaste'],
+  ] as const) {
+    const back = page.getByTestId(`undo-${i}`)
+    await expect(back).toHaveText(`Zurück${key}`)
+    await expect(back).toBeDisabled()
+    await page.keyboard.press(step)
+    await back.click()
+    await expect(page.getByTestId(`steps-${i}`).locator('strong')).toHaveText('0 Schritte')
+    await expect(back).toBeDisabled()
+  }
+  await expect(page.getByTestId('mowed-percent')).toHaveText(percent!)
 
   const [one, two] = await cutterPositions(page)
   const mid = Math.floor((lawn1.bounds.minY + lawn1.bounds.maxY) / 2)
