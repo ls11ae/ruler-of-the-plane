@@ -87,6 +87,8 @@ test('two players mow a lawn with WASD and the arrow keys', async ({ page, phone
   await setup.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.getByTestId('steps-2')).toBeVisible()
   await expectHeaderLaidOut(page)
+  // The holes of the lawn (a terrace and a small square) are stone slabs, 16 cells.
+  await expect(page.getByTestId('slabs').locator('rect[rx]')).toHaveCount(16)
   await shot(page, testInfo, 'lawn-mowing-start')
 
   // A step and a step back with each mower's undo key (Q, Backspace): the steps go down again.

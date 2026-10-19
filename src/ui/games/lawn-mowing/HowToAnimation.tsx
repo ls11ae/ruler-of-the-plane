@@ -1,6 +1,13 @@
+import { Slabs } from './LawnArt'
 import styles from './LawnMowing.module.css'
 
-/** "So geht's": a 3 × 3 mower drives a strip, then the next one, and mows three cells wide. */
+/** A small terrace of stone slabs in the first strip (columns 4–5, rows 1–2; `Slabs` counts y upwards). */
+const TERRACE = [4, 5].flatMap((x) => [1, 2].map((row) => [x, -(row + 1)] as const))
+
+/**
+ * "So geht's": a 3 × 3 mower drives a strip, then the next one, and mows three cells wide; it drives
+ * straight over the terrace, which needs no mowing.
+ */
 export function HowToAnimation({ label }: { label: string }) {
   const cols = 10
   const rows = 6
@@ -26,6 +33,8 @@ export function HowToAnimation({ label }: { label: string }) {
       ))}
       <rect className={styles.mowTop} x={0} y={0} width={cols} height={3} fill="#cfeab0" />
       <rect className={styles.mowBottom} x={0} y={3} width={cols} height={3} fill="#cfeab0" />
+      <Slabs cells={TERRACE} />
+      <rect x={4} y={1} width={2} height={2} fill="none" stroke="var(--ink)" strokeWidth={0.08} />
       <rect x={0} y={0} width={cols} height={rows} fill="none" stroke="var(--ink)" strokeWidth={0.14} />
       <g className={styles.mower}>
         <rect

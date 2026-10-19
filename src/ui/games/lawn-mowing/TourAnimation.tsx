@@ -8,8 +8,9 @@ import { Button } from '../../components/Button'
 import { useAnimationFrame } from '../../input/hooks'
 import { useLevel } from '../../levels'
 import { CUTTER_COLOURS } from './art'
-import { boardBounds, cutterCentre, ringsPath, runs, simplify } from './geometry'
+import { boardBounds, cutterCentre, holeCells, ringsPath, runs, simplify } from './geometry'
 import type { LawnTexts } from './i18n.de'
+import { Slabs } from './LawnArt'
 import styles from './LawnMowing.module.css'
 
 const COLOURS = [...CUTTER_COLOURS, '#2f9e8f']
@@ -50,6 +51,7 @@ export function TourAnimation({
     for (const w of walks) for (const p of w.slice(0, step + 1)) m.mowAt(p)
     return lawn.cells.cells().filter(([x, y]) => m.isMowed(x, y))
   }, [lawn, walks, step])
+  const slabs = useMemo(() => holeCells(level), [level])
   const b = boardBounds(level, 1.5)
   const at = (w: readonly Vec2[]) => w[Math.min(step, w.length - 1)]!
   return (
@@ -62,14 +64,22 @@ export function TourAnimation({
         aria-label={label}
       >
         <path d={ringsPath([level.outer, ...level.holes])} fill="#8fca6a" fillRule="evenodd" />
+        <Slabs cells={slabs} />
         {runs(mowed).map(([x, y, n]) => (
           <rect key={`${x},${y}`} x={x} y={-(y + 1)} width={n} height={1} fill="#cfeab0" />
         ))}
         <path
-          d={ringsPath([level.outer, ...level.holes])}
+          d={ringsPath([level.outer])}
           fill="none"
           stroke="var(--ink)"
           strokeWidth={0.18}
+          strokeLinejoin="round"
+        />
+        <path
+          d={ringsPath(level.holes)}
+          fill="none"
+          stroke="var(--ink)"
+          strokeWidth={0.09}
           strokeLinejoin="round"
         />
         {walks.map((w, i) => {

@@ -9,6 +9,7 @@ import { Stars } from '../../components/Stars'
 import { useT } from '../../i18n'
 import { useLevel } from '../../levels'
 import { boardBounds, ringsPath } from './geometry'
+import { MORTAR } from './LawnArt'
 import type { LawnTexts } from './i18n.de'
 import styles from './LawnMowing.module.css'
 import { starsKey, usePrefs, type Setup } from './store'
@@ -47,13 +48,17 @@ function LawnCard({
         aria-hidden="true"
       >
         {level.status === 'ready' && (
-          <path
-            d={ringsPath([level.value.outer, ...level.value.holes])}
-            fill="#8fca6a"
-            fillRule="evenodd"
-            stroke="var(--ink)"
-            strokeWidth={0.35}
-          />
+          <>
+            {/* The holes are stone slabs: too small here for single slabs, so the stone's colour. */}
+            <path d={ringsPath(level.value.holes)} fill={MORTAR} />
+            <path
+              d={ringsPath([level.value.outer, ...level.value.holes])}
+              fill="#8fca6a"
+              fillRule="evenodd"
+              stroke="var(--ink)"
+              strokeWidth={0.35}
+            />
+          </>
         )}
       </svg>
       <span className={styles.lawnName}>{t.lawns[name]}</span>

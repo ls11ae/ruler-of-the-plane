@@ -1,3 +1,4 @@
+import { rasterize } from '../../../core/games/lawn-mowing/grid'
 import type { Lawn } from '../../../core/games/lawn-mowing/mowing'
 import type { Bounds, Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
@@ -65,4 +66,9 @@ export function simplify(points: readonly Vec2[]): Vec2[] {
     } else out.push(p)
   }
   return out
+}
+
+/** The cells of a lawn's holes (all drawn as stone slabs). */
+export function holeCells(level: LawnMowingLevel): Vec2[] {
+  return level.holes.flatMap((ring) => rasterize([ring]).cells())
 }

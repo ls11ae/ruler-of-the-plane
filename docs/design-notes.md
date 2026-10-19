@@ -1298,3 +1298,19 @@ example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` b
   theory view's "Runden ansehen" still plays this lawn's tours on demand. Alternatives: an animation of
   the lower bound only (no tours; the tours are what the computer is good at); the strips on this lawn
   (also a solution of the level, if a poor one).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": every hole is stone slabs.** Several visitors
+  thought a mower cannot drive through a tree or the pond and steered round them. Every non-lawn cell
+  inside a lawn is now drawn as stone slabs, which one can obviously drive over: one slab per cell in
+  three stone tones, a joint of mortar round it, inked edges and a crack in some (our own SVG, so no new
+  art files; the pond, tree and flower-bed tiles of Scribble Dungeons left CREDITS.md). A hole's outline
+  is thinner than the lawn's (a paving's edge, not a wall). The shapes are unchanged, so are the instances
+  and the solver's tours; a hole is a terrace, a paved path or a small paved square by its shape (the
+  rule that made it a pond, a flower bed or a tree), and `lawns.txt` marks them T, W and S. Two lawns
+  were named after what they no longer have: "Gemüsegarten" is now "Gartenwege" (six paved paths) and
+  "Obstwiese" "Trittsteine" (13 small paved squares; English "Garden Paths", "Stepping Stones"). The
+  same look is in the how-to animation (tier screen and "So geht's": its lawn has a 2 × 2 terrace that
+  the first strip drives straight over), the theory view, the explanation, the attract demo and the
+  lawns in "Neu" (there as the stone colour only). The texts say it: "Steinplatten musst du nicht mähen,
+  drüberfahren darfst du." Alternatives: the Scribble floor tiles (white with pale grey joints, they look
+  like the grid paper round the lawn); keeping trees and ponds with a hint that mowers drive over them
+  (the picture says otherwise).

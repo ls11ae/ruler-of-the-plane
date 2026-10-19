@@ -5,9 +5,9 @@ export const de = {
     `Rasen ${lawn} · ${cutters === 1 ? 'ein Mäher' : 'zwei Mäher'} · nach CG:SHOP 2027`,
   lawns: {
     lawn1: 'Vorgarten',
-    lawn2: 'Gemüsegarten',
+    lawn2: 'Gartenwege',
     lawn3: 'Schlossgarten',
-    lawn4: 'Obstwiese',
+    lawn4: 'Trittsteine',
     lawn5: 'Stadtpark',
   } as Record<string, string>,
   lawnCard: (n: number) => `Rasen ${n}`,
@@ -33,8 +33,8 @@ export const de = {
   board: (lawn: string) => `Rasen ${lawn}`,
   pad: { up: 'hoch', down: 'runter', left: 'links', right: 'rechts', undo: 'Schritt zurück' },
   tierTeasers: {
-    easy: 'Der Vorgarten: klein, mit Teich und Baum – zum Üben.',
-    medium: 'Beete und Obstbäume: größere Wiesen, mehr zu planen.',
+    easy: 'Der Vorgarten: klein, mit Terrasse und Steinplatten – zum Üben.',
+    medium: 'Gartenwege und Trittsteine: größere Wiesen, mehr zu planen.',
     hard: 'Hier sind einfache Strategien klar schlechter als die Runden des Lösers.',
   },
   resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'allein' : 'zu zweit'}`,
@@ -51,14 +51,15 @@ export const de = {
   newGame: 'Neu',
   theoryButton: 'Theorie',
   howTo: (cutters: number) => [
-    'Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Teich, Bäume und Beete brauchst du nicht zu mähen.',
+    'Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.',
     cutters === 1
       ? 'Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.'
       : 'Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.',
     'Je weniger Schritte, desto besser.',
   ],
   howToKeys: { one: 'Mäher 1', two: 'Mäher 2', home: 'Feierabend', undo: 'Schritt zurück' },
-  howToAnimation: 'Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit',
+  howToAnimation:
+    'Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse',
   result: {
     title: 'Feierabend!',
     stats: (longest: number, target: string) => `Längste Runde: ${longest} Schritte · ${target}`,

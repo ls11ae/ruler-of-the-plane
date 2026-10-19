@@ -1,16 +1,14 @@
 import { useId, useMemo } from 'react'
-import { holeKind, rasterize } from '../../../core/games/lawn-mowing/grid'
 import type { Bounds, Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { useBoard } from '../../components/boardContext'
 import { art } from './art'
-import { ringsPath, runs, toBoard } from './geometry'
+import { holeCells, ringsPath, runs } from './geometry'
 
 const GRASS = '#8fca6a'
 const GRASS_DARK = '#79b957'
 const MOWED = '#cfeab0'
 const MOWED_STRIPE = '#bfe09c'
-const POND = '#b9d6ee'
 
 /** Grid paper around the lawn (the Scribble floor tile spans 2 × 2 cells). */
 export function Paper({ bounds }: { bounds: Bounds }) {
@@ -41,18 +39,66 @@ export function Paper({ bounds }: { bounds: Bounds }) {
   )
 }
 
-/** The lawn: uncut grass, the holes (pond, trees, flower beds) and the ink outline on top of the mowing. */
+/** Mortar between the stone slabs, and the slabs' tones (cell by cell, so a paving does not look flat). */
+export const MORTAR = '#bab3a4'
+const SLAB_TONES = ['#ddd7ca', '#d6cfc1', '#e2dccf'] as const
+
+/** A small number per cell (the same on every render), for the tone and the crack of its slab. */
+const cellHash = (x: number, y: number) => (Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0
+
+/**
+ * Stone slabs on cells (`y` up, as the lawn): a terrace, a paved path or a small paved square inside a
+ * lawn, which a mower obviously drives over (Kevin, 2026-10-19). One slab per cell with a joint of mortar
+ * around it, inked edges, and a crack in some of them.
+ */
+export function Slabs({ cells }: { cells: readonly Vec2[] }) {
+  return (
+    <g aria-hidden="true" data-testid="slabs">
+      {cells.map(([x, y]) => (
+        <rect key={`m${x},${y}`} x={x} y={-(y + 1)} width={1} height={1} fill={MORTAR} />
+      ))}
+      {cells.map(([x, y]) => {
+        const h = cellHash(x, y)
+        const top = -(y + 1)
+        return (
+          <g key={`${x},${y}`}>
+            <rect
+              x={x + 0.06}
+              y={top + 0.06}
+              width={0.88}
+              height={0.88}
+              rx={0.1}
+              fill={SLAB_TONES[h % SLAB_TONES.length]}
+              stroke="var(--ink)"
+              strokeOpacity={0.55}
+              strokeWidth={0.045}
+            />
+            {h % 4 === 0 && (
+              <path
+                d={
+                  (h >> 3) % 2
+                    ? `M${x + 0.22},${top + 0.06}l0.16,0.3l-0.08,0.24`
+                    : `M${x + 0.94},${top + 0.62}l-0.28,0.08l-0.2,0.24`
+                }
+                fill="none"
+                stroke="var(--ink)"
+                strokeOpacity={0.4}
+                strokeWidth={0.035}
+                strokeLinecap="round"
+              />
+            )}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+/** The lawn: uncut grass and its holes as stone slabs (the ink outline goes on top of the mowing). */
 export function LawnBase({ level }: { level: LawnMowingLevel }) {
   const id = useId().replace(/[^\w-]/g, '')
   const lawn = ringsPath([level.outer, ...level.holes])
-  const holes = useMemo(
-    () =>
-      level.holes.map((ring) => {
-        const cells = rasterize([ring])
-        return { ring, kind: holeKind(ring), cells: cells.cells() }
-      }),
-    [level],
-  )
+  const slabs = useMemo(() => holeCells(level), [level])
   return (
     <g aria-hidden="true">
       <defs>
@@ -61,53 +107,11 @@ export function LawnBase({ level }: { level: LawnMowingLevel }) {
           <rect width={1} height={1} fill="none" stroke={GRASS_DARK} strokeWidth={0.04} />
           <image href={art.grass} width={1} height={1} opacity={0.55} />
         </pattern>
-        <pattern id={`${id}-water`} patternUnits="userSpaceOnUse" x={0} y={0} width={1} height={1}>
-          <rect width={1} height={1} fill={POND} />
-          <image href={art.water} width={1} height={1} opacity={0.8} />
-        </pattern>
-        <pattern id={`${id}-plants`} patternUnits="userSpaceOnUse" x={0} y={0} width={1} height={1}>
-          <rect width={1} height={1} fill="#f6efe6" />
-          <image href={art.plants} width={1} height={1} />
-        </pattern>
       </defs>
       <path d={lawn} fill={`url(#${id}-grass)`} fillRule="evenodd" />
-      {holes.map(({ ring, kind, cells }, i) => {
-        if (kind === 'tree') {
-          const b = ringBox(ring)
-          return (
-            <g key={i}>
-              <path d={ringsPath([ring])} fill="#f6efe6" />
-              <image href={art.tree} x={b.minX} y={b.minY} width={b.maxX - b.minX} height={b.maxY - b.minY} />
-            </g>
-          )
-        }
-        return (
-          <g key={i}>
-            {cells.map(([x, y]) => (
-              <rect
-                key={`${x},${y}`}
-                x={x}
-                y={-(y + 1)}
-                width={1}
-                height={1}
-                fill={`url(#${id}-${kind === 'pond' ? 'water' : 'plants'})`}
-              />
-            ))}
-          </g>
-        )
-      })}
+      <Slabs cells={slabs} />
     </g>
   )
-}
-
-function ringBox(ring: readonly Vec2[]): Bounds {
-  const pts = ring.map(toBoard)
-  return {
-    minX: Math.min(...pts.map(([x]) => x)),
-    maxX: Math.max(...pts.map(([x]) => x)),
-    minY: Math.min(...pts.map(([, y]) => y)),
-    maxY: Math.max(...pts.map(([, y]) => y)),
-  }
 }
 
 /** Mowed cells: light green with mowing stripes. */
@@ -128,18 +132,16 @@ export function Mowed({ cells }: { cells: readonly Vec2[] }) {
   )
 }
 
-/** The ink outline of the lawn and its holes. */
+/**
+ * The ink outline of the lawn, and a thinner one round its stone slabs (a paving's edge, not a wall: the
+ * mowers drive over it).
+ */
 export function LawnOutline({ level }: { level: LawnMowingLevel }) {
   const board = useBoard()
   return (
-    <path
-      d={ringsPath([level.outer, ...level.holes])}
-      fill="none"
-      stroke="var(--ink)"
-      strokeWidth={board.pxToBoard(3)}
-      strokeLinejoin="round"
-      filter={board.ink}
-      aria-hidden="true"
-    />
+    <g fill="none" stroke="var(--ink)" strokeLinejoin="round" filter={board.ink} aria-hidden="true">
+      <path d={ringsPath([level.outer])} strokeWidth={board.pxToBoard(3)} />
+      <path d={ringsPath(level.holes)} strokeWidth={board.pxToBoard(1.6)} strokeOpacity={0.8} />
+    </g>
   )
 }

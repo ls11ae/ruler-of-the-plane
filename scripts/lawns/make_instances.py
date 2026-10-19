@@ -54,7 +54,7 @@ def cells_of(rows: list[str]) -> tuple[set[Cell], dict[Cell, str]]:
         for x, char in enumerate(row.ljust(width, ".")):
             if char == "#":
                 lawn.add((x, y))
-            elif char in "TFP":
+            elif char in "SWT":
                 marks[(x, y)] = char
             elif char != ".":
                 raise ValueError(f"unknown character {char!r} at ({x}, {y})")
@@ -79,16 +79,16 @@ def components(cells: set[Cell]) -> list[set[Cell]]:
 
 
 def hole_kind(hole: set[Cell]) -> str:
-    """The art the game draws for a hole: the same rule as in the game's code."""
+    """The kind of stone slabs a hole is (square, path, terrace): the same rule as in the game's code."""
     xs = [x for x, _ in hole]
     ys = [y for _, y in hole]
     w, h = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
     if len(hole) == w * h:
         if w == h and w <= 2:
-            return "T"
+            return "S"
         if min(w, h) <= 2 and max(w, h) >= 3:
-            return "F"
-    return "P"
+            return "W"
+    return "T"
 
 
 def rings(lawn: set[Cell]) -> list[list[tuple[int, int]]]:

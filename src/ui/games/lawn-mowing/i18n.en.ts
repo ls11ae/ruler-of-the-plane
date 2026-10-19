@@ -6,9 +6,9 @@ export const en: LawnTexts = {
     `Lawn ${lawn} · ${cutters === 1 ? 'one mower' : 'two mowers'} · after CG:SHOP 2027`,
   lawns: {
     lawn1: 'Front Garden',
-    lawn2: 'Kitchen Garden',
+    lawn2: 'Garden Paths',
     lawn3: 'Castle Garden',
-    lawn4: 'Orchard',
+    lawn4: 'Stepping Stones',
     lawn5: 'City Park',
   },
   lawnCard: (n: number) => `Lawn ${n}`,
@@ -34,8 +34,8 @@ export const en: LawnTexts = {
   board: (lawn: string) => `Lawn ${lawn}`,
   pad: { up: 'up', down: 'down', left: 'left', right: 'right', undo: 'Step back' },
   tierTeasers: {
-    easy: 'The front garden: small, with a pond and a tree – for practice.',
-    medium: 'Flower beds and fruit trees: larger lawns, more to plan.',
+    easy: 'The front garden: small, with a terrace and stone slabs – for practice.',
+    medium: 'Garden paths and stepping stones: larger lawns, more to plan.',
     hard: "Here simple strategies are clearly worse than the solver's tours.",
   },
   resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'alone' : 'two players'}`,
@@ -52,14 +52,15 @@ export const en: LawnTexts = {
   newGame: 'New',
   theoryButton: 'Theory',
   howTo: (cutters: number) => [
-    'Mow the whole lawn! A mower cuts 3 × 3 squares. The pond, trees and flower beds need no mowing.',
+    'Mow the whole lawn! A mower cuts 3 × 3 squares. Stone slabs need no mowing, but you may drive over them.',
     cutters === 1
       ? 'When everything is mowed: home time! The mower drives back to the start.'
       : 'When everything is mowed: home time! Everyone drives back to the start. The longer round counts.',
     'The fewer steps, the better.',
   ],
   howToKeys: { one: 'Mower 1', two: 'Mower 2', home: 'Home time', undo: 'Step back' },
-  howToAnimation: 'A mower drives in strips and cuts three squares wide',
+  howToAnimation:
+    'A mower drives in strips, cuts three squares wide and drives straight over a small terrace',
   result: {
     title: 'Home time!',
     stats: (longest: number, target: string) => `Longest round: ${longest} steps · ${target}`,

@@ -885,14 +885,14 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `theoryButton`: Theorie
 - `howTo(cutters)`:
   - cutters = 2:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Teich, Bäume und Beete brauchst du nicht zu mähen.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
     - Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.
     - Je weniger Schritte, desto besser.
   - cutters = 1:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Teich, Bäume und Beete brauchst du nicht zu mähen.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
     - Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.
     - Je weniger Schritte, desto besser.
-- `howToAnimation`: Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit
+- `howToAnimation`: Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse
 - `explanation(bound, mine, reference, solver, cutters)`:
   - bound = 100, mine = 124, reference = 110, solver = true, cutters = 2:
     - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
@@ -918,9 +918,9 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 ### lawns
 
 - `lawns.lawn1`: Vorgarten
-- `lawns.lawn2`: Gemüsegarten
+- `lawns.lawn2`: Gartenwege
 - `lawns.lawn3`: Schlossgarten
-- `lawns.lawn4`: Obstwiese
+- `lawns.lawn4`: Trittsteine
 - `lawns.lawn5`: Stadtpark
 
 ### pad
@@ -933,8 +933,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 ### tierTeasers
 
-- `tierTeasers.easy`: Der Vorgarten: klein, mit Teich und Baum – zum Üben.
-- `tierTeasers.medium`: Beete und Obstbäume: größere Wiesen, mehr zu planen.
+- `tierTeasers.easy`: Der Vorgarten: klein, mit Terrasse und Steinplatten – zum Üben.
+- `tierTeasers.medium`: Gartenwege und Trittsteine: größere Wiesen, mehr zu planen.
 - `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Lösers.
 
 ### setup
