@@ -207,7 +207,7 @@ export const de = {
     ControlRight: 'Strg',
     AltLeft: 'Alt',
     AltRight: 'Alt Gr',
-    Backspace: 'Rück',
+    Backspace: 'Rücktaste',
     Tab: 'Tab',
     CapsLock: 'Feststell',
     MetaLeft: 'Win',

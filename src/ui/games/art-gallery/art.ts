@@ -12,3 +12,5 @@ export const floorTile = tiles
 export const torchToken = token
 /** Props scattered on the floor as decoration (under the light). */
 export const props = [barrels, chest, crateSmall, barrel] as const
+/** The stone colour under the rock strokes (`rock.svg`) around the dungeon and in the pillars. */
+export const ROCK_COLOUR = '#e2dbce'

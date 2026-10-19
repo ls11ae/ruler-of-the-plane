@@ -9,6 +9,7 @@ Needs `pip install -r scripts/lawns/requirements.txt`. Run from the repository r
     python3 scripts/lawns/solve.py                      # all ten instances, 10 minutes each
     python3 scripts/lawns/solve.py lawn3_2s3 --seconds 120
     python3 scripts/lawns/solve.py --table              # only the README table, from the solution files
+    python3 scripts/lawns/solve.py example_1s3 example_2s3   # the example lawn of the explanation
 
 An existing solution file is the starting point if it is better than the best simple strategy (so runs can
 continue each other); a file is only replaced by a shorter solution. Then `npm run levels`.
@@ -25,7 +26,7 @@ from cgshop2027_pyutils.io import read_solution
 
 from bounds import circulation_bound
 from heuristics import all_heuristics
-from lawn import INSTANCES, SOLUTIONS, Lawn, Walk, length, load, verify, walk_through, write_solution
+from lawn import INSTANCES, Lawn, Walk, folders, length, load, verify, walk_through, write_solution
 from lns import improve, rotated
 
 ALGORITHM = "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT"
@@ -34,7 +35,7 @@ BORING = 1.05  # ... at most 5 % above it
 
 
 def existing(lawn: Lawn) -> tuple[list[Walk], dict] | None:
-    path = SOLUTIONS / f"{lawn.uid}.solution.json"
+    path = folders(lawn.uid)[1] / f"{lawn.uid}.solution.json"
     if not path.exists():
         return None
     solution = read_solution(path)

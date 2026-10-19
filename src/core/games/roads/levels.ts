@@ -20,7 +20,7 @@ export const MST_IDS = [
   'kings-taxes/tsp/ktLevel3',
 ] as const
 export const STEINER_IDS = [
-  'roads/steiner/1-dreieck',
+  'roads/steiner/1-gabel',
   'roads/steiner/2-viereck',
   'roads/steiner/3-zickzack',
   'roads/steiner/4-leiter',
@@ -85,6 +85,20 @@ export function mapOf(level: KingsTaxesLevel | RoadsSteinerLevel | RoadsBichroma
     villages: level.villages.length,
     bounds: level.bounds,
   }
+}
+
+/**
+ * The picture of the how-to of "Kreuzungen": a castle above two villages, joined at one junction. No map
+ * of the set may look like it (the how-to would solve that map).
+ */
+export const STEINER_HOW_TO: RoadsMap = {
+  points: [
+    [-1.6, 0.9],
+    [1.6, 0.9],
+    [0, -1.5],
+  ],
+  villages: 2,
+  bounds: { minX: -1.6, minY: -1.5, maxX: 1.6, maxY: 0.9 },
 }
 
 /** Size of the random maps (level units, as the Unity levels: the larger side is 6). */

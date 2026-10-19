@@ -6,9 +6,9 @@ export const en: LawnTexts = {
     `Lawn ${lawn} · ${cutters === 1 ? 'one mower' : 'two mowers'} · after CG:SHOP 2027`,
   lawns: {
     lawn1: 'Front Garden',
-    lawn2: 'Kitchen Garden',
+    lawn2: 'Garden Paths',
     lawn3: 'Castle Garden',
-    lawn4: 'Orchard',
+    lawn4: 'Stepping Stones',
     lawn5: 'City Park',
   },
   lawnCard: (n: number) => `Lawn ${n}`,
@@ -18,11 +18,10 @@ export const en: LawnTexts = {
   cutter: (i: number) => `Mower ${i}`,
   steps: (n: number) => `${n} ${n === 1 ? 'step' : 'steps'}`,
   home: (n: number) => (n > 0 ? `+${n} back` : 'at the start'),
-  longestTitle: 'The longer round counts:',
-  longestTitleOne: 'Your round:',
-  target: (n: number) => `Solver's target: ${n}`,
-  targetStrips: (n: number) => `Target (strip strategy): ${n}`,
-  targetPending: "Solver's target: coming soon",
+  longestTitle: 'Longer mower:',
+  longestTitleOne: 'So far:',
+  target: (n: number) => `Computer: ${n} steps`,
+  targetStrips: (n: number) => `Strip strategy: ${n} steps`,
   space: 'Space',
   homeButton: 'Home time',
   homeHint: 'everyone back to the start',
@@ -34,9 +33,9 @@ export const en: LawnTexts = {
   board: (lawn: string) => `Lawn ${lawn}`,
   pad: { up: 'up', down: 'down', left: 'left', right: 'right', undo: 'Step back' },
   tierTeasers: {
-    easy: 'The front garden: small, with a pond and a tree – for practice.',
-    medium: 'Flower beds and fruit trees: larger lawns, more to plan.',
-    hard: "Here simple strategies are clearly worse than the solver's tours.",
+    easy: 'The front garden: small, with a terrace and stone slabs – for practice.',
+    medium: 'Garden paths and stepping stones: larger lawns, more to plan.',
+    hard: "Here simple strategies are clearly worse than the computer's rounds.",
   },
   resume: (lawn: string, cutters: number) => `${lawn}, ${cutters === 1 ? 'alone' : 'two players'}`,
   setup: {
@@ -48,29 +47,34 @@ export const en: LawnTexts = {
     phoneOne: 'On a phone you mow with one mower.',
     start: "Let's go!",
   },
-  undoKey: 'Step back',
+  undoButton: 'Back',
   newGame: 'New',
   theoryButton: 'Theory',
   howTo: (cutters: number) => [
-    'Mow the whole lawn! A mower cuts 3 × 3 squares. The pond, trees and flower beds need no mowing.',
+    'Mow the whole lawn! A mower cuts 3 × 3 squares. Stone slabs need no mowing, but you may drive over them.',
     cutters === 1
       ? 'When everything is mowed: home time! The mower drives back to the start.'
       : 'When everything is mowed: home time! Everyone drives back to the start. The longer round counts.',
     'The fewer steps, the better.',
   ],
   howToKeys: { one: 'Mower 1', two: 'Mower 2', home: 'Home time', undo: 'Step back' },
-  howToAnimation: 'A mower drives in strips and cuts three squares wide',
+  howToAnimation:
+    'A mower drives in strips, cuts three squares wide and drives straight over a small terrace',
   result: {
     title: 'Home time!',
     stats: (longest: number, target: string) => `Longest round: ${longest} steps · ${target}`,
     score: (n: number) => `${n} steps`,
   },
-  explanation: (bound: number) => [
+  explanation: (bound: number, mine: number, reference: number, solver: boolean, cutters: number) => [
     'We want rounds that together mow the whole lawn. The longest round counts, because all mowers start at the same time.',
-    `Each step cuts at most 3 new squares, so this lawn needs at least ${bound} steps. Finding the best round is still very hard.`,
-    "The chair's solver searches long and cleverly for short rounds; the animation shows its (or a simple) solution.",
+    `Each step cuts at most 3 new squares, so this lawn needs at least ${bound} steps. ${cutters === 1 ? `You needed ${mine}` : `Your longer round had ${mine}`}, ${solver ? 'the computer' : 'the strip strategy'} ${reference}.`,
+    'Finding the shortest rounds is very hard; the computer searches long and cleverly. The animation shows its rounds on a small example.',
   ],
   explanationAnimation: "The solver's rounds on this lawn",
+  exampleCaption: (cutters: number, steps: number) =>
+    `Example – a small lawn: this is how the computer mows ${cutters === 1 ? 'with one mower' : 'with two mowers'}, ${steps} steps.`,
+  exampleAnimation: (cutters: number) =>
+    `Example: the computer's rounds ${cutters === 1 ? 'with one mower' : 'with two mowers'} on a small lawn that is none of the lawns here`,
   replay: 'Show again',
   theory: {
     title: 'Theory',

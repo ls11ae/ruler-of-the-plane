@@ -195,11 +195,18 @@
   box-shadow: none;
 }
 
-/* The undo key on a cutter's card, with the curved arrow beside it. */
-.undoKey {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
+/* The step back on a cutter's card: a button with the curved arrow, "Zurück" and its key. */
+.undoButton {
+  gap: 5px;
+  margin-right: 6px;
+  padding-inline: 0.45em 0.35em;
+  font-size: 0.95rem;
+}
+
+.undoButton kbd {
+  height: 1.55em;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 0 var(--ink);
 }
 
 .phone {
@@ -366,6 +373,14 @@
 }
 
 /* Animations ("So geht's", "Was steckt dahinter?", theory). */
+/* "Beispiel – …" above the explanation's animation: it is not this lawn. */
+.animationCaption {
+  margin: 0;
+  padding: 6px 10px 4px;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
 .animationSvg {
   display: block;
   width: 100%;

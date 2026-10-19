@@ -59,11 +59,18 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
     else await page.mouse.click(p.x, p.y)
   }
 
-  // A torch in a poor spot: the dungeon stays partly dark and the thickest dark spot is marked.
+  // A torch in a poor spot: the dungeon stays partly dark (67 %), without a mark where the next torch
+  // belongs.
   await place(-2.5, 3.5)
   await expect(page.getByText('Fackeln: 1', { exact: true })).toBeVisible()
-  await expect(page.getByTestId('dark-hint')).toBeVisible()
+  await expect(page.getByTestId('lit-percent')).toHaveText(/^66 %/)
+  await expect(page.getByTestId('dark-hint')).toHaveCount(0)
   await shot(page, testInfo, 'art-gallery-one-torch')
+  // A good one beside it: 96 % lit, now the thickest dark spot is marked.
+  await place(2.35, -2.79)
+  await expect(page.getByTestId('lit-percent')).toHaveText(/^96 %/)
+  await expect(page.getByTestId('dark-hint')).toBeVisible()
+  await shot(page, testInfo, 'art-gallery-dark-hint')
 
   // Remove it again: laptop by dragging it off the dungeon, phone by dragging it onto the bucket.
   const torch = await toScreen(page, -2.5, 3.5)
@@ -82,10 +89,10 @@ test('plays the first dungeon: place, remove, light it with two torches', async 
     await page.mouse.move(outside.x, outside.y, { steps: 6 })
     await page.mouse.up()
   }
-  await expect(page.getByText('Fackeln: 0', { exact: true })).toBeVisible()
+  await expect(page.getByText('Fackeln: 1', { exact: true })).toBeVisible()
+  await expect(page.getByTestId('dark-hint')).toHaveCount(0)
 
   // Two well-placed torches light everything: three stars.
-  await place(2.35, -2.79)
   await place(1.37, 1.83)
   await expect(page.getByTestId('lit-percent')).toHaveText(/^100 %/)
   const result = page.getByRole('dialog', { name: 'Geschafft!' })

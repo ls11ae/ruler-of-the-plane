@@ -195,7 +195,8 @@ the booth laptops' keyboards (key test in the staff menu).
   since 2026-10-17)
 - Look as in `docs/look/rasenmaehen.webp`: Scribble grid paper; uncut cells green with grass, mowed cells
   striped light green, holes (pond, tree, flower bed) from the Scribble tiles, cutters as red and purple
-  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines. — done 2026-10-16
+  tokens with numbers, their 3 × 3 footprint dashed, tours as coloured lines. — done 2026-10-16 (since
+  2026-10-19 every hole is stone slabs, uncut grass darker; see Phase 6, "Kevin's playtest")
 
 Acceptance: coverage and tour lengths agree with the pyutils27 verifier on test fixtures (generated once
 with Python and committed; `pip install` works in the cloud sessions); two players can mow a lawn on one
@@ -286,6 +287,30 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   the gate to the castle cannot have two good starts; the round is proposed): best 3.45 m with the
   leash wound twice, straight 4.72 m (+37 %), wound once 3.92 m (+14 %), three times 4.22 m (+22 %)
   (`scripts/gassi/tradeoff.ts`; see the decision log, "Kevin's review").
+- Kevin's playtest of `main` at `8f4d3e2` (2026-10-19, all agreed by Kevin; see the decision log,
+  "Kevin's playtest"):
+  - "Straßenbau", "Kreuzungen": a new first map, unlike the how-to's picture (a castle above two
+    villages at one junction was map 1 with its solution). — done 2026-10-19: "Gabel", a fork with one
+    junction and a road straight on (`scripts/roads/steiner-maps.ts`).
+  - "Kreuzungen": junctions settle on a win only very close to the optimum; between that and 1 % the
+    network counts but the junctions stay put. — done 2026-10-19: 0.03 %, tuned on the six maps (angles
+    typically 4–5° from 120°; at 0.2 % they could still be 10–20° off).
+  - "Licht ins Verlies": the marker on the thickest dark spot only from 95 % lit on. — done 2026-10-19
+    (the attract demo keeps it).
+  - "Licht ins Verlies": rock around the dungeon and in the pillars, somewhat darker; "Mittel" starts
+    with small pillars. — done 2026-10-19: groups of short ink strokes on stone; "Mittel" starts with
+    agLevel4_8, the corridors round large pillars come last.
+  - "Rasenmähen": a button "↶ Zurück" with its key on each mower's card. — done 2026-10-19 (the key
+    label of Backspace is now "Rücktaste" everywhere).
+  - "Rasenmähen": the explanation plays a generic example lawn, not the level's solution. — done
+    2026-10-19: `levels/lawn-mowing/example/`, tours for one and two mowers from the offline solver.
+  - "Rasenmähen": every hole is stone slabs, which a mower obviously drives over. — done 2026-10-19 (also
+    in the how-to, theory, explanation, attract demo; "Gemüsegarten" and "Obstwiese" renamed "Gartenwege"
+    and "Trittsteine").
+  - "Erobere das Land": the castle count on phones. — done 2026-10-19 ("Du bist dran · Burg 3 von 10").
+  - "Rasenmähen": "Bisher" / "Längerer Mäher" and "Computer: 110 Schritte" on the score card. — done
+    2026-10-19.
+  - "Rasenmähen": mowed and uncut grass clearly different in colour. — done 2026-10-19.
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

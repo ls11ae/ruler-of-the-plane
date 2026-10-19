@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 import { readFileSync } from 'node:fs'
 import type { Road } from '../src/core/games/roads/mst'
@@ -10,8 +11,26 @@ freshDevice()
 
 const read = <T>(path: string) =>
   JSON.parse(readFileSync(new URL(`../public/levels/${path}.json`, import.meta.url), 'utf8')) as T
-const steiner = read<RoadsSteinerLevel>('roads/steiner/1-dreieck')
+const steiner = read<RoadsSteinerLevel>('roads/steiner/1-gabel')
 const plane = read<RoadsBichromaticLevel>('roads/bichromatic/1-burgen')
+
+const places: Pt[] = [...steiner.villages, ...steiner.castles]
+const n = places.length
+const best = steiner.optimum.junctions[0]!
+// The first map: one junction, and a road from place to place.
+const forked = steiner.optimum.roads.filter(([, b]) => b === n).map(([a]) => a)
+const straight = steiner.optimum.roads.filter(([a, b]) => a < n && b < n)
+
+/** The first map's network with its junction at `at`: three roads to the junction, then the straight one. */
+async function buildFork(page: Page, at: Pt, phone: boolean) {
+  expect([forked.length, straight.length]).toEqual([3, 1])
+  await drag(page, places[forked[0]!]!, at, phone)
+  await expect(page.locator('[data-junction=built]')).toHaveCount(1)
+  await drag(page, places[forked[1]!]!, at, phone)
+  await drag(page, places[forked[2]!]!, at, phone)
+  await expect(page.getByTestId('roads-state')).toHaveText('Noch 2 Teile verbinden')
+  await drag(page, places[straight[0]![0]]!, places[straight[0]![1]]!, phone)
+}
 
 test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ page, phone }, testInfo) => {
   await openMap(page, 'Kreuzungen', 1)
@@ -23,43 +42,51 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await expect(page.locator('header')).toContainText('Kreuzungen 1 von 6')
   if (!phone) await expectHeaderLaidOut(page)
 
-  const places: Pt[] = [...steiner.villages, ...steiner.castles]
-  const best = steiner.optimum.junctions[0]!
   // A junction well off its best spot: a road dragged onto open land there, then the others to it.
   const off: Pt = [best[0] + 0.5, best[1] + 0.25]
-  await drag(page, places[0]!, off, phone)
-  await expect(page.locator('[data-junction=built]')).toHaveCount(1)
-  await drag(page, places[1]!, off, phone)
-  await drag(page, places[2]!, off, phone)
+  await buildFork(page, off, phone)
   await expect(page.getByTestId('roads-state')).toHaveText(/über dem Optimum/)
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await page.getByRole('button', { name: 'Tipp' }).click()
   await expect(page.getByTestId('roads-hint')).toContainText('120°')
   await shot(page, testInfo, 'roads-steiner-building')
 
-  // Moved close to its best spot (within 1 % of the optimum): optimal.
-  await drag(page, off, [best[0] + 0.05, best[1] - 0.03], phone)
+  // Moved closer (0.5 % above the optimum, within 1 %): optimal, but the junction stays where it was put,
+  // with its angles some 10–20° off 120°.
+  await drag(page, off, [best[0] + 0.3, best[1]], phone)
   await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
-  await expect(page.getByTestId('junction-angles')).toContainText('120°')
+  const angles = page.getByTestId('junction-angles')
+  const put = await angles.textContent()
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible()
+  await expect(angles).toHaveText(put!)
+  await expect(angles).not.toContainText('120°')
   await expect(result.getByRole('img', { name: '2 Sterne von 3' })).toBeVisible()
   await expect(result.getByText(/Steinerpunkte/)).toBeVisible()
-  await expect(result.getByTestId('steiner-animation-length')).toHaveText('Länge: 5,9 km', {
+  await expect(result.getByTestId('steiner-animation-length')).toHaveText('Länge: 7,7 km', {
     timeout: 10_000,
   })
   await shot(page, testInfo, 'roads-steiner-result')
   await result.getByRole('button', { name: 'Theorie' }).click()
   const theory = page.getByRole('complementary', { name: 'Theorie' })
-  await expect(theory.getByTestId('steiner-compare')).toContainText('14,4 % länger')
+  await expect(theory.getByTestId('steiner-compare')).toContainText('8,5 % länger')
   await theory.getByRole('button', { name: 'Ohne Kreuzungen' }).click()
   await shot(page, testInfo, 'roads-steiner-theory')
+})
+
+test('Kreuzungen: very close to the optimum the junction settles at 120°', async ({ page, phone }) => {
+  await openMap(page, 'Kreuzungen', 1)
+  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  // 0.02 % above the optimum, angles 123°, 120° and 117°: the junction slides the last bit.
+  await buildFork(page, [best[0] + 0.05, best[1] - 0.03], phone)
+  await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
+  await expect(page.getByTestId('junction-angles').getByText('120°')).toHaveCount(3)
+  await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toBeVisible()
 })
 
 test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ page, phone }) => {
   await openMap(page, 'Kreuzungen', 1)
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
-  const places: Pt[] = [...steiner.villages, ...steiner.castles]
   const [a, b] = [places[0]!, places[1]!]
   await drag(page, a, b, phone)
   // Dragged at its middle, the road bends at a new junction; dropped onto a village, the junction is gone.
@@ -70,7 +97,7 @@ test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ p
   await expect(page.getByTestId('junction-angles')).toContainText('°')
   await drag(page, bend, a, phone)
   await expect(page.locator('[data-junction=built]')).toHaveCount(0)
-  await expect(page.getByTestId('roads-state')).toHaveText('Noch 2 Teile verbinden')
+  await expect(page.getByTestId('roads-state')).toHaveText('Noch 3 Teile verbinden')
 })
 
 test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({ page, phone }, testInfo) => {

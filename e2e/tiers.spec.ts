@@ -20,7 +20,7 @@ type TierName = (typeof TIERS)[number]
 const STARTS: Record<string, Record<TierName, { header: string; howTo?: RegExp }>> = {
   'art-gallery': {
     Leicht: { header: 'Leicht 1 von 4 · Ziel: 2 Fackeln' },
-    Mittel: { header: 'Mittel 1 von 5 · Ziel: 4 Fackeln' },
+    Mittel: { header: 'Mittel 1 von 5 · Ziel: 8 Fackeln' },
     Schwer: { header: 'Schwer 1 von 5 · Ziel: 4 Fackeln' },
   },
   voronoi: {

@@ -76,7 +76,7 @@ const SAMPLES: Record<string, Sample> = {
   optimum: '12,4 km',
   percent: '4.2',
   tier: 'Mittel',
-  target: 'Ziel vom Löser: 48',
+  target: 'Computer: 48 Schritte',
   map: 'Insel',
   a: 'Du',
   b: 'Computer',
@@ -111,6 +111,8 @@ const OVERRIDES: Record<string, Record<string, Record<string, Sample>>> = {
     home: { n: 6 },
     notDone: { n: 7 },
     'theory.bound': { n: 412, k: 2, bound: 40 },
+    explanation: { bound: 100, mine: 124, reference: 110 },
+    exampleCaption: { steps: 46 },
     'theory.competition': { cells: 1980, k: 3, longest: 236 },
   },
 }

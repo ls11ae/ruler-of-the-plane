@@ -234,7 +234,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `keys.ControlRight`: Strg
 - `keys.AltLeft`: Alt
 - `keys.AltRight`: Alt Gr
-- `keys.Backspace`: Rück
+- `keys.Backspace`: Rücktaste
 - `keys.Tab`: Tab
 - `keys.CapsLock`: Feststell
 - `keys.MetaLeft`: Win
@@ -406,6 +406,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
   - bonus = 0, cities = 1, mines = 1: (leer)
 - `scoreLabel(name, total)`:
   - name = „Blau“, total = 10: Blau: 10 Punkte
+- `castleCount(castle, total)`:
+  - castle = 4, total = 10: Burg 4 von 10
 - `hintMouse`: Zeig auf die Karte: Die Vorschau zeigt dein neues Gebiet. Burgen nur an Land und mit Abstand.
 - `hintTouch`: Finger auf die Karte, zielen, loslassen: Burg gebaut. Nur an Land und mit Abstand.
 - `hintHold`: Halte den Finger auf der Karte, ziel und lass dann los.
@@ -858,13 +860,12 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `home(n)`:
   - n = 6: +6 zurück
   - n = 0: am Start
-- `longestTitle`: Es zählt die längere Runde:
-- `longestTitleOne`: Deine Runde:
+- `longestTitle`: Längerer Mäher:
+- `longestTitleOne`: Bisher:
 - `target(n)`:
-  - n = 48: Ziel vom Löser: 48
+  - n = 48: Computer: 48 Schritte
 - `targetStrips(n)`:
-  - n = 48: Ziel (Streifen-Strategie): 48
-- `targetPending`: Ziel vom Löser: kommt bald
+  - n = 48: Streifen-Strategie: 48 Schritte
 - `space`: Leertaste
 - `homeButton`: Feierabend
 - `homeHint`: alle zurück zum Start
@@ -880,33 +881,47 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `resume(lawn, cutters)`:
   - lawn = „Vorgarten“, cutters = 2: Vorgarten, zu zweit
   - lawn = „Vorgarten“, cutters = 1: Vorgarten, allein
-- `undoKey`: Schritt zurück
+- `undoButton`: Zurück
 - `newGame`: Neu
 - `theoryButton`: Theorie
 - `howTo(cutters)`:
   - cutters = 2:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Teich, Bäume und Beete brauchst du nicht zu mähen.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
     - Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.
     - Je weniger Schritte, desto besser.
   - cutters = 1:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Teich, Bäume und Beete brauchst du nicht zu mähen.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
     - Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.
     - Je weniger Schritte, desto besser.
-- `howToAnimation`: Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit
-- `explanation(bound)`:
-  - bound = 40:
+- `howToAnimation`: Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse
+- `explanation(bound, mine, reference, solver, cutters)`:
+  - bound = 100, mine = 124, reference = 110, solver = true, cutters = 2:
     - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
-    - Jeder Schritt mäht höchstens 3 neue Felder; darum braucht dieser Rasen mindestens 40 Schritte. Die beste Runde zu finden ist trotzdem sehr schwer.
-    - Der Löser des Lehrstuhls sucht mit cleveren Verfahren lange nach kurzen Runden; die Animation zeigt seine (oder eine einfache) Lösung.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Eure längere Runde hatte 124, der Computer 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
+  - bound = 100, mine = 124, reference = 110, solver = false, cutters = 2:
+    - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Eure längere Runde hatte 124, die Streifen-Strategie 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
+  - bound = 100, mine = 124, reference = 110, solver = true, cutters = 1:
+    - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
+    - Jeder Schritt mäht höchstens 3 neue Felder, darum braucht dieser Rasen mindestens 100 Schritte. Du hast 124 gebraucht, der Computer 110.
+    - Die kürzesten Runden zu finden ist sehr schwer; der Computer sucht lange mit cleveren Verfahren. Die Animation zeigt seine Runden an einem kleinen Beispiel.
 - `explanationAnimation`: Die Runden des Lösers auf diesem Rasen
+- `exampleCaption(cutters, steps)`:
+  - cutters = 2, steps = 46: Beispiel – ein kleiner Rasen: So mäht der Computer mit zwei Mähern, 46 Schritte.
+  - cutters = 1, steps = 46: Beispiel – ein kleiner Rasen: So mäht der Computer mit einem Mäher, 46 Schritte.
+- `exampleAnimation(cutters)`:
+  - cutters = 2: Beispiel: die Runden des Computers mit zwei Mähern auf einem kleinen Rasen, der keiner der Rasen hier ist
+  - cutters = 1: Beispiel: die Runden des Computers mit einem Mäher auf einem kleinen Rasen, der keiner der Rasen hier ist
 - `replay`: Nochmal zeigen
 
 ### lawns
 
 - `lawns.lawn1`: Vorgarten
-- `lawns.lawn2`: Gemüsegarten
+- `lawns.lawn2`: Gartenwege
 - `lawns.lawn3`: Schlossgarten
-- `lawns.lawn4`: Obstwiese
+- `lawns.lawn4`: Trittsteine
 - `lawns.lawn5`: Stadtpark
 
 ### pad
@@ -919,9 +934,9 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 ### tierTeasers
 
-- `tierTeasers.easy`: Der Vorgarten: klein, mit Teich und Baum – zum Üben.
-- `tierTeasers.medium`: Beete und Obstbäume: größere Wiesen, mehr zu planen.
-- `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Lösers.
+- `tierTeasers.easy`: Der Vorgarten: klein, mit Terrasse und Steinplatten – zum Üben.
+- `tierTeasers.medium`: Gartenwege und Trittsteine: größere Wiesen, mehr zu planen.
+- `tierTeasers.hard`: Hier sind einfache Strategien klar schlechter als die Runden des Computers.
 
 ### setup
 
@@ -944,7 +959,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 - `result.title`: Feierabend!
 - `result.stats(longest, target)`:
-  - longest = 52, target = „Ziel vom Löser: 48“: Längste Runde: 52 Schritte · Ziel vom Löser: 48
+  - longest = 52, target = „Computer: 48 Schritte“: Längste Runde: 52 Schritte · Computer: 48 Schritte
 - `result.score(n)`:
   - n = 48: 48 Schritte
 

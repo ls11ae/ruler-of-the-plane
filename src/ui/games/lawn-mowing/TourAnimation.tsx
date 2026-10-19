@@ -1,12 +1,16 @@
 import { useMemo, useRef, useState } from 'react'
-import { Mowing, type Lawn } from '../../../core/games/lawn-mowing/mowing'
+import { makeLawn, Mowing, type Lawn } from '../../../core/games/lawn-mowing/mowing'
+import { EXAMPLE_LAWN } from '../../../core/games/lawn-mowing/rules'
 import { positionsOf } from '../../../core/games/lawn-mowing/tour'
 import type { Vec2 } from '../../../core/geometry/types'
 import type { LawnMowingLevel } from '../../../core/levels/schema'
 import { Button } from '../../components/Button'
 import { useAnimationFrame } from '../../input/hooks'
-import { CUTTER_COLOURS } from './art'
-import { boardBounds, cutterCentre, ringsPath, runs, simplify } from './geometry'
+import { useLevel } from '../../levels'
+import { CUTTER_COLOURS, LAWN } from './art'
+import { boardBounds, cutterCentre, holeCells, ringsPath, runs, simplify } from './geometry'
+import type { LawnTexts } from './i18n.de'
+import { Slabs } from './LawnArt'
 import styles from './LawnMowing.module.css'
 
 const COLOURS = [...CUTTER_COLOURS, '#2f9e8f']
@@ -22,6 +26,7 @@ export function TourAnimation({
   label,
   replay,
   durationMs = 7000,
+  caption,
 }: {
   level: LawnMowingLevel
   lawn: Lawn
@@ -29,6 +34,8 @@ export function TourAnimation({
   label: string
   replay: string
   durationMs?: number
+  /** A visible label above the picture (e.g. that it is an example). */
+  caption?: string
 }) {
   const walks = useMemo(() => tours.map((t) => positionsOf(t)), [tours])
   const total = Math.max(1, ...walks.map((w) => w.length - 1))
@@ -44,25 +51,35 @@ export function TourAnimation({
     for (const w of walks) for (const p of w.slice(0, step + 1)) m.mowAt(p)
     return lawn.cells.cells().filter(([x, y]) => m.isMowed(x, y))
   }, [lawn, walks, step])
+  const slabs = useMemo(() => holeCells(level), [level])
   const b = boardBounds(level, 1.5)
   const at = (w: readonly Vec2[]) => w[Math.min(step, w.length - 1)]!
   return (
     <div>
+      {caption && <p className={styles.animationCaption}>{caption}</p>}
       <svg
         viewBox={`${b.minX} ${b.minY} ${b.maxX - b.minX} ${b.maxY - b.minY}`}
         className={styles.animationSvg}
         role="img"
         aria-label={label}
       >
-        <path d={ringsPath([level.outer, ...level.holes])} fill="#8fca6a" fillRule="evenodd" />
+        <path d={ringsPath([level.outer, ...level.holes])} fill={LAWN.grass} fillRule="evenodd" />
+        <Slabs cells={slabs} />
         {runs(mowed).map(([x, y, n]) => (
-          <rect key={`${x},${y}`} x={x} y={-(y + 1)} width={n} height={1} fill="#cfeab0" />
+          <rect key={`${x},${y}`} x={x} y={-(y + 1)} width={n} height={1} fill={LAWN.mowed} />
         ))}
         <path
-          d={ringsPath([level.outer, ...level.holes])}
+          d={ringsPath([level.outer])}
           fill="none"
           stroke="var(--ink)"
           strokeWidth={0.18}
+          strokeLinejoin="round"
+        />
+        <path
+          d={ringsPath(level.holes)}
+          fill="none"
+          stroke="var(--ink)"
+          strokeWidth={0.09}
           strokeLinejoin="round"
         />
         {walks.map((w, i) => {
@@ -100,5 +117,31 @@ export function TourAnimation({
         {replay}
       </Button>
     </div>
+  )
+}
+
+/**
+ * The explanation's animation: the computer's tours on the small example lawn (none of the booth lawns),
+ * for as many mowers as the visitor played with, labelled as an example.
+ */
+export function ExampleAnimation({ cutters, t }: { cutters: number; t: LawnTexts }) {
+  const level = useLevel<LawnMowingLevel>(EXAMPLE_LAWN)
+  const example = level.status === 'ready' ? level.value : null
+  const lawn = useMemo(
+    () => (example ? makeLawn(example.outer, example.holes, example.cutter, example.cutterCenter) : null),
+    [example],
+  )
+  const solution = example?.variants.find((v) => v.cutters === cutters)?.solution
+  if (!example || !lawn || !solution) return null
+  return (
+    <TourAnimation
+      level={example}
+      lawn={lawn}
+      tours={solution.tours}
+      label={t.exampleAnimation(cutters)}
+      caption={t.exampleCaption(cutters, solution.maxTourLength)}
+      replay={t.replay}
+      durationMs={6000}
+    />
   )
 }

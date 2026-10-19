@@ -28,6 +28,12 @@ export const SCALE = 1e7
  */
 export const LIT_RADIUS = 0.03
 
+/**
+ * The pulsing marker on the thickest dark spot appears only from this lit share on (Kevin, 2026-10-19):
+ * earlier it gave away where the next torch belongs; from 95 % on it helps to find the last dark corners.
+ */
+export const DARK_HINT_FROM = 0.95
+
 export const toPath64 = (ring: readonly Vec2[]): Path64 =>
   ring.map(([x, y]) => ({ x: Math.round(x * SCALE), y: Math.round(y * SCALE) }))
 
@@ -93,9 +99,12 @@ export function coverage(
   }
 }
 
+/** Whether the game marks the thickest dark spot: not fully lit, but at least {@link DARK_HINT_FROM} lit. */
+export const showsDarkHint = (c: Coverage) => !c.fullyLit && c.litShare >= DARK_HINT_FROM
+
 /**
  * The centre of the thickest dark spot and its radius (the largest r for which the shrunk dark region is
- * not empty, to about 1 %), for the pulsing hint while the floor is not fully lit; null if there is no
+ * not empty, to about 1 %), for the pulsing hint while the floor is nearly lit; null if there is no
  * dark region. A binary search over Clipper2 offsets, about a dozen of them.
  */
 export function thickestDarkSpot(darkPaths: Paths64): { at: Vec2; radius: number } | null {

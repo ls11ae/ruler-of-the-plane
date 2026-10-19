@@ -43,7 +43,7 @@ describe('shipped levels (public/levels)', () => {
       divide: 9,
       'convex-hull': 3,
       voronoi: 3,
-      'lawn-mowing': 6,
+      'lawn-mowing': 7,
       'roads/steiner': 6,
       'roads/bichromatic': 6,
     })
@@ -59,7 +59,7 @@ describe('shipped levels (public/levels)', () => {
 
   it('carry the parameters of their file names', () => {
     for (const level of levels) {
-      if (level.collection === 'lawn-mowing' && level.competition) continue
+      if (level.collection === 'lawn-mowing' && (level.competition || level.example)) continue
       const { number, param } = parseLevelName(level.collection, level.name)
       expect(level.number).toBe(number)
       if (level.collection === 'art-gallery') expect(level.torches).toBe(param)
@@ -138,12 +138,26 @@ describe('shipped levels (public/levels)', () => {
     const lawn = makeLawn(level.outer, level.holes, level.cutter, level.cutterCenter)
 
     it('is a lawn of 300 to 500 cells with a 3 × 3 cutter for 1 and 2 cutters (booth lawns)', () => {
-      if (level.competition) return
+      if (level.competition || level.example) return
       expect(lawn.cells.count).toBeGreaterThanOrEqual(300)
       expect(lawn.cells.count).toBeLessThanOrEqual(500)
       expect(lawn.offsets).toHaveLength(9)
       expect(level.variants.map((v) => v.cutters)).toEqual([1, 2])
       expect(level.holes.length).toBeGreaterThan(0)
+    })
+
+    it('is a small example lawn with tours for 1 and 2 cutters, none of the booth lawns (the example)', () => {
+      if (!level.example) return
+      expect(lawn.cells.count).toBeLessThan(200)
+      expect(lawn.offsets).toHaveLength(9)
+      expect(level.variants.map((v) => [v.cutters, !!v.solution])).toEqual([
+        [1, true],
+        [2, true],
+      ])
+      const shape = (l: typeof level) => JSON.stringify([l.outer, l.holes])
+      for (const other of levels) {
+        if (other.collection === 'lawn-mowing' && other !== level) expect(shape(other)).not.toBe(shape(level))
+      }
     })
 
     it('has solutions that mow everything, with the stated longest tour', () => {

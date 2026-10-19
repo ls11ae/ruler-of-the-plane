@@ -447,7 +447,7 @@ their ends.
   generous: on the triangle a junction 0.56 units off its spot is only 1.8 % too long, and within 1 % the
   angles can be 10–15° off. So on the win the junctions slide the last bit to their best spots (Weiszfeld
   steps on the player's own roads, half a second), and the angles read 120°: the rule shows itself where
-  it is reached. Hints compare with the stored optimum, its junctions matched to the player's (nearest
+  it is reached (since 2026-10-19 only within 0.03 % of the optimum, see "Kevin's playtest"). Hints compare with the stored optimum, its junctions matched to the player's (nearest
   pairs within 0.8): a junction without a match with one road (a dead end) or two (a bend), a missing
   junction as a dashed ghost with a road to it, a junction or road too many, a road missing, finally the
   junction furthest from 120° ("Schieb die Kreuzung im grünen Kreis…"); following them leads to the
@@ -1213,3 +1213,131 @@ the QR poster and card rejected and removed.
   the leash could go (as the paper's polygons; a new kind of obstacle for the rope and the search);
   replacing one of the two free-start walks (four woods walks in "Schwer" are not too many: eight walks in
   all, as in "Mittel" with seven).
+
+### Kevin's playtest (2026-10-19)
+
+Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
+
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Kreuzungen": a new first map, "Gabel".** The how-to's
+  animation (a castle above two villages, joined at one junction) was exactly map 1 ("Dreieck") with its
+  solution, so the how-to solved the first map. The animation stays; map 1 is now a fork with a road
+  straight on: two villages on the left joined at a junction, which leads on to the castle in the middle,
+  and from the castle a road without a junction to a village on the right (the angle at the castle is
+  wider than 120°, so no junction helps there). Four places, one junction 1.5 units from every place, the
+  network without junctions 8.5 % longer (the old triangle: 14.4 %); it also shows early that not every
+  place needs a junction. The optimum comes from `scripts/roads/steiner-maps.ts` as the other maps'
+  (every full topology, Smith's iteration); the how-to's picture moved to `STEINER_HOW_TO` in
+  `src/core/games/roads/levels.ts`, and a test checks that map 1 has more places than it and a road from
+  place to place. The old map's leaderboard (`roads/steiner/1-dreieck`) is orphaned. Alternatives: the
+  triangle turned or mirrored (still three places round one junction, the same picture); a different
+  how-to picture (Kevin wanted the animation kept).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Kreuzungen": the junctions settle only very close to the
+  optimum.** On a win the junctions slid to their best spots, and with the 1 % tolerance this happened as
+  soon as a network was roughly right, so it looked like snapping to the solution. 1 % stays the win; the
+  junctions now settle only when the network is at most 0.03 % longer than the optimum
+  (`SETTLE_TOLERANCE` in `src/core/games/roads/junctions.ts`); between that and 1 % the network counts as
+  optimal, but the junctions stay where the player put them, with their angles as they are. Tuned on the
+  six maps by moving the optimum's junctions in random directions until the network is a given share too
+  long: at Kevin's starting value of 0.2 % the worst angle at a junction is typically still 10–13° off
+  120° (up to 21° on "Wabe", whose junctions have short roads between them), and a junction moves up to
+  0.3 units when it settles; at 0.03 % the worst angle is typically 4–5° off (at most 4.4° on "Gabel", 7.6°
+  on "Wabe"), and a junction moves at most 0.1 units (a map is about 6 wide; 10–20 px on the laptop).
+  The angle labels lead there: each degree off is a few pixels. Tests: every map at the threshold
+  (median worst angle at most 5.5°, at most 8.5°, junctions within 0.12), a network between the two
+  thresholds counts but does not settle, and the smoke test plays both. Alternatives: a rule on the
+  angles instead (Kevin asked for one on the length, which is what the king pays); 0.05 % (angles
+  typically 5–6.5° off, up to 10°).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Licht ins Verlies": the dark-spot marker only from 95 % lit
+  on.** The pulsing marker on the thickest dark spot gave away where the next torch belongs. It now
+  appears only once at least 95 % of the floor is lit and the dungeon is still not fully lit by the
+  thickness rule (`DARK_HINT_FROM`, `showsDarkHint` in `src/core/games/art-gallery/coverage.ts`), so it
+  helps to find the last dark corners. 95 % is the lit share shown above the board (rounded down, so the
+  marker appears from "95 %" on). The attract demo keeps its marker before the last torch. Alternatives: a
+  marker on request (a hint button; the game has none so far); a share relative to the torches still to
+  place (harder to explain).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Licht ins Verlies": rock around the dungeon and in the
+  pillars, and "Mittel" starts with small pillars.** On "Mittel 1" (a narrow corridor round three large
+  pillars) inside and outside were hard to tell apart: the unlit floor is dark, while pillars and the
+  outside were lightly hatched, so the corridor looked like a wall and the pillars like rooms. The
+  outside and the pillars are now rock, only somewhat darker than before (Kevin): stone colour `#e2dbce`
+  instead of `#efebe2`, under groups of four to six short ink strokes in random directions, as rock is
+  drawn on hand-made dungeon maps, instead of even diagonal hatching that read like fabric. The tile
+  (`src/ui/games/art-gallery/rock.svg`, 144 px, seamless) is drawn by `scripts/art-gallery/rock-tile.ts`
+  (seeded; a test checks the committed file and that it is seamless), our own art, so nothing new in
+  CREDITS.md. The floor with its grid stays as it is. The same rock is behind the dungeon in the game
+  (also in the theory view), in the explanation's animations and in the attract demo. "Mittel" now
+  starts with agLevel4_8 (the mockup's dungeon, 6 pillars, the largest 36 % of the floor, three small
+  diamonds), then agLevel8_4 (no pillars), then the corridors round large pillars by torches: agLevel10_4
+  (53 %), agLevel5_5 (58 %), agLevel12_7 (45 %); a test checks that the first has the smallest pillars.
+  "Mittel 1" now asks for 8 torches. The contrast checks of `e2e/a11y.spec.ts` stay green. Alternatives:
+  a darker even hatching (still read like fabric, see the screenshots of the session); moving
+  agLevel2_3 (3 small pillars, "Leicht 4") to "Mittel" (Kevin asked to reorder "Mittel"); agLevel8_4
+  first (no pillars at all).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": a button "↶ Zurück" on each mower's card.** The
+  step back was not recognisable (only the key Q with a small curved arrow on the card). Each card now
+  has a button with the curved arrow, "Zurück" and its key as a keycap ("Q", "Rücktaste" for mower 2),
+  in the top row of the keys, where Q sits beside W; it works with the mouse as well as the key, is
+  disabled while the mower has not moved, and does not take the focus (so the space bar stays
+  "Feierabend"). The keys stay, and phones keep the middle of the direction pad. The shared key label of
+  Backspace is now "Rücktaste" (English "Backspace") instead of "Rück", also in "So geht's" and the key
+  test. The four cards still fit side by side at 1280 px. Alternatives: a separate button column beside
+  the keys (the cards would no longer fit side by side at 1280 px); the button below the card's steps
+  (the card would grow taller than the "Feierabend" card).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": the explanation plays an example lawn.** "Was
+  steckt dahinter?" after a finished lawn played the solver's tours on that very lawn, so it showed the
+  solution of a level. It now plays the computer's tours on a small example lawn that is none of the booth
+  lawns (16 × 9 cells with a notch and a 3 × 3 patch inside, 125 cells to mow), with one mower or two, as
+  the visitor played, labelled above the picture: "Beispiel – ein kleiner Rasen: So mäht der Computer mit
+  einem Mäher, 46 Schritte." The text keeps this lawn's numbers: the lower bound, the visitor's longest
+  round and the computer's ("…mindestens 100 Schritte. Du hast 124 gebraucht, der Computer 110."). The
+  example's tours come from the same offline solver as the booth lawns (`scripts/lawns/solve.py
+example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` by `make_instances.py`):
+  one mower 46 steps, equal to its lower bound; two mowers 26, lower bound 24. `npm run levels` imports
+  it as `lawn-mowing/example` (flagged `example`, like the competition instance; not in any tier), and a
+  test checks that it is small, has tours for one and two mowers and differs from every booth lawn. The
+  theory view's "Runden ansehen" still plays this lawn's tours on demand. Alternatives: an animation of
+  the lower bound only (no tours; the tours are what the computer is good at); the strips on this lawn
+  (also a solution of the level, if a poor one).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": every hole is stone slabs.** Several visitors
+  thought a mower cannot drive through a tree or the pond and steered round them. Every non-lawn cell
+  inside a lawn is now drawn as stone slabs, which one can obviously drive over: one slab per cell in
+  three stone tones, a joint of mortar round it, inked edges and a crack in some (our own SVG, so no new
+  art files; the pond, tree and flower-bed tiles of Scribble Dungeons left CREDITS.md). A hole's outline
+  is thinner than the lawn's (a paving's edge, not a wall). The shapes are unchanged, so are the instances
+  and the solver's tours; a hole is a terrace, a paved path or a small paved square by its shape (the
+  rule that made it a pond, a flower bed or a tree), and `lawns.txt` marks them T, W and S. Two lawns
+  were named after what they no longer have: "Gemüsegarten" is now "Gartenwege" (six paved paths) and
+  "Obstwiese" "Trittsteine" (13 small paved squares; English "Garden Paths", "Stepping Stones"). The
+  same look is in the how-to animation (tier screen and "So geht's": its lawn has a 2 × 2 terrace that
+  the first strip drives straight over), the theory view, the explanation, the attract demo and the
+  lawns in "Neu" (there as the stone colour only). The texts say it: "Steinplatten musst du nicht mähen,
+  drüberfahren darfst du." Alternatives: the Scribble floor tiles (white with pale grey joints, they look
+  like the grid paper round the lawn); keeping trees and ponds with a hint that mowers drive over them
+  (the picture says otherwise).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Erobere das Land": the castle count on phones.** The header
+  drops its subtitle on narrow screens (phones, windows up to 720 px), so "Burg 3 von 10" was missing,
+  which players want to know. There it now follows whose turn it is, in the line above the hint: "Du bist
+  dran · Burg 3 von 10" (also "Computer überlegt … · Burg 3 von 10"); wider screens keep it in the
+  subtitle only. Alternatives: keeping the subtitle on phones (the header would take a third line); the
+  count in the score cards (it belongs to the round, not to a player).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": the score card says "Bisher" and "Computer".**
+  "Deine Runde" was confusing. The score card now reads "Bisher: 12 Schritte" with one mower and
+  "Längerer Mäher: 12 Schritte" with two (the steps so far with the way back, as before), and "Computer:
+  110 Schritte" instead of "Ziel vom Löser: 110", since the app calls the solver "der Computer" elsewhere
+  too (also on the phone beside the direction pad, on the result screen, and in the "Schwer" teaser of
+  the tier screen; the theory view still names "den Löser des Lehrstuhls"). Without the solver's tours
+  the line would read "Streifen-Strategie: 74 Schritte". It fits on phones (390 px) and the four cards
+  still fit side by side at 1280 px (both tested). Alternatives: "Deine Runde bisher" (longer, and with
+  two mowers it is not one round).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Rasenmähen": mowed and unmowed clearly different.** Above all
+  on phones it was hard to see where the lawn was already mowed: the uncut grass (green under the white
+  Scribble grass tile at 55 %) came out almost as pale as the mowed cells. Uncut grass is now a darker,
+  fuller green (`#5d9f3c`, grid lines `#4c8a2f`) with two tufts of dark green strokes per cell, drawn in
+  SVG instead of the Scribble tile (which only whitened the green; it left CREDITS.md); mowed cells are
+  clearly lighter (`#dbf0c4`, stripes `#c9e6aa`) and keep their stripes, so colour is not the only cue
+  (tufts on uncut grass, stripes on mowed). The same colours in the how-to, the theory and explanation
+  animations, the attract demo and the lawn cards (`LAWN` in `src/ui/games/lawn-mowing/art.ts`).
+  Checked at 390 × 844 (screenshots of the session); the contrast checks of `e2e/a11y.spec.ts` stay
+  green (no text lies on the lawn). Alternatives: the Scribble tile multiplied onto the green (a blend
+  mode inside an SVG pattern, untested in WebKit); only a darker mowed colour (the mowed area would read
+  as the important part).

@@ -10,9 +10,16 @@
   flex: 1;
   min-height: 0;
   display: flex;
-  /* Hatched rock around the dungeon and inside the pillars. */
-  background-color: #efebe2;
-  background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgb(43 36 32 / 13%) 9px 10.5px);
+}
+
+/*
+ * Rock around the dungeon and inside the pillars: groups of short ink strokes on stone (Kevin, 2026-10-19:
+ * a little darker than the light hatching before, so pillars no longer look like rooms; the tile comes
+ * from scripts/art-gallery/rock-tile.ts).
+ */
+.rock {
+  background-color: #e2dbce; /* ROCK_COLOUR in art.ts */
+  background-image: url('./rock.svg');
 }
 
 .boardArea {

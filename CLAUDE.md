@@ -37,7 +37,13 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   entries agreed, the QR poster and card rejected and removed (tsp-boards' print material covers this
   game), tags only mark booth releases (`phase-6` = the laptop test), and a fourth "Schwer" woods walk
   "Schlossrunde" whose free start is a real trade-off (a round from the castle, since no walk from the
-  gate to the castle can have two good starts; the round is "proposed"). Open are the items that need
+  gate to the castle can have two good starts; the round is "proposed"). Kevin's playtest (2026-10-19, branch `claude/zen-euler-2febve`): a new first
+  map "Gabel" of "Kreuzungen" (the how-to showed map 1's solution) and junctions that settle only within
+  0.03 % of the optimum; in "Licht ins Verlies" the dark-spot marker only from 95 % lit, rock (short ink
+  strokes on stone) round the dungeon and in the pillars, "Mittel" starting with small pillars; in
+  "Rasenmähen" a button "↶ Zurück" per mower, the explanation on an example lawn (`levels/lawn-mowing/example/`),
+  stone slabs for every hole, "Bisher"/"Computer" on the score card and darker uncut grass; the castle
+  count on phones in "Erobere das Land". Open are the items that need
   the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
   the shared code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the
@@ -131,8 +137,9 @@ Design decisions go to the decision log in `docs/design-notes.md`.
 - Art gallery: a level is a polygon, 9 of the 14 Unity levels with holes ("pillars"); a torch sees its
   visibility polygon (exact, a point). "Fully lit" is judged by thickness (Kevin, 2026-10-16): the dark
   region (level minus the union of visibility polygons, Clipper2), shrunk by r = 0.03 level units, is
-  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and while
-  not lit a pulsing dot marks the thickest dark spot. An area tolerance would accept a half-dark niche
+  empty, i.e. no dark spot is thicker than 0.06 units; the remaining hairlines are shown lit, and once at
+  least 95 % is lit (but not fully) a pulsing dot marks the thickest dark spot (earlier it gave away where
+  the next torch belongs; Kevin, 2026-10-19). An area tolerance would accept a half-dark niche
   (the smallest niches of agLevel8_4 are 0.29 % of the floor); the Unity version used an area ratio plus
   checkpoints, which was fragile. r is tuned in the playtest.
 - The 14 art gallery levels are the 2020 set of "Designing Art Galleries" (van Benthem, Buchin,

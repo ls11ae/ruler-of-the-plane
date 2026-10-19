@@ -15,6 +15,9 @@ from cgshop2027_pyutils.schemas import CGSHOP2027Instance
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "levels" / "lawn-mowing" / "lawns.txt"
 OUT = ROOT / "levels" / "lawn-mowing" / "instances"
+# The example lawn of the explanation (not a booth lawn), in a folder of its own.
+EXAMPLE_SOURCE = ROOT / "levels" / "lawn-mowing" / "example" / "lawn.txt"
+EXAMPLE_OUT = ROOT / "levels" / "lawn-mowing" / "example" / "instances"
 CUTTERS = (1, 2)
 CUTTER = {"x": [0, 3, 3, 0], "y": [0, 0, 3, 3]}
 CUTTER_CENTER = [1, 1]
@@ -51,7 +54,7 @@ def cells_of(rows: list[str]) -> tuple[set[Cell], dict[Cell, str]]:
         for x, char in enumerate(row.ljust(width, ".")):
             if char == "#":
                 lawn.add((x, y))
-            elif char in "TFP":
+            elif char in "SWT":
                 marks[(x, y)] = char
             elif char != ".":
                 raise ValueError(f"unknown character {char!r} at ({x}, {y})")
@@ -76,16 +79,16 @@ def components(cells: set[Cell]) -> list[set[Cell]]:
 
 
 def hole_kind(hole: set[Cell]) -> str:
-    """The art the game draws for a hole: the same rule as in the game's code."""
+    """The kind of stone slabs a hole is (square, path, terrace): the same rule as in the game's code."""
     xs = [x for x, _ in hole]
     ys = [y for _, y in hole]
     w, h = max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
     if len(hole) == w * h:
         if w == h and w <= 2:
-            return "T"
+            return "S"
         if min(w, h) <= 2 and max(w, h) >= 3:
-            return "F"
-    return "P"
+            return "W"
+    return "T"
 
 
 def rings(lawn: set[Cell]) -> list[list[tuple[int, int]]]:
@@ -164,8 +167,13 @@ def make(name: str, rows: list[str]) -> tuple[dict, int, int]:
 
 
 def main() -> None:
-    lawns = read_lawns(SOURCE.read_text())
-    OUT.mkdir(parents=True, exist_ok=True)
+    write_instances(SOURCE, OUT)
+    write_instances(EXAMPLE_SOURCE, EXAMPLE_OUT)
+
+
+def write_instances(source: Path, out: Path) -> None:
+    lawns = read_lawns(source.read_text())
+    out.mkdir(parents=True, exist_ok=True)
     written = set()
     for name, (title, rows) in lawns.items():
         region, cells, holes = make(name, rows)
@@ -180,12 +188,12 @@ def main() -> None:
                 "number_of_cutters": k,
             }
             CGSHOP2027Instance.model_validate(instance)
-            path = OUT / f"{uid}.instance.json"
+            path = out / f"{uid}.instance.json"
             path.write_text(json.dumps(instance, separators=(",", ":")) + "\n")
             written.add(path.name)
         bound = -(-(cells - CUTTER_WIDTH**2) // CUTTER_WIDTH)
         print(f"{name} ({title}): {cells} cells, {holes} holes, lower bound {bound} (1 cutter)")
-    for stale in OUT.glob("*.instance.json"):
+    for stale in out.glob("*.instance.json"):
         if stale.name not in written:
             stale.unlink()
             print(f"removed {stale.name}")

@@ -1,0 +1,106 @@
+{
+  "id": "lawn-mowing/example",
+  "collection": "lawn-mowing",
+  "name": "example",
+  "number": 7,
+  "source": "levels/lawn-mowing/example/instances/example_1s3.instance.json",
+  "bounds": { "minX": 0, "minY": 0, "maxX": 16, "maxY": 9 },
+  "outer": [
+    [0, 0],
+    [11, 0],
+    [11, 2],
+    [16, 2],
+    [16, 9],
+    [0, 9]
+  ],
+  "holes": [
+    [
+      [4, 4],
+      [4, 7],
+      [7, 7],
+      [7, 4]
+    ]
+  ],
+  "cutter": [
+    [0, 0],
+    [3, 0],
+    [3, 3],
+    [0, 3]
+  ],
+  "cutterCenter": [1, 1],
+  "variants": [
+    {
+      "cutters": 1,
+      "uid": "example_1s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [9, 1],
+            [9, 3],
+            [10, 3],
+            [10, 4],
+            [12, 4],
+            [12, 3],
+            [14, 3],
+            [14, 7],
+            [7, 7],
+            [7, 5],
+            [6, 5],
+            [6, 4],
+            [4, 4],
+            [4, 7],
+            [1, 7]
+          ]
+        ],
+        "maxTourLength": 46,
+        "source": "levels/lawn-mowing/example/solutions/example_1s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 46,
+          "best_simple_strategy": {
+            "name": "nearest",
+            "longest_tour": 50
+          }
+        }
+      }
+    },
+    {
+      "cutters": 2,
+      "uid": "example_2s3",
+      "solution": {
+        "tours": [
+          [
+            [1, 1],
+            [1, 7],
+            [5, 7],
+            [4, 7],
+            [4, 4],
+            [5, 4],
+            [5, 1]
+          ],
+          [
+            [8, 1],
+            [8, 7],
+            [14, 7],
+            [14, 3],
+            [11, 3],
+            [11, 4],
+            [11, 1]
+          ]
+        ],
+        "maxTourLength": 26,
+        "source": "levels/lawn-mowing/example/solutions/example_2s3.solution.json",
+        "meta": {
+          "algorithm": "scripts/lawns/solve.py: best simple strategy, improved by large neighbourhood search with CP-SAT",
+          "lower_bound": 24,
+          "best_simple_strategy": {
+            "name": "halves with spiral",
+            "longest_tour": 26
+          }
+        }
+      }
+    }
+  ],
+  "example": true
+}

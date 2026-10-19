@@ -5,13 +5,17 @@ Five small lawns for the booth, each as a CG:SHOP 2027 instance in the pyutils27
 from (0, 0) to (3, 3), `cutter_center` (1, 1), as in the competition's `…s3` instances), once for one and
 once for two cutters.
 
-| Lawn  | Name          | Cells | Holes                                 |
-| ----- | ------------- | ----: | ------------------------------------- |
-| lawn1 | Vorgarten     |   304 | pond, tree                            |
-| lawn2 | Gemüsegarten  |   345 | six flower beds                       |
-| lawn3 | Schlossgarten |   399 | pond, tree, flower bed                |
-| lawn4 | Obstwiese     |   426 | 13 trees                              |
-| lawn5 | Stadtpark     |   462 | pond around an island, tree, two beds |
+| Lawn  | Name          | Cells | Holes (stone slabs)                                       |
+| ----- | ------------- | ----: | --------------------------------------------------------- |
+| lawn1 | Vorgarten     |   304 | a terrace, a small paved square                           |
+| lawn2 | Gartenwege    |   345 | six paved paths                                           |
+| lawn3 | Schlossgarten |   399 | a terrace, a small paved square, a paved path             |
+| lawn4 | Trittsteine   |   426 | 13 small paved squares (stepping stones)                  |
+| lawn5 | Stadtpark     |   462 | a paved ring path round an island, two squares, two paths |
+
+Every hole is drawn as stone slabs, which a mower obviously drives over (Kevin, 2026-10-19: with ponds,
+trees and flower beds, visitors steered round them). Until 2026-10-19 the holes were ponds, trees and
+flower beds, and lawn2 and lawn4 were called "Gemüsegarten" and "Obstwiese"; the shapes are unchanged.
 
 ## Solutions
 
@@ -65,6 +69,12 @@ from the existing solution file as well and only replaces it by a better one.
   pyutils27 solution format. They are kept apart from the instances because pyutils27's instance database treats every JSON
   file in a folder as an instance. `npm run levels` puts instances and solutions into
   `public/levels/lawn-mowing/<lawn>.json` (one file per lawn with both numbers of cutters).
+- `example/`: the small example lawn of the explanation after a finished lawn ("Was steckt dahinter?"),
+  none of the booth lawns (Kevin, 2026-10-19: the animation showed the solution of the lawn just played).
+  `lawn.txt` is its source (same format as `lawns.txt`), `instances/` its instances for one and two
+  cutters (`make_instances.py`), `solutions/` the tours of `python3 scripts/lawns/solve.py example_1s3
+example_2s3` (one cutter: 46 steps, equal to the lower bound; two cutters: 26, lower bound 24).
+  `npm run levels` writes it to `public/levels/lawn-mowing/example.json`.
 - `competition/`: a real CG:SHOP 2027 instance with the example solution from pyutils27 (MIT), shown in
   the theory view.
 - `fixtures/`: tours on some of these instances checked by the pyutils27 verifier
@@ -95,5 +105,5 @@ reachable.
 - Coordinates as in pyutils27: y points up, cell (x, y) is the unit square [x, x + 1] × [y, y + 1]; the
   game flips y to draw.
 - Holes need no mowing; cutters may cross them and leave the lawn. The game picks a hole's art from its
-  shape: a 1 × 1 or 2 × 2 square is a tree, a rectangle 1 or 2 cells wide and at least 3 long a flower bed,
-  anything else a pond.
+  shape: a 1 × 1 or 2 × 2 square is a small paved square, a rectangle 1 or 2 cells wide and at least 3
+  long a paved path, anything else a terrace (all drawn as stone slabs).

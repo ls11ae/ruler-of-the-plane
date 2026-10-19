@@ -5,6 +5,7 @@ import {
   extendTo,
   fullTopologyCount,
   isNearlyOptimal,
+  isSettleClose,
   junctionHint,
   lengthOf,
   mergeInto,
@@ -401,7 +402,8 @@ function SteinerScreen({
   const [show, setShow] = useState<'mst' | 'optimum' | null>(null)
   const mst = useMemo(() => kruskal(points), [points])
 
-  // On the win the junctions slide the last bit to their best spots, so the angles read 120°.
+  // On a win very close to the optimum the junctions slide the last bit to their best spots, so the angles
+  // read 120°; further off (still within 1 %) they stay where the player put them.
   const [settle, setSettle] = useState<{ frames: Vec2[][]; start: number } | null>(null)
   useAnimationFrame((now) => {
     if (!settle) return
@@ -423,7 +425,7 @@ function SteinerScreen({
     setSettle(null)
     if (!settled) return
     const optimal = isNearlyOptimal(points, next, optimum.length)
-    if (optimal && !round.won && next.junctions.length) {
+    if (optimal && !round.won && next.junctions.length && isSettleClose(points, next, optimum.length)) {
       const frames = relax(points, next, SETTLE_ROUNDS)
       setSettle({ frames: [...frames.slice(0, SETTLE_FRAMES), frames.at(-1)!], start: performance.now() })
     }

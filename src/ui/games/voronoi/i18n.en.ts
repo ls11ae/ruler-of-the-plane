@@ -26,6 +26,7 @@ export const en: VoronoiTexts = {
   bonus: (bonus: number, cities: number, mines: number) =>
     bonus > 0 ? `+${bonus} ${bonusWords(cities, mines)}` : '',
   scoreLabel: (name: string, total: number) => `${name}: ${total} points`,
+  castleCount: (castle: number, total: number) => `Castle ${castle} of ${total}`,
   turn: {
     yours: 'Your turn',
     computer: 'Computer is thinking …',

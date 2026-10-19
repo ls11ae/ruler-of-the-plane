@@ -23,6 +23,15 @@ ROOT = Path(__file__).resolve().parents[2]
 LAWNS = ROOT / "levels" / "lawn-mowing"
 INSTANCES = LAWNS / "instances"
 SOLUTIONS = LAWNS / "solutions"
+# The example lawn of the game's explanation (not a booth lawn), with its own instances and solutions.
+EXAMPLE = LAWNS / "example"
+
+
+def folders(uid: str) -> tuple[Path, Path]:
+    """The folders of an instance and its solution: the example lawn's (`example_<k>s3`) or the booth's."""
+    if uid.startswith("example"):
+        return EXAMPLE / "instances", EXAMPLE / "solutions"
+    return INSTANCES, SOLUTIONS
 
 Point = tuple[int, int]
 Walk = list[Point]  # a closed walk: positions after every unit step, the return to walk[0] implicit
@@ -166,7 +175,7 @@ def bfs(lawn: Lawn, start: Point) -> dict[Point, Point | None]:
 
 
 def load(uid: str) -> Lawn:
-    return Lawn(read_instance(INSTANCES / f"{uid}.instance.json"))
+    return Lawn(read_instance(folders(uid)[0] / f"{uid}.instance.json"))
 
 
 def solution_of(lawn: Lawn, walks: list[Walk], meta: dict | None = None) -> CGSHOP2027Solution:
@@ -182,7 +191,7 @@ def verify(lawn: Lawn, walks: list[Walk]) -> list[str]:
     return SolutionValidator(lawn.instance).check_for_errors(solution_of(lawn, walks))
 
 
-def write_solution(lawn: Lawn, walks: list[Walk], meta: dict, folder: Path = SOLUTIONS) -> Path:
+def write_solution(lawn: Lawn, walks: list[Walk], meta: dict, folder: Path | None = None) -> Path:
     solution = solution_of(lawn, walks, meta)
     errors = SolutionValidator(lawn.instance).check_for_errors(solution)
     if errors:
@@ -193,6 +202,7 @@ def write_solution(lawn: Lawn, walks: list[Walk], meta: dict, folder: Path = SOL
         "tours": [{"x": t.x, "y": t.y} for t in solution.tours],
         "meta": meta,
     }
-    target = folder / f"{lawn.uid}.solution.json"
+    target = (folder or folders(lawn.uid)[1]) / f"{lawn.uid}.solution.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(data, separators=(",", ":")) + "\n")
     return target

@@ -7,10 +7,11 @@ import { steinerMinimalTree } from './steiner'
 
 /**
  * The maps of "Kreuzungen" (Straßenbau with junctions) and their optima: `npx tsx scripts/roads/steiner-maps.ts`
- * writes `levels/roads/steiner/<n>-<name>.json`, which `npm run levels` imports. The villages are patches
- * of a triangular lattice (where junctions save most: 10–13 % against the shortest network without
- * junctions) with a little seeded jitter, so the maps look less regular and each optimum is unique. The
- * last settlement of each map is a castle (it only looks different). Level units as the random maps: about
+ * writes `levels/roads/steiner/<n>-<name>.json`, which `npm run levels` imports. The first map is a fork
+ * with one junction and a road straight on; the others are patches of a triangular lattice (where
+ * junctions save most: 10–13 % against the shortest network without junctions) or of a grid. Every map
+ * gets a little seeded jitter, so the maps look less regular and each optimum is unique. The last
+ * settlement of each map is a castle (it only looks different). Level units as the random maps: about
  * 6 × 4.
  */
 
@@ -30,18 +31,17 @@ interface MapSpec {
 
 const MAPS: MapSpec[] = [
   {
+    // A fork and a road straight on: two villages joined at a junction, which leads on to the castle, and
+    // from there a road without a junction to a third village (the angle at the castle is wider than 120°).
+    // Not the how-to's picture (a castle above two villages, three roads to one junction).
     number: 1,
-    name: 'dreieck',
-    points: lattice(
-      [
-        [0, 0],
-        [1, 0],
-        [0, 1],
-      ],
-      3.4,
-      -1.7,
-      1.0,
-    ),
+    name: 'gabel',
+    points: [
+      [-2.6, -1.3],
+      [-2.2, 1.3],
+      [2.6, 0.9],
+      [0.1, -0.2],
+    ],
     jitter: 0.1,
     seed: 1,
   },

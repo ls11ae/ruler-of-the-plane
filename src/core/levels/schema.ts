@@ -148,6 +148,8 @@ export interface LawnMowingLevel extends LevelBase {
   variants: { cutters: number; uid: string; solution?: LawnSolution }[]
   /** A real CG:SHOP instance for the theory view, not a booth lawn. */
   competition?: boolean
+  /** The small example lawn of the explanation after a finished lawn, not a booth lawn. */
+  example?: boolean
 }
 
 /**

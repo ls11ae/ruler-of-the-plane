@@ -192,7 +192,7 @@ describe.each(INSTANCES)('booth lawn $instance_uid', (inst) => {
 })
 
 describe('holes', () => {
-  it('are trees, flower beds and ponds by their shape, as drawn in lawns.txt', () => {
+  it('are small paved squares, paved paths and terraces by their shape, as drawn in lawns.txt', () => {
     const kinds = (uid: string) => {
       const inst = INSTANCES.find((i) => i.instance_uid === uid)!
       const counts: Record<string, number> = {}
@@ -201,10 +201,10 @@ describe('holes', () => {
       }
       return counts
     }
-    expect(kinds('lawn1_1s3')).toEqual({ pond: 1, tree: 1 })
-    expect(kinds('lawn2_1s3')).toEqual({ bed: 6 })
-    expect(kinds('lawn3_1s3')).toEqual({ pond: 1, tree: 1, bed: 1 })
-    expect(kinds('lawn4_1s3')).toEqual({ tree: 13 })
-    expect(kinds('lawn5_1s3')).toEqual({ pond: 1, tree: 2, bed: 2 })
+    expect(kinds('lawn1_1s3')).toEqual({ terrace: 1, square: 1 })
+    expect(kinds('lawn2_1s3')).toEqual({ path: 6 })
+    expect(kinds('lawn3_1s3')).toEqual({ terrace: 1, square: 1, path: 1 })
+    expect(kinds('lawn4_1s3')).toEqual({ square: 13 })
+    expect(kinds('lawn5_1s3')).toEqual({ terrace: 1, square: 2, path: 2 })
   })
 })
