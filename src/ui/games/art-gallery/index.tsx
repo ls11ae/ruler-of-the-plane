@@ -194,7 +194,7 @@ function LevelScreen({ level, name, t }: { level: ArtGalleryLevel; name: LevelNa
           </>
         }
       />
-      <main className={styles.main}>
+      <main className={`${styles.main} ${styles.rock}`}>
         <div className={styles.boardArea}>
           <Board
             bounds={level.bounds}

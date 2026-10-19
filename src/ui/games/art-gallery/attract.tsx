@@ -12,6 +12,7 @@ import type { AttractProps } from '../registry'
 import { DarkHint, DungeonFloor, DungeonWalls, LightLayer } from './DungeonArt'
 import { makeLighting } from './lighting'
 import { ringPath } from './paths'
+import styles from './ArtGallery.module.css'
 import { Torch } from './Torch'
 
 /** The dark dungeon first, then a torch every so often; the light spreads from each one. */
@@ -76,7 +77,7 @@ function Demo({
   const lit = lights[settled]!
   const spreading = shown > settled ? shown - 1 : null
   return (
-    <div data-step={shown + settled} style={{ width: '100%', height: '100%' }}>
+    <div data-step={shown + settled} className={styles.rock} style={{ width: '100%', height: '100%' }}>
       <Board bounds={level.bounds} padding={0.35} autoRotate>
         <DungeonFloor level={level} />
         <LightLayer

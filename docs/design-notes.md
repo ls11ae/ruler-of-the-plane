@@ -1255,3 +1255,21 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   marker appears from "95 %" on). The attract demo keeps its marker before the last torch. Alternatives: a
   marker on request (a hint button; the game has none so far); a share relative to the torches still to
   place (harder to explain).
+- **2026-10-19 (agreed by Kevin 2026-10-19) "Licht ins Verlies": rock around the dungeon and in the
+  pillars, and "Mittel" starts with small pillars.** On "Mittel 1" (a narrow corridor round three large
+  pillars) inside and outside were hard to tell apart: the unlit floor is dark, while pillars and the
+  outside were lightly hatched, so the corridor looked like a wall and the pillars like rooms. The
+  outside and the pillars are now rock, only somewhat darker than before (Kevin): stone colour `#e2dbce`
+  instead of `#efebe2`, under groups of four to six short ink strokes in random directions, as rock is
+  drawn on hand-made dungeon maps, instead of even diagonal hatching that read like fabric. The tile
+  (`src/ui/games/art-gallery/rock.svg`, 144 px, seamless) is drawn by `scripts/art-gallery/rock-tile.ts`
+  (seeded; a test checks the committed file and that it is seamless), our own art, so nothing new in
+  CREDITS.md. The floor with its grid stays as it is. The same rock is behind the dungeon in the game
+  (also in the theory view), in the explanation's animations and in the attract demo. "Mittel" now
+  starts with agLevel4_8 (the mockup's dungeon, 6 pillars, the largest 36 % of the floor, three small
+  diamonds), then agLevel8_4 (no pillars), then the corridors round large pillars by torches: agLevel10_4
+  (53 %), agLevel5_5 (58 %), agLevel12_7 (45 %); a test checks that the first has the smallest pillars.
+  "Mittel 1" now asks for 8 torches. The contrast checks of `e2e/a11y.spec.ts` stay green. Alternatives:
+  a darker even hatching (still read like fabric, see the screenshots of the session); moving
+  agLevel2_3 (3 small pillars, "Leicht 4") to "Mittel" (Kevin asked to reorder "Mittel"); agLevel8_4
+  first (no pillars at all).

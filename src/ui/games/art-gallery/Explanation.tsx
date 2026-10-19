@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { fisk } from '../../../core/games/art-gallery/triangulation'
 import { visibilityPolygon } from '../../../core/games/art-gallery/visibility'
 import type { Vec2 } from '../../../core/geometry/types'
@@ -8,6 +8,8 @@ import { useAnimationFrame } from '../../input/hooks'
 import styles from './Animations.module.css'
 import { diagonals, FISK_COLOURS } from './fiskDrawing'
 import { floorPath, ringPath } from './paths'
+import rock from './rock.svg'
+import { ROCK_COLOUR } from './art'
 
 export function CornerMark({ at, colour, size }: { at: Vec2; colour: number; size: number }) {
   const [x, y] = at
@@ -29,6 +31,30 @@ export function CornerMark({ at, colour, size }: { at: Vec2; colour: number; siz
 function viewBoxOf(level: ArtGalleryLevel, pad = 0.4) {
   const { minX, minY, maxX, maxY } = level.bounds
   return `${minX - pad} ${minY - pad} ${maxX - minX + 2 * pad} ${maxY - minY + 2 * pad}`
+}
+
+/** The rock of the board around the dungeon and in its pillars (one tile is a quarter of the level). */
+function Rock({ level, pad = 0.4 }: { level: ArtGalleryLevel; pad?: number }) {
+  const id = useId().replace(/[^\w-]/g, '')
+  const { minX, minY, maxX, maxY } = level.bounds
+  const tile = Math.max(maxX - minX, maxY - minY) / 4
+  return (
+    <>
+      <defs>
+        <pattern id={`rock-${id}`} patternUnits="userSpaceOnUse" width={tile} height={tile}>
+          <rect width={tile} height={tile} fill={ROCK_COLOUR} />
+          <image href={rock} width={tile} height={tile} />
+        </pattern>
+      </defs>
+      <rect
+        x={minX - pad}
+        y={minY - pad}
+        width={maxX - minX + 2 * pad}
+        height={maxY - minY + 2 * pad}
+        fill={`url(#rock-${id})`}
+      />
+    </>
+  )
 }
 
 /**
@@ -58,6 +84,7 @@ export function FiskAnimation({
   return (
     <div>
       <svg key={run} viewBox={viewBoxOf(level)} className={styles.svg} role="img" aria-label={label}>
+        <Rock level={level} />
         <path d={floorPath(level)} fill="var(--paper)" fillRule="evenodd" />
         {lines.map(([a, b], i) => (
           <line
@@ -169,6 +196,8 @@ export function SweepAnimation({
             <path d={done ? `M${q[0] - R},${q[1] - R}h${2 * R}v${2 * R}h${-2 * R}Z` : wedge} />
           </clipPath>
         </defs>
+        <Rock level={level} />
+        <path d={floorPath(level)} fill="var(--paper)" fillRule="evenodd" />
         <path d={floorPath(level)} fill="var(--dark)" fillOpacity={0.85} fillRule="evenodd" />
         {done &&
           polys.slice(1).map((p, i) => <path key={i} d={ringPath(p)} fill="#ffe7a0" fillOpacity={0.9} />)}
