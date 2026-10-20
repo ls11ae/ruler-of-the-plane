@@ -1341,3 +1341,22 @@ example_1s3 example_2s3`, instances from `levels/lawn-mowing/example/lawn.txt` b
   green (no text lies on the lawn). Alternatives: the Scribble tile multiplied onto the green (a blend
   mode inside an SVG pattern, untested in WebKit); only a darker mowed colour (the mowed area would read
   as the important part).
+
+### Kevin's playtest (2026-10-20)
+
+Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 2026-10-20.
+
+- **2026-10-20 (agreed by Kevin 2026-10-20) "Straßenbau": equally short networks count, up to the
+  rounding of the coordinates** (a bug). Map 6 of "Von Ort zu Ort" (`kings-taxes/tsp/ktLevel2`) has
+  several shortest networks; the rounding of the level coordinates makes two of them 1.7e-8 and 3.7e-8
+  longer than Kruskal's tree (and both swaps together 5e-8). `isOptimal` compared with a tolerance of
+  1e-9, so such a network was refused, and `percentOver` rounded the difference up to "+0,1 % über dem
+  Optimum" (a visitor sent exactly this screenshot). Lengths are now equal up to a relative 1e-6
+  (`LENGTH_TOLERANCE`, `atMost` in `src/core/games/roads/mst.ts`), in `isOptimal`, in the hints' cycle
+  property and in "Zwei Sorten" (`isPlaneOptimal`, which used 1e-6 already); `overOptimum` is 0 within
+  it, so an optimal network can never read "+0,1 %". Checked: on the eight maps every tree one road away
+  from the shortest is either as short up to rounding (map 6 twice, map 8 once, an exact tie) or at least
+  0.23 % longer (a test); in "Zwei Sorten" the stored optima differ from the computed lengths by at most
+  4e-8 and the closest plane network one road away is 0.42 % longer; on 3,000 random maps none of 565,730
+  such trees lies within 1e-6, the closest is 3e-6 longer (a real difference). "Kreuzungen" compares
+  with a percentage anyway. Tests: map 6's three other shortest networks count, get no hint and no "+x %".

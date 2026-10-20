@@ -108,19 +108,29 @@ export function componentCount(n: number, roads: readonly Road[]): number {
   return sets.count
 }
 
-/** Tolerance for comparing lengths (level coordinates are a few units; rounding errors are far smaller). */
-const EPS = 1e-9
+/**
+ * Lengths are equal up to this share. The level coordinates are rounded, so networks that are equally
+ * short on the drawn map can differ by a few 1e-8: map 6 of "Von Ort zu Ort" (`kings-taxes/tsp/ktLevel2`)
+ * has two such, 1.7e-8 and 3.7e-8 above Kruskal's tree, which a tolerance of 1e-9 refused (and "+0,1 %"
+ * showed). Real differences are far larger: the closest other tree on the fixed maps is 0.23 % longer, on
+ * 3,000 random maps 3e-6.
+ */
+export const LENGTH_TOLERANCE = 1e-6
+
+/** Whether `length` is no longer than `reference`, up to the rounding of the coordinates. */
+export const atMost = (length: number, reference: number) => length <= reference * (1 + LENGTH_TOLERANCE)
 
 /** Every village connected and the network as short as a minimum spanning tree. */
 export function isOptimal(points: readonly Vec2[], roads: readonly Road[], mstLength: number): boolean {
-  return (
-    componentCount(points.length, roads) === 1 &&
-    networkLength(points, roads) <= mstLength + EPS * (1 + mstLength)
-  )
+  return componentCount(points.length, roads) === 1 && atMost(networkLength(points, roads), mstLength)
 }
 
-/** How much longer than the optimum a connected network is, as a share (0.12 = 12 %). */
-export const overOptimum = (length: number, mstLength: number) => Math.max(0, length / mstLength - 1)
+/**
+ * How much longer than the optimum a connected network is, as a share (0.12 = 12 %); 0 for a network
+ * as short as the optimum up to rounding, so it never reads "+0,1 %".
+ */
+export const overOptimum = (length: number, mstLength: number) =>
+  atMost(length, mstLength) ? 0 : length / mstLength - 1
 
 export type Hint =
   | { kind: 'ring'; road: Road }
@@ -148,7 +158,7 @@ export function hint(points: readonly Vec2[], roads: readonly Road[], mstLength:
     const shorter = new DisjointSets(points.length)
     let instead: Road | null = null
     for (const { road: r, length: l } of sorted) {
-      if (l >= length - EPS * (1 + length)) break
+      if (l >= length * (1 - LENGTH_TOLERANCE)) break
       if (shorter.union(r[0], r[1]) && shorter.find(road[0]) === shorter.find(road[1])) {
         instead = r
         break
