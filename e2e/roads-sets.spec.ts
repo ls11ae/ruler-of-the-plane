@@ -1,9 +1,9 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 import { readFileSync } from 'node:fs'
-import type { Road } from '../src/core/games/roads/mst'
+import { componentCount, kruskal, networkLength, roadsByLength, type Road } from '../src/core/games/roads/mst'
 import { freeTree } from '../src/core/games/roads/plane'
-import type { RoadsBichromaticLevel, RoadsSteinerLevel } from '../src/core/levels/schema'
+import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../src/core/levels/schema'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
 import { drag, openMap, type Pt } from './roads-helpers'
 
@@ -141,4 +141,33 @@ test('Zwei Sorten: castles to villages, crossings marked, the theory', async ({ 
   )
   await expect(theory).toContainText('O(log n)')
   await shot(page, testInfo, 'roads-plane-theory')
+})
+
+test('Von Ort zu Ort: a network 0,45 % longer than the shortest counts, and the result says so', async ({
+  page,
+  phone,
+}, testInfo) => {
+  const level = read<KingsTaxesLevel>('kings-taxes/spanner/ktLevel2_1.7')
+  const points: Pt[] = [...level.villages, ...level.castles]
+  const { roads: mst, length } = kruskal(points)
+  // The next-best network: Kruskal's tree with one road swapped, 0.45 % longer.
+  let near: { roads: Road[]; over: number } | null = null
+  for (const { road: into } of roadsByLength(points)) {
+    for (const out of mst) {
+      const roads = [...mst.filter((r) => r !== out), into]
+      const over = networkLength(points, roads) / length - 1
+      if (componentCount(points.length, roads) === 1 && over > 1e-6 && (!near || over < near.over))
+        near = { roads, over }
+    }
+  }
+  expect(near!.over).toBeGreaterThan(0.004)
+  expect(near!.over).toBeLessThan(0.005)
+  await openMap(page, 'Von Ort zu Ort', 5)
+  for (const [a, b] of near!.roads) await drag(page, points[a]!, points[b]!, phone)
+  await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
+  const result = page.getByRole('dialog', { name: 'Geschafft!' })
+  await expect(result.getByTestId('roads-nearly')).toHaveText(
+    'Optimal! Nur 0,5 % länger als das kürzeste Netz – mit bloßem Auge kaum zu sehen.',
+  )
+  await shot(page, testInfo, 'roads-nearly-optimal')
 })

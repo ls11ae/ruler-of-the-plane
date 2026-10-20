@@ -76,18 +76,22 @@ export function greedyPlane(points: readonly Vec2[], villages: number): { roads:
   return { roads, stuck: sets.count > 1 }
 }
 
-/** Every place connected, only castle–village roads, no crossings, and as short as the optimum. */
+/**
+ * Every place connected, only castle–village roads, no crossings, and as short as the optimum, or at most
+ * `tolerance` longer (a share; the game passes `NEAR_OPTIMAL`).
+ */
 export function isPlaneOptimal(
   points: readonly Vec2[],
   villages: number,
   roads: readonly Road[],
   optimum: number,
+  tolerance = 0,
 ): boolean {
   return (
     componentCount(points.length, roads) === 1 &&
     roads.every((r) => joinsTwoKinds(r, villages)) &&
     crossings(points, roads).length === 0 &&
-    atMost(networkLength(points, roads), optimum)
+    atMost(networkLength(points, roads), optimum * (1 + tolerance))
   )
 }
 

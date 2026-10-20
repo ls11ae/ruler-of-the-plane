@@ -35,6 +35,7 @@ import {
   kruskal,
   kruskalSoFar,
   networkLength,
+  NEAR_OPTIMAL,
   overOptimum,
   roadKey,
   type Road,
@@ -92,7 +93,13 @@ type Notice = { mark: Highlight; text: string } | null
 function useRound(levelId: RoadsLevelId | null, set: RoadsSet) {
   const progress = useProgress()
   const [hints, setHints] = useState(0)
-  const [won, setWon] = useState<{ seconds: number; hints: number; length: number } | null>(null)
+  const [won, setWon] = useState<{
+    seconds: number
+    hints: number
+    length: number
+    /** How much longer than the shortest network (a share), if a nearly optimal one counted. */
+    over: number
+  } | null>(null)
   const [overlay, setOverlay] = useState<'howto' | 'result' | null>(progress.seenHowTo[set] ? null : 'howto')
   const startedAt = useRef<number | null>(null)
   const timer = useRef<number | undefined>(undefined)
@@ -103,11 +110,14 @@ function useRound(levelId: RoadsLevelId | null, set: RoadsSet) {
     overlay,
     setOverlay,
     hint: () => setHints((n) => n + 1),
-    /** After every change of the network: starts the clock, and wins if the network is optimal. */
-    check(optimal: boolean, length: number) {
+    /**
+     * After every change of the network: starts the clock, and wins if the network counts as optimal
+     * (`over`: how much longer than the shortest it is, 0 if it is the shortest).
+     */
+    check(optimal: boolean, length: number, over = 0) {
       if (startedAt.current === null) startedAt.current = performance.now()
       if (won || !optimal) return
-      setWon({ seconds: (performance.now() - startedAt.current) / 1000, hints, length })
+      setWon({ seconds: (performance.now() - startedAt.current) / 1000, hints, length, over })
       if (levelId) progress.recordWin(levelId, starsFor(hints))
       window.clearTimeout(timer.current)
       timer.current = window.setTimeout(() => setOverlay('result'), RESULT_DELAY_MS)
@@ -226,7 +236,16 @@ function Frame(props: FrameProps) {
         <ResultScreen
           outcome="won"
           stars={starsFor(won.hints)}
-          stats={t.stats(won.length, won.hints, t.time(won.seconds))}
+          stats={
+            <>
+              {t.stats(won.length, won.hints, t.time(won.seconds))}
+              {won.over > 0 && (
+                <span className={styles.nearly} data-testid="roads-nearly">
+                  {t.nearlyOptimal(percentOver(won.over))}
+                </span>
+              )}
+            </>
+          }
           explanation={props.result.explanation.join(' ')}
           animation={props.result.animation}
           onTheory={() => {
@@ -276,11 +295,17 @@ function MstScreen({ map, levelId, subtitle, t, onNext, onPicker }: ScreenProps)
 
   const length = networkLength(points, roads)
   const groups = componentCount(points.length, roads)
-  const optimal = isOptimal(points, roads, mst.length)
+  // Up to 0.5 % longer than the shortest network counts (the difference cannot be seen).
+  const optimal = isOptimal(points, roads, mst.length, NEAR_OPTIMAL)
   const change = (next: Road[]) => {
     setRoads(next)
     setNotice(null)
-    round.check(isOptimal(points, next, mst.length), networkLength(points, next))
+    const nextLength = networkLength(points, next)
+    round.check(
+      isOptimal(points, next, mst.length, NEAR_OPTIMAL),
+      nextLength,
+      overOptimum(nextLength, mst.length),
+    )
   }
   const state = optimal
     ? t.optimal
@@ -544,13 +569,19 @@ function PlaneScreen({
   const change = (next: Road[]) => {
     setRoads(next)
     setNotice(null)
-    round.check(isPlaneOptimal(points, villages, next, level.optimum.length), networkLength(points, next))
+    const nextLength = networkLength(points, next)
+    round.check(
+      isPlaneOptimal(points, villages, next, level.optimum.length, NEAR_OPTIMAL),
+      nextLength,
+      overOptimum(nextLength, level.optimum.length),
+    )
   }
   const found = crossings(points, roads)
   const warn = new Set(found.flatMap((c) => c.roads.map(roadKey)))
   const length = networkLength(points, roads)
   const groups = componentCount(points.length, roads)
-  const optimal = isPlaneOptimal(points, villages, roads, level.optimum.length)
+  // Up to 0.5 % longer than the optimum counts (the difference cannot be seen).
+  const optimal = isPlaneOptimal(points, villages, roads, level.optimum.length, NEAR_OPTIMAL)
   const state = optimal
     ? t.optimal
     : found.length

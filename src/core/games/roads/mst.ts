@@ -120,9 +120,27 @@ export const LENGTH_TOLERANCE = 1e-6
 /** Whether `length` is no longer than `reference`, up to the rounding of the coordinates. */
 export const atMost = (length: number, reference: number) => length <= reference * (1 + LENGTH_TOLERANCE)
 
-/** Every village connected and the network as short as a minimum spanning tree. */
-export function isOptimal(points: readonly Vec2[], roads: readonly Road[], mstLength: number): boolean {
-  return componentCount(points.length, roads) === 1 && atMost(networkLength(points, roads), mstLength)
+/**
+ * In "Von Ort zu Ort" and "Zwei Sorten" a network at most this much longer than the shortest counts as
+ * optimal (Kevin, 2026-10-20): a few tenths of a percent cannot be told apart by eye (on maps 5–8 the
+ * next-best networks are 0.24–0.56 % longer). "Kreuzungen" has its own rule (`junctions.ts`).
+ */
+export const NEAR_OPTIMAL = 0.005
+
+/**
+ * Every village connected and the network as short as a minimum spanning tree, or at most `tolerance`
+ * longer (a share; the game passes {@link NEAR_OPTIMAL}).
+ */
+export function isOptimal(
+  points: readonly Vec2[],
+  roads: readonly Road[],
+  mstLength: number,
+  tolerance = 0,
+): boolean {
+  return (
+    componentCount(points.length, roads) === 1 &&
+    atMost(networkLength(points, roads), mstLength * (1 + tolerance))
+  )
 }
 
 /**

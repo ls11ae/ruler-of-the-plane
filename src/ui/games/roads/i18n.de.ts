@@ -14,6 +14,9 @@ export const de = {
   length: (units: number) => `Länge: ${km(units)}`,
   over: (percent: string) => `+${percent.replace('.', ',')} % über dem Optimum`,
   optimal: 'Optimal!',
+  /** On the result, when a network up to 0.5 % longer than the shortest counted as optimal. */
+  nearlyOptimal: (percent: string) =>
+    `Optimal! Nur ${percent.replace('.', ',')} % länger als das kürzeste Netz – mit bloßem Auge kaum zu sehen.`,
   groups: (n: number) => (n === 2 ? 'Noch 2 Teile verbinden' : `Noch ${n} Teile verbinden`),
   start: 'Verbinde alle Orte',
   hintButton: 'Tipp',

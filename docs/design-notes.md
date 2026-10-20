@@ -1360,3 +1360,18 @@ Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 
   4e-8 and the closest plane network one road away is 0.42 % longer; on 3,000 random maps none of 565,730
   such trees lies within 1e-6, the closest is 3e-6 longer (a real difference). "Kreuzungen" compares
   with a percentage anyway. Tests: map 6's three other shortest networks count, get no hint and no "+x %".
+- **2026-10-20 (agreed by Kevin 2026-10-20) "Straßenbau": up to 0.5 % longer counts in "Von Ort zu Ort"
+  and "Zwei Sorten".** A network only a few tenths of a percent longer than the shortest cannot be told
+  apart by eye (on maps 5–8 of "Von Ort zu Ort" the next-best networks are 0.24–0.56 % longer; in "Zwei
+  Sorten" the closest plane network one road away is 0.42 % longer on "Mark"). In "Von Ort zu Ort" (fixed
+  maps and random villages) and in "Zwei Sorten", a network at most 0.5 % longer than the optimum now
+  counts as optimal (`NEAR_OPTIMAL` in `src/core/games/roads/mst.ts`, passed to `isOptimal` and
+  `isPlaneOptimal`), as "Kreuzungen" did with 1 %. If it is not exactly the shortest, the result says so
+  below the numbers: "Optimal! Nur 0,5 % länger als das kürzeste Netz – mit bloßem Auge kaum zu sehen."
+  (the share rounded up to a tenth, as in the header), and the explanation shows the shortest network as
+  before. Hints, stars and leaderboard are unchanged (the hints still lead to the shortest network).
+  Tests: every network one road away on maps 5–8 counts exactly when it is at most 0.5 % longer; in "Zwei
+  Sorten" "Mark"'s 0.42 % network counts and "Königreich"'s 0.84 % one does not; the smoke test plays
+  map 5 with its 0.45 % network. Alternatives: 0.2 % (the next-best networks of maps 7 and 8, 0.23–0.24 %
+  longer and just as invisible, would still be refused); counting it with one star less (Kevin: stars
+  unchanged).

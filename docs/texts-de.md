@@ -1003,6 +1003,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `over(percent)`:
   - percent = „4.2“: +4,2 % über dem Optimum
 - `optimal`: Optimal!
+- `nearlyOptimal(percent)`:
+  - percent = „4.2“: Optimal! Nur 4,2 % länger als das kürzeste Netz – mit bloßem Auge kaum zu sehen.
 - `groups(n)`:
   - n = 6: Noch 6 Teile verbinden
   - n = 2: Noch 2 Teile verbinden

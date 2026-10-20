@@ -13,6 +13,8 @@ export const en: RoadsTexts = {
   length: (units: number) => `Length: ${km(units)}`,
   over: (percent: string) => `+${percent} % above the optimum`,
   optimal: 'Optimal!',
+  nearlyOptimal: (percent: string) =>
+    `Optimal! Only ${percent} % longer than the shortest network – hardly visible to the eye.`,
   groups: (n: number) => `Still ${n} parts to connect`,
   start: 'Connect all places',
   hintButton: 'Hint',

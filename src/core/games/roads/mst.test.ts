@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../geometry/types'
 import { mulberry32 } from '../../random'
-import { mapOf, randomMap } from './levels'
+import { mapOf, MST_IDS, randomMap } from './levels'
 import {
   componentCount,
   hint,
   isOptimal,
   kruskal,
+  NEAR_OPTIMAL,
   overOptimum,
   networkLength,
   normalise,
@@ -140,6 +141,27 @@ describe('optimal networks', () => {
         }
       }
     }
+  })
+
+  it('counts a network at most 0.5 % longer as optimal in the game (maps 5–8: the next-best networks)', () => {
+    let near = 0
+    for (const id of MST_IDS.slice(4)) {
+      const { points } = mapOf(KINGS_TAXES_LEVELS.find((l) => l.id === id)!)
+      const { roads, length } = kruskal(points)
+      for (const { road: into } of roadsByLength(points)) {
+        for (const out of roads) {
+          const net = [...roads.filter((r) => r !== out), into]
+          if (componentCount(points.length, net) !== 1) continue
+          const over = overOptimum(networkLength(points, net), length)
+          if (over === 0) continue
+          expect(isOptimal(points, net, length)).toBe(false)
+          expect(isOptimal(points, net, length, NEAR_OPTIMAL), `${id}: +${over}`).toBe(over <= 0.005)
+          if (over <= 0.005) near++
+        }
+      }
+    }
+    expect(NEAR_OPTIMAL).toBe(0.005)
+    expect(near).toBeGreaterThan(0)
   })
 
   it('accepts the optimum on every Unity map', () => {
