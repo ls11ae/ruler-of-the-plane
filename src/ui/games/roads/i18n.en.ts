@@ -13,6 +13,8 @@ export const en: RoadsTexts = {
   length: (units: number) => `Length: ${km(units)}`,
   over: (percent: string) => `+${percent} % above the optimum`,
   optimal: 'Optimal!',
+  nearlyOptimal: (percent: string) =>
+    `Optimal! Only ${percent} % longer than the shortest network – hardly visible to the eye.`,
   groups: (n: number) => `Still ${n} parts to connect`,
   start: 'Connect all places',
   hintButton: 'Hint',
@@ -79,9 +81,9 @@ export const en: RoadsTexts = {
   },
   steiner: {
     hintMouse:
-      'Drag from place to place: road · drag onto open land: junction · drag a junction: move it · click a road: remove it',
+      'Drag from place to place: road · drag onto open land: junction · click a junction, then a place or junction: road · drag a junction: move it · click a road: remove it',
     hintTouch:
-      'Tap a place, then a place or open land: road · drag a junction: move it · tap a road: remove it',
+      'Tap a place or junction, then a place, junction or open land: road · drag a junction: move it · tap a road: remove it',
     hints: {
       deadEnd: 'The road with the cross ends at a junction where nothing goes on: it can go.',
       bend: 'Only two roads meet at the junction with the cross: without the bend the way would be shorter.',
@@ -93,10 +95,11 @@ export const en: RoadsTexts = {
     },
     howTo: [
       'Now you may build junctions: drag a road from a place onto open land, and a junction appears there.',
-      'Drag a junction to move it; it shows the angles between its roads.',
-      'Junctions make the network shorter. Up to 1 % above the optimum counts as optimal.',
+      'Drag a junction to move it; it shows the angles between its roads. For a road from a junction, click or tap it, then a place or another junction.',
+      'Junctions make the network shorter. When all angles are about right, the junctions slide to their best spots.',
     ],
     howToAnimation: 'Three roads meet at a junction, which slides to the best spot',
+    otherShape: 'All angles are right – but joined differently, the network gets even shorter.',
     explanation: (places: number, shapes: number) => [
       'The network is shortest when exactly three roads meet at 120° at every junction (Steiner points).',
       `The computer tries every possible shape of the network – ${shapes === 1 ? 'one shape' : `${shapes} shapes`} for ${places} places – and moves the junctions of each until it is shortest.`,
@@ -105,6 +108,8 @@ export const en: RoadsTexts = {
     animation: 'The junctions slide to their best spots until three roads meet at 120° everywhere',
     theory: {
       rule: 'A junction only pays off where three roads meet at 120°. Such points are called Steiner points.',
+      check:
+        'If your network has the same shape as the shortest one and all angles are right to within 5°, the junctions slide to their best spots: then it is optimal. A network of another shape can have 120° everywhere and still be longer.',
       compare: (mst: string, optimum: string, percent: string) =>
         `Without junctions the shortest network here is ${mst} long, with junctions ${optimum}: without, it is ${percent} % longer.`,
       bound:

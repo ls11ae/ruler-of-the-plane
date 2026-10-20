@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Vec2 } from '../../geometry/types'
 import { BICHROMATIC_LEVELS } from './levels.fixture'
-import { componentCount, networkLength, roadKey, type Road } from './mst'
+import { componentCount, NEAR_OPTIMAL, networkLength, roadKey, type Road } from './mst'
 import {
   crossings,
   freeTree,
@@ -75,6 +75,37 @@ describe('Zwei Sorten', () => {
       expect(isPlaneOptimal(points, v, free, level.optimum.length)).toBe(false)
       expect(isPlaneOptimal(points, v, greedy.roads, level.optimum.length)).toBe(false)
     }
+  })
+
+  it('counts a plane network at most 0.5 % longer than the optimum as optimal in the game', () => {
+    const counted = (id: string) => {
+      const level = BICHROMATIC_LEVELS.find((l) => l.id === id)!
+      const points = [...level.villages, ...level.castles]
+      const v = level.villages.length
+      const tree = level.optimum.roads as Road[]
+      // The shortest plane network one road away from the optimum.
+      let best: { roads: Road[]; over: number } | null = null
+      for (let a = 0; a < v; a++) {
+        for (let b = v; b < points.length; b++) {
+          if (tree.some((r) => roadKey(r) === roadKey([a, b]))) continue
+          for (const out of tree) {
+            const roads = [...tree.filter((r) => r !== out), [a, b] as Road]
+            if (componentCount(points.length, roads) !== 1 || crossings(points, roads).length) continue
+            const over = networkLength(points, roads) / level.optimum.length - 1
+            if (!best || over < best.over) best = { roads, over }
+          }
+        }
+      }
+      return {
+        over: best!.over,
+        exact: isPlaneOptimal(points, v, best!.roads, level.optimum.length),
+        near: isPlaneOptimal(points, v, best!.roads, level.optimum.length, NEAR_OPTIMAL),
+      }
+    }
+    // "Mark": 0.42 % longer, counts; "Königreich": 0.84 % longer, does not.
+    expect(counted('roads/bichromatic/3-mark')).toMatchObject({ exact: false, near: true })
+    expect(counted('roads/bichromatic/3-mark').over).toBeCloseTo(0.0042, 4)
+    expect(counted('roads/bichromatic/6-koenigreich')).toMatchObject({ exact: false, near: false })
   })
 
   it('the stored optimum of the small maps (up to 8 places) agrees with brute force', () => {

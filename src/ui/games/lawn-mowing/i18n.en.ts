@@ -51,7 +51,7 @@ export const en: LawnTexts = {
   newGame: 'New',
   theoryButton: 'Theory',
   howTo: (cutters: number) => [
-    'Mow the whole lawn! A mower cuts 3 × 3 squares. Stone slabs need no mowing, but you may drive over them.',
+    'Mow the whole lawn! A mower cuts 3 × 3 squares. It may hang over the edge and drive over stone slabs – only the lawn needs mowing.',
     cutters === 1
       ? 'When everything is mowed: home time! The mower drives back to the start.'
       : 'When everything is mowed: home time! Everyone drives back to the start. The longer round counts.',
@@ -59,7 +59,7 @@ export const en: LawnTexts = {
   ],
   howToKeys: { one: 'Mower 1', two: 'Mower 2', home: 'Home time', undo: 'Step back' },
   howToAnimation:
-    'A mower drives in strips, cuts three squares wide and drives straight over a small terrace',
+    'A mower drives in strips and cuts three squares wide; it drives over a small terrace, and the last strip hangs over the edge',
   result: {
     title: 'Home time!',
     stats: (longest: number, target: string) => `Longest round: ${longest} steps · ${target}`,

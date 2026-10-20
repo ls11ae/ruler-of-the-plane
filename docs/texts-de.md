@@ -886,14 +886,14 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `theoryButton`: Theorie
 - `howTo(cutters)`:
   - cutters = 2:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten fahren – mähen musst du nur den Rasen.
     - Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.
     - Je weniger Schritte, desto besser.
   - cutters = 1:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten fahren – mähen musst du nur den Rasen.
     - Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.
     - Je weniger Schritte, desto besser.
-- `howToAnimation`: Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse
+- `howToAnimation`: Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit; er fährt über eine kleine Terrasse, und der letzte Streifen ragt über den Rand
 - `explanation(bound, mine, reference, solver, cutters)`:
   - bound = 100, mine = 124, reference = 110, solver = true, cutters = 2:
     - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
@@ -1003,6 +1003,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `over(percent)`:
   - percent = „4.2“: +4,2 % über dem Optimum
 - `optimal`: Optimal!
+- `nearlyOptimal(percent)`:
+  - percent = „4.2“: Optimal! Nur 4,2 % länger als das kürzeste Netz – mit bloßem Auge kaum zu sehen.
 - `groups(n)`:
   - n = 6: Noch 6 Teile verbinden
   - n = 2: Noch 2 Teile verbinden
@@ -1084,8 +1086,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 ### steiner
 
-- `steiner.hintMouse`: Von Ort zu Ort ziehen: Straße · aufs freie Land ziehen: Kreuzung · Kreuzung ziehen: verschieben · Straße anklicken: abreißen
-- `steiner.hintTouch`: Ort antippen, dann Ort oder freies Land: Straße · Kreuzung ziehen: verschieben · Straße antippen: abreißen
+- `steiner.hintMouse`: Von Ort zu Ort ziehen: Straße · aufs freie Land ziehen: Kreuzung · Kreuzung anklicken, dann Ort oder Kreuzung: Straße · Kreuzung ziehen: verschieben · Straße anklicken: abreißen
+- `steiner.hintTouch`: Ort oder Kreuzung antippen, dann Ort, Kreuzung oder freies Land: Straße · Kreuzung ziehen: verschieben · Straße antippen: abreißen
 - `steiner.hints.deadEnd`: Die Straße mit dem Kreuz endet an einer Kreuzung, von der nichts weitergeht: Sie kann weg.
 - `steiner.hints.bend`: An der Kreuzung mit dem Kreuz treffen sich nur zwei Straßen: Ohne den Knick wäre der Weg kürzer.
 - `steiner.hints.missing`: Hier lohnt sich eine Kreuzung: Bau die Straße mit dem Plus bis zum gestrichelten Kreis.
@@ -1095,9 +1097,10 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `steiner.hints.angle`: Schieb die Kreuzung im grünen Kreis: Am kürzesten wird es, wenn sich ihre Straßen unter 120° treffen.
 - `steiner.howTo`:
   - Jetzt darfst du Kreuzungen bauen: Zieh eine Straße von einem Ort aufs freie Land, dort entsteht eine Kreuzung.
-  - Zieh eine Kreuzung, um sie zu verschieben; an ihr siehst du die Winkel zwischen den Straßen.
-  - Mit Kreuzungen wird das Netz kürzer. Bis 1 % über dem Optimum zählt als optimal.
+  - Zieh eine Kreuzung, um sie zu verschieben; an ihr siehst du die Winkel. Für eine Straße von einer Kreuzung aus klick oder tipp sie an, dann einen Ort oder eine andere Kreuzung.
+  - Mit Kreuzungen wird das Netz kürzer. Stimmen alle Winkel ungefähr, rutschen die Kreuzungen an ihren besten Platz.
 - `steiner.howToAnimation`: Drei Straßen treffen sich an einer Kreuzung, die an den besten Platz rutscht
+- `steiner.otherShape`: Alle Winkel stimmen – aber anders verbunden wird das Netz noch kürzer.
 - `steiner.explanation(places, shapes)`:
   - places = 7, shapes = 945:
     - Am kürzesten wird das Netz, wenn sich an jeder Kreuzung genau drei Straßen unter 120° treffen (Steinerpunkte).
@@ -1109,6 +1112,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
     - Bei vielen Orten geht das nicht mehr: Das kürzeste Netz mit Kreuzungen zu finden ist NP-schwer.
 - `steiner.animation`: Die Kreuzungen rutschen an ihre besten Plätze, bis sich überall drei Straßen unter 120° treffen
 - `steiner.theory.rule`: Eine Kreuzung lohnt sich nur, wenn sich dort drei Straßen unter 120° treffen. Solche Punkte heißen Steinerpunkte.
+- `steiner.theory.check`: Hat dein Netz dieselbe Form wie das kürzeste und stimmen alle Winkel bis auf 5°, rutschen die Kreuzungen an ihren besten Platz: Dann ist es optimal. Auch ein Netz anderer Form kann überall 120° haben und ist trotzdem länger.
 - `steiner.theory.compare(mst, optimum, percent)`:
   - mst = „14,1 km“, optimum = „12,4 km“, percent = „4.2“: Ohne Kreuzungen ist das kürzeste Netz hier 14,1 km lang, mit Kreuzungen 12,4 km: Ohne ist es 4,2 % länger.
 - `steiner.theory.bound`: Gilbert und Pollak vermuteten 1968: Ohne Kreuzungen ist das kürzeste Netz nie mehr als etwa 15 % länger (beim gleichseitigen Dreieck sind es 15,5 %). Bewiesen ist das bis heute nur für wenige Orte.

@@ -6,8 +6,11 @@ import {
   EMPTY_NETWORK,
   extendTo,
   fullTopologyCount,
-  isNearlyOptimal,
-  isSettleClose,
+  anglesRight,
+  anglesRightOtherShape,
+  ANGLE_TOLERANCE,
+  hasOptimumShape,
+  isSolved,
   junctionHint,
   lengthOf,
   mergeInto,
@@ -17,16 +20,14 @@ import {
   placeGroups,
   relax,
   removeRoad,
-  SETTLE_TOLERANCE,
   splitRoad,
   toDegrees,
-  TOLERANCE,
   type JunctionNetwork,
   type SteinerOptimum,
 } from './junctions'
 import { BICHROMATIC_IDS, LEVEL_IDS, setOf, STEINER_HOW_TO, STEINER_IDS } from './levels'
 import { BICHROMATIC_LEVELS, STEINER_LEVELS } from './levels.fixture'
-import { kruskal, roadKey, type Road } from './mst'
+import { kruskal, normalise, roadKey, type Road } from './mst'
 import { mulberry32 } from '../../random'
 
 const TRIANGLE: Vec2[] = [
@@ -141,7 +142,7 @@ describe('the shipped maps of "Kreuzungen"', () => {
         junctions: [...level.optimum.junctions],
         roads: [...level.optimum.roads],
       }
-      expect(isNearlyOptimal(places, net, level.optimum.length), level.id).toBe(true)
+      expect(isSolved(places, net, level.optimum), level.id).toBe(true)
       const nodes = nodesOf(places, net)
       for (let v = places.length; v < nodes.length; v++) {
         expect(neighboursOf(net.roads, v)).toHaveLength(3)
@@ -149,8 +150,8 @@ describe('the shipped maps of "Kreuzungen"', () => {
       }
       const mst = kruskal(places)
       expect(mst.length).toBeCloseTo(level.mstLength, 5)
-      expect(mst.length).toBeGreaterThan(level.optimum.length * (1 + 4 * TOLERANCE))
-      expect(isNearlyOptimal(places, { junctions: [], roads: mst.roads }, level.optimum.length)).toBe(false)
+      expect(mst.length).toBeGreaterThan(level.optimum.length * 1.04)
+      expect(isSolved(places, { junctions: [], roads: mst.roads }, level.optimum)).toBe(false)
     }
   })
 
@@ -166,87 +167,135 @@ describe('the shipped maps of "Kreuzungen"', () => {
     expect(level.mstLength / level.optimum.length).toBeGreaterThan(1.06)
   })
 
-  it('counts a network within 1 % as optimal, not one further off', () => {
+  it("is solved with the optimum's shape and every angle within 5° of 120°, not further off", () => {
     const level = STEINER_LEVELS[0]!
     const places = placesOf(level)
     const net: JunctionNetwork = { junctions: [...level.optimum.junctions], roads: [...level.optimum.roads] }
     const [x, y] = net.junctions[0]!
     const n = places.length
-    expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.2, y]), level.optimum.length)).toBe(true)
-    expect(isNearlyOptimal(places, moveJunction(n, net, n, [x + 0.6, y]), level.optimum.length)).toBe(false)
-    expect(isNearlyOptimal(places, removeRoad(n, net, net.roads[0]!), level.optimum.length)).toBe(false)
+    const worst = (moved: JunctionNetwork) =>
+      Math.max(
+        ...anglesAt(nodesOf(places, moved), moved.roads, n).map((a) => Math.abs(toDegrees(a.size) - 120)),
+      )
+    // Angles 123°, 120°, 117°: solved. Angles 125°, 129°, 106° (0.35 % longer): not, though within 1 %.
+    const close = moveJunction(n, net, n, [x + 0.05, y - 0.03])
+    expect(worst(close)).toBeLessThan(ANGLE_TOLERANCE)
+    expect(isSolved(places, close, level.optimum)).toBe(true)
+    const off = moveJunction(n, net, n, [x + 0.25, y])
+    expect(worst(off)).toBeGreaterThan(ANGLE_TOLERANCE)
+    expect(lengthOf(places, off)).toBeLessThan(level.optimum.length * 1.01)
+    expect(isSolved(places, off, level.optimum)).toBe(false)
+    expect(isSolved(places, removeRoad(n, net, net.roads[0]!), level.optimum)).toBe(false)
+  })
+
+  it('compares shapes: the same junctions joined to the same places and junctions, in any order', () => {
+    for (const level of STEINER_LEVELS) {
+      const places = placesOf(level)
+      const n = places.length
+      const k = level.optimum.junctions.length
+      // The junctions numbered the other way round, the roads listed backwards and turned.
+      const id = (v: number) => (v < n ? v : n + k - 1 - (v - n))
+      const turned: JunctionNetwork = {
+        junctions: [...level.optimum.junctions].reverse(),
+        roads: [...level.optimum.roads].reverse().map(([a, b]) => normalise(id(b), id(a))),
+      }
+      expect(hasOptimumShape(n, turned, level.optimum), level.id).toBe(true)
+      expect(isSolved(places, turned, level.optimum), level.id).toBe(true)
+      // A junction joined to another place instead: another shape, wherever the junctions are.
+      const [a, b] = level.optimum.roads.find(([a, b]) => a < n && b >= n)!
+      const other = (a + 1) % n
+      const swapped: JunctionNetwork = {
+        junctions: [...level.optimum.junctions],
+        roads: level.optimum.roads.map((r) => (r[0] === a && r[1] === b ? normalise(other, b) : r)),
+      }
+      if (!level.optimum.roads.some((r) => roadKey(r) === roadKey(normalise(other, b))))
+        expect(hasOptimumShape(n, swapped, level.optimum), level.id).toBe(false)
+    }
+  })
+
+  it('says so when every angle is right but the shape is another (a longer local optimum)', () => {
+    // Map 1: the junction joins the three villages instead (at their 120° point); the castle hangs on a village.
+    const level = STEINER_LEVELS[0]!
+    const places = placesOf(level)
+    const n = places.length
+    const castle = n - 1
+    const start: JunctionNetwork = {
+      junctions: [[0, 0]],
+      roads: [normalise(0, n), normalise(1, n), normalise(2, n), normalise(0, castle)],
+    }
+    const local: JunctionNetwork = { ...start, junctions: relax(places, start, 2000).at(-1)! }
+    expect(anglesRight(places, local)).toBe(true)
+    expect(hasOptimumShape(n, local, level.optimum)).toBe(false)
+    expect(anglesRightOtherShape(places, local, level.optimum)).toBe(true)
+    expect(isSolved(places, local, level.optimum)).toBe(false)
+    expect(lengthOf(places, local)).toBeGreaterThan(level.optimum.length * 1.01)
+    // Not said of the optimum's shape, nor of a network that does not join every place.
+    const optimum: JunctionNetwork = {
+      junctions: [...level.optimum.junctions],
+      roads: [...level.optimum.roads],
+    }
+    expect(anglesRightOtherShape(places, optimum, level.optimum)).toBe(false)
+    expect(anglesRightOtherShape(places, removeRoad(n, local, normalise(0, castle)), level.optimum)).toBe(
+      false,
+    )
   })
 })
 
 /**
- * Networks with the optimum's roads whose junctions are moved off their best spots in random directions
- * (all at once, as a player places them by hand), each just so far that the network is `excess` longer than
- * the optimum: the worst angle at a junction (degrees from 120°) and the furthest junction from its spot.
+ * Networks with the optimum's shape whose junctions are moved off their best spots in random directions,
+ * just so far that the worst angle at a junction is `degrees` off 120°: how far the furthest junction moved,
+ * and how much longer the network is.
  */
-function offBy(level: (typeof STEINER_LEVELS)[number], excess: number, samples: number) {
+function offBy(level: (typeof STEINER_LEVELS)[number], degrees: number, samples: number) {
   const places = placesOf(level)
   const { optimum } = level
   const rng = mulberry32(level.number)
   const gauss = () => Math.sqrt(-2 * Math.log(1 - rng())) * Math.cos(2 * Math.PI * rng())
+  const worst = (net: JunctionNetwork) => {
+    const nodes = nodesOf(places, net)
+    return Math.max(
+      ...net.junctions.flatMap((_, k) =>
+        anglesAt(nodes, net.roads, places.length + k).map((a) => Math.abs(toDegrees(a.size) - 120)),
+      ),
+    )
+  }
   return Array.from({ length: samples }, () => {
-    const dirs = optimum.junctions.map(() => [gauss(), gauss()] as const)
+    const raw = optimum.junctions.map(() => [gauss(), gauss()] as const)
+    const norm = Math.hypot(...raw.flat())
     const at = (t: number): JunctionNetwork => ({
-      junctions: optimum.junctions.map(([x, y], k) => [x + t * dirs[k]![0], y + t * dirs[k]![1]]),
+      junctions: optimum.junctions.map(([x, y], k) => [
+        x + (t * raw[k]![0]) / norm,
+        y + (t * raw[k]![1]) / norm,
+      ]),
       roads: [...optimum.roads],
     })
     let [lo, hi] = [0, 1]
     for (let i = 0; i < 50; i++) {
       const t = (lo + hi) / 2
-      if (lengthOf(places, at(t)) < optimum.length * (1 + excess)) lo = t
+      if (worst(at(t)) < degrees) lo = t
       else hi = t
     }
     const net = at(lo)
-    const nodes = nodesOf(places, net)
-    const junctions = net.junctions.map((_, k) => places.length + k)
-    const angle = Math.max(
-      ...junctions.flatMap((v) =>
-        anglesAt(nodes, net.roads, v).map((a) => Math.abs(toDegrees(a.size) - 120)),
-      ),
-    )
     const moved = Math.max(
       ...net.junctions.map(([x, y], k) =>
         Math.hypot(x - optimum.junctions[k]![0], y - optimum.junctions[k]![1]),
       ),
     )
-    return { net, angle, moved }
+    return { net, moved, over: lengthOf(places, net) / optimum.length - 1 }
   })
 }
 
-const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)]!
-
-describe('settling on a win in "Kreuzungen"', () => {
-  it('settles only networks whose angles are within about 5° of 120°, and moves junctions only a little', () => {
+describe('the angle rule of "Kreuzungen"', () => {
+  it('solves networks just inside 5°, so close that settling moves a junction only a little', () => {
     for (const level of STEINER_LEVELS) {
       const places = placesOf(level)
-      const close = offBy(level, SETTLE_TOLERANCE * 0.999, 200)
-      for (const { net } of close) expect(isSettleClose(places, net, level.optimum.length)).toBe(true)
-      expect(median(close.map((c) => c.angle)), level.id).toBeLessThanOrEqual(5.5)
-      expect(Math.max(...close.map((c) => c.angle)), level.id).toBeLessThanOrEqual(8.5)
-      expect(Math.max(...close.map((c) => c.moved)), level.id).toBeLessThan(0.12)
-      // At 0.2 % (Kevin's starting value) the angles can still be far off: that looked like snapping.
-      expect(median(offBy(level, 0.002, 200).map((c) => c.angle)), level.id).toBeGreaterThan(9)
+      const inside = offBy(level, ANGLE_TOLERANCE * 0.99, 100)
+      for (const { net } of inside) expect(isSolved(places, net, level.optimum), level.id).toBe(true)
+      expect(Math.max(...inside.map((c) => c.moved)), level.id).toBeLessThan(0.25)
+      expect(Math.max(...inside.map((c) => c.over)), level.id).toBeLessThan(0.002)
+      for (const { net } of offBy(level, ANGLE_TOLERANCE * 1.01, 20))
+        expect(isSolved(places, net, level.optimum), level.id).toBe(false)
     }
-  })
-
-  it('counts a network between the two thresholds as optimal, without settling it', () => {
-    for (const level of STEINER_LEVELS) {
-      const places = placesOf(level)
-      for (const { net } of offBy(level, (SETTLE_TOLERANCE + TOLERANCE) / 2, 20)) {
-        expect(isNearlyOptimal(places, net, level.optimum.length)).toBe(true)
-        expect(isSettleClose(places, net, level.optimum.length)).toBe(false)
-      }
-    }
-    const level = STEINER_LEVELS[0]!
-    const places = placesOf(level)
-    const net: JunctionNetwork = { junctions: [...level.optimum.junctions], roads: [...level.optimum.roads] }
-    expect(isSettleClose(places, removeRoad(places.length, net, net.roads[0]!), level.optimum.length)).toBe(
-      false,
-    )
   })
 })
 
@@ -299,7 +348,7 @@ describe('hints of "Kreuzungen"', () => {
       wrong = extendTo(places.length, wrong, 2, [places[2]![0] - 0.4, places[2]![1] - 0.9])
       for (const start of [EMPTY_NETWORK, mst, wrong]) {
         const { net, kinds } = followHints(places, optimum, start)
-        expect(isNearlyOptimal(places, net, optimum.length), `${level.id}: ${kinds.join(' ')}`).toBe(true)
+        expect(isSolved(places, net, optimum), `${level.id}: ${kinds.join(' ')}`).toBe(true)
       }
     }
   })

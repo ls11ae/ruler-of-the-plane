@@ -4,8 +4,8 @@ import {
   EMPTY_NETWORK,
   extendTo,
   fullTopologyCount,
-  isNearlyOptimal,
-  isSettleClose,
+  anglesRightOtherShape,
+  isSolved,
   junctionHint,
   lengthOf,
   mergeInto,
@@ -35,6 +35,7 @@ import {
   kruskal,
   kruskalSoFar,
   networkLength,
+  NEAR_OPTIMAL,
   overOptimum,
   roadKey,
   type Road,
@@ -80,7 +81,7 @@ import { useMedia } from './useMedia'
 
 /** Pause between the optimal network and the result screen, to see it. */
 const RESULT_DELAY_MS = 900
-/** "Kreuzungen": how the junctions settle on a win (Weiszfeld rounds; the first ones are shown). */
+/** "Kreuzungen": how the junctions settle when the map is solved (Weiszfeld rounds; the first ones are shown). */
 const SETTLE_ROUNDS = 2000
 const SETTLE_FRAMES = 30
 const SETTLE_FRAME_MS = 16
@@ -92,7 +93,13 @@ type Notice = { mark: Highlight; text: string } | null
 function useRound(levelId: RoadsLevelId | null, set: RoadsSet) {
   const progress = useProgress()
   const [hints, setHints] = useState(0)
-  const [won, setWon] = useState<{ seconds: number; hints: number; length: number } | null>(null)
+  const [won, setWon] = useState<{
+    seconds: number
+    hints: number
+    length: number
+    /** How much longer than the shortest network (a share), if a nearly optimal one counted. */
+    over: number
+  } | null>(null)
   const [overlay, setOverlay] = useState<'howto' | 'result' | null>(progress.seenHowTo[set] ? null : 'howto')
   const startedAt = useRef<number | null>(null)
   const timer = useRef<number | undefined>(undefined)
@@ -103,11 +110,14 @@ function useRound(levelId: RoadsLevelId | null, set: RoadsSet) {
     overlay,
     setOverlay,
     hint: () => setHints((n) => n + 1),
-    /** After every change of the network: starts the clock, and wins if the network is optimal. */
-    check(optimal: boolean, length: number) {
+    /**
+     * After every change of the network: starts the clock, and wins if the network counts as optimal
+     * (`over`: how much longer than the shortest it is, 0 if it is the shortest).
+     */
+    check(optimal: boolean, length: number, over = 0) {
       if (startedAt.current === null) startedAt.current = performance.now()
       if (won || !optimal) return
-      setWon({ seconds: (performance.now() - startedAt.current) / 1000, hints, length })
+      setWon({ seconds: (performance.now() - startedAt.current) / 1000, hints, length, over })
       if (levelId) progress.recordWin(levelId, starsFor(hints))
       window.clearTimeout(timer.current)
       timer.current = window.setTimeout(() => setOverlay('result'), RESULT_DELAY_MS)
@@ -226,7 +236,16 @@ function Frame(props: FrameProps) {
         <ResultScreen
           outcome="won"
           stars={starsFor(won.hints)}
-          stats={t.stats(won.length, won.hints, t.time(won.seconds))}
+          stats={
+            <>
+              {t.stats(won.length, won.hints, t.time(won.seconds))}
+              {won.over > 0 && (
+                <span className={styles.nearly} data-testid="roads-nearly">
+                  {t.nearlyOptimal(percentOver(won.over))}
+                </span>
+              )}
+            </>
+          }
           explanation={props.result.explanation.join(' ')}
           animation={props.result.animation}
           onTheory={() => {
@@ -276,11 +295,17 @@ function MstScreen({ map, levelId, subtitle, t, onNext, onPicker }: ScreenProps)
 
   const length = networkLength(points, roads)
   const groups = componentCount(points.length, roads)
-  const optimal = isOptimal(points, roads, mst.length)
+  // Up to 0.5 % longer than the shortest network counts (the difference cannot be seen).
+  const optimal = isOptimal(points, roads, mst.length, NEAR_OPTIMAL)
   const change = (next: Road[]) => {
     setRoads(next)
     setNotice(null)
-    round.check(isOptimal(points, next, mst.length), networkLength(points, next))
+    const nextLength = networkLength(points, next)
+    round.check(
+      isOptimal(points, next, mst.length, NEAR_OPTIMAL),
+      nextLength,
+      overOptimum(nextLength, mst.length),
+    )
   }
   const state = optimal
     ? t.optimal
@@ -383,7 +408,11 @@ function junctionNotice(h: NonNullable<JunctionHint>, t: RoadsTexts): Notice {
   }
 }
 
-/** "Kreuzungen": roads may branch at junctions (Steiner tree); within 1 % of the optimum counts. */
+/**
+ * "Kreuzungen": roads may branch at junctions (Steiner tree). Solved when the network has the optimum's shape
+ * and every angle at a junction is about 120°; then the junctions slide to their best spots, and only then
+ * it reads "Optimal!".
+ */
 function SteinerScreen({
   level,
   ...props
@@ -402,8 +431,8 @@ function SteinerScreen({
   const [show, setShow] = useState<'mst' | 'optimum' | null>(null)
   const mst = useMemo(() => kruskal(points), [points])
 
-  // On a win very close to the optimum the junctions slide the last bit to their best spots, so the angles
-  // read 120°; further off (still within 1 %) they stay where the player put them.
+  // Once solved, the junctions slide the last bit to their best spots, so the angles read 120°; the win
+  // comes when they are there.
   const [settle, setSettle] = useState<{ frames: Vec2[][]; start: number } | null>(null)
   useAnimationFrame((now) => {
     if (!settle) return
@@ -414,7 +443,10 @@ function SteinerScreen({
     )
     current.current = { ...current.current, junctions: settle.frames[k]! }
     setNet(current.current)
-    if (k === settle.frames.length - 1) setSettle(null)
+    if (k === settle.frames.length - 1) {
+      setSettle(null)
+      round.check(true, lengthOf(points, current.current))
+    }
   }, settle !== null)
 
   /** A new network; `settled` once the pointer is let go (a junction in motion never wins). */
@@ -424,12 +456,14 @@ function SteinerScreen({
     setNotice(null)
     setSettle(null)
     if (!settled) return
-    const optimal = isNearlyOptimal(points, next, optimum.length)
-    if (optimal && !round.won && next.junctions.length && isSettleClose(points, next, optimum.length)) {
+    if (isSolved(points, next, optimum)) {
       const frames = relax(points, next, SETTLE_ROUNDS)
       setSettle({ frames: [...frames.slice(0, SETTLE_FRAMES), frames.at(-1)!], start: performance.now() })
+      return
     }
-    round.check(optimal, lengthOf(points, next))
+    // All angles right in another shape: a local optimum, which only another shape beats.
+    if (anglesRightOtherShape(points, next, optimum)) setNotice({ mark: null, text: t.steiner.otherShape })
+    round.check(false, lengthOf(points, next))
   }
   const edit: JunctionEditing = {
     junctions: net.junctions,
@@ -446,7 +480,7 @@ function SteinerScreen({
 
   const length = lengthOf(points, net)
   const groups = placeGroups(places, net)
-  const optimal = isNearlyOptimal(points, net, optimum.length)
+  const optimal = settle === null && isSolved(points, net, optimum)
   const state = optimal
     ? t.optimal
     : groups > 1
@@ -544,13 +578,19 @@ function PlaneScreen({
   const change = (next: Road[]) => {
     setRoads(next)
     setNotice(null)
-    round.check(isPlaneOptimal(points, villages, next, level.optimum.length), networkLength(points, next))
+    const nextLength = networkLength(points, next)
+    round.check(
+      isPlaneOptimal(points, villages, next, level.optimum.length, NEAR_OPTIMAL),
+      nextLength,
+      overOptimum(nextLength, level.optimum.length),
+    )
   }
   const found = crossings(points, roads)
   const warn = new Set(found.flatMap((c) => c.roads.map(roadKey)))
   const length = networkLength(points, roads)
   const groups = componentCount(points.length, roads)
-  const optimal = isPlaneOptimal(points, villages, roads, level.optimum.length)
+  // Up to 0.5 % longer than the optimum counts (the difference cannot be seen).
+  const optimal = isPlaneOptimal(points, villages, roads, level.optimum.length, NEAR_OPTIMAL)
   const state = optimal
     ? t.optimal
     : found.length

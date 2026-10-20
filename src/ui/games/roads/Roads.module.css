@@ -290,3 +290,11 @@
     font-size: 1rem;
   }
 }
+
+/* On the result: "Optimal! Nur 0,3 % länger als das kürzeste Netz …" below the numbers. */
+.nearly {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}

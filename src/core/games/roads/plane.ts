@@ -1,6 +1,6 @@
 import { segmentsIntersect } from '../../geometry/predicates'
 import type { Vec2 } from '../../geometry/types'
-import { componentCount, DisjointSets, networkLength, roadKey, roadLength, type Road } from './mst'
+import { atMost, componentCount, DisjointSets, networkLength, roadKey, roadLength, type Road } from './mst'
 
 /**
  * "Zwei Sorten": castles and villages, every road joins a castle and a village, and roads must not cross
@@ -76,21 +76,22 @@ export function greedyPlane(points: readonly Vec2[], villages: number): { roads:
   return { roads, stuck: sets.count > 1 }
 }
 
-/** Tolerance for comparing with a stored optimum (level files round lengths to 6 decimals). */
-const EPS = 1e-6
-
-/** Every place connected, only castle–village roads, no crossings, and as short as the optimum. */
+/**
+ * Every place connected, only castle–village roads, no crossings, and as short as the optimum, or at most
+ * `tolerance` longer (a share; the game passes `NEAR_OPTIMAL`).
+ */
 export function isPlaneOptimal(
   points: readonly Vec2[],
   villages: number,
   roads: readonly Road[],
   optimum: number,
+  tolerance = 0,
 ): boolean {
   return (
     componentCount(points.length, roads) === 1 &&
     roads.every((r) => joinsTwoKinds(r, villages)) &&
     crossings(points, roads).length === 0 &&
-    networkLength(points, roads) <= optimum + EPS * (1 + optimum)
+    atMost(networkLength(points, roads), optimum * (1 + tolerance))
   )
 }
 

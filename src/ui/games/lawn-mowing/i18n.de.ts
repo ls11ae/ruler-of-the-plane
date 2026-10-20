@@ -52,7 +52,7 @@ export const de = {
   newGame: 'Neu',
   theoryButton: 'Theorie',
   howTo: (cutters: number) => [
-    'Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.',
+    'Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten fahren – mähen musst du nur den Rasen.',
     cutters === 1
       ? 'Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.'
       : 'Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.',
@@ -60,7 +60,7 @@ export const de = {
   ],
   howToKeys: { one: 'Mäher 1', two: 'Mäher 2', home: 'Feierabend', undo: 'Schritt zurück' },
   howToAnimation:
-    'Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse',
+    'Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit; er fährt über eine kleine Terrasse, und der letzte Streifen ragt über den Rand',
   result: {
     title: 'Feierabend!',
     stats: (longest: number, target: string) => `Längste Runde: ${longest} Schritte · ${target}`,

@@ -257,7 +257,8 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   plus own checks of contrast against the drawn background, text sizes and 44 px hit targets on every
   screen; see the decision log, Phase 6).
 - "Straßenbau" is too easy (Kevin's playtest): two harder sets after the current maps, "Kreuzungen"
-  (Steiner tree: junctions placed by hand, angles shown, within 1 % of the stored optimum counts) and
+  (Steiner tree: junctions placed by hand, angles shown, within 1 % of the stored optimum counts; since
+  2026-10-20 the optimum's shape with every angle within 5° of 120°) and
   "Zwei Sorten" (castles and villages, every road joins one of each, no two roads cross), each map with
   its exact optimum computed offline. — done 2026-10-17 (six maps each; `scripts/roads/`, see the
   decision log, Phase 6)
@@ -294,7 +295,7 @@ force for up to 8 villages; following the hints from a random tangle of roads al
     junction and a road straight on (`scripts/roads/steiner-maps.ts`).
   - "Kreuzungen": junctions settle on a win only very close to the optimum; between that and 1 % the
     network counts but the junctions stay put. — done 2026-10-19: 0.03 %, tuned on the six maps (angles
-    typically 4–5° from 120°; at 0.2 % they could still be 10–20° off).
+    typically 4–5° from 120°; at 0.2 % they could still be 10–20° off). (Replaced on 2026-10-20, see below.)
   - "Licht ins Verlies": the marker on the thickest dark spot only from 95 % lit on. — done 2026-10-19
     (the attract demo keeps it).
   - "Licht ins Verlies": rock around the dungeon and in the pillars, somewhat darker; "Mittel" starts
@@ -311,6 +312,20 @@ force for up to 8 villages; following the hints from a random tangle of roads al
   - "Rasenmähen": "Bisher" / "Längerer Mäher" and "Computer: 110 Schritte" on the score card. — done
     2026-10-19.
   - "Rasenmähen": mowed and uncut grass clearly different in colour. — done 2026-10-19.
+- Kevin's playtest of 2026-10-20, "Straßenbau" and "Rasenmähen" (all agreed by Kevin; see the decision
+  log, "Kevin's playtest (2026-10-20)"):
+  - "Straßenbau", bug: equally short networks refused by the rounding of the coordinates (map 6 of "Von
+    Ort zu Ort", "+0,1 %"). — done 2026-10-20: lengths equal up to a relative 1e-6; checked on every set
+    and on 3,000 random maps.
+  - "Straßenbau": up to 0.5 % longer counts in "Von Ort zu Ort" and "Zwei Sorten", and the result says
+    how much longer it is. — done 2026-10-20.
+  - "Kreuzungen": a road from a junction by clicking it, then a place or junction, said in the hint line
+    and "So geht's", and a dashed line from the selected node to the mouse pointer. — done 2026-10-20.
+  - "Rasenmähen": the mower may hang over the edge, said in the rules and shown in the how-to animation
+    (its lawn one row higher than two strips). — done 2026-10-20.
+  - "Kreuzungen": solved when the network has the optimum's shape and every angle is within 5° of 120°;
+    then the junctions settle and only then "Optimal!" (replaces the 1 % win and the 0.03 % settling). —
+    done 2026-10-20 (5° to be tuned in the playtest, also with a finger on a phone).
 
 Acceptance: in the playtest, each game is understood within about 10 s and finished within 5 minutes;
 no crash or stuck state in a 2-hour unattended run of the attract mode.

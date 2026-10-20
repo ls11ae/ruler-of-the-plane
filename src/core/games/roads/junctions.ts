@@ -4,8 +4,9 @@ import { DisjointSets, networkLength, normalise, roadKey, roadLength, type Road 
 /**
  * "Kreuzungen": the road network may branch at junctions anywhere on the land (Euclidean Steiner tree).
  * Nodes are the places (villages, then castles: indices 0…n−1) and then the player's junctions; a road
- * joins two nodes. Junctions are placed by hand, so a network within 1 % of the stored optimum counts as
- * optimal. In a shortest network every junction has three roads meeting at 120° (Steiner points).
+ * joins two nodes. In a shortest network every junction has three roads meeting at 120° (Steiner points).
+ * Junctions are placed by hand, so a map counts as solved when the network has the optimum's shape and every
+ * angle at a junction is about 120°; then the junctions slide to their best spots (Kevin, 2026-10-20).
  */
 
 /** The player's network: junctions (nodes after the places) and roads between nodes. */
@@ -23,17 +24,14 @@ export interface SteinerOptimum {
   length: number
 }
 
-/** A network this much longer than the optimum still counts as optimal (junctions are placed by hand). */
-export const TOLERANCE = 0.01
-
 /**
- * On a win, the junctions slide to their best spots only if the network is at most this much longer than
- * the optimum, so that the slide moves them only a little (Kevin, 2026-10-19). Tuned on the six maps: at
- * 0.03 % the worst angle at a junction is typically 4–5° from 120° (at most about 8°), and a junction moves
- * at most about 0.1 units (a map is about 6 wide); at 0.2 % the angles are typically still 10–13° off (up to
- * 20°), which looked like snapping to the solution. Between this and 1 % the network counts as optimal, but the junctions stay where they are.
+ * The angles at a junction count as right within this many degrees of 120° (Kevin, 2026-10-20; tune in the
+ * playtest, also with a finger on a phone). On the six maps, a junction may then lie 0.03–0.08 units from
+ * its best spot in its tightest direction (median 0.04–0.10; a map is about 6 units wide, some 130 px on a
+ * laptop and 70 px on a phone per unit), and the network is at most 0.16 % longer than the optimum (median
+ * 0.02–0.05 %).
  */
-export const SETTLE_TOLERANCE = 0.0003
+export const ANGLE_TOLERANCE = 5
 
 export const nodesOf = (places: readonly Vec2[], net: JunctionNetwork): Vec2[] => [
   ...places,
@@ -50,17 +48,59 @@ export function placeGroups(places: number, net: JunctionNetwork): number {
   return new Set(Array.from({ length: places }, (_, i) => sets.find(i))).size
 }
 
-/** Every place connected, and the network at most 1 % longer than the optimum. */
-export function isNearlyOptimal(places: readonly Vec2[], net: JunctionNetwork, optimum: number): boolean {
-  return placeGroups(places.length, net) === 1 && lengthOf(places, net) <= optimum * (1 + TOLERANCE) + 1e-9
+/**
+ * Every junction has three roads, and every angle between them is within {@link ANGLE_TOLERANCE} of 120°
+ * (false for a network without junctions).
+ */
+export function anglesRight(places: readonly Vec2[], net: JunctionNetwork): boolean {
+  if (!net.junctions.length) return false
+  const nodes = nodesOf(places, net)
+  const degree = degrees(nodes.length, net.roads)
+  return net.junctions.every((_, k) => {
+    const v = places.length + k
+    return degree[v] === 3 && angleError(nodes, net.roads, v) <= ANGLE_TOLERANCE
+  })
 }
 
-/** Every place connected, and the network so close to the optimum that its junctions may settle. */
-export function isSettleClose(places: readonly Vec2[], net: JunctionNetwork, optimum: number): boolean {
-  return (
-    placeGroups(places.length, net) === 1 && lengthOf(places, net) <= optimum * (1 + SETTLE_TOLERANCE) + 1e-9
+/** Every order of 0…k−1 (k ≤ 4 junctions on the maps: at most 24). */
+function permutations(k: number): number[][] {
+  if (k === 0) return [[]]
+  return permutations(k - 1).flatMap((p) =>
+    Array.from({ length: k }, (_, i) => [...p.slice(0, i), k - 1, ...p.slice(i)]),
   )
 }
+
+/**
+ * Whether the network has the optimum's shape: as many junctions as the optimum, and a numbering of them
+ * under which its roads are exactly the optimum's (each junction joined to the same places and to the same
+ * junctions). Where the junctions lie does not matter.
+ */
+export function hasOptimumShape(places: number, net: JunctionNetwork, optimum: SteinerOptimum): boolean {
+  const k = optimum.junctions.length
+  if (net.junctions.length !== k || net.roads.length !== optimum.roads.length) return false
+  const wanted = new Set(optimum.roads.map(roadKey))
+  return permutations(k).some((order) => {
+    const id = (v: number) => (v < places ? v : places + order[v - places]!)
+    return net.roads.every(([a, b]) => wanted.has(roadKey(normalise(id(a), id(b)))))
+  })
+}
+
+/** The map is solved: the optimum's shape, and every angle at a junction about 120°. */
+export const isSolved = (places: readonly Vec2[], net: JunctionNetwork, optimum: SteinerOptimum) =>
+  hasOptimumShape(places.length, net, optimum) && anglesRight(places, net)
+
+/**
+ * Every place connected and every angle about 120°, but not the optimum's shape: joining the places
+ * differently gives a shorter network (a local optimum, worth saying).
+ */
+export const anglesRightOtherShape = (
+  places: readonly Vec2[],
+  net: JunctionNetwork,
+  optimum: SteinerOptimum,
+) =>
+  placeGroups(places.length, net) === 1 &&
+  anglesRight(places, net) &&
+  !hasOptimumShape(places.length, net, optimum)
 
 /** Roads per node. */
 export function degrees(nodes: number, roads: readonly Road[]): number[] {
@@ -248,14 +288,14 @@ export type JunctionHint =
  * then, in this order: a junction the optimum has no match for, with one or two roads; a missing junction
  * (as a ghost with a road to it from a node it joins in the optimum); another junction without a match; a
  * road the optimum does not have; a road of the optimum not built yet (shortest first); the junction
- * whose angles are furthest from 120°. Null if the network counts as optimal.
+ * whose angles are furthest from 120°. Null if the map is solved.
  */
 export function junctionHint(
   places: readonly Vec2[],
   net: JunctionNetwork,
   optimum: SteinerOptimum,
 ): JunctionHint {
-  if (isNearlyOptimal(places, net, optimum.length)) return null
+  if (isSolved(places, net, optimum)) return null
   const n = places.length
   const nodes = nodesOf(places, net)
   const degree = degrees(nodes.length, net.roads)
