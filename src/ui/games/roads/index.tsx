@@ -4,8 +4,8 @@ import {
   EMPTY_NETWORK,
   extendTo,
   fullTopologyCount,
-  isNearlyOptimal,
-  isSettleClose,
+  anglesRightOtherShape,
+  isSolved,
   junctionHint,
   lengthOf,
   mergeInto,
@@ -81,7 +81,7 @@ import { useMedia } from './useMedia'
 
 /** Pause between the optimal network and the result screen, to see it. */
 const RESULT_DELAY_MS = 900
-/** "Kreuzungen": how the junctions settle on a win (Weiszfeld rounds; the first ones are shown). */
+/** "Kreuzungen": how the junctions settle when the map is solved (Weiszfeld rounds; the first ones are shown). */
 const SETTLE_ROUNDS = 2000
 const SETTLE_FRAMES = 30
 const SETTLE_FRAME_MS = 16
@@ -408,7 +408,11 @@ function junctionNotice(h: NonNullable<JunctionHint>, t: RoadsTexts): Notice {
   }
 }
 
-/** "Kreuzungen": roads may branch at junctions (Steiner tree); within 1 % of the optimum counts. */
+/**
+ * "Kreuzungen": roads may branch at junctions (Steiner tree). Solved when the network has the optimum's shape
+ * and every angle at a junction is about 120°; then the junctions slide to their best spots, and only then
+ * it reads "Optimal!".
+ */
 function SteinerScreen({
   level,
   ...props
@@ -427,8 +431,8 @@ function SteinerScreen({
   const [show, setShow] = useState<'mst' | 'optimum' | null>(null)
   const mst = useMemo(() => kruskal(points), [points])
 
-  // On a win very close to the optimum the junctions slide the last bit to their best spots, so the angles
-  // read 120°; further off (still within 1 %) they stay where the player put them.
+  // Once solved, the junctions slide the last bit to their best spots, so the angles read 120°; the win
+  // comes when they are there.
   const [settle, setSettle] = useState<{ frames: Vec2[][]; start: number } | null>(null)
   useAnimationFrame((now) => {
     if (!settle) return
@@ -439,7 +443,10 @@ function SteinerScreen({
     )
     current.current = { ...current.current, junctions: settle.frames[k]! }
     setNet(current.current)
-    if (k === settle.frames.length - 1) setSettle(null)
+    if (k === settle.frames.length - 1) {
+      setSettle(null)
+      round.check(true, lengthOf(points, current.current))
+    }
   }, settle !== null)
 
   /** A new network; `settled` once the pointer is let go (a junction in motion never wins). */
@@ -449,12 +456,14 @@ function SteinerScreen({
     setNotice(null)
     setSettle(null)
     if (!settled) return
-    const optimal = isNearlyOptimal(points, next, optimum.length)
-    if (optimal && !round.won && next.junctions.length && isSettleClose(points, next, optimum.length)) {
+    if (isSolved(points, next, optimum)) {
       const frames = relax(points, next, SETTLE_ROUNDS)
       setSettle({ frames: [...frames.slice(0, SETTLE_FRAMES), frames.at(-1)!], start: performance.now() })
+      return
     }
-    round.check(optimal, lengthOf(points, next))
+    // All angles right in another shape: a local optimum, which only another shape beats.
+    if (anglesRightOtherShape(points, next, optimum)) setNotice({ mark: null, text: t.steiner.otherShape })
+    round.check(false, lengthOf(points, next))
   }
   const edit: JunctionEditing = {
     junctions: net.junctions,
@@ -471,7 +480,7 @@ function SteinerScreen({
 
   const length = lengthOf(points, net)
   const groups = placeGroups(places, net)
-  const optimal = isNearlyOptimal(points, net, optimum.length)
+  const optimal = settle === null && isSolved(points, net, optimum)
   const state = optimal
     ? t.optimal
     : groups > 1

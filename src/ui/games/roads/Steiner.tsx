@@ -238,6 +238,7 @@ export function SteinerTheory({
         </Button>
       </div>
       <p>{t.steiner.theory.rule}</p>
+      <p>{t.steiner.theory.check}</p>
       <div className={styles.toggles}>
         {(['mst', 'optimum'] as const).map((s) => (
           <Button

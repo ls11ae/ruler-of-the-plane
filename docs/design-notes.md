@@ -437,7 +437,8 @@ their ends.
   too close to the 1 % rule to be worth the effort; the hexagon's jitter seed keeps its junctions 0.49
   away from the middle village (most seeds put one under its icon). The importer checks every stored
   optimum: a tree, its length, degree 3 and 120° (± 1°) at every junction, the MST length.
-- **2026-10-17 (agreed by Kevin 2026-10-18) "Kreuzungen": junctions by hand, within 1 %** (the 1 % is Kevin's). A road dragged
+- **2026-10-17 (agreed by Kevin 2026-10-18) "Kreuzungen": junctions by hand, within 1 %** (the 1 % is Kevin's;
+  replaced on 2026-10-20 by the optimum's shape with every angle within 5°, see "Kevin's playtest (2026-10-20)"). A road dragged
   onto open land ends at a new junction there (on phones: tap a place, then open land); a junction is
   dragged to move it and dropped onto a place or junction to merge into it; a road dragged at its middle
   bends at a new junction; a junction without roads disappears. Every junction shows the angles between
@@ -1232,7 +1233,8 @@ Kevin played `main` at `8f4d3e2` and decided the following on 2026-10-19.
   triangle turned or mirrored (still three places round one junction, the same picture); a different
   how-to picture (Kevin wanted the animation kept).
 - **2026-10-19 (agreed by Kevin 2026-10-19) "Kreuzungen": the junctions settle only very close to the
-  optimum.** On a win the junctions slid to their best spots, and with the 1 % tolerance this happened as
+  optimum.** (Replaced on 2026-10-20, with the 1 % win, by the optimum's shape and every angle within 5°, see
+  "Kevin's playtest (2026-10-20)".) On a win the junctions slid to their best spots, and with the 1 % tolerance this happened as
   soon as a network was roughly right, so it looked like snapping to the solution. 1 % stays the win; the
   junctions now settle only when the network is at most 0.03 % longer than the optimum
   (`SETTLE_TOLERANCE` in `src/core/games/roads/junctions.ts`); between that and 1 % the network counts as
@@ -1397,3 +1399,28 @@ Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 
   over the edge by two rows (a 9 s loop instead of 6 s; the terrace stays in the first strip).
   Alternatives: a lawn one row lower than two strips (the second strip would hang over by one row; Kevin
   asked for one row higher); a separate picture of a mower at the edge (one more thing to look at).
+- **2026-10-20 (agreed by Kevin 2026-10-20) "Kreuzungen": solved by the optimum's shape and angles of about
+  120°** (replaces the 1 % win of 2026-10-17 and the 0.03 % settling of 2026-10-19). A network up to 1 %
+  too long read "Optimal" without being optimal, which Kevin does not want. The map is now solved when the
+  network has the optimum's shape and every angle at a junction is within 5° of 120° (`isSolved`,
+  `hasOptimumShape`, `anglesRight`, `ANGLE_TOLERANCE` in `src/core/games/roads/junctions.ts`). The shape:
+  as many junctions as the optimum, and a numbering of them under which the roads are exactly the
+  optimum's, so each junction is joined to the same places and to the same junctions; it is checked
+  combinatorially (every numbering, at most 4! = 24 on the maps), not by where the junctions lie (the hints
+  still match junctions by distance). Then the junctions slide to their best spots (Weiszfeld, as before),
+  and only after that the header reads "Optimal!" and the round is won; until then it shows "+x %" as
+  before. If every angle is about 120° and every place is joined, but the shape is another (a longer local
+  optimum), the footer says "Alle Winkel stimmen – aber anders verbunden wird das Netz noch kürzer." The
+  how-to says "Mit Kreuzungen wird das Netz kürzer. Stimmen alle Winkel ungefähr, rutschen die Kreuzungen
+  an ihren besten Platz." instead of "Bis 1 % über dem Optimum zählt als optimal.", and the theory adds the
+  rule and that a network of another shape can have 120° everywhere and still be longer. What 5° means on
+  the six maps (junctions moved in random directions until the worst angle is 5° off): a junction may lie
+  0.03–0.08 units from its best spot in its tightest direction (median 0.04–0.10 units; about 4–10 px on a
+  laptop and 2–7 px on a phone, where "Wabe" is the tightest), and the network is then at most 0.16 %
+  longer (median 0.02–0.05 %). That is fine with a mouse; with a finger on a phone the angle labels lead
+  there, but it is to be tried in the playtest (Kevin: tune there). Tests: the optimum is solved on every
+  map, also with its junctions numbered otherwise; networks just inside 5° are solved, just outside not; a
+  network 0.35 % too long with angles 10–20° off is not solved; the other-shape message; the hints still
+  lead to a solved network from every start; the smoke test plays all of it. Alternatives: a length rule
+  with the angle check only for settling (the 1 % look-alike Kevin rejected); comparing shapes by the
+  hints' distance matching (a player's junction far off its spot would count as another shape).

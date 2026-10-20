@@ -100,9 +100,11 @@ export const de = {
     howTo: [
       'Jetzt darfst du Kreuzungen bauen: Zieh eine Straße von einem Ort aufs freie Land, dort entsteht eine Kreuzung.',
       'Zieh eine Kreuzung, um sie zu verschieben; an ihr siehst du die Winkel. Für eine Straße von einer Kreuzung aus klick oder tipp sie an, dann einen Ort oder eine andere Kreuzung.',
-      'Mit Kreuzungen wird das Netz kürzer. Bis 1 % über dem Optimum zählt als optimal.',
+      'Mit Kreuzungen wird das Netz kürzer. Stimmen alle Winkel ungefähr, rutschen die Kreuzungen an ihren besten Platz.',
     ],
     howToAnimation: 'Drei Straßen treffen sich an einer Kreuzung, die an den besten Platz rutscht',
+    /** All angles about 120°, but another shape of network: a local optimum. */
+    otherShape: 'Alle Winkel stimmen – aber anders verbunden wird das Netz noch kürzer.',
     explanation: (places: number, shapes: number) => [
       'Am kürzesten wird das Netz, wenn sich an jeder Kreuzung genau drei Straßen unter 120° treffen (Steinerpunkte).',
       `Der Computer probiert jede mögliche Form des Netzes aus – bei ${places} Orten ${shapes === 1 ? 'eine Form' : `${shapes} Formen`} – und schiebt bei jeder die Kreuzungen, bis das Netz am kürzesten ist.`,
@@ -112,6 +114,8 @@ export const de = {
       'Die Kreuzungen rutschen an ihre besten Plätze, bis sich überall drei Straßen unter 120° treffen',
     theory: {
       rule: 'Eine Kreuzung lohnt sich nur, wenn sich dort drei Straßen unter 120° treffen. Solche Punkte heißen Steinerpunkte.',
+      check:
+        'Hat dein Netz dieselbe Form wie das kürzeste und stimmen alle Winkel bis auf 5°, rutschen die Kreuzungen an ihren besten Platz: Dann ist es optimal. Auch ein Netz anderer Form kann überall 120° haben und ist trotzdem länger.',
       compare: (mst: string, optimum: string, percent: string) =>
         `Ohne Kreuzungen ist das kürzeste Netz hier ${mst} lang, mit Kreuzungen ${optimum}: Ohne ist es ${percent.replace('.', ',')} % länger.`,
       bound:

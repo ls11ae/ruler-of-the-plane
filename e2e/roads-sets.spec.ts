@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 import { readFileSync } from 'node:fs'
+import { relax, type JunctionNetwork } from '../src/core/games/roads/junctions'
 import { componentCount, kruskal, networkLength, roadsByLength, type Road } from '../src/core/games/roads/mst'
 import { freeTree } from '../src/core/games/roads/plane'
 import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../src/core/levels/schema'
@@ -32,11 +33,15 @@ async function buildFork(page: Page, at: Pt, phone: boolean) {
   await drag(page, places[straight[0]![0]]!, places[straight[0]![1]]!, phone)
 }
 
-test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ page, phone }, testInfo) => {
+test('Kreuzungen: a junction, its angles, solved at about 120°, the theory', async ({
+  page,
+  phone,
+}, testInfo) => {
   await openMap(page, 'Kreuzungen', 1)
   // The rules changed: "So geht's" of the new set.
   const howTo = page.getByRole('dialog', { name: "So geht's" })
   await expect(howTo.getByText(/Jetzt darfst du Kreuzungen bauen/)).toBeVisible()
+  await expect(howTo.getByText(/Stimmen alle Winkel ungefähr, rutschen die Kreuzungen/)).toBeVisible()
   await shot(page, testInfo, 'roads-steiner-howto')
   await howTo.getByRole('button', { name: "Los geht's!" }).click()
   await expect(page.locator('header')).toContainText('Kreuzungen 1 von 6')
@@ -51,17 +56,23 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await expect(page.getByTestId('roads-hint')).toContainText('120°')
   await shot(page, testInfo, 'roads-steiner-building')
 
-  // Moved closer (0.5 % above the optimum, within 1 %): optimal, but the junction stays where it was put,
-  // with its angles some 10–20° off 120°.
+  // Moved closer: only 0.5 % too long, but the angles are 10–20° off 120°: not optimal (no 1 % rule).
   await drag(page, off, [best[0] + 0.3, best[1]], phone)
+  await expect(page.getByTestId('roads-state')).toHaveText(/^\+0,[4-6] % über dem Optimum$/)
+  await expect(page.getByTestId('junction-angles')).not.toContainText('120°')
+  await page.waitForTimeout(1200)
+  await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toHaveCount(0)
+
+  // Built again with every angle within 5° of 120° (123°, 120°, 117°): the junction slides to its best spot,
+  // and then it is optimal.
+  await page.getByRole('button', { name: 'Neu' }).click()
+  await buildFork(page, [best[0] + 0.05, best[1] - 0.03], phone)
   await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
-  const angles = page.getByTestId('junction-angles')
-  const put = await angles.textContent()
+  await expect(page.getByTestId('junction-angles').getByText('120°')).toHaveCount(3)
   const result = page.getByRole('dialog', { name: 'Geschafft!' })
   await expect(result).toBeVisible()
-  await expect(angles).toHaveText(put!)
-  await expect(angles).not.toContainText('120°')
-  await expect(result.getByRole('img', { name: '2 Sterne von 3' })).toBeVisible()
+  // "Neu" started the map again, without the hint.
+  await expect(result.getByRole('img', { name: '3 Sterne von 3' })).toBeVisible()
   await expect(result.getByText(/Steinerpunkte/)).toBeVisible()
   await expect(result.getByTestId('steiner-animation-length')).toHaveText('Länge: 7,7 km', {
     timeout: 10_000,
@@ -70,18 +81,36 @@ test('Kreuzungen: a junction, its angles, the 1 % rule, the theory', async ({ pa
   await result.getByRole('button', { name: 'Theorie' }).click()
   const theory = page.getByRole('complementary', { name: 'Theorie' })
   await expect(theory.getByTestId('steiner-compare')).toContainText('8,5 % länger')
+  await expect(theory.getByText(/stimmen alle Winkel bis auf 5°/)).toBeVisible()
   await theory.getByRole('button', { name: 'Ohne Kreuzungen' }).click()
   await shot(page, testInfo, 'roads-steiner-theory')
 })
 
-test('Kreuzungen: very close to the optimum the junction settles at 120°', async ({ page, phone }) => {
+test('Kreuzungen: every angle right in another shape: joined differently it gets shorter', async ({
+  page,
+  phone,
+}, testInfo) => {
   await openMap(page, 'Kreuzungen', 1)
   await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
-  // 0.02 % above the optimum, angles 123°, 120° and 117°: the junction slides the last bit.
-  await buildFork(page, [best[0] + 0.05, best[1] - 0.03], phone)
-  await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
-  await expect(page.getByTestId('junction-angles').getByText('120°')).toHaveCount(3)
-  await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toBeVisible()
+  // A junction joining the three villages at their 120° point, and the castle on a road to a village.
+  const castle = n - 1
+  const start: JunctionNetwork = {
+    junctions: [[0, 0]],
+    roads: [
+      [0, n],
+      [1, n],
+      [2, n],
+    ],
+  }
+  const at = relax(places, start, 2000).at(-1)![0]!
+  for (const v of [0, 1, 2]) await drag(page, places[v]!, at, phone)
+  await expect(page.locator('[data-junction=built]')).toHaveCount(1)
+  await drag(page, places[0]!, places[castle]!, phone)
+  await expect(page.getByTestId('roads-hint')).toHaveText(
+    'Alle Winkel stimmen – aber anders verbunden wird das Netz noch kürzer.',
+  )
+  await expect(page.getByTestId('roads-state')).toHaveText(/über dem Optimum/)
+  await shot(page, testInfo, 'roads-steiner-other-shape')
 })
 
 test('Kreuzungen: a road from a junction by clicking it, then a place, with a dashed line to the pointer', async ({
