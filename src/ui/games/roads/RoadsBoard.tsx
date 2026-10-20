@@ -357,6 +357,8 @@ export function RoadsLayer({
   const [selected, setSelected] = useState<number | null>(null)
   const [pointer, setPointer] = useState<Vec2 | null>(null)
   const [hoverRoad, setHoverRoad] = useState<string | null>(null)
+  // Where the mouse is while a node is selected by a click: the road to be built follows it.
+  const [hover, setHover] = useState<Vec2 | null>(null)
   // The current drag, also as a ref: the handlers of one gesture run before React renders again.
   const [drag, setDragState] = useState<Drag | null>(null)
   const dragRef = useRef<Drag | null>(null)
@@ -446,6 +448,8 @@ export function RoadsLayer({
         setDrag(null)
         setPointer(null)
         if (node !== null) {
+          // With the mouse, the road to be built starts at the click and follows the pointer.
+          setHover(e.pointerType === 'mouse' ? p : null)
           if (selected === null || selected === node) setSelected(selected === node ? null : node)
           else {
             join(selected, node)
@@ -463,9 +467,13 @@ export function RoadsLayer({
     { dragThreshold: 8, longPressMs: 1e9 },
   )
 
-  const from = drag?.kind === 'build' ? drag.from : null
-  const target = pointer && from !== null ? nodeAt(pointer) : null
-  const previewEnd = target !== null && target !== from ? nodes[target]! : pointer
+  // The road being built: dragged from a node, or (with the mouse) from a node selected by a click to the
+  // pointer, so that a started road shows (Kevin, 2026-10-20).
+  const dragging = drag?.kind === 'build'
+  const from = dragging ? drag.from : !drag && selected !== null && hover ? selected : null
+  const end = dragging ? pointer : hover
+  const target = end && from !== null ? nodeAt(end) : null
+  const previewEnd = target !== null && target !== from ? nodes[target]! : end
   const refused = from !== null && target !== null && target !== from && !canJoin(from, target)
   const moving = drag && drag.kind !== 'build' ? drag.node : null
   const pad = 1
@@ -495,7 +503,9 @@ export function RoadsLayer({
         <RoadLine key={`o${key}`} a={a} b={b} tone={tone} ghost={ghost} />
       ))}
       {from !== null && previewEnd && (
-        <RoadLine a={nodes[from]!} b={previewEnd} ghost tone={refused ? 'bad' : undefined} mark={refused} />
+        <g data-testid="road-preview">
+          <RoadLine a={nodes[from]!} b={previewEnd} ghost tone={refused ? 'bad' : undefined} mark={refused} />
+        </g>
       )}
       {edit?.junctions.map((_, k) => {
         const v = places + k
@@ -542,9 +552,13 @@ export function RoadsLayer({
             const p = at(e)
             const r = nodeAt(p) === null ? roadAt(p) : null
             setHoverRoad(r ? roadKey(r) : null)
+            setHover(selected !== null ? p : null)
           }
         }}
-        onPointerLeave={() => setHoverRoad(null)}
+        onPointerLeave={() => {
+          setHoverRoad(null)
+          setHover(null)
+        }}
       />
     </g>
   )

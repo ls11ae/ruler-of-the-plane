@@ -1375,3 +1375,16 @@ Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 
   map 5 with its 0.45 % network. Alternatives: 0.2 % (the next-best networks of maps 7 and 8, 0.23–0.24 %
   longer and just as invisible, would still be refused); counting it with one star less (Kevin: stars
   unchanged).
+- **2026-10-20 (agreed by Kevin 2026-10-20) "Kreuzungen": a road from a junction, said and shown.** A
+  visitor could not start a road at a junction for a long time: dragging a junction moves it, and that a
+  click on a junction and then on a place or another junction builds a road was said nowhere (in the end
+  the visitor dropped a new junction onto an old one). The hint line at the bottom now says it (mouse:
+  "Kreuzung anklicken, dann Ort oder Kreuzung: Straße"; touch: "Ort oder Kreuzung antippen, dann Ort,
+  Kreuzung oder freies Land: Straße"), and so does "So geht's" ("Für eine Straße von einer Kreuzung aus
+  klick oder tipp sie an, dann einen Ort oder eine andere Kreuzung."). Once a place or junction is
+  selected by a click, the road to be built follows the mouse pointer as a faint dashed line, as while
+  dragging (snapping to the place or junction under the pointer, red where "Zwei Sorten" refuses it), so
+  it is clear that a road has been started; in every set, since all of them build roads by two clicks.
+  On touch there is no pointer to follow; the selected node stays marked as before. Alternatives: a road
+  started by dragging from a junction with a modifier key (nobody would find it); dragging from a
+  junction's edge (too fine for a finger).

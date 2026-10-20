@@ -81,9 +81,9 @@ export const en: RoadsTexts = {
   },
   steiner: {
     hintMouse:
-      'Drag from place to place: road · drag onto open land: junction · drag a junction: move it · click a road: remove it',
+      'Drag from place to place: road · drag onto open land: junction · click a junction, then a place or junction: road · drag a junction: move it · click a road: remove it',
     hintTouch:
-      'Tap a place, then a place or open land: road · drag a junction: move it · tap a road: remove it',
+      'Tap a place or junction, then a place, junction or open land: road · drag a junction: move it · tap a road: remove it',
     hints: {
       deadEnd: 'The road with the cross ends at a junction where nothing goes on: it can go.',
       bend: 'Only two roads meet at the junction with the cross: without the bend the way would be shorter.',
@@ -95,7 +95,7 @@ export const en: RoadsTexts = {
     },
     howTo: [
       'Now you may build junctions: drag a road from a place onto open land, and a junction appears there.',
-      'Drag a junction to move it; it shows the angles between its roads.',
+      'Drag a junction to move it; it shows the angles between its roads. For a road from a junction, click or tap it, then a place or another junction.',
       'Junctions make the network shorter. Up to 1 % above the optimum counts as optimal.',
     ],
     howToAnimation: 'Three roads meet at a junction, which slides to the best spot',

@@ -5,7 +5,7 @@ import { componentCount, kruskal, networkLength, roadsByLength, type Road } from
 import { freeTree } from '../src/core/games/roads/plane'
 import type { KingsTaxesLevel, RoadsBichromaticLevel, RoadsSteinerLevel } from '../src/core/levels/schema'
 import { expectHeaderLaidOut, freshDevice, shot } from './helpers'
-import { drag, openMap, type Pt } from './roads-helpers'
+import { drag, openMap, toScreen, type Pt } from './roads-helpers'
 
 freshDevice()
 
@@ -82,6 +82,40 @@ test('Kreuzungen: very close to the optimum the junction settles at 120°', asyn
   await expect(page.getByTestId('roads-state')).toHaveText('Optimal!')
   await expect(page.getByTestId('junction-angles').getByText('120°')).toHaveCount(3)
   await expect(page.getByRole('dialog', { name: 'Geschafft!' })).toBeVisible()
+})
+
+test('Kreuzungen: a road from a junction by clicking it, then a place, with a dashed line to the pointer', async ({
+  page,
+  phone,
+}, testInfo) => {
+  await openMap(page, 'Kreuzungen', 1)
+  await page.getByRole('dialog', { name: "So geht's" }).getByRole('button', { name: "Los geht's!" }).click()
+  // The footer says how.
+  await expect(page.locator('footer')).toContainText(
+    phone
+      ? 'Ort oder Kreuzung antippen, dann Ort, Kreuzung oder freies Land'
+      : 'Kreuzung anklicken, dann Ort oder Kreuzung: Straße',
+  )
+  // A junction at the optimum's spot, with one road from a place.
+  await drag(page, places[forked[0]!]!, best, phone)
+  await expect(page.locator('[data-junction=built]')).toHaveCount(1)
+  const junction = await toScreen(page, best)
+  const place = await toScreen(page, places[forked[1]!]!)
+  if (phone) {
+    await page.touchscreen.tap(junction.x, junction.y)
+    await page.touchscreen.tap(place.x, place.y)
+  } else {
+    await page.mouse.click(junction.x, junction.y)
+    // A road has been started: it follows the pointer as a dashed line.
+    await page.mouse.move((junction.x + place.x) / 2, (junction.y + place.y) / 2 + 30, { steps: 4 })
+    await expect(page.getByTestId('road-preview')).toHaveCount(1)
+    await shot(page, testInfo, 'roads-steiner-click-junction')
+    await page.mouse.click(place.x, place.y)
+    await expect(page.getByTestId('road-preview')).toHaveCount(0)
+  }
+  await expect(page.getByTestId('junction-angles')).toContainText('°')
+  await expect(page.locator('[data-junction=built]')).toHaveCount(1)
+  await expect(page.getByTestId('roads-state')).toHaveText('Noch 3 Teile verbinden')
 })
 
 test('Kreuzungen: a bent road and a junction dropped onto a village', async ({ page, phone }) => {

@@ -1086,8 +1086,8 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 
 ### steiner
 
-- `steiner.hintMouse`: Von Ort zu Ort ziehen: Straße · aufs freie Land ziehen: Kreuzung · Kreuzung ziehen: verschieben · Straße anklicken: abreißen
-- `steiner.hintTouch`: Ort antippen, dann Ort oder freies Land: Straße · Kreuzung ziehen: verschieben · Straße antippen: abreißen
+- `steiner.hintMouse`: Von Ort zu Ort ziehen: Straße · aufs freie Land ziehen: Kreuzung · Kreuzung anklicken, dann Ort oder Kreuzung: Straße · Kreuzung ziehen: verschieben · Straße anklicken: abreißen
+- `steiner.hintTouch`: Ort oder Kreuzung antippen, dann Ort, Kreuzung oder freies Land: Straße · Kreuzung ziehen: verschieben · Straße antippen: abreißen
 - `steiner.hints.deadEnd`: Die Straße mit dem Kreuz endet an einer Kreuzung, von der nichts weitergeht: Sie kann weg.
 - `steiner.hints.bend`: An der Kreuzung mit dem Kreuz treffen sich nur zwei Straßen: Ohne den Knick wäre der Weg kürzer.
 - `steiner.hints.missing`: Hier lohnt sich eine Kreuzung: Bau die Straße mit dem Plus bis zum gestrichelten Kreis.
@@ -1097,7 +1097,7 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `steiner.hints.angle`: Schieb die Kreuzung im grünen Kreis: Am kürzesten wird es, wenn sich ihre Straßen unter 120° treffen.
 - `steiner.howTo`:
   - Jetzt darfst du Kreuzungen bauen: Zieh eine Straße von einem Ort aufs freie Land, dort entsteht eine Kreuzung.
-  - Zieh eine Kreuzung, um sie zu verschieben; an ihr siehst du die Winkel zwischen den Straßen.
+  - Zieh eine Kreuzung, um sie zu verschieben; an ihr siehst du die Winkel. Für eine Straße von einer Kreuzung aus klick oder tipp sie an, dann einen Ort oder eine andere Kreuzung.
   - Mit Kreuzungen wird das Netz kürzer. Bis 1 % über dem Optimum zählt als optimal.
 - `steiner.howToAnimation`: Drei Straßen treffen sich an einer Kreuzung, die an den besten Platz rutscht
 - `steiner.explanation(places, shapes)`:
