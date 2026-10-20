@@ -38,12 +38,16 @@ Design decisions go to the decision log in `docs/design-notes.md`.
   game), tags only mark booth releases (`phase-6` = the laptop test), and a fourth "Schwer" woods walk
   "Schlossrunde" whose free start is a real trade-off (a round from the castle, since no walk from the
   gate to the castle can have two good starts; the round is "proposed"). Kevin's playtest (2026-10-19, branch `claude/zen-euler-2febve`): a new first
-  map "Gabel" of "Kreuzungen" (the how-to showed map 1's solution) and junctions that settle only within
-  0.03 % of the optimum; in "Licht ins Verlies" the dark-spot marker only from 95 % lit, rock (short ink
+  map "Gabel" of "Kreuzungen" (the how-to showed map 1's solution); in "Licht ins Verlies" the dark-spot marker only from 95 % lit, rock (short ink
   strokes on stone) round the dungeon and in the pillars, "Mittel" starting with small pillars; in
   "Rasenmähen" a button "↶ Zurück" per mower, the explanation on an example lawn (`levels/lawn-mowing/example/`),
   stone slabs for every hole, "Bisher"/"Computer" on the score card and darker uncut grass; the castle
-  count on phones in "Erobere das Land". Open are the items that need
+  count on phones in "Erobere das Land". Kevin's playtest (2026-10-20, branch `claude/zen-euler-2febve`):
+  in "Straßenbau" equally short networks count up to the rounding of the coordinates (a bug on map 6), up
+  to 0.5 % longer counts in "Von Ort zu Ort" and "Zwei Sorten", "Kreuzungen" is solved by the optimum's
+  shape with every angle within 5° of 120° (then the junctions settle; no 1 % rule any more), and a road
+  from a junction is said and drawn while it is being built; in "Rasenmähen" the mower may hang over the
+  edge (said and shown in the how-to). Open are the items that need
   the booth laptops (playtest, the 200 ms "Schwer" move, the key test, the checklist). **`docs/roadmap.md` is the source of truth for open work**, in its order. How the shell and
   the shared code fit together and how a game plugs in: `docs/architecture.md`.
 - Repository `ls11ae/ruler-of-the-plane` (public, MIT). Default branch `main`. The app lives at the

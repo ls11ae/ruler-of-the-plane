@@ -19,6 +19,8 @@ export function HowToAnimation({ label }: { label: string }) {
     <svg
       viewBox={`-0.5 -0.5 ${cols + 1} ${rows + over + 1}`}
       className={`${styles.animationSvg} ${styles.loop}`}
+      // Taller than the other games' (room for the overhang): a little lower, so "So geht's" fits a laptop.
+      style={{ maxHeight: '30vh' }}
       role="img"
       aria-label={label}
     >

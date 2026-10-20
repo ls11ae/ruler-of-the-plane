@@ -1396,7 +1396,10 @@ Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 
   den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten
   fahren – mähen musst du nur den Rasen." The how-to animation (tier screen and "So geht's") shows it: its
   lawn is one row higher than two strips (7 rows), so the mower drives three strips and the last hangs
-  over the edge by two rows (a 9 s loop instead of 6 s; the terrace stays in the first strip).
+  over the edge by two rows (a 9 s loop instead of 6 s; the terrace stays in the first strip). The picture
+  is taller than the other games' how-to animations, so it is capped at 30 % of the screen height, and
+  "So geht's" with the keys still fits a laptop's 800 px (the accessibility check of the "Los geht's!"
+  button failed at the bottom edge of the dialog before).
   Alternatives: a lawn one row lower than two strips (the second strip would hang over by one row; Kevin
   asked for one row higher); a separate picture of a mower at the edge (one more thing to look at).
 - **2026-10-20 (agreed by Kevin 2026-10-20) "Kreuzungen": solved by the optimum's shape and angles of about
