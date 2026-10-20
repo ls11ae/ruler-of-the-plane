@@ -389,9 +389,12 @@
   margin-bottom: 6px;
 }
 
-/* "So geht's": a 6 s loop. The mower drives the top strip, drops down, drives the bottom strip back. */
+/*
+ * "So geht's": a 9 s loop. The mower drives the top strip, drops down, drives the middle strip back,
+ * drops again and drives the bottom strip, which hangs over the lawn's edge by two rows.
+ */
 .loop * {
-  animation-duration: 6s;
+  animation-duration: 9s;
   animation-iteration-count: infinite;
   animation-fill-mode: both;
   animation-timing-function: linear;
@@ -406,24 +409,35 @@
   transform-origin: 0 0;
 }
 
+.mowMiddle {
+  animation-name: mowMiddle;
+  transform-origin: 10px 0;
+}
+
 .mowBottom {
   animation-name: mowBottom;
-  transform-origin: 10px 0;
+  transform-origin: 0 0;
 }
 
 @keyframes drive {
   0% {
     transform: translate(0, 0);
   }
-  40% {
+  28% {
     transform: translate(7px, 0);
   }
-  50% {
+  33% {
     transform: translate(7px, 3px);
   }
-  90%,
-  100% {
+  61% {
     transform: translate(0, 3px);
+  }
+  66% {
+    transform: translate(0, 6px);
+  }
+  94%,
+  100% {
+    transform: translate(7px, 6px);
   }
 }
 
@@ -431,7 +445,21 @@
   0% {
     transform: scaleX(0.3);
   }
-  40%,
+  28%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes mowMiddle {
+  0%,
+  33% {
+    transform: scaleX(0);
+  }
+  33.1% {
+    transform: scaleX(0.3);
+  }
+  61%,
   100% {
     transform: scaleX(1);
   }
@@ -439,13 +467,13 @@
 
 @keyframes mowBottom {
   0%,
-  50% {
+  66% {
     transform: scaleX(0);
   }
-  51% {
+  66.1% {
     transform: scaleX(0.3);
   }
-  90%,
+  94%,
   100% {
     transform: scaleX(1);
   }

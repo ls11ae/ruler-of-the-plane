@@ -67,6 +67,9 @@ async function startGame(page: Page, players: 1 | 2, testInfo: TestInfo) {
   await page.goto('./#/play/lawn-mowing')
   const tiers = page.getByTestId('tier-screen')
   await expect(tiers).toContainText('Mähe den ganzen Rasen!')
+  // The mower may hang over the edge: said in the rules, and the how-to's last strip does.
+  await expect(tiers).toContainText('Er darf über den Rand hinausragen und über Steinplatten fahren')
+  await expect(tiers.getByRole('img', { name: /der letzte Streifen ragt über den Rand/ })).toBeVisible()
   if (players === 2) await tiers.getByRole('button', { name: 'Zu zweit (2 Mäher)' }).click()
   await shot(page, testInfo, 'lawn-mowing-tiers')
   await chooseTier(page, 'Leicht')

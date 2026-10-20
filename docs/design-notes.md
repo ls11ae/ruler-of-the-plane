@@ -1388,3 +1388,12 @@ Kevin played "Straßenbau" and "Rasenmähen" again and decided the following on 
   On touch there is no pointer to follow; the selected node stays marked as before. Alternatives: a road
   started by dragging from a junction with a modifier key (nobody would find it); dragging from a
   junction's edge (too fine for a finger).
+- **2026-10-20 (agreed by Kevin 2026-10-20) "Rasenmähen": the mower may hang over the edge, said and
+  shown.** Visitors kept the whole mower on the lawn because nothing said it may hang over the edge (one
+  only found out because a start position did). The rules say it together with the stone slabs: "Mähe
+  den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten
+  fahren – mähen musst du nur den Rasen." The how-to animation (tier screen and "So geht's") shows it: its
+  lawn is one row higher than two strips (7 rows), so the mower drives three strips and the last hangs
+  over the edge by two rows (a 9 s loop instead of 6 s; the terrace stays in the first strip).
+  Alternatives: a lawn one row lower than two strips (the second strip would hang over by one row; Kevin
+  asked for one row higher); a separate picture of a mower at the edge (one more thing to look at).

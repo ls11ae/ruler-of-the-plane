@@ -886,14 +886,14 @@ workflow artifact "texte-screenshots" (GitHub → Actions → "Texts" → the la
 - `theoryButton`: Theorie
 - `howTo(cutters)`:
   - cutters = 2:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten fahren – mähen musst du nur den Rasen.
     - Wenn alles gemäht ist: Feierabend! Alle fahren zurück zum Start. Es zählt die längere Runde.
     - Je weniger Schritte, desto besser.
   - cutters = 1:
-    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Steinplatten musst du nicht mähen, drüberfahren darfst du.
+    - Mähe den ganzen Rasen! Ein Mäher mäht 3 × 3 Felder. Er darf über den Rand hinausragen und über Steinplatten fahren – mähen musst du nur den Rasen.
     - Wenn alles gemäht ist: Feierabend! Der Mäher fährt zurück zum Start.
     - Je weniger Schritte, desto besser.
-- `howToAnimation`: Ein Mäher fährt Streifen ab, mäht dabei drei Felder breit und fährt über eine kleine Terrasse
+- `howToAnimation`: Ein Mäher fährt Streifen ab und mäht dabei drei Felder breit; er fährt über eine kleine Terrasse, und der letzte Streifen ragt über den Rand
 - `explanation(bound, mine, reference, solver, cutters)`:
   - bound = 100, mine = 124, reference = 110, solver = true, cutters = 2:
     - Gesucht sind Runden, die zusammen den ganzen Rasen mähen. Es zählt die längste Runde, denn alle Mäher fahren gleichzeitig los.
